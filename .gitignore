@@ -1,11 +1,14 @@
 *.aux
 *.bbl
+*.bcf
 *.blg
-*.dep
 *.fdb_latexmk
 *.fls
 *.log
 *.out
-*.toc
+*.run.xml
 *.synctex.gz
+*.toc
 main.pdf
+rendered/
+
