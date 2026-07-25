@@ -1,11 +1,15 @@
 # Phenomenological Investigations of Polarized Collisions in Herwig 7
 
 Draft of the follow-up polarized-collision phenomenology paper.  The
-manuscript includes the central-PDF hard-scale scan for the HERMES and COMPASS
-inclusive-DIS measurements and the STAR weak-boson measurements.  It also
-defines the validated STAR inclusive-jet/dijet and HERMES identified-hadron
-SIDIS analyses; their result panels remain compile-safe placeholders until
-production-statistics samples are available.  PHENIX prompt-photon results
-are outside the current paper scope.
+manuscript includes the data-bearing predictions from the
+`paper_central_3m_20260723` campaign: HERMES and COMPASS inclusive DIS,
+HERMES identified-hadron SIDIS, STAR weak-boson production, and STAR
+inclusive-jet and dijet production at 200 and 510 GeV.  These figures use the
+central PDF members and central hard scales, with Monte Carlo statistical
+uncertainties shown separately.  PHENIX prompt-photon results are outside the
+current paper scope.
+
+The exact measurement and figure inventory is recorded in
+[`FIGURE_SOURCES.md`](FIGURE_SOURCES.md).
 
 Build with `make` in a TeX environment containing `latexmk`.

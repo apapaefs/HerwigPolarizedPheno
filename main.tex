@@ -13,18 +13,6 @@
 \newcommand{\suu}{\sigma_{UU}}
 \newcommand{\sll}{\sigma_{LL}}
 \newcommand{\GeV}{\ensuremath{\,\mathrm{GeV}}}
-\newcommand{\placeholderfigure}[2]{%
-  \begin{figure}[t]
-    \centering
-    \fbox{\begin{minipage}[c][4.2cm][c]{0.88\textwidth}
-      \centering\small\color{gray!70!black}
-      Production-statistics placeholder\\[0.5em]
-      #1
-    \end{minipage}}
-    \caption{#2 The numerical curves and uncertainty bands will be inserted
-    after the production campaign; no quantitative conclusion is inferred
-    from this placeholder.}
-  \end{figure}}
 
 \title{Phenomenological Investigations of Polarized Collisions in \Herwig~7}
 
@@ -46,9 +34,13 @@ next-to-leading order matched to the parton shower using the POWHEG method,
 whereas the proton--proton hard processes are treated at leading order and
 evolved with a spin-correlated parton shower.  We define the helicity
 combinations, fiducial measurements and uncertainty prescriptions needed for
-a reproducible comparison.  A first central-PDF scale scan is presented for
-inclusive DIS and weak-boson production; the jet and semi-inclusive results
-remain provisional pending production statistics.
+a reproducible comparison.  Central-PDF, central-scale predictions based on
+production-statistics event samples are presented for every selected
+measurement.  They reproduce the principal inclusive-DIS and weak-boson
+trends and provide first fully exclusive comparisons for identified-hadron
+SIDIS and polarized jet production.  The statistically sparse tails of the
+jet measurements remain Monte Carlo limited, and PDF and scale variations
+are deferred to the complete uncertainty analysis.
 }
 
 \begin{document}
@@ -114,8 +106,9 @@ The paper is organized as follows.  Section~\ref{sec:dis} defines the
 inclusive and semi-inclusive DIS observables, simulation and experimental
 selections.  Section~\ref{sec:pp} describes weak-boson and jet production in
 polarized proton--proton collisions.  Provisional conclusions are given in
-section~\ref{sec:conclusions}.  The low-$Q^2$ HERMES projection and compact
-reproducibility tables are collected in the appendices.
+section~\ref{sec:conclusions}.  The detailed semi-inclusive projections, the
+low-$Q^2$ HERMES projection and compact reproducibility tables are collected
+in the appendices.
 
 \section{Deep-inelastic scattering}
 \label{sec:dis}
@@ -189,9 +182,10 @@ Five simulation variants are retained for the DIS comparison:
   an additional spin-density matrix; and
   \item polarized NLO+PS with shower spin correlations disabled.
 \end{enumerate}
-The last three are diagnostics, not components of the nominal uncertainty
-band.  In particular, the comparison without real-emission spin information
-does not alter the POWHEG hardest-emission probability or event weight.
+The four non-nominal variants are diagnostics, not components of the nominal
+uncertainty band, and are not displayed in the central sample studied here.
+In particular, the comparison without real-emission spin information does
+not alter the POWHEG hardest-emission probability or event weight.
 
 \subsection{HERMES proton data}
 
@@ -267,12 +261,45 @@ $A_2$, $g_2$, or depolarization model enters.  Since the one-, two- and
 three-dimensional projections contain overlapping events and no
 cross-projection covariance is published, they are assessed separately.
 
-\placeholderfigure{HERMES proton $\pi^\pm$ and deuteron
-$\pi^\pm,K^\pm$ $A_\parallel$ in the one-, two- and three-dimensional
-published projections.}
-{The HERMES identified-hadron SIDIS comparison.  The analysis and reference
-data have passed the central validation run; production-statistics curves are
-not inferred from the 100-event smoke sample.}
+The one-dimensional comparisons are shown in
+fig.~\ref{fig:hermes-sidis-x}.  The proton and deuteron pion predictions
+exhibit the observed increase of the asymmetry with $x$, with the proton
+channels showing the larger positive asymmetry.  The kaon measurements have
+less statistical resolving power.  Their central prediction distinguishes
+$K^+$ and $K^-$ at small and intermediate $x$, while the data remain
+compatible with a range of behaviours.  In the highest-$x$ bins the
+experimental errors become large, and these isolated points are not used to
+infer a discrepancy.
+
+All data-bearing two- and three-dimensional projections are displayed in
+appendix~\ref{app:sidis-projections}.  The finer grids retain the broad
+charge and target hierarchy seen in the $x$ projection, but individual bins
+fluctuate substantially and the Monte Carlo uncertainty grows in the sparsely
+populated high-$x$ region.  We therefore do not combine the overlapping
+projections into a single goodness-of-fit measure.
+
+\begin{figure}[p]
+  \centering
+  \includegraphics[width=0.44\textwidth]{figures/paper-central-3m-20260723/hermes-sidis/proton_piplus_x.png}
+  \hfill
+  \includegraphics[width=0.44\textwidth]{figures/paper-central-3m-20260723/hermes-sidis/proton_piminus_x.png}
+
+  \includegraphics[width=0.44\textwidth]{figures/paper-central-3m-20260723/hermes-sidis/deuteron_piplus_x.png}
+  \hfill
+  \includegraphics[width=0.44\textwidth]{figures/paper-central-3m-20260723/hermes-sidis/deuteron_piminus_x.png}
+
+  \includegraphics[width=0.44\textwidth]{figures/paper-central-3m-20260723/hermes-sidis/deuteron_kplus_x.png}
+  \hfill
+  \includegraphics[width=0.44\textwidth]{figures/paper-central-3m-20260723/hermes-sidis/deuteron_kminus_x.png}
+  \caption{HERMES identified-hadron longitudinal double-spin asymmetries as
+  functions of $x$.  From top to bottom, the rows show proton
+  $\pi^+,\pi^-$, deuteron $\pi^+,\pi^-$, and deuteron $K^+,K^-$.
+  The red stepped curve is the polarized NLO+PS prediction at the central
+  hard scale and with the central PDF members; its theory-centred band is the
+  Monte Carlo statistical uncertainty.  Experimental points carry the
+  published total uncertainties.}
+  \label{fig:hermes-sidis-x}
+\end{figure}
 
 \subsection{COMPASS proton and deuteron data}
 
@@ -314,51 +341,52 @@ published bin boundaries are used for every comparison.
 
 \subsection{Uncertainties and presentation}
 
-The nominal curve carries separate Monte Carlo, PDF and hard-scale
-uncertainties.  Polarized PDF replicas are varied while the unpolarized member
-is held central, and conversely for unpolarized replicas.  A single replica
-member is used coherently in every helicity and in both signed NLO
-components.  The two independent replica variances are then added in
-quadrature to form the 68\% PDF band.  The scale envelope is not combined with
-the PDF or Monte Carlo uncertainty.
+The uncertainty construction keeps Monte Carlo, PDF and hard-scale
+components separate.  For a PDF ensemble, a polarized member is varied while
+the unpolarized member is held central, and conversely.  A single member is
+used coherently in every helicity, target component and signed NLO
+contribution; the two replica variances are then added in quadrature.  The
+hard-scale envelope is not combined with either the PDF or Monte Carlo
+component.
 
-The plots display one total experimental uncertainty per point.  Monte Carlo
-statistical uncertainties form a theory-centred band, separate from the
-hard-scale envelope.  For asymmetries near zero, pulls using the combined
-experimental and Monte Carlo statistical uncertainty are more stable than
-data/theory ratios.  The overlap between the experimental inputs and the
-NNPDFpol2.0 fit is stated on all quantitative summaries.
+The production sample displayed in this paper fixes both PDF members and all
+hard scales at their central values.  The figures therefore contain no PDF or
+scale band.  Each NLO DIS helicity and target component contains
+$3.0\times10^6$ positive-component events and $3.0\times10^5$
+negative-component events.  Each LO proton--proton channel contains
+$3.0\times10^6$ events per helicity.  The plots display one total
+experimental uncertainty per point and a separate, theory-centred Monte
+Carlo statistical band.  For asymmetries near zero, pulls use the combined
+experimental and Monte Carlo statistical uncertainty and are more stable
+than data/theory ratios.
 
-Figure~\ref{fig:inclusive-dis-data} shows the completed central-PDF scale
-scan.  Each DIS scale point contains 300,000 positive NLO events and 30,000
-negative NLO events for every physical helicity and, for deuterium, every
-nucleon component.  The PDF-replica ensemble is not part of this first scan
-and is therefore not drawn.  The common rise of the proton asymmetry with
-$x$ is reproduced across the three beam configurations.  The deuteron
-prediction remains close to zero at small $x$ and becomes positive at larger
-$x$, following the broad trend of the data.  The lowest-$x$ bins also show
-that scale and Monte Carlo uncertainties can be appreciable when the
-polarized numerator is small; these bins should not be read as a precision
-test of the shower.
+Figure~\ref{fig:inclusive-dis-data} shows the inclusive DIS comparisons.  The
+common rise of the proton asymmetry with $x$ is reproduced across the three
+beam configurations.  The deuteron prediction remains close to zero at small
+$x$ and becomes positive at larger $x$, following the broad trend of the
+data.  The Monte Carlo uncertainty is small over most of the measured range
+and increases in the upper-$x$ bins, where accepted event rates are lower.
+The overlap between these measurements and the NNPDFpol2.0 fit remains
+essential when interpreting the agreement.
 
 \begin{figure}[p]
   \centering
-  \includegraphics[width=0.48\textwidth]{figures/scan-20260722/dis/hermes-a1.png}
+  \includegraphics[width=0.48\textwidth]{figures/paper-central-3m-20260723/dis/hermes-a1.png}
   \hfill
-  \includegraphics[width=0.48\textwidth]{figures/scan-20260722/dis/compass-2010-a1.png}
+  \includegraphics[width=0.48\textwidth]{figures/paper-central-3m-20260723/dis/compass-2010-a1.png}
 
-  \includegraphics[width=0.48\textwidth]{figures/scan-20260722/dis/compass-2016-a1.png}
+  \includegraphics[width=0.48\textwidth]{figures/paper-central-3m-20260723/dis/compass-2016-a1.png}
   \hfill
-  \includegraphics[width=0.48\textwidth]{figures/scan-20260722/dis/compass-2017-a1.png}
-  \caption{Inclusive virtual-photon asymmetries from the central-PDF
-  production scan.  Top left: HERMES proton data at $27.6\GeV$.  Top right:
+  \includegraphics[width=0.48\textwidth]{figures/paper-central-3m-20260723/dis/compass-2017-a1.png}
+  \caption{Inclusive virtual-photon asymmetries from the central-PDF,
+  central-scale production sample.  Top left: HERMES proton data at
+  $27.6\GeV$.  Top right:
   COMPASS proton data at $160\GeV$.  Bottom left: COMPASS proton data at
   $200\GeV$.  Bottom right: COMPASS deuteron data at $160\GeV$.  The red
   stepped curve is the nominal polarized NLO+PS prediction.  The
-  theory-centred red band is its Monte Carlo statistical uncertainty and the
-  lighter envelope is the common hard-scale variation
-  $\mu/\mu_0=1/2,1,2$.  The experimental points carry their published total
-  uncertainties.  The $A_1$ construction uses $A_2=g_2=0$.}
+  theory-centred red band is its Monte Carlo statistical uncertainty.  The
+  experimental points carry their published total uncertainties.  The
+  $A_1$ construction uses $A_2=g_2=0$.}
   \label{fig:inclusive-dis-data}
 \end{figure}
 
@@ -396,7 +424,9 @@ The common hard-scale points are
 $\mu/\mu_0=1/2,1,2$.  For electroweak Born $W/Z$ production only the
 factorization scale is varied.  Jet production varies the supported
 renormalization and factorization scale together.  PDF replicas are combined
-with the same coherence and quadrature prescription as in DIS.
+with the same coherence and quadrature prescription as in DIS.  Only the
+central scale and central PDF members enter the figures presented below; the
+remaining points define the subsequent uncertainty scan.
 
 \subsection{STAR weak-boson asymmetries}
 
@@ -433,15 +463,15 @@ closure test is the beam-exchange relation
 \end{equation}
 rather than equality of $PP$ and $MM$.
 
-The central-PDF scale scan contains 300,000 events per channel, helicity and
-scale point.  Figure~\ref{fig:star-weak-data} shows all five published
-weak-boson observables.  The LO+PS prediction reproduces the opposite signs
-and broad pseudorapidity dependence of the $W^+$ and $W^-$ single-spin
-asymmetries.  Most points are described within their total uncertainties,
-although the pull panels in fig.~\ref{fig:star-weak-pulls} identify localized
-deviations in both charge channels.  The predicted double-spin asymmetries are
-positive across the fiducial region, while the measured central values lie
-closer to zero and have substantially larger uncertainties.  The integrated
+The central sample contains $3.0\times10^6$ events per channel and helicity.
+Figure~\ref{fig:star-weak-data} shows all five published weak-boson
+observables.  The LO+PS prediction reproduces the opposite signs and the
+broad pseudorapidity dependence of the $W^+$ and $W^-$ single-spin
+asymmetries.  The pointwise pulls in fig.~\ref{fig:star-weak-pulls} are
+generally modest, with the most visible local displacement in the
+forward-$\eta$ region.  The predicted double-spin asymmetries are positive
+across the fiducial region, whereas the measured central values lie closer to
+zero and have substantially larger uncertainties.  The integrated
 $Z/\gamma^*$ prediction is close to the measured central value.  These
 comparisons test the exclusive LO+PS realization of the fitted helicity
 information; they do not constitute an independent validation of the
@@ -449,26 +479,26 @@ NNPDFpol2.0 fit.
 
 \begin{figure}[p]
   \centering
-  \includegraphics[width=0.48\textwidth]{figures/scan-20260722/star-weak/wplus-al.png}
+  \includegraphics[width=0.48\textwidth]{figures/paper-central-3m-20260723/star-weak/Wplus_AL.png}
   \hfill
-  \includegraphics[width=0.48\textwidth]{figures/scan-20260722/star-weak/wminus-al.png}
+  \includegraphics[width=0.48\textwidth]{figures/paper-central-3m-20260723/star-weak/Wminus_AL.png}
 
-  \includegraphics[width=0.48\textwidth]{figures/scan-20260722/star-weak/wplus-all.png}
+  \includegraphics[width=0.48\textwidth]{figures/paper-central-3m-20260723/star-weak/Wplus_ALL.png}
   \hfill
-  \includegraphics[width=0.48\textwidth]{figures/scan-20260722/star-weak/wminus-all.png}
+  \includegraphics[width=0.48\textwidth]{figures/paper-central-3m-20260723/star-weak/Wminus_ALL.png}
   \caption{STAR $W^\pm$ spin asymmetries at $\sqrt{s}=510\GeV$.  The upper
   row shows $A_L$ for $W^+$ (left) and $W^-$ (right); the lower row shows the
   corresponding $A_{LL}$.  The red stepped curve is the polarized LO+PS
-  prediction with multiple-parton interactions enabled.  The dark
-  theory-centred band is the Monte Carlo statistical uncertainty and the
-  lighter band is the factorization-scale envelope.  Experimental points
-  carry their published total uncertainties.}
+  prediction with multiple-parton interactions enabled at the central
+  factorization scale.  The theory-centred band is the Monte Carlo statistical
+  uncertainty.  Experimental points carry their published total
+  uncertainties.}
   \label{fig:star-weak-data}
 \end{figure}
 
 \begin{figure}[p]
   \centering
-  \includegraphics[width=0.58\textwidth]{figures/scan-20260722/star-weak/zgamma-al.png}
+  \includegraphics[width=0.58\textwidth]{figures/paper-central-3m-20260723/star-weak/Zgamma_AL.png}
   \caption{The integrated STAR $Z/\gamma^*$ longitudinal single-spin
   asymmetry.  The line and uncertainty conventions are those of
   fig.~\ref{fig:star-weak-data}.}
@@ -477,20 +507,18 @@ NNPDFpol2.0 fit.
 
 \begin{figure}[p]
   \centering
-  \includegraphics[width=0.46\textwidth]{figures/scan-20260722/star-weak/pull-wplus-al.png}
+  \includegraphics[width=0.46\textwidth]{figures/paper-central-3m-20260723/star-weak/Pull_Wplus_AL.png}
   \hfill
-  \includegraphics[width=0.46\textwidth]{figures/scan-20260722/star-weak/pull-wminus-al.png}
+  \includegraphics[width=0.46\textwidth]{figures/paper-central-3m-20260723/star-weak/Pull_Wminus_AL.png}
 
-  \includegraphics[width=0.46\textwidth]{figures/scan-20260722/star-weak/pull-wplus-all.png}
+  \includegraphics[width=0.46\textwidth]{figures/paper-central-3m-20260723/star-weak/Pull_Wplus_ALL.png}
   \hfill
-  \includegraphics[width=0.46\textwidth]{figures/scan-20260722/star-weak/pull-wminus-all.png}
+  \includegraphics[width=0.46\textwidth]{figures/paper-central-3m-20260723/star-weak/Pull_Wminus_ALL.png}
 
-  \includegraphics[width=0.48\textwidth]{figures/scan-20260722/star-weak/pull-zgamma-al.png}
+  \includegraphics[width=0.48\textwidth]{figures/paper-central-3m-20260723/star-weak/Pull_Zgamma_AL.png}
   \caption{Pulls corresponding to the STAR weak-boson comparisons in
   figs.~\ref{fig:star-weak-data} and \ref{fig:star-z-data}.  The denominator
-  contains the experimental and Monte Carlo statistical uncertainties.  The
-  hard-scale displacement is shown separately and is not added in quadrature
-  to the pull denominator.}
+  contains the experimental and Monte Carlo statistical uncertainties.}
   \label{fig:star-weak-pulls}
 \end{figure}
 
@@ -533,12 +561,59 @@ separate from the point-to-point covariance.  The nominal hard-shower-parton
 prediction has MPI switched off; an MPI-on stable-particle result is retained
 only as a modelling diagnostic.
 
-\placeholderfigure{STAR inclusive-jet and topology-resolved dijet
-$A_{LL}$ at $\sqrt{s}=200$ and $510\GeV$, including the full experimental
-covariance and separate PDF and hard-scale components.}
-{The STAR jet comparison.  The reference extraction and the polarized
-LO+PS analysis have passed central smoke validation, but the available
-100-event curves are not used as scientific results.}
+Figures~\ref{fig:star-jets-200} and \ref{fig:star-jets-510} show every
+independent inclusive-jet and topology-resolved dijet comparison.  At
+$200\GeV$, the lower and intermediate jet-$p_T$ and dijet-mass bins display
+the measured small positive asymmetry and its gradual increase.  The same
+qualitative pattern is present at $510\GeV$, where the wider kinematic reach
+separates the four dijet topologies.  In both data sets, however, the
+highest-$p_T$ and highest-mass prediction bins have large Monte Carlo bands
+and visibly unstable central values.  Three million events per helicity are
+not sufficient for a quantitative treatment of these tails after the
+parton-jet and topology selections.  We retain the bins to show the complete
+published comparison, but exclude them from numerical conclusions pending
+higher statistics or dedicated variance reduction.
+
+\begin{figure}[p]
+  \centering
+  \includegraphics[width=0.48\textwidth]{figures/paper-central-3m-20260723/star-jets-200/inclusive_central_ALL.png}
+  \hfill
+  \includegraphics[width=0.48\textwidth]{figures/paper-central-3m-20260723/star-jets-200/inclusive_forward_ALL.png}
+
+  \includegraphics[width=0.48\textwidth]{figures/paper-central-3m-20260723/star-jets-200/dijet_same_sign_ALL.png}
+  \hfill
+  \includegraphics[width=0.48\textwidth]{figures/paper-central-3m-20260723/star-jets-200/dijet_opposite_sign_ALL.png}
+  \caption{STAR inclusive-jet and dijet $A_{LL}$ at
+  $\sqrt{s}=200\GeV$.  The upper row shows central (left) and forward
+  (right) inclusive jets; the lower row shows same-sign (left) and
+  opposite-sign (right) dijet topologies.  The red stepped curve is the
+  polarized LO+PS prediction formed from hard shower-parton jets with MPI
+  off, at the central scale and with the central PDF members.  The shaded
+  band is its Monte Carlo statistical uncertainty.  Experimental error bars
+  contain the published point-to-point components; the luminosity and
+  polarization uncertainties are retained as separate global nuisances.}
+  \label{fig:star-jets-200}
+\end{figure}
+
+\begin{figure}[p]
+  \centering
+  \includegraphics[width=0.44\textwidth]{figures/paper-central-3m-20260723/star-jets-510/inclusive_ALL.png}
+  \hfill
+  \includegraphics[width=0.44\textwidth]{figures/paper-central-3m-20260723/star-jets-510/dijet_A_ALL.png}
+
+  \includegraphics[width=0.44\textwidth]{figures/paper-central-3m-20260723/star-jets-510/dijet_B_ALL.png}
+  \hfill
+  \includegraphics[width=0.44\textwidth]{figures/paper-central-3m-20260723/star-jets-510/dijet_C_ALL.png}
+
+  \includegraphics[width=0.44\textwidth]{figures/paper-central-3m-20260723/star-jets-510/dijet_D_ALL.png}
+  \caption{STAR inclusive-jet and dijet $A_{LL}$ at
+  $\sqrt{s}=510\GeV$.  The panels show the inclusive measurement and dijet
+  topologies A--D, in reading order.  Theory and uncertainty conventions are
+  those of fig.~\ref{fig:star-jets-200}.  The rapidly growing Monte Carlo
+  bands in the upper kinematic bins make the statistical limitation of the
+  present sample explicit.}
+  \label{fig:star-jets-510}
+\end{figure}
 
 \section{Conclusions}
 \label{sec:conclusions}
@@ -562,18 +637,127 @@ parton-to-hadron and underlying-event treatment.  The interpretation must
 account for the fact that NNPDFpol2.0 already contains a substantial fraction
 of the experimental information used here.
 
-The first central-PDF scale scan reproduces the rise of the inclusive proton
-DIS asymmetry with $x$, the smaller deuteron asymmetry, and the signs and broad
-pseudorapidity dependence of the STAR weak-boson single-spin measurements.
-The interpretation remains qualitative: the PDF-replica ensembles are absent
-from the displayed bands, the weak-boson hard process is leading order, and
-the STAR jet and HERMES semi-inclusive samples require production statistics.
-Covariance-aware goodness-of-fit values and quantitative uncertainty
-comparisons are therefore deferred until those samples are available.
+The central-PDF, central-scale production sample reproduces the rise of the
+inclusive proton DIS asymmetry with $x$, the smaller deuteron asymmetry, and
+the signs and broad pseudorapidity dependence of the STAR weak-boson
+single-spin measurements.  The identified-pion SIDIS predictions follow the
+principal charge and target trends, while the kaon and multidimensional
+measurements are less constraining.  The STAR jet predictions exhibit the
+small positive asymmetries in the well-populated lower and intermediate
+kinematic bins, but their upper tails remain Monte Carlo limited.
+
+These findings are necessarily provisional.  The displayed bands do not yet
+include PDF replicas or hard-scale variations, the proton--proton hard
+processes are leading order, and much of the experimental information enters
+the NNPDFpol2.0 fit.  A quantitative assessment will require the complete
+uncertainty ensembles, covariance-aware tests for each independent
+projection, and additional jet statistics.  The present results establish
+the common event-level comparison and identify the regions in which that
+subsequent analysis can be made reliably.
 
 \clearpage
 \appendix
 
+\section{Detailed HERMES semi-inclusive projections}
+\label{app:sidis-projections}
+
+Figures~\ref{fig:hermes-sidis-xz}, \ref{fig:hermes-sidis-xpt} and
+\ref{fig:hermes-sidis-xzpt} collect the remaining 18 data-bearing HERMES
+SIDIS predictions.  The horizontal axes use the experiment's published
+flattened-bin ordering; each entry retains its original $x$, $z$, and
+$P_{hT}$ boundaries.  This presentation keeps the full multidimensional
+information visible without implying that neighbouring indices define a
+continuous one-dimensional variable.  The one-, two- and three-dimensional
+panels are alternative projections of overlapping events and are not
+combined statistically.
+
+The six charge-separated channels and the number of published points retained
+in each projection are summarized in table~\ref{tab:sidis-projections}.  The
+supplement also provides 36 charge-difference $A_1$ points and azimuthal
+moments.  They are retained as auxiliary information but are not overlaid
+here: the primary prediction is the directly measured $A_\parallel$, whereas
+the charge-difference entries are supplied only as the model-dependent
+$A_1$ conversion.
+
+\begin{table}[h]
+  \centering
+  \caption{Point inventory for the HERMES SIDIS projections.  The six
+  channels are proton $\pi^\pm$ and deuteron $\pi^\pm,K^\pm$.}
+  \label{tab:sidis-projections}
+  \small
+  \begin{tabular}{@{}lccc@{}}
+    \toprule
+    Projection & points per channel & channels & total points \\
+    \midrule
+    $x$ & 9 & 6 & 54 \\
+    $(x,z)$ & 21 & 6 & 126 \\
+    $(x,P_{hT})$ & 18 & 6 & 108 \\
+    $(x,z,P_{hT})$ & 78--80 & 6 & 477 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{figure}[p]
+  \centering
+  \includegraphics[width=0.44\textwidth]{figures/paper-central-3m-20260723/hermes-sidis/proton_piplus_xz.png}
+  \hfill
+  \includegraphics[width=0.44\textwidth]{figures/paper-central-3m-20260723/hermes-sidis/proton_piminus_xz.png}
+
+  \includegraphics[width=0.44\textwidth]{figures/paper-central-3m-20260723/hermes-sidis/deuteron_piplus_xz.png}
+  \hfill
+  \includegraphics[width=0.44\textwidth]{figures/paper-central-3m-20260723/hermes-sidis/deuteron_piminus_xz.png}
+
+  \includegraphics[width=0.44\textwidth]{figures/paper-central-3m-20260723/hermes-sidis/deuteron_kplus_xz.png}
+  \hfill
+  \includegraphics[width=0.44\textwidth]{figures/paper-central-3m-20260723/hermes-sidis/deuteron_kminus_xz.png}
+  \caption{HERMES $A_\parallel^h$ in the published coarse $(x,z)$
+  projection.  The rows show proton $\pi^+,\pi^-$, deuteron
+  $\pi^+,\pi^-$, and deuteron $K^+,K^-$, respectively.  Theory, data and
+  uncertainty conventions are those of fig.~\ref{fig:hermes-sidis-x}.}
+  \label{fig:hermes-sidis-xz}
+\end{figure}
+
+\begin{figure}[p]
+  \centering
+  \includegraphics[width=0.44\textwidth]{figures/paper-central-3m-20260723/hermes-sidis/proton_piplus_xpt.png}
+  \hfill
+  \includegraphics[width=0.44\textwidth]{figures/paper-central-3m-20260723/hermes-sidis/proton_piminus_xpt.png}
+
+  \includegraphics[width=0.44\textwidth]{figures/paper-central-3m-20260723/hermes-sidis/deuteron_piplus_xpt.png}
+  \hfill
+  \includegraphics[width=0.44\textwidth]{figures/paper-central-3m-20260723/hermes-sidis/deuteron_piminus_xpt.png}
+
+  \includegraphics[width=0.44\textwidth]{figures/paper-central-3m-20260723/hermes-sidis/deuteron_kplus_xpt.png}
+  \hfill
+  \includegraphics[width=0.44\textwidth]{figures/paper-central-3m-20260723/hermes-sidis/deuteron_kminus_xpt.png}
+  \caption{HERMES $A_\parallel^h$ in the published coarse
+  $(x,P_{hT})$ projection, with the same panel order and conventions as in
+  fig.~\ref{fig:hermes-sidis-xz}.}
+  \label{fig:hermes-sidis-xpt}
+\end{figure}
+
+\begin{figure}[p]
+  \centering
+  \includegraphics[width=0.44\textwidth]{figures/paper-central-3m-20260723/hermes-sidis/proton_piplus_xzpt.png}
+  \hfill
+  \includegraphics[width=0.44\textwidth]{figures/paper-central-3m-20260723/hermes-sidis/proton_piminus_xzpt.png}
+
+  \includegraphics[width=0.44\textwidth]{figures/paper-central-3m-20260723/hermes-sidis/deuteron_piplus_xzpt.png}
+  \hfill
+  \includegraphics[width=0.44\textwidth]{figures/paper-central-3m-20260723/hermes-sidis/deuteron_piminus_xzpt.png}
+
+  \includegraphics[width=0.44\textwidth]{figures/paper-central-3m-20260723/hermes-sidis/deuteron_kplus_xzpt.png}
+  \hfill
+  \includegraphics[width=0.44\textwidth]{figures/paper-central-3m-20260723/hermes-sidis/deuteron_kminus_xzpt.png}
+  \caption{HERMES $A_\parallel^h$ in the published
+  $(x,z,P_{hT})$ grid, with the same panel order and conventions as in
+  fig.~\ref{fig:hermes-sidis-xz}.  The larger fluctuations near the end of
+  the flattened ordering reflect the reduced population of the high-$x$
+  multidimensional bins.}
+  \label{fig:hermes-sidis-xzpt}
+\end{figure}
+
+\clearpage
 \section{The low-\texorpdfstring{$Q^2$}{Q2} HERMES projection}
 \label{app:lowq2}
 
@@ -593,42 +777,42 @@ keeps the low-$Q^2$ information visible without assigning perturbative
 significance to a region below the PDF boundary.
 
 Figures~\ref{fig:hermes-legacy-1}--\ref{fig:hermes-legacy-5} contain all 19
-data-bearing slices from the central-PDF scale scan.  Above the perturbative
+data-bearing slices from the central-PDF, central-scale sample.  Above the perturbative
 boundary, the prediction follows the increase of the asymmetry with $x$ and
 $Q^2$ within the current experimental and Monte Carlo precision.  The open
 square points make the extrapolated low-$Q^2$ region explicit; neither their
 apparent agreement nor their discrepancy is used in the interpretation.
-Several high-$x$ bins also retain sizable statistical or scale uncertainties,
+Several high-$x$ bins also retain sizable Monte Carlo uncertainties,
 so the projection is presented as a detailed consistency view rather than a
 separate precision determination.
 
 \begin{figure}[p]
   \centering
-  \includegraphics[width=0.48\textwidth]{figures/scan-20260722/hermes-legacy/d07-x01-y02.png}
+  \includegraphics[width=0.48\textwidth]{figures/paper-central-3m-20260723/hermes-legacy/d07-x01-y02.png}
   \hfill
-  \includegraphics[width=0.48\textwidth]{figures/scan-20260722/hermes-legacy/d07-x02-y02.png}
+  \includegraphics[width=0.48\textwidth]{figures/paper-central-3m-20260723/hermes-legacy/d07-x02-y02.png}
 
-  \includegraphics[width=0.48\textwidth]{figures/scan-20260722/hermes-legacy/d07-x03-y02.png}
+  \includegraphics[width=0.48\textwidth]{figures/paper-central-3m-20260723/hermes-legacy/d07-x03-y02.png}
   \hfill
-  \includegraphics[width=0.48\textwidth]{figures/scan-20260722/hermes-legacy/d07-x04-y02.png}
+  \includegraphics[width=0.48\textwidth]{figures/paper-central-3m-20260723/hermes-legacy/d07-x04-y02.png}
   \caption{HERMES Born-level $A_\parallel^p(Q^2)$ for, from upper left to
   lower right, $0.0041<x<0.0073$, $0.0073<x<0.0118$,
   $0.0118<x<0.0168$, and $0.0168<x<0.0212$.  Open squares denote
   points with mean $Q^2<1\,\mathrm{GeV}^2$ and are display-only.  The red
-  curve, Monte Carlo band and hard-scale envelope follow the conventions of
+  curve and Monte Carlo band follow the conventions of
   fig.~\ref{fig:inclusive-dis-data}.}
   \label{fig:hermes-legacy-1}
 \end{figure}
 
 \begin{figure}[p]
   \centering
-  \includegraphics[width=0.48\textwidth]{figures/scan-20260722/hermes-legacy/d07-x05-y02.png}
+  \includegraphics[width=0.48\textwidth]{figures/paper-central-3m-20260723/hermes-legacy/d07-x05-y02.png}
   \hfill
-  \includegraphics[width=0.48\textwidth]{figures/scan-20260722/hermes-legacy/d07-x06-y02.png}
+  \includegraphics[width=0.48\textwidth]{figures/paper-central-3m-20260723/hermes-legacy/d07-x06-y02.png}
 
-  \includegraphics[width=0.48\textwidth]{figures/scan-20260722/hermes-legacy/d07-x07-y02.png}
+  \includegraphics[width=0.48\textwidth]{figures/paper-central-3m-20260723/hermes-legacy/d07-x07-y02.png}
   \hfill
-  \includegraphics[width=0.48\textwidth]{figures/scan-20260722/hermes-legacy/d07-x08-y02.png}
+  \includegraphics[width=0.48\textwidth]{figures/paper-central-3m-20260723/hermes-legacy/d07-x08-y02.png}
   \caption{HERMES Born-level $A_\parallel^p(Q^2)$ for, from upper left to
   lower right, $0.0212<x<0.0295$, $0.0295<x<0.0362$,
   $0.0362<x<0.0444$, and $0.0444<x<0.0568$.  Marker and uncertainty
@@ -638,13 +822,13 @@ separate precision determination.
 
 \begin{figure}[p]
   \centering
-  \includegraphics[width=0.48\textwidth]{figures/scan-20260722/hermes-legacy/d07-x09-y02.png}
+  \includegraphics[width=0.48\textwidth]{figures/paper-central-3m-20260723/hermes-legacy/d07-x09-y02.png}
   \hfill
-  \includegraphics[width=0.48\textwidth]{figures/scan-20260722/hermes-legacy/d07-x10-y02.png}
+  \includegraphics[width=0.48\textwidth]{figures/paper-central-3m-20260723/hermes-legacy/d07-x10-y02.png}
 
-  \includegraphics[width=0.48\textwidth]{figures/scan-20260722/hermes-legacy/d07-x11-y02.png}
+  \includegraphics[width=0.48\textwidth]{figures/paper-central-3m-20260723/hermes-legacy/d07-x11-y02.png}
   \hfill
-  \includegraphics[width=0.48\textwidth]{figures/scan-20260722/hermes-legacy/d07-x12-y02.png}
+  \includegraphics[width=0.48\textwidth]{figures/paper-central-3m-20260723/hermes-legacy/d07-x12-y02.png}
   \caption{HERMES Born-level $A_\parallel^p(Q^2)$ for, from upper left to
   lower right, $0.0568<x<0.0727$, $0.0727<x<0.0929$,
   $0.0929<x<0.119$, and $0.119<x<0.152$.  Uncertainty conventions are
@@ -654,13 +838,13 @@ separate precision determination.
 
 \begin{figure}[p]
   \centering
-  \includegraphics[width=0.48\textwidth]{figures/scan-20260722/hermes-legacy/d07-x13-y02.png}
+  \includegraphics[width=0.48\textwidth]{figures/paper-central-3m-20260723/hermes-legacy/d07-x13-y02.png}
   \hfill
-  \includegraphics[width=0.48\textwidth]{figures/scan-20260722/hermes-legacy/d07-x14-y02.png}
+  \includegraphics[width=0.48\textwidth]{figures/paper-central-3m-20260723/hermes-legacy/d07-x14-y02.png}
 
-  \includegraphics[width=0.48\textwidth]{figures/scan-20260722/hermes-legacy/d07-x15-y02.png}
+  \includegraphics[width=0.48\textwidth]{figures/paper-central-3m-20260723/hermes-legacy/d07-x15-y02.png}
   \hfill
-  \includegraphics[width=0.48\textwidth]{figures/scan-20260722/hermes-legacy/d07-x16-y02.png}
+  \includegraphics[width=0.48\textwidth]{figures/paper-central-3m-20260723/hermes-legacy/d07-x16-y02.png}
   \caption{HERMES Born-level $A_\parallel^p(Q^2)$ for, from upper left to
   lower right, $0.152<x<0.194$, $0.194<x<0.249$,
   $0.249<x<0.318$, and $0.318<x<0.406$.  Uncertainty conventions are
@@ -670,11 +854,11 @@ separate precision determination.
 
 \begin{figure}[p]
   \centering
-  \includegraphics[width=0.48\textwidth]{figures/scan-20260722/hermes-legacy/d07-x17-y02.png}
+  \includegraphics[width=0.48\textwidth]{figures/paper-central-3m-20260723/hermes-legacy/d07-x17-y02.png}
   \hfill
-  \includegraphics[width=0.48\textwidth]{figures/scan-20260722/hermes-legacy/d07-x18-y02.png}
+  \includegraphics[width=0.48\textwidth]{figures/paper-central-3m-20260723/hermes-legacy/d07-x18-y02.png}
 
-  \includegraphics[width=0.48\textwidth]{figures/scan-20260722/hermes-legacy/d07-x19-y02.png}
+  \includegraphics[width=0.48\textwidth]{figures/paper-central-3m-20260723/hermes-legacy/d07-x19-y02.png}
   \caption{HERMES Born-level $A_\parallel^p(Q^2)$ for
   $0.406<x<0.520$ (upper left), $0.520<x<0.665$ (upper right), and
   $0.665<x<0.9$ (lower left).  Uncertainty conventions are those of
@@ -706,7 +890,9 @@ separate precision determination.
     hadronization and remnants & \checkmark & \checkmark & \checkmark \\
     multiple-parton interactions & -- & \checkmark & -- \\
     observable level & stable hadrons & stable leptons & hard shower partons \\
-    hard-scale factors & $1/2,1,2$ & $1/2,1,2$ & $1/2,1,2$ \\
+    displayed hard-scale factor & $1$ & $1$ & $1$ \\
+    defined variation factors & $1/2,1,2$ & $1/2,1,2$ & $1/2,1,2$ \\
+    events per helicity & $3.0$M POS, $0.3$M NEG & $3.0$M & $3.0$M \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -726,7 +912,7 @@ separate precision determination.
     COMPASS deuteron & Impulse approximation with effective nucleon polarization; no further nuclear correction. \\
     STAR weak bosons & LO hard matrix elements with NLO PDF inputs; the nominal full-event prediction includes MPI. \\
     STAR jets & LO hard matrix elements with NLO PDF inputs; hard shower-parton jets and MPI off define the publication-level comparison. \\
-    Displayed scan & Central PDF members and hard-scale variations only; the PDF-replica bands remain to be generated. \\
+    Displayed sample & Central PDF members and central hard scales only; PDF-replica and scale bands remain to be generated. \\
     PDF comparison & NNPDFpol2.0 contains much of the compared information, so agreement is not an independent PDF validation. \\
     \bottomrule
   \end{tabular}
