@@ -4,6 +4,7 @@
 \usepackage{xcolor}
 \usepackage{microtype}
 \usepackage{graphicx}
+\usepackage{placeins}
 
 \newcommand{\Herwig}{\textsc{Herwig}}
 \newcommand{\Rivet}{\textsc{Rivet}}
@@ -100,7 +101,68 @@ qualification is that NNPDFpol2.0 includes much of the HERMES, COMPASS and
 STAR information considered here.  Agreement with those measurements is
 therefore not an independent validation of the polarized PDF fit.  It tests
 instead the consistency of the hard process, helicity bookkeeping and
-exclusive event evolution with the fitted information.
+exclusive event evolution with the fitted information.  The precise overlap
+is summarized in table~\ref{tab:nnpdf-overlap}, using the input-data inventory
+of ref.~\cite{NNPDFpol:2025}.  We distinguish observables fitted directly,
+alternative representations of the same experimental information and
+measurements absent from the fit.
+
+\begin{table}[t]
+  \centering
+  \caption{Overlap between the measurements displayed in this work and the
+  experimental input to NNPDFpol2.0.  ``Same information'' denotes a
+  published observable reconstructed from the same bins and event sample as
+  a fitted quantity; it is not an independent PDF validation.}
+  \label{tab:nnpdf-overlap}
+  \footnotesize
+  \setlength{\tabcolsep}{4pt}
+  \renewcommand{\arraystretch}{1.08}
+  \begin{tabular}{@{}p{0.24\textwidth}p{0.18\textwidth}p{0.51\textwidth}@{}}
+    \toprule
+    \shortstack[l]{Measurement and\\observable} &
+      Fit status & Relation to the fitted data \\
+    \midrule
+    HERMES 2007 $A_1^p$ & Same information &
+      The corresponding 15 $g_1^p$ values from the same bins and publication
+      enter the fit. \\
+    HERMES 2007 low-$Q^2$ $A_\parallel$ & Not as this projection &
+      The 45-point projection is not fitted, but it shares the event sample
+      and publication with the fitted HERMES data; the sub-GeV points are
+      outside the fit region. \\
+    HERMES 2019 $A_\parallel^{\pi,K}$ & Not fitted &
+      Identified-hadron SIDIS is excluded from NNPDFpol2.0 because its
+      interpretation requires fragmentation functions. \\
+    \addlinespace[2pt]
+    COMPASS 2010 $A_1^p$ & Not fitted &
+      The 2007, $160\GeV$ proton sample is absent; the fit instead uses the
+      later 2011, $200\GeV$ result. \\
+    COMPASS 2016 $A_1^p$ & Same information &
+      The corresponding 17 $g_1^p$ points enter the fit. \\
+    COMPASS 2017 $A_1^d$ & Same information &
+      The corresponding 15 $g_1^d$ points enter the fit. \\
+    \addlinespace[2pt]
+    STAR 2019 $W^\pm A_L$ & Fitted directly &
+      Six $W^+$ and six $W^-$ single-spin points enter the fit. \\
+    STAR 2019 $W^\pm A_{LL}$ and $Z/\gamma^* A_L$ & Not fitted &
+      The double-spin and neutral-current observables are absent from the
+      fit, although they arise from the same publication and data-taking
+      period as the fitted $W^\pm A_L$ measurement. \\
+    STAR 2021 jets, $200\GeV$ & Fitted directly &
+      All 22 inclusive-jet and 14 dijet points enter the fit. \\
+    STAR 2022 jets, $510\GeV$ & Fitted directly &
+      All 14 inclusive-jet and 49 dijet points enter the fit. \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+The HERMES identified-hadron measurement and the COMPASS 2010 proton sample
+are therefore the clearest measurement-level hold-outs with respect to
+NNPDFpol2.0.  The STAR $W^\pm A_{LL}$ and $Z/\gamma^* A_L$ results provide
+observable-level hold-outs, whereas the HERMES low-$Q^2$ projection should
+not be interpreted as independent because it reuses the fitted experimental
+sample.  Even for the unfitted measurements, the comparison tests the
+combined PDF, hard-process and exclusive-event description rather than the
+polarized PDFs in isolation.
 
 The paper is organized as follows.  Section~\ref{sec:dis} defines the
 inclusive and semi-inclusive DIS observables, simulation and experimental
@@ -110,6 +172,7 @@ section~\ref{sec:conclusions}.  The detailed semi-inclusive projections, the
 low-$Q^2$ HERMES projection and compact reproducibility tables are collected
 in the appendices.
 
+\FloatBarrier
 \section{Deep-inelastic scattering}
 \label{sec:dis}
 
@@ -206,11 +269,32 @@ is exactly the PDF-grid boundary and is consequently treated as an
 exploratory region.  A nested $Q^2>4\,\mathrm{GeV}^2$ selection provides a
 more conservative validation view.
 
+Figure~\ref{fig:hermes-inclusive-data} shows the primary inclusive
+comparison.  The prediction follows the observed rise of the proton
+asymmetry with $x$.  Its Monte Carlo uncertainty is small over most of the
+measured range and increases in the upper-$x$ bins, where the accepted event
+rate is lower.  Since the corresponding $g_1^p$ information enters
+NNPDFpol2.0, this agreement is interpreted as an event-level consistency
+test rather than an independent PDF validation.
+
+\begin{figure}[!htbp]
+  \centering
+  \includegraphics[width=0.66\textwidth]{figures/paper-central-3m-20260723/dis/hermes-a1.png}
+  \caption{HERMES proton $A_1^p$ at a positron energy of $27.6\GeV$.
+  The red stepped curve is the nominal polarized NLO+PS prediction at the
+  central hard scale and with the central PDF members.  Its theory-centred
+  band is the Monte Carlo statistical uncertainty, while the experimental
+  points carry their published total uncertainties.  The $A_1$ construction
+  uses $A_2=g_2=0$.}
+  \label{fig:hermes-inclusive-data}
+\end{figure}
+
 The same publication also provides a 45-point Born-level
 $\ap(x,Q^2)$ projection in 19 $x$ slices.  It is scientifically distinct
 from the primary $A_1^p(x)$ comparison and is discussed separately in
 appendix~\ref{app:lowq2}.
 
+\FloatBarrier
 \subsection{HERMES identified-hadron semi-inclusive data}
 \label{sec:hermes-sidis}
 
@@ -278,7 +362,7 @@ fluctuate substantially and the Monte Carlo uncertainty grows in the sparsely
 populated high-$x$ region.  We therefore do not combine the overlapping
 projections into a single goodness-of-fit measure.
 
-\begin{figure}[p]
+\begin{figure}[!htbp]
   \centering
   \includegraphics[width=0.44\textwidth]{figures/paper-central-3m-20260723/hermes-sidis/proton_piplus_x.png}
   \hfill
@@ -301,6 +385,7 @@ projections into a single goodness-of-fit measure.
   \label{fig:hermes-sidis-x}
 \end{figure}
 
+\FloatBarrier
 \subsection{COMPASS proton and deuteron data}
 
 The 2010 proton measurement uses a nominal $160\GeV$ positive-muon beam and
@@ -320,7 +405,7 @@ $A_1^d$ is compared with the prediction obtained using $A_2=g_2=0$.
 Table~\ref{tab:dis-selections} summarizes the principal selections.  Exact
 published bin boundaries are used for every comparison.
 
-\begin{table}[t]
+\begin{table}[!htbp]
   \centering
   \caption{Fixed-target DIS configurations.  The HERMES low-$Q^2$
   projection is detailed in appendix~\ref{app:lowq2}.}
@@ -339,6 +424,31 @@ published bin boundaries are used for every comparison.
   \end{tabular}
 \end{table}
 
+Figure~\ref{fig:compass-inclusive-data} collects the three COMPASS
+comparisons.  The proton predictions reproduce the common rise of $A_1^p$
+with $x$ at both beam energies.  The deuteron prediction remains close to
+zero at small $x$ and becomes positive at larger $x$, following the broad
+trend of the data.  The Monte Carlo uncertainty grows in the upper-$x$ bins.
+The 2016 proton and 2017 deuteron measurements enter NNPDFpol2.0 through
+their published $g_1$ values, whereas the 2010 proton sample does not.
+
+\begin{figure}[!htbp]
+  \centering
+  \includegraphics[width=0.46\textwidth]{figures/paper-central-3m-20260723/dis/compass-2010-a1.png}
+  \hfill
+  \includegraphics[width=0.46\textwidth]{figures/paper-central-3m-20260723/dis/compass-2016-a1.png}
+
+  \includegraphics[width=0.46\textwidth]{figures/paper-central-3m-20260723/dis/compass-2017-a1.png}
+  \caption{COMPASS inclusive virtual-photon asymmetries.  The upper panels
+  show proton data at nominal muon energies of $160\GeV$ (left) and
+  $200\GeV$ (right); the lower panel shows deuteron data at $160\GeV$.
+  Curves, uncertainty bands and experimental error bars follow the
+  conventions of fig.~\ref{fig:hermes-inclusive-data}.  The $A_1$
+  construction uses $A_2=g_2=0$.}
+  \label{fig:compass-inclusive-data}
+\end{figure}
+
+\FloatBarrier
 \subsection{Uncertainties and presentation}
 
 The uncertainty construction keeps Monte Carlo, PDF and hard-scale
@@ -360,36 +470,7 @@ Carlo statistical band.  For asymmetries near zero, pulls use the combined
 experimental and Monte Carlo statistical uncertainty and are more stable
 than data/theory ratios.
 
-Figure~\ref{fig:inclusive-dis-data} shows the inclusive DIS comparisons.  The
-common rise of the proton asymmetry with $x$ is reproduced across the three
-beam configurations.  The deuteron prediction remains close to zero at small
-$x$ and becomes positive at larger $x$, following the broad trend of the
-data.  The Monte Carlo uncertainty is small over most of the measured range
-and increases in the upper-$x$ bins, where accepted event rates are lower.
-The overlap between these measurements and the NNPDFpol2.0 fit remains
-essential when interpreting the agreement.
-
-\begin{figure}[p]
-  \centering
-  \includegraphics[width=0.48\textwidth]{figures/paper-central-3m-20260723/dis/hermes-a1.png}
-  \hfill
-  \includegraphics[width=0.48\textwidth]{figures/paper-central-3m-20260723/dis/compass-2010-a1.png}
-
-  \includegraphics[width=0.48\textwidth]{figures/paper-central-3m-20260723/dis/compass-2016-a1.png}
-  \hfill
-  \includegraphics[width=0.48\textwidth]{figures/paper-central-3m-20260723/dis/compass-2017-a1.png}
-  \caption{Inclusive virtual-photon asymmetries from the central-PDF,
-  central-scale production sample.  Top left: HERMES proton data at
-  $27.6\GeV$.  Top right:
-  COMPASS proton data at $160\GeV$.  Bottom left: COMPASS proton data at
-  $200\GeV$.  Bottom right: COMPASS deuteron data at $160\GeV$.  The red
-  stepped curve is the nominal polarized NLO+PS prediction.  The
-  theory-centred red band is its Monte Carlo statistical uncertainty.  The
-  experimental points carry their published total uncertainties.  The
-  $A_1$ construction uses $A_2=g_2=0$.}
-  \label{fig:inclusive-dis-data}
-\end{figure}
-
+\FloatBarrier
 \section{Proton--proton collisions}
 \label{sec:pp}
 
@@ -477,7 +558,7 @@ comparisons test the exclusive LO+PS realization of the fitted helicity
 information; they do not constitute an independent validation of the
 NNPDFpol2.0 fit.
 
-\begin{figure}[p]
+\begin{figure}[!htbp]
   \centering
   \includegraphics[width=0.48\textwidth]{figures/paper-central-3m-20260723/star-weak/Wplus_AL.png}
   \hfill
@@ -496,7 +577,7 @@ NNPDFpol2.0 fit.
   \label{fig:star-weak-data}
 \end{figure}
 
-\begin{figure}[p]
+\begin{figure}[!htbp]
   \centering
   \includegraphics[width=0.58\textwidth]{figures/paper-central-3m-20260723/star-weak/Zgamma_AL.png}
   \caption{The integrated STAR $Z/\gamma^*$ longitudinal single-spin
@@ -505,7 +586,7 @@ NNPDFpol2.0 fit.
   \label{fig:star-z-data}
 \end{figure}
 
-\begin{figure}[p]
+\begin{figure}[!htbp]
   \centering
   \includegraphics[width=0.46\textwidth]{figures/paper-central-3m-20260723/star-weak/Pull_Wplus_AL.png}
   \hfill
@@ -522,6 +603,7 @@ NNPDFpol2.0 fit.
   \label{fig:star-weak-pulls}
 \end{figure}
 
+\FloatBarrier
 \subsection{STAR inclusive-jet and dijet asymmetries}
 \label{sec:star-jets}
 
@@ -574,7 +656,7 @@ parton-jet and topology selections.  We retain the bins to show the complete
 published comparison, but exclude them from numerical conclusions pending
 higher statistics or dedicated variance reduction.
 
-\begin{figure}[p]
+\begin{figure}[!htbp]
   \centering
   \includegraphics[width=0.48\textwidth]{figures/paper-central-3m-20260723/star-jets-200/inclusive_central_ALL.png}
   \hfill
@@ -595,7 +677,7 @@ higher statistics or dedicated variance reduction.
   \label{fig:star-jets-200}
 \end{figure}
 
-\begin{figure}[p]
+\begin{figure}[!htbp]
   \centering
   \includegraphics[width=0.44\textwidth]{figures/paper-central-3m-20260723/star-jets-510/inclusive_ALL.png}
   \hfill
@@ -615,6 +697,7 @@ higher statistics or dedicated variance reduction.
   \label{fig:star-jets-510}
 \end{figure}
 
+\FloatBarrier
 \section{Conclusions}
 \label{sec:conclusions}
 
@@ -799,8 +882,8 @@ separate precision determination.
   lower right, $0.0041<x<0.0073$, $0.0073<x<0.0118$,
   $0.0118<x<0.0168$, and $0.0168<x<0.0212$.  Open squares denote
   points with mean $Q^2<1\,\mathrm{GeV}^2$ and are display-only.  The red
-  curve and Monte Carlo band follow the conventions of
-  fig.~\ref{fig:inclusive-dis-data}.}
+curve and Monte Carlo band follow the conventions of
+fig.~\ref{fig:hermes-inclusive-data}.}
   \label{fig:hermes-legacy-1}
 \end{figure}
 
@@ -913,7 +996,9 @@ separate precision determination.
     STAR weak bosons & LO hard matrix elements with NLO PDF inputs; the nominal full-event prediction includes MPI. \\
     STAR jets & LO hard matrix elements with NLO PDF inputs; hard shower-parton jets and MPI off define the publication-level comparison. \\
     Displayed sample & Central PDF members and central hard scales only; PDF-replica and scale bands remain to be generated. \\
-    PDF comparison & NNPDFpol2.0 contains much of the compared information, so agreement is not an independent PDF validation. \\
+    PDF comparison & The exact measurement overlap is summarized in
+    table~\ref{tab:nnpdf-overlap}; fitted and same-information comparisons
+    are not independent PDF validation. \\
     \bottomrule
   \end{tabular}
 \end{table}
