@@ -12,14 +12,17 @@ LO events per channel and physical helicity.
 
 | Paper directory | Measurement | Primary overlays |
 |---|---|---:|
-| `dis/` | HERMES 2007 primary; COMPASS 2010 proton; COMPASS 2016 proton; COMPASS 2017 deuteron | 4 |
-| `hermes-legacy/` | HERMES 2007 Born-level low-\(Q^2\) projection | 19 |
-| `hermes-sidis/` | HERMES 2019 identified-hadron SIDIS | 24 |
+| `dis/` | Fixed-target inclusive DIS, retained on disk but withdrawn pending prompt-lepton regeneration | 0 |
+| `hermes-legacy/` | HERMES 2007 Born-level low-\(Q^2\) projection, retained on disk but withdrawn because the \(Q^2\)-cell boundaries are unverified | 0 |
+| `hermes-sidis/` | HERMES 2019 identified-hadron SIDIS, retained on disk but withdrawn pending corrected processing and a fresh three-dimensional run | 0 |
 | `star-weak/` | STAR 2019 \(W^\pm\) and \(Z/\gamma^*\) | 5 |
 | `star-jets-200/` | STAR 2021 inclusive jets and dijets at 200 GeV | 4 |
-| `star-jets-510/` | STAR 2022 inclusive jets and dijets at 510 GeV | 5 |
+| `star-jets-510/` | STAR 2022 inclusive jets and dijets at 510 GeV, retained on disk but withdrawn pending a newly signed covariance-corrected campaign or validated migration | 0 |
 
-The manuscript therefore contains 61 primary data-overlay predictions.
+The pre-audit COMPASS 2010 overlay is also retained under `dis/` but is not
+included in the manuscript because its event histogram used incorrect
+\(x\)-bin edges.  The manuscript therefore contains 9 primary data-overlay
+predictions.
 `star-weak/` also carries the five corresponding pull panels retained in the
 draft.  Diagnostic closure plots, HERMES azimuthal moments, alternative
 comparison families, and plots without experimental reference points are not
