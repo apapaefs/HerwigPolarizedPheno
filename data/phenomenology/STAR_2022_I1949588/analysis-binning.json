@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "measurement": "STAR_2022_I1949588",
+  "source": {
+    "publication_doi": "10.1103/PhysRevD.105.092011",
+    "arxiv": "2110.11020",
+    "inclusive_tables": [
+      "II",
+      "VI"
+    ],
+    "dijet_tables": [
+      "III",
+      "VII"
+    ]
+  },
+  "interpretation": "Published detector-level event intervals used for the measured asymmetry. Predictions are displayed at the unfolded parton-level representative coordinates from HEPData; the horizontal HEPData ranges are jet-energy-scale coordinate uncertainties, not event-bin boundaries.",
+  "datasets": {
+    "inclusive": [
+      7.0,
+      8.2,
+      9.6,
+      11.2,
+      13.1,
+      15.3,
+      17.9,
+      20.9,
+      24.5,
+      28.7,
+      33.6,
+      39.3,
+      46.0,
+      53.8,
+      62.8
+    ],
+    "dijet_A": [
+      12.0,
+      14.0,
+      17.0,
+      20.0,
+      24.0,
+      29.0,
+      34.0,
+      41.0,
+      49.0,
+      59.0,
+      70.0,
+      84.0,
+      101.0
+    ],
+    "dijet_B": [
+      12.0,
+      14.0,
+      17.0,
+      20.0,
+      24.0,
+      29.0,
+      34.0,
+      41.0,
+      49.0,
+      59.0,
+      70.0,
+      84.0,
+      101.0,
+      121.0
+    ],
+    "dijet_C": [
+      12.0,
+      14.0,
+      17.0,
+      20.0,
+      24.0,
+      29.0,
+      34.0,
+      41.0,
+      49.0,
+      59.0,
+      70.0,
+      84.0,
+      101.0
+    ],
+    "dijet_D": [
+      14.0,
+      17.0,
+      20.0,
+      24.0,
+      29.0,
+      34.0,
+      41.0,
+      49.0,
+      59.0,
+      70.0,
+      84.0,
+      101.0,
+      121.0
+    ]
+  }
+}

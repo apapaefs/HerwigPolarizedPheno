@@ -1,0 +1,109 @@
+{
+  "schema_version": 4,
+  "id": "STAR_2022_I1949588",
+  "title": "STAR inclusive-jet and dijet longitudinal double-spin asymmetries at 510 GeV",
+  "process_kind": "polarized_pp_jets",
+  "analysis": {
+    "name": "STAR_2022_I1949588",
+    "source": "analyses/rivet/pp/STAR_2022_I1949588.cc",
+    "info": "analyses/rivet/pp/STAR_2022_I1949588.info",
+    "plot": "analyses/rivet/pp/STAR_2022_I1949588.plot",
+    "plugin": "RivetSTAR_2022_I1949588.so",
+    "reference_yoda": "analyses/rivet/pp/STAR_2022_I1949588.yoda.gz",
+    "support_files": ["analyses/rivet/pp/STARPolarizedJets.hh"]
+  },
+  "reference": {
+    "snapshot": "data/phenomenology/STAR_2022_I1949588/reference.json",
+    "source_manifest": "data/phenomenology/STAR_2022_I1949588/source-manifest.json",
+    "record_doi": "10.17182/hepdata.114778.v1",
+    "tables": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+  },
+  "cards": {
+    "directory": "cards/phenomenology/STAR_2022_I1949588",
+    "common": "STAR_2022_I1949588-Common.in",
+    "stem_pattern": "STAR_2022_I1949588_{channel}_{helicity}-LO",
+    "polarized_pdf_object": "/Herwig/Partons/STAR510JetPolarizedPDF",
+    "helicities": {
+      "PP": [1, 1],
+      "PM": [1, -1],
+      "MP": [-1, 1],
+      "MM": [-1, -1]
+    },
+    "contributions": {"LO": "Born"}
+  },
+  "channels": {
+    "jets": {
+      "label": "inclusive jets and topology-resolved dijets",
+      "raw_objects": {
+        "inclusive": "inclusive_Yield",
+        "dijet_A": "dijet_A_Yield",
+        "dijet_B": "dijet_B_Yield",
+        "dijet_C": "dijet_C_Yield",
+        "dijet_D": "dijet_D_Yield"
+      },
+      "scale_object": "/Herwig/MatrixElements/MEQCD2to2",
+      "scale_interpretation": "renormalization and factorization"
+    }
+  },
+  "families": {
+    "nominal": {
+      "label": "LO+PS (polarized; hard shower-parton jets, MPI off)",
+      "helicities": ["PP", "PM", "MP", "MM"],
+      "mpi": "off",
+      "observable_level": "hard_parton",
+      "analysis_options": {"LEVEL": "HARDPARTON"}
+    },
+    "hadron_mpi_on": {
+      "label": "LO+PS (polarized; hadron level, MPI on)",
+      "helicities": ["PP", "PM", "MP", "MM"],
+      "mpi": "on",
+      "observable_level": "stable_particle",
+      "analysis_options": {"LEVEL": "HADRON"},
+      "diagnostic_only": true
+    },
+    "unpolarized_closure": {
+      "label": "LO+PS (unpolarized closure; hard shower-parton jets, MPI off)",
+      "helicities": ["00"],
+      "mpi": "off",
+      "observable_level": "hard_parton",
+      "analysis_options": {"LEVEL": "HARDPARTON"},
+      "diagnostic_only": true
+    }
+  },
+  "campaign": {
+    "default_jobs": 4,
+    "default_shards": 1,
+    "default_seed_base": 1949588,
+    "default_events": {"LO": 300000},
+    "smoke_events": 100
+  },
+  "postprocessor": "star_jet_all",
+  "scales": {
+    "central": 1.0,
+    "points": [0.5, 1.0, 2.0],
+    "mapping": "MEQCD2to2 ScalePreFactor = (mu/mu0)^2"
+  },
+  "pdf_ensembles": {
+    "polarized": {"set": "NNPDFpol20_nlo_as_01180", "central_member": 0, "replica_members": [1, 100]},
+    "unpolarized": {"set": "NNPDF40_nlo_pch_as_01180", "central_member": 0, "replica_members": [1, 100]},
+    "combination": "independent replica variances added in quadrature"
+  },
+  "global_uncertainties": {
+    "relative_luminosity_absolute": 0.00047,
+    "polarization_relative": 0.064
+  },
+  "goodness_of_fit": {
+    "primary_datasets": ["inclusive", "dijet_A", "dijet_B", "dijet_C", "dijet_D"],
+    "alternate_display_only": [],
+    "covariance": "complete 63x63 point-to-point covariance from HEPData Tables 6-20",
+    "global_nuisances": ["relative_luminosity_absolute", "polarization_relative"]
+  },
+  "physics": {
+    "beams": "longitudinally polarized pp",
+    "sqrt_s_gev": 510.0,
+    "hard_process_accuracy": "LO",
+    "observable_level": "terminal hard-scatter shower partons before hadronization",
+    "event_simulation": "QCD shower with spin correlations, hadronization and remnants; MPI off",
+    "pdf_accuracy": "NLO PDF inputs do not promote the hard prediction to NLO accuracy"
+  }
+}

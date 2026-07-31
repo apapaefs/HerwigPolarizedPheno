@@ -1,22 +1,100 @@
-# Phenomenological Investigations of Polarized Collisions in Herwig 7
+# Herwig Polarized Phenomenology
 
-Draft of the follow-up polarized-collision phenomenology paper.  The
-manuscript includes the data-bearing collider predictions from the
-`paper_central_3m_20260723` campaign that remain usable after the
-experimental-analysis audit: STAR weak-boson production and STAR
-inclusive-jet and dijet production at 200 GeV.  The 510 GeV STAR jet panels
-are withheld pending a newly signed covariance-corrected campaign or a
-validated reference-only migration.  All pre-audit
-fixed-target panels are withheld pending regeneration with the prompt
-scattered-lepton definition.  COMPASS 2010 and HERMES identified-hadron SIDIS
-also require corrected binning, normalization, or sparse-cell mapping, while
-the HERMES low-\(Q^2\) panels require authoritative per-\(x\)
-\(Q^2\)-cell boundaries.  The retained figures use the central PDF
-members and central hard scales, with Monte Carlo statistical uncertainties
-shown separately.  PHENIX prompt-photon results remain diagnostic-only and
-outside the quantitative paper scope.
+This repository contains the experimental-data phenomenology layer built on
+Herwig Polarized: ten Rivet analyses, the registry-driven campaign runner,
+checksum-pinned reference inputs, postprocessing and plotting code, focused
+tests, and the JHEP manuscript *Phenomenological Investigations of Polarized
+Collisions in Herwig 7*.
 
-The exact measurement and figure inventory is recorded in
-[`FIGURE_SOURCES.md`](FIGURE_SOURCES.md).
+The generator implementation remains an external dependency. This repository
+does not vendor Herwig, ThePEG, generated campaigns, installed libraries, or
+ordinary YODA/plot products.
 
-Build with `make` in a TeX environment containing `latexmk`.
+## Repository layout
+
+- `analyses/rivet/{dis,pp}/`: the ten data-linked Rivet analyses and their
+  vendored reference YODA files;
+- `cards/`, `config/`, and `data/`: Herwig cards, measurement registries, raw
+  provenance inputs, normalized snapshots, and checksums;
+- `scripts/run_phenomenology_campaign.py`: primary campaign entry point;
+- `scripts/run_experimental_campaign.py`: backward-compatible fixed-target
+  engine used by the primary runner;
+- `scripts/tests/`: self-contained campaign, reference, postprocessing, and
+  Rivet-source tests;
+- `docs/`: workflow documentation and the experimental-compatibility audit;
+- `main.tex`, `references.bib`, and `figures/`: the Overleaf-compatible paper
+  bundle, intentionally kept at repository root.
+
+Generated work is written below `campaigns/` and ignored by Git.
+
+## Quick start
+
+Use a shell with the compatible Herwig Polarized, Rivet, YODA, LHAPDF, and
+PDF sets described in [`docs/runtime-compatibility.md`](docs/runtime-compatibility.md).
+
+List the registered measurements:
+
+```bash
+python3 scripts/run_phenomenology_campaign.py list
+```
+
+Run the focused tests and build the Rivet plugin:
+
+```bash
+make test
+make rivet
+```
+
+Run a small end-to-end campaign, for example:
+
+```bash
+python3 scripts/run_phenomenology_campaign.py full \
+  --measurement HERMES_2007_I726689 \
+  --tag local-smoke \
+  --smoke \
+  --jobs 4
+```
+
+The primary runner also supports COMPASS inclusive DIS, HERMES identified-
+hadron SIDIS, STAR weak-boson and jet measurements, and the diagnostic PHENIX
+prompt-photon comparison. See [`docs/phenomenology-campaign.md`](docs/phenomenology-campaign.md)
+for profiles, physics families, PDF replicas, scale points, sharding, resume,
+and recovery.
+
+Build the paper with:
+
+```bash
+make paper
+```
+
+This requires `latexmk` and a suitable TeX installation.
+
+## Scientific status
+
+These implementations provide exact, checksum-checked reference-data
+transcription and conditional truth/generator-level comparisons. They are not
+full reproductions of detector, trigger, background, response, or complete
+experimental covariance chains. In particular:
+
+- all fixed-target production made before the compatibility audit must be
+  regenerated with the corrected prompt-lepton and bin definitions;
+- the HERMES low-`Q^2` projection still needs authoritative per-`x` cell
+  boundaries;
+- STAR weak-boson and jet results are explicitly generator-level proxies;
+- the STAR 510 GeV result needs a newly signed covariance-corrected campaign;
+- PHENIX prompt photons remain diagnostic-only because the available hard
+  process is incomplete for a publication-level comparison;
+- measurements already entering NNPDFpol2.0 are closure tests, not independent
+  validations of that fit.
+
+The authoritative measurement-by-measurement assessment is
+[`docs/experimental-analysis-compatibility-audit.md`](docs/experimental-analysis-compatibility-audit.md).
+
+## Provenance and paper mirroring
+
+The phenomenology code/data snapshot was imported from `apapaefs/HerwigPol`
+commit `822911203d431daa2a026fc697aabf5eeeb060b2`. The paper history is retained
+through audited manuscript commit `f6af80a`, descending linearly from the
+original Overleaf import. The repository `main` branch is mirrored to the
+legacy paper GitHub repository used by Overleaf; see
+[`docs/overleaf-mirroring.md`](docs/overleaf-mirroring.md).

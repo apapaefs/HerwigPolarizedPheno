@@ -1,0 +1,8 @@
+# -*- ThePEG-repository -*-
+read STAR_2022_I1949588-Common.in
+set /Herwig/Partons/PPPolarizedExtractor:FirstLongitudinalPolarization -1
+set /Herwig/Partons/PPPolarizedExtractor:SecondLongitudinalPolarization 1
+insert /Herwig/MatrixElements/SubProcess:MatrixElements[0] /Herwig/MatrixElements/MEQCD2to2
+set /Herwig/MatrixElements/MEQCD2to2:Process All
+cd /Herwig/Generators
+saverun STAR_2022_I1949588_jets_MP-LO EventGenerator

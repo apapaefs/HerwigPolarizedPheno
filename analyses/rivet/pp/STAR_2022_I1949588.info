@@ -1,0 +1,24 @@
+Name: STAR_2022_I1949588
+Summary: Inclusive-jet and topology-resolved dijet longitudinal double-spin asymmetries at 510 GeV
+Experiment: STAR
+Collider: RHIC
+Year: 2022
+InspireID: 1949588
+Status: UNVALIDATED
+Reentrant: true
+Authors:
+  - Andreas Papaefstathiou <apapaefs@kennesaw.edu>
+References:
+  - DOI:10.1103/PhysRevD.105.092011
+  - HEPData:10.17182/hepdata.114778.v1
+RunInfo: Requires independent PP, PM, MP, and MM polarized pp samples.
+NumEvents: 100000
+NeedsCrossSection: yes
+Beams: [p+, p+]
+Energies: [510]
+Options:
+ - LEVEL=HARDPARTON,HADRON
+Description: >
+  The default HARDPARTON option clusters terminal shower partons attached to
+  the signal process and rejects beam-remnant descendants. HADRON is an
+  optional stable-particle modeling diagnostic.

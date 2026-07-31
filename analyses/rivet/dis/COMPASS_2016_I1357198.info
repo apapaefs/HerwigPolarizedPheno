@@ -1,0 +1,48 @@
+Name: COMPASS_2016_I1357198
+Year: 2016
+Summary: Proton virtual-photon asymmetry in 200 GeV polarized-muon fixed-target DIS
+Experiment: COMPASS
+Collider: CERN SPS fixed target
+InspireID: 1357198
+Status: UNVALIDATED
+Reentrant: true
+Authors:
+ - Andreas Papaefstathiou <apapaefs@kennesaw.edu>
+References:
+ - Phys.Lett.B 753 (2016) 18-28
+ - arXiv:1503.08935
+RunInfo: Requires independent mu+p samples for PP, PM, MP, and MM and separate POSNLO/NEGNLO contributions.
+NumEvents: 100000
+NeedsCrossSection: yes
+Beams: [[ANTIMUON, PROTON]]
+Energies: [[200.0, 0.938272]]
+Description:
+  Reconstructs fixed-target laboratory kinematics from the incoming and
+  highest-energy prompt outgoing positive muon, excluding leptons from
+  hadron decays. The primary selection uses
+  Q2 > 1 GeV2, 0.1 < y < 0.9, W2 > 12 GeV2, and 0.0025 < x < 0.7,
+  with Q2 <= 190 GeV2. Raw ordinary, inverse-D, and covariance-proxy
+  cross sections are supplied for external physical-helicity
+  POSNLO+NEGNLO combination. A Q2 > 4 GeV2 validation selection is also
+  provided. D includes the muon mass and the E143 R1998 fit. The A1
+  extraction follows COMPASS in neglecting eta A2.
+Keywords:
+ - DIS
+ - polarized
+ - fixed-target
+ - muon
+ - asymmetry
+BibKey: COMPASS:2015mhb
+BibTeX: '@article{COMPASS:2015mhb,
+  author = "Adolph, C. and others",
+  collaboration = "COMPASS",
+  title = "{The Spin Structure Function g1p of the Proton and a Test of the Bjorken Sum Rule}",
+  eprint = "1503.08935",
+  archivePrefix = "arXiv",
+  primaryClass = "hep-ex",
+  doi = "10.1016/j.physletb.2015.11.064",
+  journal = "Phys. Lett. B",
+  volume = "753",
+  pages = "18--28",
+  year = "2016"
+}'

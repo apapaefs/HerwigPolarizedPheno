@@ -1,0 +1,1017 @@
+{
+  "datasets": [
+    {
+      "points": [
+        {
+          "bin": 1,
+          "nonperturbative_extrapolation": true,
+          "q2_high": 20.0,
+          "q2_low": 0.18,
+          "q2_mean": 0.26,
+          "stat": 0.0249,
+          "systematic_combined": 0.0026,
+          "systematics": {
+            "published_total_including_5p2pct_normalization": 0.0026
+          },
+          "value": 0.0205,
+          "x_mean": 0.0058,
+          "x_mean_source": "published",
+          "y_mean": 0.866
+        }
+      ],
+      "q2_edges": [
+        0.18,
+        20.0
+      ],
+      "rivet_path": "/HERMES_2007_I726689_LEGACY/d07-x01-y02",
+      "slice": 1,
+      "x_high": 0.0073,
+      "x_low": 0.0041
+    },
+    {
+      "points": [
+        {
+          "bin": 1,
+          "nonperturbative_extrapolation": true,
+          "q2_high": 20.0,
+          "q2_low": 0.18,
+          "q2_mean": 0.41,
+          "stat": 0.0167,
+          "systematic_combined": 0.0022,
+          "systematics": {
+            "published_total_including_5p2pct_normalization": 0.0022
+          },
+          "value": 0.0138,
+          "x_mean": 0.0096,
+          "x_mean_source": "published",
+          "y_mean": 0.824
+        }
+      ],
+      "q2_edges": [
+        0.18,
+        20.0
+      ],
+      "rivet_path": "/HERMES_2007_I726689_LEGACY/d07-x02-y02",
+      "slice": 2,
+      "x_high": 0.0118,
+      "x_low": 0.0073
+    },
+    {
+      "points": [
+        {
+          "bin": 1,
+          "nonperturbative_extrapolation": true,
+          "q2_high": 20.0,
+          "q2_low": 0.18,
+          "q2_mean": 0.57,
+          "stat": 0.0153,
+          "systematic_combined": 0.0027,
+          "systematics": {
+            "published_total_including_5p2pct_normalization": 0.0027
+          },
+          "value": 0.0294,
+          "x_mean": 0.0142,
+          "x_mean_source": "published",
+          "y_mean": 0.778
+        }
+      ],
+      "q2_edges": [
+        0.18,
+        20.0
+      ],
+      "rivet_path": "/HERMES_2007_I726689_LEGACY/d07-x03-y02",
+      "slice": 3,
+      "x_high": 0.0168,
+      "x_low": 0.0118
+    },
+    {
+      "points": [
+        {
+          "bin": 1,
+          "nonperturbative_extrapolation": true,
+          "q2_high": 20.0,
+          "q2_low": 0.18,
+          "q2_mean": 0.73,
+          "stat": 0.0173,
+          "systematic_combined": 0.0031,
+          "systematics": {
+            "published_total_including_5p2pct_normalization": 0.0031
+          },
+          "value": 0.0347,
+          "x_mean": 0.019,
+          "x_mean_source": "bin midpoint",
+          "y_mean": 0.738
+        }
+      ],
+      "q2_edges": [
+        0.18,
+        20.0
+      ],
+      "rivet_path": "/HERMES_2007_I726689_LEGACY/d07-x04-y02",
+      "slice": 4,
+      "x_high": 0.0212,
+      "x_low": 0.0168
+    },
+    {
+      "points": [
+        {
+          "bin": 1,
+          "nonperturbative_extrapolation": true,
+          "q2_high": 1.0,
+          "q2_low": 0.18,
+          "q2_mean": 0.82,
+          "stat": 0.0136,
+          "systematic_combined": 0.0032,
+          "systematics": {
+            "published_total_including_5p2pct_normalization": 0.0032
+          },
+          "value": 0.0428,
+          "x_mean": 0.0248,
+          "x_mean_source": "published",
+          "y_mean": 0.642
+        },
+        {
+          "bin": 2,
+          "nonperturbative_extrapolation": false,
+          "q2_high": 20.0,
+          "q2_low": 1.0,
+          "q2_mean": 1.12,
+          "stat": 0.0294,
+          "systematic_combined": 0.0074,
+          "systematics": {
+            "published_total_including_5p2pct_normalization": 0.0074
+          },
+          "value": 0.0931,
+          "x_mean": 0.0264,
+          "x_mean_source": "published",
+          "y_mean": 0.818
+        }
+      ],
+      "q2_edges": [
+        0.18,
+        1.0,
+        20.0
+      ],
+      "rivet_path": "/HERMES_2007_I726689_LEGACY/d07-x05-y02",
+      "slice": 5,
+      "x_high": 0.0295,
+      "x_low": 0.0212
+    },
+    {
+      "points": [
+        {
+          "bin": 1,
+          "nonperturbative_extrapolation": true,
+          "q2_high": 1.0,
+          "q2_low": 0.18,
+          "q2_mean": 0.87,
+          "stat": 0.0239,
+          "systematic_combined": 0.0031,
+          "systematics": {
+            "published_total_including_5p2pct_normalization": 0.0031
+          },
+          "value": 0.0561,
+          "x_mean": 0.0325,
+          "x_mean_source": "published",
+          "y_mean": 0.515
+        },
+        {
+          "bin": 2,
+          "nonperturbative_extrapolation": false,
+          "q2_high": 20.0,
+          "q2_low": 1.0,
+          "q2_mean": 1.25,
+          "stat": 0.0199,
+          "systematic_combined": 0.0057,
+          "systematics": {
+            "published_total_including_5p2pct_normalization": 0.0057
+          },
+          "value": 0.0724,
+          "x_mean": 0.0329,
+          "x_mean_source": "published",
+          "y_mean": 0.732
+        }
+      ],
+      "q2_edges": [
+        0.18,
+        1.0,
+        20.0
+      ],
+      "rivet_path": "/HERMES_2007_I726689_LEGACY/d07-x06-y02",
+      "slice": 6,
+      "x_high": 0.0362,
+      "x_low": 0.0295
+    },
+    {
+      "points": [
+        {
+          "bin": 1,
+          "nonperturbative_extrapolation": true,
+          "q2_high": 1.0,
+          "q2_low": 0.18,
+          "q2_mean": 0.9,
+          "stat": 0.0313,
+          "systematic_combined": 0.0031,
+          "systematics": {
+            "published_total_including_5p2pct_normalization": 0.0031
+          },
+          "value": 0.0522,
+          "x_mean": 0.0399,
+          "x_mean_source": "published",
+          "y_mean": 0.435
+        },
+        {
+          "bin": 2,
+          "nonperturbative_extrapolation": false,
+          "q2_high": 20.0,
+          "q2_low": 1.0,
+          "q2_mean": 1.38,
+          "stat": 0.0156,
+          "systematic_combined": 0.0048,
+          "systematics": {
+            "published_total_including_5p2pct_normalization": 0.0048
+          },
+          "value": 0.0592,
+          "x_mean": 0.0403,
+          "x_mean_source": "bin midpoint",
+          "y_mean": 0.659
+        }
+      ],
+      "q2_edges": [
+        0.18,
+        1.0,
+        20.0
+      ],
+      "rivet_path": "/HERMES_2007_I726689_LEGACY/d07-x07-y02",
+      "slice": 7,
+      "x_high": 0.0444,
+      "x_low": 0.0362
+    },
+    {
+      "points": [
+        {
+          "bin": 1,
+          "nonperturbative_extrapolation": true,
+          "q2_high": 1.0,
+          "q2_low": 0.18,
+          "q2_mean": 0.93,
+          "stat": 0.036,
+          "systematic_combined": 0.0029,
+          "systematics": {
+            "published_total_including_5p2pct_normalization": 0.0029
+          },
+          "value": 0.0291,
+          "x_mean": 0.0498,
+          "x_mean_source": "published",
+          "y_mean": 0.361
+        },
+        {
+          "bin": 2,
+          "nonperturbative_extrapolation": false,
+          "q2_high": 20.0,
+          "q2_low": 1.0,
+          "q2_mean": 1.54,
+          "stat": 0.0116,
+          "systematic_combined": 0.0051,
+          "systematics": {
+            "published_total_including_5p2pct_normalization": 0.0051
+          },
+          "value": 0.0613,
+          "x_mean": 0.050600000000000006,
+          "x_mean_source": "bin midpoint",
+          "y_mean": 0.586
+        }
+      ],
+      "q2_edges": [
+        0.18,
+        1.0,
+        20.0
+      ],
+      "rivet_path": "/HERMES_2007_I726689_LEGACY/d07-x08-y02",
+      "slice": 8,
+      "x_high": 0.0568,
+      "x_low": 0.0444
+    },
+    {
+      "points": [
+        {
+          "bin": 1,
+          "nonperturbative_extrapolation": false,
+          "q2_high": 1.505,
+          "q2_low": 0.18,
+          "q2_mean": 1.25,
+          "stat": 0.0179,
+          "systematic_combined": 0.0028,
+          "systematics": {
+            "published_total_including_5p2pct_normalization": 0.0028
+          },
+          "value": 0.0466,
+          "x_mean": 0.0643,
+          "x_mean_source": "published",
+          "y_mean": 0.375
+        },
+        {
+          "bin": 2,
+          "nonperturbative_extrapolation": false,
+          "q2_high": 2.27,
+          "q2_low": 1.505,
+          "q2_mean": 1.85,
+          "stat": 0.0158,
+          "systematic_combined": 0.0044,
+          "systematics": {
+            "published_total_including_5p2pct_normalization": 0.0044
+          },
+          "value": 0.0549,
+          "x_mean": 0.0645,
+          "x_mean_source": "published",
+          "y_mean": 0.555
+        },
+        {
+          "bin": 3,
+          "nonperturbative_extrapolation": false,
+          "q2_high": 20.0,
+          "q2_low": 2.27,
+          "q2_mean": 2.58,
+          "stat": 0.0263,
+          "systematic_combined": 0.0069,
+          "systematics": {
+            "published_total_including_5p2pct_normalization": 0.0069
+          },
+          "value": 0.0724,
+          "x_mean": 0.0655,
+          "x_mean_source": "published",
+          "y_mean": 0.761
+        }
+      ],
+      "q2_edges": [
+        0.18,
+        1.505,
+        2.27,
+        20.0
+      ],
+      "rivet_path": "/HERMES_2007_I726689_LEGACY/d07-x09-y02",
+      "slice": 9,
+      "x_high": 0.0727,
+      "x_low": 0.0568
+    },
+    {
+      "points": [
+        {
+          "bin": 1,
+          "nonperturbative_extrapolation": false,
+          "q2_high": 1.62,
+          "q2_low": 0.18,
+          "q2_mean": 1.31,
+          "stat": 0.0185,
+          "systematic_combined": 0.0026,
+          "systematics": {
+            "published_total_including_5p2pct_normalization": 0.0026
+          },
+          "value": 0.0382,
+          "x_mean": 0.0823,
+          "x_mean_source": "published",
+          "y_mean": 0.308
+        },
+        {
+          "bin": 2,
+          "nonperturbative_extrapolation": false,
+          "q2_high": 2.62,
+          "q2_low": 1.62,
+          "q2_mean": 2.06,
+          "stat": 0.0147,
+          "systematic_combined": 0.0053,
+          "systematics": {
+            "published_total_including_5p2pct_normalization": 0.0053
+          },
+          "value": 0.0876,
+          "x_mean": 0.0824,
+          "x_mean_source": "published",
+          "y_mean": 0.484
+        },
+        {
+          "bin": 3,
+          "nonperturbative_extrapolation": false,
+          "q2_high": 20.0,
+          "q2_low": 2.62,
+          "q2_mean": 3.08,
+          "stat": 0.0218,
+          "systematic_combined": 0.0104,
+          "systematics": {
+            "published_total_including_5p2pct_normalization": 0.0104
+          },
+          "value": 0.1521,
+          "x_mean": 0.0835,
+          "x_mean_source": "published",
+          "y_mean": 0.712
+        }
+      ],
+      "q2_edges": [
+        0.18,
+        1.62,
+        2.62,
+        20.0
+      ],
+      "rivet_path": "/HERMES_2007_I726689_LEGACY/d07-x10-y02",
+      "slice": 10,
+      "x_high": 0.0929,
+      "x_low": 0.0727
+    },
+    {
+      "points": [
+        {
+          "bin": 1,
+          "nonperturbative_extrapolation": false,
+          "q2_high": 1.74,
+          "q2_low": 0.18,
+          "q2_mean": 1.38,
+          "stat": 0.02,
+          "systematic_combined": 0.0033,
+          "systematics": {
+            "published_total_including_5p2pct_normalization": 0.0033
+          },
+          "value": 0.0518,
+          "x_mean": 0.1051,
+          "x_mean_source": "published",
+          "y_mean": 0.253
+        },
+        {
+          "bin": 2,
+          "nonperturbative_extrapolation": false,
+          "q2_high": 3.02,
+          "q2_low": 1.74,
+          "q2_mean": 2.29,
+          "stat": 0.0143,
+          "systematic_combined": 0.0043,
+          "systematics": {
+            "published_total_including_5p2pct_normalization": 0.0043
+          },
+          "value": 0.0631,
+          "x_mean": 0.1054,
+          "x_mean_source": "published",
+          "y_mean": 0.42
+        },
+        {
+          "bin": 3,
+          "nonperturbative_extrapolation": false,
+          "q2_high": 20.0,
+          "q2_low": 3.02,
+          "q2_mean": 3.65,
+          "stat": 0.0197,
+          "systematic_combined": 0.0098,
+          "systematics": {
+            "published_total_including_5p2pct_normalization": 0.0098
+          },
+          "value": 0.1481,
+          "x_mean": 0.1064,
+          "x_mean_source": "published",
+          "y_mean": 0.662
+        }
+      ],
+      "q2_edges": [
+        0.18,
+        1.74,
+        3.02,
+        20.0
+      ],
+      "rivet_path": "/HERMES_2007_I726689_LEGACY/d07-x11-y02",
+      "slice": 11,
+      "x_high": 0.119,
+      "x_low": 0.0929
+    },
+    {
+      "points": [
+        {
+          "bin": 1,
+          "nonperturbative_extrapolation": false,
+          "q2_high": 1.88,
+          "q2_low": 0.18,
+          "q2_mean": 1.46,
+          "stat": 0.0226,
+          "systematic_combined": 0.0026,
+          "systematics": {
+            "published_total_including_5p2pct_normalization": 0.0026
+          },
+          "value": 0.0414,
+          "x_mean": 0.1344,
+          "x_mean_source": "published",
+          "y_mean": 0.21
+        },
+        {
+          "bin": 2,
+          "nonperturbative_extrapolation": false,
+          "q2_high": 3.49,
+          "q2_low": 1.88,
+          "q2_mean": 2.56,
+          "stat": 0.0141,
+          "systematic_combined": 0.0055,
+          "systematics": {
+            "published_total_including_5p2pct_normalization": 0.0055
+          },
+          "value": 0.0888,
+          "x_mean": 0.1347,
+          "x_mean_source": "published",
+          "y_mean": 0.366
+        },
+        {
+          "bin": 3,
+          "nonperturbative_extrapolation": false,
+          "q2_high": 20.0,
+          "q2_low": 3.49,
+          "q2_mean": 4.3,
+          "stat": 0.0189,
+          "systematic_combined": 0.0108,
+          "systematics": {
+            "published_total_including_5p2pct_normalization": 0.0108
+          },
+          "value": 0.1717,
+          "x_mean": 0.1358,
+          "x_mean_source": "published",
+          "y_mean": 0.612
+        }
+      ],
+      "q2_edges": [
+        0.18,
+        1.88,
+        3.49,
+        20.0
+      ],
+      "rivet_path": "/HERMES_2007_I726689_LEGACY/d07-x12-y02",
+      "slice": 12,
+      "x_high": 0.152,
+      "x_low": 0.119
+    },
+    {
+      "points": [
+        {
+          "bin": 1,
+          "nonperturbative_extrapolation": false,
+          "q2_high": 2.06,
+          "q2_low": 0.18,
+          "q2_mean": 1.56,
+          "stat": 0.027,
+          "systematic_combined": 0.0029,
+          "systematics": {
+            "published_total_including_5p2pct_normalization": 0.0029
+          },
+          "value": 0.0505,
+          "x_mean": 0.1719,
+          "x_mean_source": "published",
+          "y_mean": 0.176
+        },
+        {
+          "bin": 2,
+          "nonperturbative_extrapolation": false,
+          "q2_high": 4.02,
+          "q2_low": 2.06,
+          "q2_mean": 2.87,
+          "stat": 0.0146,
+          "systematic_combined": 0.0061,
+          "systematics": {
+            "published_total_including_5p2pct_normalization": 0.0061
+          },
+          "value": 0.0999,
+          "x_mean": 0.1722,
+          "x_mean_source": "published",
+          "y_mean": 0.321
+        },
+        {
+          "bin": 3,
+          "nonperturbative_extrapolation": false,
+          "q2_high": 20.0,
+          "q2_low": 4.02,
+          "q2_mean": 5.05,
+          "stat": 0.0189,
+          "systematic_combined": 0.0116,
+          "systematics": {
+            "published_total_including_5p2pct_normalization": 0.0116
+          },
+          "value": 0.1896,
+          "x_mean": 0.1734,
+          "x_mean_source": "published",
+          "y_mean": 0.563
+        }
+      ],
+      "q2_edges": [
+        0.18,
+        2.06,
+        4.02,
+        20.0
+      ],
+      "rivet_path": "/HERMES_2007_I726689_LEGACY/d07-x13-y02",
+      "slice": 13,
+      "x_high": 0.194,
+      "x_low": 0.152
+    },
+    {
+      "points": [
+        {
+          "bin": 1,
+          "nonperturbative_extrapolation": false,
+          "q2_high": 2.23,
+          "q2_low": 0.18,
+          "q2_mean": 1.67,
+          "stat": 0.0324,
+          "systematic_combined": 0.0033,
+          "systematics": {
+            "published_total_including_5p2pct_normalization": 0.0033
+          },
+          "value": 0.0433,
+          "x_mean": 0.2191,
+          "x_mean_source": "published",
+          "y_mean": 0.147
+        },
+        {
+          "bin": 2,
+          "nonperturbative_extrapolation": false,
+          "q2_high": 4.61,
+          "q2_low": 2.23,
+          "q2_mean": 3.18,
+          "stat": 0.0154,
+          "systematic_combined": 0.0056,
+          "systematics": {
+            "published_total_including_5p2pct_normalization": 0.0056
+          },
+          "value": 0.0867,
+          "x_mean": 0.22,
+          "x_mean_source": "published",
+          "y_mean": 0.279
+        },
+        {
+          "bin": 3,
+          "nonperturbative_extrapolation": false,
+          "q2_high": 20.0,
+          "q2_low": 4.61,
+          "q2_mean": 5.87,
+          "stat": 0.0195,
+          "systematic_combined": 0.0113,
+          "systematics": {
+            "published_total_including_5p2pct_normalization": 0.0113
+          },
+          "value": 0.1875,
+          "x_mean": 0.2213,
+          "x_mean_source": "published",
+          "y_mean": 0.512
+        }
+      ],
+      "q2_edges": [
+        0.18,
+        2.23,
+        4.61,
+        20.0
+      ],
+      "rivet_path": "/HERMES_2007_I726689_LEGACY/d07-x14-y02",
+      "slice": 14,
+      "x_high": 0.249,
+      "x_low": 0.194
+    },
+    {
+      "points": [
+        {
+          "bin": 1,
+          "nonperturbative_extrapolation": false,
+          "q2_high": 2.66,
+          "q2_low": 0.18,
+          "q2_mean": 1.98,
+          "stat": 0.0354,
+          "systematic_combined": 0.0039,
+          "systematics": {
+            "published_total_including_5p2pct_normalization": 0.0039
+          },
+          "value": 0.0676,
+          "x_mean": 0.2786,
+          "x_mean_source": "published",
+          "y_mean": 0.137
+        },
+        {
+          "bin": 2,
+          "nonperturbative_extrapolation": false,
+          "q2_high": 5.5,
+          "q2_low": 2.66,
+          "q2_mean": 3.77,
+          "stat": 0.0174,
+          "systematic_combined": 0.0064,
+          "systematics": {
+            "published_total_including_5p2pct_normalization": 0.0064
+          },
+          "value": 0.1047,
+          "x_mean": 0.281,
+          "x_mean_source": "published",
+          "y_mean": 0.259
+        },
+        {
+          "bin": 3,
+          "nonperturbative_extrapolation": false,
+          "q2_high": 20.0,
+          "q2_low": 5.5,
+          "q2_mean": 6.94,
+          "stat": 0.0222,
+          "systematic_combined": 0.0127,
+          "systematics": {
+            "published_total_including_5p2pct_normalization": 0.0127
+          },
+          "value": 0.2142,
+          "x_mean": 0.2824,
+          "x_mean_source": "published",
+          "y_mean": 0.475
+        }
+      ],
+      "q2_edges": [
+        0.18,
+        2.66,
+        5.5,
+        20.0
+      ],
+      "rivet_path": "/HERMES_2007_I726689_LEGACY/d07-x15-y02",
+      "slice": 15,
+      "x_high": 0.318,
+      "x_low": 0.249
+    },
+    {
+      "points": [
+        {
+          "bin": 1,
+          "nonperturbative_extrapolation": false,
+          "q2_high": 3.3,
+          "q2_low": 0.18,
+          "q2_mean": 2.46,
+          "stat": 0.0405,
+          "systematic_combined": 0.0055,
+          "systematics": {
+            "published_total_including_5p2pct_normalization": 0.0055
+          },
+          "value": 0.0646,
+          "x_mean": 0.355,
+          "x_mean_source": "published",
+          "y_mean": 0.134
+        },
+        {
+          "bin": 2,
+          "nonperturbative_extrapolation": false,
+          "q2_high": 6.625,
+          "q2_low": 3.3,
+          "q2_mean": 4.62,
+          "stat": 0.021,
+          "systematic_combined": 0.008,
+          "systematics": {
+            "published_total_including_5p2pct_normalization": 0.008
+          },
+          "value": 0.1268,
+          "x_mean": 0.3585,
+          "x_mean_source": "published",
+          "y_mean": 0.249
+        },
+        {
+          "bin": 3,
+          "nonperturbative_extrapolation": false,
+          "q2_high": 20.0,
+          "q2_low": 6.625,
+          "q2_mean": 8.25,
+          "stat": 0.0278,
+          "systematic_combined": 0.0151,
+          "systematics": {
+            "published_total_including_5p2pct_normalization": 0.0151
+          },
+          "value": 0.2581,
+          "x_mean": 0.3603,
+          "x_mean_source": "published",
+          "y_mean": 0.442
+        }
+      ],
+      "q2_edges": [
+        0.18,
+        3.3,
+        6.625,
+        20.0
+      ],
+      "rivet_path": "/HERMES_2007_I726689_LEGACY/d07-x16-y02",
+      "slice": 16,
+      "x_high": 0.406,
+      "x_low": 0.318
+    },
+    {
+      "points": [
+        {
+          "bin": 1,
+          "nonperturbative_extrapolation": false,
+          "q2_high": 4.09,
+          "q2_low": 0.18,
+          "q2_mean": 3.08,
+          "stat": 0.0514,
+          "systematic_combined": 0.006,
+          "systematics": {
+            "published_total_including_5p2pct_normalization": 0.006
+          },
+          "value": 0.0675,
+          "x_mean": 0.452,
+          "x_mean_source": "published",
+          "y_mean": 0.131
+        },
+        {
+          "bin": 2,
+          "nonperturbative_extrapolation": false,
+          "q2_high": 7.98,
+          "q2_low": 4.09,
+          "q2_mean": 5.61,
+          "stat": 0.0278,
+          "systematic_combined": 0.0103,
+          "systematics": {
+            "published_total_including_5p2pct_normalization": 0.0103
+          },
+          "value": 0.1719,
+          "x_mean": 0.4567,
+          "x_mean_source": "published",
+          "y_mean": 0.237
+        },
+        {
+          "bin": 3,
+          "nonperturbative_extrapolation": false,
+          "q2_high": 20.0,
+          "q2_low": 7.98,
+          "q2_mean": 9.72,
+          "stat": 0.0384,
+          "systematic_combined": 0.0165,
+          "systematics": {
+            "published_total_including_5p2pct_normalization": 0.0165
+          },
+          "value": 0.287,
+          "x_mean": 0.4589,
+          "x_mean_source": "published",
+          "y_mean": 0.409
+        }
+      ],
+      "q2_edges": [
+        0.18,
+        4.09,
+        7.98,
+        20.0
+      ],
+      "rivet_path": "/HERMES_2007_I726689_LEGACY/d07-x17-y02",
+      "slice": 17,
+      "x_high": 0.52,
+      "x_low": 0.406
+    },
+    {
+      "points": [
+        {
+          "bin": 1,
+          "nonperturbative_extrapolation": false,
+          "q2_high": 5.04,
+          "q2_low": 0.18,
+          "q2_mean": 3.9,
+          "stat": 0.0739,
+          "systematic_combined": 0.0085,
+          "systematics": {
+            "published_total_including_5p2pct_normalization": 0.0085
+          },
+          "value": 0.0962,
+          "x_mean": 0.5629,
+          "x_mean_source": "published",
+          "y_mean": 0.134
+        },
+        {
+          "bin": 2,
+          "nonperturbative_extrapolation": false,
+          "q2_high": 9.455,
+          "q2_low": 5.04,
+          "q2_mean": 6.77,
+          "stat": 0.0481,
+          "systematic_combined": 0.0077,
+          "systematics": {
+            "published_total_including_5p2pct_normalization": 0.0077
+          },
+          "value": 0.1126,
+          "x_mean": 0.5798,
+          "x_mean_source": "published",
+          "y_mean": 0.225
+        },
+        {
+          "bin": 3,
+          "nonperturbative_extrapolation": false,
+          "q2_high": 20.0,
+          "q2_low": 9.455,
+          "q2_mean": 11.36,
+          "stat": 0.0643,
+          "systematic_combined": 0.0182,
+          "systematics": {
+            "published_total_including_5p2pct_normalization": 0.0182
+          },
+          "value": 0.3151,
+          "x_mean": 0.5823,
+          "x_mean_source": "published",
+          "y_mean": 0.377
+        }
+      ],
+      "q2_edges": [
+        0.18,
+        5.04,
+        9.455,
+        20.0
+      ],
+      "rivet_path": "/HERMES_2007_I726689_LEGACY/d07-x18-y02",
+      "slice": 18,
+      "x_high": 0.665,
+      "x_low": 0.52
+    },
+    {
+      "points": [
+        {
+          "bin": 1,
+          "nonperturbative_extrapolation": false,
+          "q2_high": 7.645,
+          "q2_low": 0.18,
+          "q2_mean": 6.32,
+          "stat": 0.1522,
+          "systematic_combined": 0.0108,
+          "systematics": {
+            "published_total_including_5p2pct_normalization": 0.0108
+          },
+          "value": 0.1307,
+          "x_mean": 0.6921,
+          "x_mean_source": "published",
+          "y_mean": 0.176
+        },
+        {
+          "bin": 2,
+          "nonperturbative_extrapolation": false,
+          "q2_high": 12.5,
+          "q2_low": 7.645,
+          "q2_mean": 9.56,
+          "stat": 0.0939,
+          "systematic_combined": 0.0175,
+          "systematics": {
+            "published_total_including_5p2pct_normalization": 0.0175
+          },
+          "value": 0.3028,
+          "x_mean": 0.7173,
+          "x_mean_source": "published",
+          "y_mean": 0.257
+        },
+        {
+          "bin": 3,
+          "nonperturbative_extrapolation": false,
+          "q2_high": 20.0,
+          "q2_low": 12.5,
+          "q2_mean": 14.29,
+          "stat": 0.1757,
+          "systematic_combined": 0.0298,
+          "systematics": {
+            "published_total_including_5p2pct_normalization": 0.0298
+          },
+          "value": 0.5274,
+          "x_mean": 0.7311,
+          "x_mean_source": "published",
+          "y_mean": 0.377
+        }
+      ],
+      "q2_edges": [
+        0.18,
+        7.645,
+        12.5,
+        20.0
+      ],
+      "rivet_path": "/HERMES_2007_I726689_LEGACY/d07-x19-y02",
+      "slice": 19,
+      "x_high": 0.9,
+      "x_low": 0.665
+    }
+  ],
+  "measurement": "HERMES_2007_I726689_LEGACY",
+  "observable": "Aparallel Born",
+  "point_count": 45,
+  "provenance": {
+    "normalization_included_in_published_systematic": true,
+    "normalization_uncertainty_percent": 5.2,
+    "publication": "Phys. Rev. D 75 (2007) 012007",
+    "retrieved": "2026-07-21",
+    "source": "HEPData Table 7",
+    "source_sha256": "faa0f3fc562ebd8fc96148a57f43b95367ff0b37a1b747c1f740f6b8613412ae",
+    "source_url": "https://www.hepdata.net/record/data/11211/10813/1",
+    "table_doi": "10.17182/hepdata.11211.v1/t7"
+  },
+  "quantitative_mask": "q2_mean < 1 GeV2",
+  "scale_floor_gev": 1.0,
+  "schema_version": 3,
+  "selection": "0.18 < Q2 < 20 GeV2",
+  "x_edges": [
+    0.0041,
+    0.0073,
+    0.0118,
+    0.0168,
+    0.0212,
+    0.0295,
+    0.0362,
+    0.0444,
+    0.0568,
+    0.0727,
+    0.0929,
+    0.119,
+    0.152,
+    0.194,
+    0.249,
+    0.318,
+    0.406,
+    0.52,
+    0.665,
+    0.9
+  ]
+}

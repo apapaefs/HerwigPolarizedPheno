@@ -1,0 +1,7 @@
+# -*- ThePEG-repository -*-
+read HERMES_2019_I1698889-Common.in
+set /Herwig/Partons/EPPolarizedExtractor:FirstLongitudinalPolarization -1
+set /Herwig/Partons/EPPolarizedExtractor:SecondLongitudinalPolarization 1
+set /Herwig/MatrixElements/PowhegMEDISNCPol:Contribution NegativeNLO
+cd /Herwig/Generators
+saverun HERMES_2019_I1698889_P_MP-NEGNLO EventGenerator

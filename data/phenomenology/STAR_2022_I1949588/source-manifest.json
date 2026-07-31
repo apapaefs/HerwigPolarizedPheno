@@ -1,0 +1,298 @@
+{
+  "analysis_binning": {
+    "path": "data/phenomenology/STAR_2022_I1949588/analysis-binning.json",
+    "publication_doi": "10.1103/PhysRevD.105.092011",
+    "sha256": "310b0f26ec59c578eb3415fe47827ddc55297983dc03e2de26c8c0527502ac6b"
+  },
+  "measurement": "STAR_2022_I1949588",
+  "record_doi": "10.17182/hepdata.114778.v1",
+  "record_path": "data/phenomenology/STAR_2022_I1949588/raw/record.json",
+  "record_sha256": "e3a786c2fe24f3d9413e61057d545cca0ec3cc756e0b5e9eeb23187a4fddad4d",
+  "record_version": 1,
+  "retrieved": "2026-07-22",
+  "schema_version": 1,
+  "source": "HEPData",
+  "tables": [
+    {
+      "doi": "10.17182/hepdata.114778.v1/t1",
+      "headers": [
+        "Parton Jet $x_{T} (=2p_{T}/\\sqrt{s})$ range",
+        "Parton Jet $x_{T} (=2p_{T}/\\sqrt{s})$",
+        "Parton Jet $p_{T}$ (GeV/$c$)",
+        "Inclusive Jet $A_{LL}$"
+      ],
+      "name": "Figure 3",
+      "number": 1,
+      "path": "data/phenomenology/STAR_2022_I1949588/raw/t01.json",
+      "rows": 14,
+      "sha256": "c4b2279cedfb269e4ae6c1a8f1116bb21e5dfcb6b0a75692f8faaaf37638b3b6",
+      "url": "https://www.hepdata.net/record/data/114778/1317573/1"
+    },
+    {
+      "doi": "10.17182/hepdata.114778.v1/t2",
+      "headers": [
+        "Parton Dijet $M_{inv}$ (GeV/$c^{2}$) range",
+        "Parton Dijet $M_{inv}$ (GeV/$c^{2}$)",
+        "Dijet $A_{LL}$, topology A"
+      ],
+      "name": "Figure 5 topology A",
+      "number": 2,
+      "path": "data/phenomenology/STAR_2022_I1949588/raw/t02.json",
+      "rows": 12,
+      "sha256": "f32baedd95c1a1800a2be6f7f8d3a6c88cd52166190d53149446666f03ce74c7",
+      "url": "https://www.hepdata.net/record/data/114778/1317574/1"
+    },
+    {
+      "doi": "10.17182/hepdata.114778.v1/t3",
+      "headers": [
+        "Parton Dijet $M_{inv}$ (GeV/$c^{2}$) range",
+        "Parton Dijet $M_{inv}$ (GeV/$c^{2}$)",
+        "Dijet $A_{LL}$, topology B"
+      ],
+      "name": "Figure 5 topology B",
+      "number": 3,
+      "path": "data/phenomenology/STAR_2022_I1949588/raw/t03.json",
+      "rows": 13,
+      "sha256": "cb31438136fc8b57cb13b0431ebf7539ffbd20b0852bcff4fa55c0c7c80c0d7d",
+      "url": "https://www.hepdata.net/record/data/114778/1317575/1"
+    },
+    {
+      "doi": "10.17182/hepdata.114778.v1/t4",
+      "headers": [
+        "Parton Dijet $M_{inv}$ (GeV/$c^{2}$) range",
+        "Parton Dijet $M_{inv}$ (GeV/$c^{2}$)",
+        "Dijet $A_{LL}$, topology C"
+      ],
+      "name": "Figure 5 topology C",
+      "number": 4,
+      "path": "data/phenomenology/STAR_2022_I1949588/raw/t04.json",
+      "rows": 12,
+      "sha256": "c9af9b42a660de354505b40664218908984dc9a88863f6f8e824435171687aee",
+      "url": "https://www.hepdata.net/record/data/114778/1317576/1"
+    },
+    {
+      "doi": "10.17182/hepdata.114778.v1/t5",
+      "headers": [
+        "Parton Dijet $M_{inv}$ (GeV/$c^{2}$) range",
+        "Parton Dijet $M_{inv}$ (GeV/$c^{2}$)",
+        "Dijet $A_{LL}$, topology D"
+      ],
+      "name": "Figure 5 topology D",
+      "number": 5,
+      "path": "data/phenomenology/STAR_2022_I1949588/raw/t05.json",
+      "rows": 12,
+      "sha256": "accfb2f2c0b82508e6923e77313031d3201f8562dc0548d7d2902851b54ee0cb",
+      "url": "https://www.hepdata.net/record/data/114778/1317577/1"
+    },
+    {
+      "doi": "10.17182/hepdata.114778.v1/t6",
+      "headers": [
+        "Parton Jet $p_{T}$ (GeV/$c$)",
+        "Parton Jet $p_{T}$ (GeV/$c$)__1",
+        "Correlation Inclusive-Inclusive jet"
+      ],
+      "name": "Inclusive jet - Inclusive jet correlation",
+      "number": 6,
+      "path": "data/phenomenology/STAR_2022_I1949588/raw/t06.json",
+      "rows": 105,
+      "sha256": "c82df29a181cd6e54a7c0518dc252c3379d0286ecf3e27154745d0dd0e78eb3d",
+      "url": "https://www.hepdata.net/record/data/114778/1317578/1"
+    },
+    {
+      "doi": "10.17182/hepdata.114778.v1/t7",
+      "headers": [
+        "Parton Jet $p_{T}$ (GeV/$c$)",
+        "Topology A - Parton Dijet $M_{inv}$ (GeV/$c^2$)",
+        "Correlation Inclusive-DijetA"
+      ],
+      "name": "Inclusive jet - Dijet topology A correlation",
+      "number": 7,
+      "path": "data/phenomenology/STAR_2022_I1949588/raw/t07.json",
+      "rows": 168,
+      "sha256": "2585b4aa976760c7adc37f202be8c2a3e629e81b0f5af0721eacdd144b11f26a",
+      "url": "https://www.hepdata.net/record/data/114778/1317579/1"
+    },
+    {
+      "doi": "10.17182/hepdata.114778.v1/t8",
+      "headers": [
+        "Parton Jet $p_{T}$ (GeV/$c$)",
+        "Topology B - Parton Dijet $M_{inv}$ (GeV/$c^2$)",
+        "Correlation Inclusive-DijetB"
+      ],
+      "name": "Inclusive jet - Dijet topology B correlation",
+      "number": 8,
+      "path": "data/phenomenology/STAR_2022_I1949588/raw/t08.json",
+      "rows": 182,
+      "sha256": "5c3003408cc22e850ecb8fdc62d7eb5580ca85a53bf44bbca8cb1ef9ba9df62d",
+      "url": "https://www.hepdata.net/record/data/114778/1317580/1"
+    },
+    {
+      "doi": "10.17182/hepdata.114778.v1/t9",
+      "headers": [
+        "Parton Jet $p_{T}$ (GeV/$c$)",
+        "Topology C - Parton Dijet $M_{inv}$ (GeV/$c^2$)",
+        "Correlation Inclusive-DijetC"
+      ],
+      "name": "Inclusive jet - Dijet topology C correlation",
+      "number": 9,
+      "path": "data/phenomenology/STAR_2022_I1949588/raw/t09.json",
+      "rows": 168,
+      "sha256": "7a45c6c367152b7c0b2c3b1ef5c94686877575ae6115dee8226e090decf29b49",
+      "url": "https://www.hepdata.net/record/data/114778/1317581/1"
+    },
+    {
+      "doi": "10.17182/hepdata.114778.v1/t10",
+      "headers": [
+        "Parton Jet $p_{T}$ (GeV/$c$)",
+        "Topology D - Parton Dijet $M_{inv}$ (GeV/$c^2$)",
+        "Correlation Inclusive-DijetD"
+      ],
+      "name": "Inclusive jet - Dijet topology D correlation",
+      "number": 10,
+      "path": "data/phenomenology/STAR_2022_I1949588/raw/t10.json",
+      "rows": 168,
+      "sha256": "8c644b610f13a96168dfef4b54d344df9feec6169dc3acd335960d762d221927",
+      "url": "https://www.hepdata.net/record/data/114778/1317582/1"
+    },
+    {
+      "doi": "10.17182/hepdata.114778.v1/t11",
+      "headers": [
+        "Topology A - Parton Dijet $M_{inv}$ (GeV/$c^2$)",
+        "Topology A - Parton Dijet $M_{inv}$ (GeV/$c^2$)__1",
+        "Correlation DijetA"
+      ],
+      "name": "Dijet topology A correlation",
+      "number": 11,
+      "path": "data/phenomenology/STAR_2022_I1949588/raw/t11.json",
+      "rows": 78,
+      "sha256": "f7d811bdebfa959ee9c92fd4f1b33409802def101b8578b42eebf6c5e9a31599",
+      "url": "https://www.hepdata.net/record/data/114778/1317583/1"
+    },
+    {
+      "doi": "10.17182/hepdata.114778.v1/t12",
+      "headers": [
+        "Topology A - Parton Dijet $M_{inv}$ (GeV/$c^2$)",
+        "Topology B - Parton Dijet $M_{inv}$ (GeV/$c^2$)",
+        "Correlation DijetA-DijetB"
+      ],
+      "name": "Dijet topology A - Dijet topology B correlation",
+      "number": 12,
+      "path": "data/phenomenology/STAR_2022_I1949588/raw/t12.json",
+      "rows": 156,
+      "sha256": "b0e6514e6b60d0a4bc6389d94359993dad4e54229741734816a3d2bf6d8b7a41",
+      "url": "https://www.hepdata.net/record/data/114778/1317584/1"
+    },
+    {
+      "doi": "10.17182/hepdata.114778.v1/t13",
+      "headers": [
+        "Topology A - Parton Dijet $M_{inv}$ (GeV/$c^2$)",
+        "Topology C - Parton Dijet $M_{inv}$ (GeV/$c^2$)",
+        "Correlation DijetA-DijetC"
+      ],
+      "name": "Dijet topology A - Dijet topology C correlation",
+      "number": 13,
+      "path": "data/phenomenology/STAR_2022_I1949588/raw/t13.json",
+      "rows": 144,
+      "sha256": "741f35820a8e86738390c6f672919128afb2de590caf6e3e5c0758a3661d0916",
+      "url": "https://www.hepdata.net/record/data/114778/1317585/1"
+    },
+    {
+      "doi": "10.17182/hepdata.114778.v1/t14",
+      "headers": [
+        "Topology A - Parton Dijet $M_{inv}$ (GeV/$c^2$)",
+        "Topology C - Parton Dijet $M_{inv}$ (GeV/$c^2$)",
+        "Correlation DijetA-DijetD"
+      ],
+      "name": "Dijet topology A - Dijet topology D correlation",
+      "number": 14,
+      "path": "data/phenomenology/STAR_2022_I1949588/raw/t14.json",
+      "rows": 144,
+      "sha256": "9dcd82c38db9aa7293fdd998417617044ea8d8a28255f9057655b9c8ab5b5c18",
+      "url": "https://www.hepdata.net/record/data/114778/1317586/1"
+    },
+    {
+      "doi": "10.17182/hepdata.114778.v1/t15",
+      "headers": [
+        "Topology B - Parton Dijet $M_{inv}$ (GeV/$c^2$)",
+        "Topology B - Parton Dijet $M_{inv}$ (GeV/$c^2$)__1",
+        "Correlation DijetB"
+      ],
+      "name": "Dijet topology B correlation",
+      "number": 15,
+      "path": "data/phenomenology/STAR_2022_I1949588/raw/t15.json",
+      "rows": 91,
+      "sha256": "35ba2cf6fcabe697330a839cf3e5d60ee7624503224ee72e8fdb46e7bf164994",
+      "url": "https://www.hepdata.net/record/data/114778/1317587/1"
+    },
+    {
+      "doi": "10.17182/hepdata.114778.v1/t16",
+      "headers": [
+        "Topology B - Parton Dijet $M_{inv}$ (GeV/$c^2$)",
+        "Topology C - Parton Dijet $M_{inv}$ (GeV/$c^2$)",
+        "Correlation DijetB-DijetC"
+      ],
+      "name": "Dijet topology B - Dijet topology C correlation",
+      "number": 16,
+      "path": "data/phenomenology/STAR_2022_I1949588/raw/t16.json",
+      "rows": 156,
+      "sha256": "05d59267fe02131ad6896fd8cd544c0b8bbf2608cd911660b422abdd177dc718",
+      "url": "https://www.hepdata.net/record/data/114778/1317588/1"
+    },
+    {
+      "doi": "10.17182/hepdata.114778.v1/t17",
+      "headers": [
+        "Topology B - Parton Dijet $M_{inv}$ (GeV/$c^2$)",
+        "Topology D - Parton Dijet $M_{inv}$ (GeV/$c^2$)",
+        "Correlation DijetB-DijetD"
+      ],
+      "name": "Dijet topology B - Dijet topology D correlation",
+      "number": 17,
+      "path": "data/phenomenology/STAR_2022_I1949588/raw/t17.json",
+      "rows": 156,
+      "sha256": "7b6ee86d330b74fc84df1d5ecb21df141807b8c3a67e29c293027a91c00a0aff",
+      "url": "https://www.hepdata.net/record/data/114778/1317589/1"
+    },
+    {
+      "doi": "10.17182/hepdata.114778.v1/t18",
+      "headers": [
+        "Topology C - Parton Dijet $M_{inv}$ (GeV/$c^2$)",
+        "Topology C - Parton Dijet $M_{inv}$ (GeV/$c^2$)__1",
+        "Correlation DijetC"
+      ],
+      "name": "Dijet topology C correlation",
+      "number": 18,
+      "path": "data/phenomenology/STAR_2022_I1949588/raw/t18.json",
+      "rows": 78,
+      "sha256": "935844d835f23060e07c646980c06078db5b7f77f7ef420bf74adc9dcfc3ae1a",
+      "url": "https://www.hepdata.net/record/data/114778/1317590/1"
+    },
+    {
+      "doi": "10.17182/hepdata.114778.v1/t19",
+      "headers": [
+        "Topology C - Parton Dijet $M_{inv}$ (GeV/$c^2$)",
+        "Topology D - Parton Dijet $M_{inv}$ (GeV/$c^2$)",
+        "Correlation DijetC-DijetD"
+      ],
+      "name": "Dijet topology C - Dijet topology D correlation",
+      "number": 19,
+      "path": "data/phenomenology/STAR_2022_I1949588/raw/t19.json",
+      "rows": 144,
+      "sha256": "403b89d6f69797f0a77fc865ec12b1e3935f4c91fd8993b2afa1dcdfcac4eaf8",
+      "url": "https://www.hepdata.net/record/data/114778/1317591/1"
+    },
+    {
+      "doi": "10.17182/hepdata.114778.v1/t20",
+      "headers": [
+        "Topology D - Parton Dijet $M_{inv}$ (GeV/$c^2$)",
+        "Topology D - Parton Dijet $M_{inv}$ (GeV/$c^2$)__1",
+        "Correlation DijetD"
+      ],
+      "name": "Dijet topology D correlation",
+      "number": 20,
+      "path": "data/phenomenology/STAR_2022_I1949588/raw/t20.json",
+      "rows": 78,
+      "sha256": "d6b427d241fcd5c67abd85fa7dcbf71306bfdc0c4d44a4331b61baf7be65130a",
+      "url": "https://www.hepdata.net/record/data/114778/1317592/1"
+    }
+  ]
+}

@@ -1,0 +1,608 @@
+{
+  "channels": {
+    "inclusive_cross_section": {
+      "bin_edges": [
+        6.0,
+        6.5,
+        7.0,
+        7.5,
+        8.0,
+        8.5,
+        9.0,
+        9.5,
+        10.0,
+        12.0,
+        14.0,
+        16.0,
+        18.0,
+        20.0,
+        22.0,
+        24.0,
+        26.0,
+        28.0,
+        30.0
+      ],
+      "observable": "E d3sigma/dp3",
+      "points": [
+        {
+          "bin": 1,
+          "pt_high": 6.5,
+          "pt_low": 6.0,
+          "pt_mean": 6.25,
+          "stat": 36.0,
+          "systematic_combined": 620.0,
+          "systematics": {
+            "point_to_point_total": 620.0
+          },
+          "value": 2322.0
+        },
+        {
+          "bin": 2,
+          "pt_high": 7.0,
+          "pt_low": 6.5,
+          "pt_mean": 6.75,
+          "stat": 26.0,
+          "systematic_combined": 360.0,
+          "systematics": {
+            "point_to_point_total": 360.0
+          },
+          "value": 1301.0
+        },
+        {
+          "bin": 3,
+          "pt_high": 7.5,
+          "pt_low": 7.0,
+          "pt_mean": 7.25,
+          "stat": 19.0,
+          "systematic_combined": 210.0,
+          "systematics": {
+            "point_to_point_total": 210.0
+          },
+          "value": 809.7
+        },
+        {
+          "bin": 4,
+          "pt_high": 8.0,
+          "pt_low": 7.5,
+          "pt_mean": 7.75,
+          "stat": 14.0,
+          "systematic_combined": 130.0,
+          "systematics": {
+            "point_to_point_total": 130.0
+          },
+          "value": 564.4
+        },
+        {
+          "bin": 5,
+          "pt_high": 8.5,
+          "pt_low": 8.0,
+          "pt_mean": 8.25,
+          "stat": 11.0,
+          "systematic_combined": 84.0,
+          "systematics": {
+            "point_to_point_total": 84.0
+          },
+          "value": 364.8
+        },
+        {
+          "bin": 6,
+          "pt_high": 9.0,
+          "pt_low": 8.5,
+          "pt_mean": 8.75,
+          "stat": 8.3,
+          "systematic_combined": 55.0,
+          "systematics": {
+            "point_to_point_total": 55.0
+          },
+          "value": 250.8
+        },
+        {
+          "bin": 7,
+          "pt_high": 9.5,
+          "pt_low": 9.0,
+          "pt_mean": 9.25,
+          "stat": 6.6,
+          "systematic_combined": 37.0,
+          "systematics": {
+            "point_to_point_total": 37.0
+          },
+          "value": 166.6
+        },
+        {
+          "bin": 8,
+          "pt_high": 10.0,
+          "pt_low": 9.5,
+          "pt_mean": 9.75,
+          "stat": 5.3,
+          "systematic_combined": 25.0,
+          "systematics": {
+            "point_to_point_total": 25.0
+          },
+          "value": 106.0
+        },
+        {
+          "bin": 9,
+          "pt_high": 12.0,
+          "pt_low": 10.0,
+          "pt_mean": 11.0,
+          "stat": 1.8,
+          "systematic_combined": 15.0,
+          "systematics": {
+            "point_to_point_total": 15.0
+          },
+          "value": 61.08
+        },
+        {
+          "bin": 10,
+          "pt_high": 14.0,
+          "pt_low": 12.0,
+          "pt_mean": 13.0,
+          "stat": 0.88,
+          "systematic_combined": 4.3,
+          "systematics": {
+            "point_to_point_total": 4.3
+          },
+          "value": 17.76
+        },
+        {
+          "bin": 11,
+          "pt_high": 16.0,
+          "pt_low": 14.0,
+          "pt_mean": 15.0,
+          "stat": 0.27,
+          "systematic_combined": 1.5,
+          "systematics": {
+            "point_to_point_total": 1.5
+          },
+          "value": 7.969
+        },
+        {
+          "bin": 12,
+          "pt_high": 18.0,
+          "pt_low": 16.0,
+          "pt_mean": 17.0,
+          "stat": 0.14,
+          "systematic_combined": 0.63,
+          "systematics": {
+            "point_to_point_total": 0.63
+          },
+          "value": 2.705
+        },
+        {
+          "bin": 13,
+          "pt_high": 20.0,
+          "pt_low": 18.0,
+          "pt_mean": 19.0,
+          "stat": 0.084,
+          "systematic_combined": 0.28,
+          "systematics": {
+            "point_to_point_total": 0.28
+          },
+          "value": 1.311
+        },
+        {
+          "bin": 14,
+          "pt_high": 22.0,
+          "pt_low": 20.0,
+          "pt_mean": 21.0,
+          "stat": 0.12,
+          "systematic_combined": 0.19,
+          "systematics": {
+            "point_to_point_total": 0.19
+          },
+          "value": 0.8033
+        },
+        {
+          "bin": 15,
+          "pt_high": 24.0,
+          "pt_low": 22.0,
+          "pt_mean": 23.0,
+          "stat": 0.077,
+          "systematic_combined": 0.096,
+          "systematics": {
+            "point_to_point_total": 0.096
+          },
+          "value": 0.4969
+        },
+        {
+          "bin": 16,
+          "pt_high": 26.0,
+          "pt_low": 24.0,
+          "pt_mean": 25.0,
+          "stat": 0.054,
+          "systematic_combined": 0.053,
+          "systematics": {
+            "point_to_point_total": 0.053
+          },
+          "value": 0.2487
+        },
+        {
+          "bin": 17,
+          "pt_high": 28.0,
+          "pt_low": 26.0,
+          "pt_mean": 27.0,
+          "stat": 0.041,
+          "systematic_combined": 0.033,
+          "systematics": {
+            "point_to_point_total": 0.033
+          },
+          "value": 0.1736
+        },
+        {
+          "bin": 18,
+          "pt_high": 30.0,
+          "pt_low": 28.0,
+          "pt_mean": 29.0,
+          "stat": 0.032,
+          "systematic_combined": 0.021,
+          "systematics": {
+            "point_to_point_total": 0.021
+          },
+          "value": 0.08643
+        }
+      ],
+      "rivet_path": "/PHENIX_2023_I2033856/d01-x01-y01",
+      "units": "pb GeV^-2"
+    },
+    "isolated_all": {
+      "bin_edges": [
+        6.0,
+        7.0,
+        8.0,
+        9.0,
+        10.0,
+        12.0,
+        15.0,
+        20.0
+      ],
+      "observable": "ALL",
+      "points": [
+        {
+          "bin": 1,
+          "pt_high": 7.0,
+          "pt_low": 6.0,
+          "pt_mean": 6.5,
+          "stat": 0.0031,
+          "systematic_combined": 3.3e-05,
+          "systematics": {
+            "point_to_point_total": 3.3e-05
+          },
+          "value": -0.002265
+        },
+        {
+          "bin": 2,
+          "pt_high": 8.0,
+          "pt_low": 7.0,
+          "pt_mean": 7.5,
+          "stat": 0.0048,
+          "systematic_combined": 3.3e-05,
+          "systematics": {
+            "point_to_point_total": 3.3e-05
+          },
+          "value": 0.002301
+        },
+        {
+          "bin": 3,
+          "pt_high": 9.0,
+          "pt_low": 8.0,
+          "pt_mean": 8.5,
+          "stat": 0.0069,
+          "systematic_combined": 3.1e-05,
+          "systematics": {
+            "point_to_point_total": 3.1e-05
+          },
+          "value": 0.004449
+        },
+        {
+          "bin": 4,
+          "pt_high": 10.0,
+          "pt_low": 9.0,
+          "pt_mean": 9.5,
+          "stat": 0.0095,
+          "systematic_combined": 3.2e-05,
+          "systematics": {
+            "point_to_point_total": 3.2e-05
+          },
+          "value": 0.003846
+        },
+        {
+          "bin": 5,
+          "pt_high": 12.0,
+          "pt_low": 10.0,
+          "pt_mean": 11.0,
+          "stat": 0.0099,
+          "systematic_combined": 0.00013,
+          "systematics": {
+            "point_to_point_total": 0.00013
+          },
+          "value": 0.01479
+        },
+        {
+          "bin": 6,
+          "pt_high": 15.0,
+          "pt_low": 12.0,
+          "pt_mean": 13.5,
+          "stat": 0.014,
+          "systematic_combined": 0.00014,
+          "systematics": {
+            "point_to_point_total": 0.00014
+          },
+          "value": 0.01111
+        },
+        {
+          "bin": 7,
+          "pt_high": 20.0,
+          "pt_low": 15.0,
+          "pt_mean": 17.5,
+          "stat": 0.022,
+          "systematic_combined": 0.0004,
+          "systematics": {
+            "point_to_point_total": 0.0004
+          },
+          "value": -0.02071
+        }
+      ],
+      "rivet_path": "/PHENIX_2023_I2033856/d02-x01-y01"
+    },
+    "isolated_cross_section": {
+      "bin_edges": [
+        6.0,
+        6.5,
+        7.0,
+        7.5,
+        8.0,
+        8.5,
+        9.0,
+        9.5,
+        10.0,
+        12.0,
+        14.0,
+        16.0,
+        18.0,
+        20.0,
+        22.0,
+        24.0,
+        26.0,
+        28.0,
+        30.0
+      ],
+      "observable": "E d3sigma/dp3",
+      "points": [
+        {
+          "bin": 1,
+          "pt_high": 6.5,
+          "pt_low": 6.0,
+          "pt_mean": 6.25,
+          "stat": 11.0,
+          "systematic_combined": 110.0,
+          "systematics": {
+            "point_to_point_total": 110.0
+          },
+          "value": 1088.0
+        },
+        {
+          "bin": 2,
+          "pt_high": 7.0,
+          "pt_low": 6.5,
+          "pt_mean": 6.75,
+          "stat": 8.1,
+          "systematic_combined": 65.0,
+          "systematics": {
+            "point_to_point_total": 65.0
+          },
+          "value": 640.3
+        },
+        {
+          "bin": 3,
+          "pt_high": 7.5,
+          "pt_low": 7.0,
+          "pt_mean": 7.25,
+          "stat": 5.9,
+          "systematic_combined": 39.0,
+          "systematics": {
+            "point_to_point_total": 39.0
+          },
+          "value": 404.7
+        },
+        {
+          "bin": 4,
+          "pt_high": 8.0,
+          "pt_low": 7.5,
+          "pt_mean": 7.75,
+          "stat": 4.4,
+          "systematic_combined": 25.0,
+          "systematics": {
+            "point_to_point_total": 25.0
+          },
+          "value": 279.5
+        },
+        {
+          "bin": 5,
+          "pt_high": 8.5,
+          "pt_low": 8.0,
+          "pt_mean": 8.25,
+          "stat": 3.4,
+          "systematic_combined": 18.0,
+          "systematics": {
+            "point_to_point_total": 18.0
+          },
+          "value": 185.5
+        },
+        {
+          "bin": 6,
+          "pt_high": 9.0,
+          "pt_low": 8.5,
+          "pt_mean": 8.75,
+          "stat": 2.6,
+          "systematic_combined": 12.0,
+          "systematics": {
+            "point_to_point_total": 12.0
+          },
+          "value": 133.1
+        },
+        {
+          "bin": 7,
+          "pt_high": 9.5,
+          "pt_low": 9.0,
+          "pt_mean": 9.25,
+          "stat": 2.2,
+          "systematic_combined": 9.0,
+          "systematics": {
+            "point_to_point_total": 9.0
+          },
+          "value": 97.66
+        },
+        {
+          "bin": 8,
+          "pt_high": 10.0,
+          "pt_low": 9.5,
+          "pt_mean": 9.75,
+          "stat": 1.8,
+          "systematic_combined": 6.2,
+          "systematics": {
+            "point_to_point_total": 6.2
+          },
+          "value": 64.92
+        },
+        {
+          "bin": 9,
+          "pt_high": 12.0,
+          "pt_low": 10.0,
+          "pt_mean": 11.0,
+          "stat": 0.57,
+          "systematic_combined": 3.6,
+          "systematics": {
+            "point_to_point_total": 3.6
+          },
+          "value": 35.89
+        },
+        {
+          "bin": 10,
+          "pt_high": 14.0,
+          "pt_low": 12.0,
+          "pt_mean": 13.0,
+          "stat": 0.3,
+          "systematic_combined": 1.3,
+          "systematics": {
+            "point_to_point_total": 1.3
+          },
+          "value": 13.3
+        },
+        {
+          "bin": 11,
+          "pt_high": 16.0,
+          "pt_low": 14.0,
+          "pt_mean": 15.0,
+          "stat": 0.098,
+          "systematic_combined": 0.61,
+          "systematics": {
+            "point_to_point_total": 0.61
+          },
+          "value": 5.856
+        },
+        {
+          "bin": 12,
+          "pt_high": 18.0,
+          "pt_low": 16.0,
+          "pt_mean": 17.0,
+          "stat": 0.061,
+          "systematic_combined": 0.3,
+          "systematics": {
+            "point_to_point_total": 0.3
+          },
+          "value": 2.837
+        },
+        {
+          "bin": 13,
+          "pt_high": 20.0,
+          "pt_low": 18.0,
+          "pt_mean": 19.0,
+          "stat": 0.04,
+          "systematic_combined": 0.15,
+          "systematics": {
+            "point_to_point_total": 0.15
+          },
+          "value": 1.374
+        },
+        {
+          "bin": 14,
+          "pt_high": 22.0,
+          "pt_low": 20.0,
+          "pt_mean": 21.0,
+          "stat": 0.028,
+          "systematic_combined": 0.088,
+          "systematics": {
+            "point_to_point_total": 0.088
+          },
+          "value": 0.791
+        },
+        {
+          "bin": 15,
+          "pt_high": 24.0,
+          "pt_low": 22.0,
+          "pt_mean": 23.0,
+          "stat": 0.02,
+          "systematic_combined": 0.055,
+          "systematics": {
+            "point_to_point_total": 0.055
+          },
+          "value": 0.4473
+        },
+        {
+          "bin": 16,
+          "pt_high": 26.0,
+          "pt_low": 24.0,
+          "pt_mean": 25.0,
+          "stat": 0.015,
+          "systematic_combined": 0.036,
+          "systematics": {
+            "point_to_point_total": 0.036
+          },
+          "value": 0.2639
+        },
+        {
+          "bin": 17,
+          "pt_high": 28.0,
+          "pt_low": 26.0,
+          "pt_mean": 27.0,
+          "stat": 0.011,
+          "systematic_combined": 0.018,
+          "systematics": {
+            "point_to_point_total": 0.018
+          },
+          "value": 0.1517
+        },
+        {
+          "bin": 18,
+          "pt_high": 30.0,
+          "pt_low": 28.0,
+          "pt_mean": 29.0,
+          "stat": 0.0096,
+          "systematic_combined": 0.013,
+          "systematics": {
+            "point_to_point_total": 0.013
+          },
+          "value": 0.09666
+        }
+      ],
+      "rivet_path": "/PHENIX_2023_I2033856/d01-x01-y02",
+      "units": "pb GeV^-2"
+    }
+  },
+  "global_uncertainties": {
+    "all_polarization_relative": 0.066,
+    "all_relative_luminosity_absolute": 0.00039,
+    "cross_section_luminosity_relative": 0.1
+  },
+  "measurement": "PHENIX_2023_I2033856",
+  "provenance": {
+    "hepdata_record_doi": "10.17182/hepdata.129088.v1",
+    "retrieved": "2026-07-21",
+    "table1_sha256": "f5977a346f9c144bc0f96ab9c196424bbbc0e61bb85715e8888d8cbda37657b4",
+    "table1_url": "https://www.hepdata.net/record/data/129088/1314457/1",
+    "table2_sha256": "187b02458b4c07c6741de52b2e7c25f9c30a71d401c54ef49369082d75bca57d",
+    "table2_url": "https://www.hepdata.net/record/data/129088/1314458/1"
+  },
+  "schema_version": 3,
+  "sqrt_s_gev": 510.0
+}

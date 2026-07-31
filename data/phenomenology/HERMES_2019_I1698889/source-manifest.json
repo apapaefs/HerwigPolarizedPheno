@@ -1,0 +1,411 @@
+{
+  "archive_path": "data/phenomenology/HERMES_2019_I1698889/raw-aps-supplement.zip",
+  "archive_sha256": "05c38ee9dca04015248677e73a18f8cdb9c5df30a9ea6a6bbde15720a37aae45",
+  "measurement": "HERMES_2019_I1698889",
+  "members": [
+    {
+      "bytes": 3222,
+      "columns": 10,
+      "path": "DC85_supplemental/cosphi/data_tables/kneg_deu_2D_cosphi.txt",
+      "rows": 30,
+      "sha256": "3df12a5e86ffdd684adc52dad77bf52c91af7688e832cdd17e25c0e09b85a827"
+    },
+    {
+      "bytes": 3222,
+      "columns": 10,
+      "path": "DC85_supplemental/cosphi/data_tables/kpos_deu_2D_cosphi.txt",
+      "rows": 30,
+      "sha256": "e3340c208f8cb6e15e3ad2ba6d496cbc06769f1c743336ca3aab953cf45d0e4d"
+    },
+    {
+      "bytes": 3223,
+      "columns": 10,
+      "path": "DC85_supplemental/cosphi/data_tables/pineg_deu_2D_cosphi.txt",
+      "rows": 30,
+      "sha256": "60605f8412927d3eef49f281d3d3a312a48dc2b39f96c40d34ccdddbc52adc30"
+    },
+    {
+      "bytes": 3221,
+      "columns": 10,
+      "path": "DC85_supplemental/cosphi/data_tables/pineg_pro_2D_cosphi.txt",
+      "rows": 30,
+      "sha256": "7e479b8e7f5d70300cf3316f1118c5045b138704075fc5446cec184c5fa71a3e"
+    },
+    {
+      "bytes": 3223,
+      "columns": 10,
+      "path": "DC85_supplemental/cosphi/data_tables/pipos_deu_2D_cosphi.txt",
+      "rows": 30,
+      "sha256": "0edabfc5a32e9318c75c2f0e09d4181847c4a20df0a723604ec747a388ee7559"
+    },
+    {
+      "bytes": 3221,
+      "columns": 10,
+      "path": "DC85_supplemental/cosphi/data_tables/pipos_pro_2D_cosphi.txt",
+      "rows": 30,
+      "sha256": "dcae9ac70b603dfe76f6d2ae6b2576a24b8f2cfb18dea50bc5deda5439bfe123"
+    },
+    {
+      "bytes": 1009,
+      "columns": 5,
+      "path": "DC85_supplemental/difference/data_tables/h_deu_diff_1D_A1.txt",
+      "rows": 9,
+      "sha256": "6c07cd365c3a20446cb9a98105ca65d561480301f379c2f2cbf0b3c607e33c58"
+    },
+    {
+      "bytes": 1009,
+      "columns": 5,
+      "path": "DC85_supplemental/difference/data_tables/k_deu_diff_1D_A1.txt",
+      "rows": 9,
+      "sha256": "4e954dd1df90477924af6273f6745fe3725f08d8f166be39360b02ce56b889d8"
+    },
+    {
+      "bytes": 1010,
+      "columns": 5,
+      "path": "DC85_supplemental/difference/data_tables/pi_deu_diff_1D_A1.txt",
+      "rows": 9,
+      "sha256": "a90ad9180da08a5005f3ef16335d4dcb5651123db589be0290de20231f564c14"
+    },
+    {
+      "bytes": 1010,
+      "columns": 5,
+      "path": "DC85_supplemental/difference/data_tables/pi_pro_diff_1D_A1.txt",
+      "rows": 9,
+      "sha256": "ba2a54afb3016803bb17d11605cd452c2079b184a7b7390697b78178b4c96802"
+    },
+    {
+      "bytes": 1416,
+      "columns": 9,
+      "path": "DC85_supplemental/x/correlations/kneg_deu_1D_corr.txt",
+      "rows": 9,
+      "sha256": "b3b7bf42edd398d438076ab0d2b73cc82e08282d7bf92f5d92f4196602a6deb7"
+    },
+    {
+      "bytes": 1416,
+      "columns": 9,
+      "path": "DC85_supplemental/x/correlations/kpos_deu_1D_corr.txt",
+      "rows": 9,
+      "sha256": "0d64c8247514e89406bdbc5f1a1aa13ea22f4cfedb8b2aa27ca5709a1fb459f2"
+    },
+    {
+      "bytes": 1417,
+      "columns": 9,
+      "path": "DC85_supplemental/x/correlations/pineg_deu_1D_corr.txt",
+      "rows": 9,
+      "sha256": "80be19e9b578543bfba255bdea6593b7667b5ec0b8b2ed2b000bc42c5d731c8a"
+    },
+    {
+      "bytes": 1415,
+      "columns": 9,
+      "path": "DC85_supplemental/x/correlations/pineg_pro_1D_corr.txt",
+      "rows": 9,
+      "sha256": "96cbd1db27f2f8afd27f499f02445ee8ac1067bffc12cf4f08042d82bc0fb6d6"
+    },
+    {
+      "bytes": 1417,
+      "columns": 9,
+      "path": "DC85_supplemental/x/correlations/pipos_deu_1D_corr.txt",
+      "rows": 9,
+      "sha256": "6101f1fb87bdae54deb9c9a37a7fe0b9305584978cec50ffd3548e20bbee0841"
+    },
+    {
+      "bytes": 1415,
+      "columns": 9,
+      "path": "DC85_supplemental/x/correlations/pipos_pro_1D_corr.txt",
+      "rows": 9,
+      "sha256": "82bf38befa50e6da571d8d3b522797783cbdca337189e4880af52f9383e8a5a2"
+    },
+    {
+      "bytes": 1581,
+      "columns": 11,
+      "path": "DC85_supplemental/x/data_tables/kneg_deu_1D_A1Apar.txt",
+      "rows": 9,
+      "sha256": "259172f373f3d6e65fc5a39f94cb2edd86c1f2237a6f869214d1d58b6fa703a2"
+    },
+    {
+      "bytes": 1581,
+      "columns": 11,
+      "path": "DC85_supplemental/x/data_tables/kpos_deu_1D_A1Apar.txt",
+      "rows": 9,
+      "sha256": "e3849b5fd30c5b135206bdcfcb8b74648733752e0208665a2244e6a5a0f3e187"
+    },
+    {
+      "bytes": 1582,
+      "columns": 11,
+      "path": "DC85_supplemental/x/data_tables/pineg_deu_1D_A1Apar.txt",
+      "rows": 9,
+      "sha256": "f7178a61a2c47646ff37704d5afeaea64af73cce7d0f43b32a16cfa5f3be61c7"
+    },
+    {
+      "bytes": 1580,
+      "columns": 11,
+      "path": "DC85_supplemental/x/data_tables/pineg_pro_1D_A1Apar.txt",
+      "rows": 9,
+      "sha256": "86e0d9c950dec31bd7762421059fcda4774b6702830ae7c6b7c77d3f014d13e8"
+    },
+    {
+      "bytes": 1582,
+      "columns": 11,
+      "path": "DC85_supplemental/x/data_tables/pipos_deu_1D_A1Apar.txt",
+      "rows": 9,
+      "sha256": "d8d833ba6a18455b47d61e764bf46605841b68b0ad543af749ebd526db9aa269"
+    },
+    {
+      "bytes": 1580,
+      "columns": 11,
+      "path": "DC85_supplemental/x/data_tables/pipos_pro_1D_A1Apar.txt",
+      "rows": 9,
+      "sha256": "5b144cd45a4014a8c8afd5d90e67ce95f4051c66d2bdd18733dc60a0027ea047"
+    },
+    {
+      "bytes": 3648,
+      "columns": 18,
+      "path": "DC85_supplemental/xPt/correlations/kpos_deu_2D-xPt_corr.txt",
+      "rows": 18,
+      "sha256": "54d04092693cff13da202e500dd801b28a4ccbfe63e54a7949c3679f56fe5cd0"
+    },
+    {
+      "bytes": 3649,
+      "columns": 18,
+      "path": "DC85_supplemental/xPt/correlations/pineg_deu_2D-xPt_corr.txt",
+      "rows": 18,
+      "sha256": "f542467637cc73bb1ba650c28b0ffc9d317c958d7a70d11be8978b1b0d5fecbd"
+    },
+    {
+      "bytes": 3647,
+      "columns": 18,
+      "path": "DC85_supplemental/xPt/correlations/pineg_pro_2D-xPt_corr.txt",
+      "rows": 18,
+      "sha256": "a82373b80af55193b7073e64a804e69e431072d40e008159206bca5cb46dd61e"
+    },
+    {
+      "bytes": 3649,
+      "columns": 18,
+      "path": "DC85_supplemental/xPt/correlations/pipos_deu_2D-xPt_corr.txt",
+      "rows": 18,
+      "sha256": "96d88f77ccc3f33b116f66f42a7b1902113f22858918ee6d096aadcea552c70d"
+    },
+    {
+      "bytes": 3647,
+      "columns": 18,
+      "path": "DC85_supplemental/xPt/correlations/pipos_pro_2D-xPt_corr.txt",
+      "rows": 18,
+      "sha256": "f4b33c4b1bba38d0186ba39a06ffa42a09ff3c3c859f9fee5a3efa41c7db1f8b"
+    },
+    {
+      "bytes": 2778,
+      "columns": 13,
+      "path": "DC85_supplemental/xPt/data_tables/kneg_deu_2D-xPt_A1Apar.txt",
+      "rows": 18,
+      "sha256": "a33675749238a075de7c254605b2bb7ca15673587b9300361e32ca9604e94dd0"
+    },
+    {
+      "bytes": 2778,
+      "columns": 13,
+      "path": "DC85_supplemental/xPt/data_tables/kpos_deu_2D-xPt_A1Apar.txt",
+      "rows": 18,
+      "sha256": "713a6fb31f5a6e22afada1082db2b88595c0a857bcbb5b2ef023668c592b14d9"
+    },
+    {
+      "bytes": 2779,
+      "columns": 13,
+      "path": "DC85_supplemental/xPt/data_tables/pineg_deu_2D-xPt_A1Apar.txt",
+      "rows": 18,
+      "sha256": "7d4bb42f0fbd44a89683c6856b61f2e53cb66ea42fe1adc9176ff39f3017b6de"
+    },
+    {
+      "bytes": 2777,
+      "columns": 13,
+      "path": "DC85_supplemental/xPt/data_tables/pineg_pro_2D-xPt_A1Apar.txt",
+      "rows": 18,
+      "sha256": "ed6e4d4df380f9df49a0bd8eb642500d957824ddb07b70b37917ea5fdc5256e7"
+    },
+    {
+      "bytes": 2779,
+      "columns": 13,
+      "path": "DC85_supplemental/xPt/data_tables/pipos_deu_2D-xPt_A1Apar.txt",
+      "rows": 18,
+      "sha256": "915510272ae17ba651d2fd6833c24af7a3a3225a886d59d8d3675c36276f8f3a"
+    },
+    {
+      "bytes": 2777,
+      "columns": 13,
+      "path": "DC85_supplemental/xPt/data_tables/pipos_pro_2D-xPt_A1Apar.txt",
+      "rows": 18,
+      "sha256": "bece463032ae0bfe449183191d2121d4497edebea854786288a40ee5355628df"
+    },
+    {
+      "bytes": 4696,
+      "columns": 21,
+      "path": "DC85_supplemental/xz/correlations/kneg_deu_2D-xz_corr.txt",
+      "rows": 21,
+      "sha256": "14b52ac4116375c11ed6952c7a5b7a68256296f460598a68c0638fecc5319916"
+    },
+    {
+      "bytes": 4696,
+      "columns": 21,
+      "path": "DC85_supplemental/xz/correlations/kpos_deu_2D-xz_corr.txt",
+      "rows": 21,
+      "sha256": "90f5c9707a89e0b12271e04bd82eba62088e9feaad35863d5f2a49b7b8a55968"
+    },
+    {
+      "bytes": 4697,
+      "columns": 21,
+      "path": "DC85_supplemental/xz/correlations/pineg_deu_2D-xz_corr.txt",
+      "rows": 21,
+      "sha256": "c0959a951e4e0ae5efc66c3c9a7d8892add168b40d830583ebf4a8a657d4ea26"
+    },
+    {
+      "bytes": 4695,
+      "columns": 21,
+      "path": "DC85_supplemental/xz/correlations/pineg_pro_2D-xz_corr.txt",
+      "rows": 21,
+      "sha256": "3459b7c6a76e152bee5b209dcc71e0d9754a53762c3ddd4683f64a8b0db2accf"
+    },
+    {
+      "bytes": 4697,
+      "columns": 21,
+      "path": "DC85_supplemental/xz/correlations/pipos_deu_2D-xz_corr.txt",
+      "rows": 21,
+      "sha256": "58f5ef937028267bb473fe1f81b55b302faf98d11919607b112bf3fa2755ae07"
+    },
+    {
+      "bytes": 4695,
+      "columns": 21,
+      "path": "DC85_supplemental/xz/correlations/pipos_pro_2D-xz_corr.txt",
+      "rows": 21,
+      "sha256": "4776aa958d17ef6e5aa4b347436c6301ae76c277584983b25fac483ca9ed4502"
+    },
+    {
+      "bytes": 3115,
+      "columns": 13,
+      "path": "DC85_supplemental/xz/data_tables/kneg_deu_2D-xz_A1Apar.txt",
+      "rows": 21,
+      "sha256": "396dbee9dabf8ec5c5e5eec3d8bf293bffcf6f1390836980a0d36caf9d3237b0"
+    },
+    {
+      "bytes": 3115,
+      "columns": 13,
+      "path": "DC85_supplemental/xz/data_tables/kpos_deu_2D-xz_A1Apar.txt",
+      "rows": 21,
+      "sha256": "42774aaab53caefa86e1c375ac6b8820b7e9ca56e27ddc20ef76ed5f9ea5df01"
+    },
+    {
+      "bytes": 3117,
+      "columns": 13,
+      "path": "DC85_supplemental/xz/data_tables/pineg_deu_2D-xz_A1Apar.txt",
+      "rows": 21,
+      "sha256": "c3714cfb63b4f41ec424150d150c5c4e0c7ecdb5745998b6c7573ff19afe18c5"
+    },
+    {
+      "bytes": 3114,
+      "columns": 13,
+      "path": "DC85_supplemental/xz/data_tables/pineg_pro_2D-xz_A1Apar.txt",
+      "rows": 21,
+      "sha256": "555dfc1f963bad1d6cb157be7d8a4cc61f46a1afe949abcaa0ba408739b1818d"
+    },
+    {
+      "bytes": 3116,
+      "columns": 13,
+      "path": "DC85_supplemental/xz/data_tables/pipos_deu_2D-xz_A1Apar.txt",
+      "rows": 21,
+      "sha256": "0f65cb5ed9f8870cd2ba4dd6bb0fb735323a65531188e45c49df9ce5658c109e"
+    },
+    {
+      "bytes": 3114,
+      "columns": 13,
+      "path": "DC85_supplemental/xz/data_tables/pipos_pro_2D-xz_A1Apar.txt",
+      "rows": 21,
+      "sha256": "70b156fafbcffc0117f8306aef1e1a7d8b523c913f89aa281f7042701d7f2876"
+    },
+    {
+      "bytes": 55567,
+      "columns": 78,
+      "path": "DC85_supplemental/xzPt/correlations/kneg_deu_3D_corr.txt",
+      "rows": 78,
+      "sha256": "561eb6b1474b69b7559a13b515808bdebac98b2c021e1cb618abf5c5a2b5a1bf"
+    },
+    {
+      "bytes": 56980,
+      "columns": 79,
+      "path": "DC85_supplemental/xzPt/correlations/kpos_deu_3D_corr.txt",
+      "rows": 79,
+      "sha256": "a51328e168660173728b2dd23846cfb6f88ca9990ce51eaeccc146133a2d3ecb"
+    },
+    {
+      "bytes": 58413,
+      "columns": 80,
+      "path": "DC85_supplemental/xzPt/correlations/pineg_deu_3D_corr.txt",
+      "rows": 80,
+      "sha256": "d806bf169b7c3e9920c1dd934eb64e436a0c2e2a57ff629e790699004bf5bd1f"
+    },
+    {
+      "bytes": 58410,
+      "columns": 80,
+      "path": "DC85_supplemental/xzPt/correlations/pineg_pro_3D_corr.txt",
+      "rows": 80,
+      "sha256": "95e75835374d76890905198451792dd17e25f2d806bd17be65d3e80c59a49112"
+    },
+    {
+      "bytes": 58412,
+      "columns": 80,
+      "path": "DC85_supplemental/xzPt/correlations/pipos_deu_3D_corr.txt",
+      "rows": 80,
+      "sha256": "44d7ae5a8d5f0b122b065493c4b191c692107e75b6a0c9c153ce1e7583eec392"
+    },
+    {
+      "bytes": 58410,
+      "columns": 80,
+      "path": "DC85_supplemental/xzPt/correlations/pipos_pro_3D_corr.txt",
+      "rows": 80,
+      "sha256": "1255ce6f3574af87366da6c4a61f087df38b4c7546d5b22959ce571d518dd716"
+    },
+    {
+      "bytes": 8927,
+      "columns": 12,
+      "path": "DC85_supplemental/xzPt/data_tables/kneg_deu_3D_A1Apar.txt",
+      "rows": 78,
+      "sha256": "407181f735ff94bb7a4b77bc5d09fb5c79ca2e161e57264a9798f0e991522b6e"
+    },
+    {
+      "bytes": 9032,
+      "columns": 12,
+      "path": "DC85_supplemental/xzPt/data_tables/kpos_deu_3D_A1Apar.txt",
+      "rows": 79,
+      "sha256": "cc45e4ce031286630d93c68287b3231f0b60d6a3ee817ceeaeae04050969ffbc"
+    },
+    {
+      "bytes": 9138,
+      "columns": 12,
+      "path": "DC85_supplemental/xzPt/data_tables/pineg_deu_3D_A1Apartxt.txt",
+      "rows": 80,
+      "sha256": "02a9d052cea7f24dcbb868baf2ab88012b178f4ab9594e0d38af5aa3b8982cfc"
+    },
+    {
+      "bytes": 9136,
+      "columns": 12,
+      "path": "DC85_supplemental/xzPt/data_tables/pineg_pro_3D_A1Apar.txt",
+      "rows": 80,
+      "sha256": "7978df7a16db991db9a48dfc2ae488f129f75a4fa94420e02b90e5419ab8e6a9"
+    },
+    {
+      "bytes": 9138,
+      "columns": 12,
+      "path": "DC85_supplemental/xzPt/data_tables/pipos_deu_3D_A1Apar.txt",
+      "rows": 80,
+      "sha256": "72523b157df1a4a5447a29781dfe88d6e2ef772c8c14ab8e104d2a512273a271"
+    },
+    {
+      "bytes": 9135,
+      "columns": 12,
+      "path": "DC85_supplemental/xzPt/data_tables/pipos_pro_3D_A1Apar.txt",
+      "rows": 80,
+      "sha256": "dcbfd21f223f514638ef057f2a03523ce0d5312636772a6d42c59698ba68bae9"
+    }
+  ],
+  "publication_doi": "10.1103/PhysRevD.99.112001",
+  "retrieved": "2026-07-22",
+  "schema_version": 1,
+  "source": "official APS supplemental archive",
+  "url": "https://journals.aps.org/prd/supplemental/10.1103/PhysRevD.99.112001/DB12134_supplemental.zip"
+}

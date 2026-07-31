@@ -1,0 +1,312 @@
+{
+  "measurement": "STAR_2021_I1850855",
+  "record_doi": "10.17182/hepdata.104836.v1",
+  "record_path": "data/phenomenology/STAR_2021_I1850855/raw/record.json",
+  "record_sha256": "15f2643df4d305191de59350d15a34356f7e5feeee9e904a81b1cce8053b9b1a",
+  "record_version": 1,
+  "retrieved": "2026-07-22",
+  "schema_version": 1,
+  "source": "HEPData",
+  "tables": [
+    {
+      "doi": "10.17182/hepdata.104836.v1/t1",
+      "headers": [
+        "Inclusive jet transverse momentum $p_T$ at the detector level [GeV/$c$]",
+        "Inclusive jet transverse momentum $p_T$ at the parton level [GeV/$c$]",
+        "Jet yield for the JP2 trigger condition"
+      ],
+      "name": "Figure 1 JP2",
+      "number": 1,
+      "path": "data/phenomenology/STAR_2021_I1850855/raw/t01.json",
+      "rows": 8,
+      "sha256": "ccc303cd86b0175da4a86007139a5bca5e5cdec40110e46d9c443738d1dc35fc",
+      "url": "https://www.hepdata.net/record/data/104836/1034709/1"
+    },
+    {
+      "doi": "10.17182/hepdata.104836.v1/t2",
+      "headers": [
+        "Inclusive jet transverse momentum $p_T$ at the detector level [GeV/$c$]",
+        "Inclusive jet transverse momentum $p_T$ at the parton level [GeV/$c$]",
+        "Jet yield for the JP1 trigger condition"
+      ],
+      "name": "Figure 1 JP1",
+      "number": 2,
+      "path": "data/phenomenology/STAR_2021_I1850855/raw/t02.json",
+      "rows": 9,
+      "sha256": "d9b6cf8ad6343d34e202d811d3d0960bd475da24387fdb0d9417b88ea523a2cc",
+      "url": "https://www.hepdata.net/record/data/104836/1034710/1"
+    },
+    {
+      "doi": "10.17182/hepdata.104836.v1/t3",
+      "headers": [
+        "Dijet invariant mass $M_{inv}$ at the detector level [GeV/$c^2$]",
+        "Dijet invariant mass $M_{inv}$ at the parton level [GeV/$c^2$]",
+        "Dijet yield for the JP1 trigger condition",
+        "Dijet yield for the JP1 trigger condition for embedded simulation",
+        "Dijet yield for the JP2 trigger condition",
+        "Dijet yield for the JP2 trigger condition for embedded simulation"
+      ],
+      "name": "Figure 2",
+      "number": 3,
+      "path": "data/phenomenology/STAR_2021_I1850855/raw/t03.json",
+      "rows": 7,
+      "sha256": "8de8b6c226712fbb62de8359be770e32630f5a22758a039d5cdd97458ea98a10",
+      "url": "https://www.hepdata.net/record/data/104836/1034711/1"
+    },
+    {
+      "doi": "10.17182/hepdata.104836.v1/t4",
+      "headers": [
+        "bin",
+        "Inclusive jet transverse momentum $p_T$ at the parton level [GeV/$c$]",
+        "Double spin asymmetry $A_{LL}$"
+      ],
+      "name": "Table 1 top",
+      "number": 4,
+      "path": "data/phenomenology/STAR_2021_I1850855/raw/t04.json",
+      "rows": 11,
+      "sha256": "5188852abd9b0f11dba9e27849d7d4fdefedbcad6f3789aac2db7a15dbf8d3db",
+      "url": "https://www.hepdata.net/record/data/104836/1034712/1"
+    },
+    {
+      "doi": "10.17182/hepdata.104836.v1/t5",
+      "headers": [
+        "bin",
+        "Inclusive jet transverse momentum $p_T$ at the parton level [GeV/$c$]",
+        "Double spin asymmetry $A_{LL}$"
+      ],
+      "name": "Table 1 bottom",
+      "number": 5,
+      "path": "data/phenomenology/STAR_2021_I1850855/raw/t05.json",
+      "rows": 11,
+      "sha256": "bf164f8959fba239a79916846b3cebcaa986fbc78f0fba0e9d4137811bb4bb70",
+      "url": "https://www.hepdata.net/record/data/104836/1034713/1"
+    },
+    {
+      "doi": "10.17182/hepdata.104836.v1/t6",
+      "headers": [
+        "bin",
+        "Dijet invariant mass $M_{inv}$ at the parton level [GeV/$c^2$]",
+        "Dijet $M_{inv}/\\sqrt{s}$ at the parton level",
+        "Double spin asymmetry $A_{LL}$"
+      ],
+      "name": "Table 2 top",
+      "number": 6,
+      "path": "data/phenomenology/STAR_2021_I1850855/raw/t06.json",
+      "rows": 7,
+      "sha256": "0072a0e8c880f85a0ce1cd9919eccd767852a7c0e936b38db610fb92d4ed351e",
+      "url": "https://www.hepdata.net/record/data/104836/1034714/1"
+    },
+    {
+      "doi": "10.17182/hepdata.104836.v1/t7",
+      "headers": [
+        "bin",
+        "Dijet invariant mass $M_{inv}$ at the parton level [GeV/$c$]",
+        "Dijet $M_{inv}/\\sqrt{s}$ at the parton level",
+        "Double spin asymmetry $A_{LL}$"
+      ],
+      "name": "Table 2 bottom",
+      "number": 7,
+      "path": "data/phenomenology/STAR_2021_I1850855/raw/t07.json",
+      "rows": 7,
+      "sha256": "7345e14bde02b292fba2e1e52022cbfcbe2f9eb9e6c816d04439f842ef93bc0a",
+      "url": "https://www.hepdata.net/record/data/104836/1034715/1"
+    },
+    {
+      "doi": "10.17182/hepdata.104836.v1/t8",
+      "headers": [
+        "bin",
+        "Inclusive jet transverse momentum $p_T$ at the parton level [GeV/$c$]",
+        "Inclusive jet $x_T = 2p_T/\\sqrt{2}$ at the parton level",
+        "Double spin asymmetry $A_{LL}$"
+      ],
+      "name": "Figure 3",
+      "number": 8,
+      "path": "data/phenomenology/STAR_2021_I1850855/raw/t08.json",
+      "rows": 11,
+      "sha256": "7fede129c996abeefc87368b9b90c569ad8cb3ae23245113926f5e04db2d7633",
+      "url": "https://www.hepdata.net/record/data/104836/1034716/1"
+    },
+    {
+      "doi": "10.17182/hepdata.104836.v1/t9",
+      "headers": [
+        "Inclusive jet transverse momentum $p_T$ at the parton level ($0.5<|\\eta|<1$) [GeV/$c$]",
+        "Inclusive jet transverse momentum $p_T$ at the parton level ($0.5<|\\eta|<1$) [GeV/$c$]__1",
+        "Correlation"
+      ],
+      "name": "Table 1 Supplemental Material",
+      "number": 9,
+      "path": "data/phenomenology/STAR_2021_I1850855/raw/t09.json",
+      "rows": 66,
+      "sha256": "b2a829b43e60cb688caead1d45f31fc4aa4ad99f4cca92fea28cdc0b59235f43",
+      "url": "https://www.hepdata.net/record/data/104836/1034717/1"
+    },
+    {
+      "doi": "10.17182/hepdata.104836.v1/t10",
+      "headers": [
+        "Inclusive jet transverse momentum $p_T$ at the parton level ($|\\eta|<0.5$) [GeV/$c$]",
+        "Inclusive jet transverse momentum $p_T$ at the parton level ($|\\eta|<0.5$) [GeV/$c$]__1",
+        "Correlation"
+      ],
+      "name": "Table 2 Supplemental Material",
+      "number": 10,
+      "path": "data/phenomenology/STAR_2021_I1850855/raw/t10.json",
+      "rows": 66,
+      "sha256": "419ff8a73137d797e49ee49cb0b6923a35600d37109618531a425ee77a2d3dfd",
+      "url": "https://www.hepdata.net/record/data/104836/1034718/1"
+    },
+    {
+      "doi": "10.17182/hepdata.104836.v1/t11",
+      "headers": [
+        "Inclusive jet transverse momentum $p_T$ at the parton level ($|\\eta|<1$) [GeV/$c$]",
+        "Inclusive jet transverse momentum $p_T$ at the parton level ($|\\eta|<1$) [GeV/$c$]__1",
+        "Correlation"
+      ],
+      "name": "Table 3 Supplemental Material",
+      "number": 11,
+      "path": "data/phenomenology/STAR_2021_I1850855/raw/t11.json",
+      "rows": 66,
+      "sha256": "ad715418aea35aebb1bed01ad8352f443950ad50b2f6f515c6b8fd9b676fcdcf",
+      "url": "https://www.hepdata.net/record/data/104836/1034719/1"
+    },
+    {
+      "doi": "10.17182/hepdata.104836.v1/t12",
+      "headers": [
+        "Inclusive jet transverse momentum $p_T$ at the parton level ($|\\eta|<0.5$) [GeV/$c$]",
+        "Inclusive jet transverse momentum $p_T$ at the parton level ($0.5<|\\eta|<1$) [GeV/$c$]",
+        "Correlation"
+      ],
+      "name": "Table 4 Supplemental Material",
+      "number": 12,
+      "path": "data/phenomenology/STAR_2021_I1850855/raw/t12.json",
+      "rows": 121,
+      "sha256": "abdad6f283e53f4474379491542e50e4c2663d6633cb6f476f828d4b25d995a3",
+      "url": "https://www.hepdata.net/record/data/104836/1034720/1"
+    },
+    {
+      "doi": "10.17182/hepdata.104836.v1/t13",
+      "headers": [
+        "Inclusive jet transverse momentum $p_T$ at the parton level ($0.5<|\\eta|<1$) [GeV/$c$]",
+        "Dijet invariant mass $M_{inv}$ at the parton level ($\\textrm{sign}(\\eta_1) = \\textrm{sign}(\\eta_2)$) [GeV/$c^2$]",
+        "Correlation"
+      ],
+      "name": "Table 5 Supplemental Material",
+      "number": 13,
+      "path": "data/phenomenology/STAR_2021_I1850855/raw/t13.json",
+      "rows": 77,
+      "sha256": "c8618df633d92a05ac627c32bec54bf470d7f71fe13ca2877e7e8e57281e130e",
+      "url": "https://www.hepdata.net/record/data/104836/1034721/1"
+    },
+    {
+      "doi": "10.17182/hepdata.104836.v1/t14",
+      "headers": [
+        "Inclusive jet transverse momentum $p_T$ at the parton level ($0.5<|\\eta|<1$) [GeV/$c$]",
+        "Dijet invariant mass $M_{inv}$ at the parton level ($\\textrm{sign}(\\eta_1) \\neq \\textrm{sign}(\\eta_2)$) [GeV/$c^2$]",
+        "Correlation"
+      ],
+      "name": "Table 6 Supplemental Material",
+      "number": 14,
+      "path": "data/phenomenology/STAR_2021_I1850855/raw/t14.json",
+      "rows": 77,
+      "sha256": "3f6f2557fff856d32a2c928ddf27305d02b032a3a82869fce8d9497ca66f88ba",
+      "url": "https://www.hepdata.net/record/data/104836/1034722/1"
+    },
+    {
+      "doi": "10.17182/hepdata.104836.v1/t15",
+      "headers": [
+        "Inclusive jet transverse momentum $p_T$ at the parton level ($|\\eta|<0.5$) [GeV/$c$]",
+        "Dijet invariant mass $M_{inv}$ at the parton level ($\\textrm{sign}(\\eta_1) = \\textrm{sign}(\\eta_2)$) [GeV/$c^2$]",
+        "Correlation"
+      ],
+      "name": "Table 7 Supplemental Material",
+      "number": 15,
+      "path": "data/phenomenology/STAR_2021_I1850855/raw/t15.json",
+      "rows": 77,
+      "sha256": "9c791abc53e3b9677f55b574214ad2937e5e999ebcf1958b81f7858d5a9b9651",
+      "url": "https://www.hepdata.net/record/data/104836/1034723/1"
+    },
+    {
+      "doi": "10.17182/hepdata.104836.v1/t16",
+      "headers": [
+        "Inclusive jet transverse momentum $p_T$ at the parton level ($|\\eta|<0.5$) [GeV/$c$]",
+        "Dijet invariant mass $M_{inv}$ at the parton level ($\\textrm{sign}(\\eta_1) \\neq \\textrm{sign}(\\eta_2)$) [GeV/$c^2$]",
+        "Correlation"
+      ],
+      "name": "Table 8 Supplemental Material",
+      "number": 16,
+      "path": "data/phenomenology/STAR_2021_I1850855/raw/t16.json",
+      "rows": 77,
+      "sha256": "7e0ab590a8c619689b59a050b22c5a3c26062e1ced8a50be240f57f9cfd39d6f",
+      "url": "https://www.hepdata.net/record/data/104836/1034724/1"
+    },
+    {
+      "doi": "10.17182/hepdata.104836.v1/t17",
+      "headers": [
+        "Inclusive jet transverse momentum $p_T$ at the parton level ($|\\eta|<1$) [GeV/$c$]",
+        "Dijet invariant mass $M_{inv}$ at the parton level ($\\textrm{sign}(\\eta_1) = \\textrm{sign}(\\eta_2)$) [GeV/$c^2$]",
+        "Correlation"
+      ],
+      "name": "Table 9 Supplemental Material",
+      "number": 17,
+      "path": "data/phenomenology/STAR_2021_I1850855/raw/t17.json",
+      "rows": 77,
+      "sha256": "54d9e09d67f9dabe1430efe23d3530b91d78fb67dca57076bb2a4ca0df2c62b1",
+      "url": "https://www.hepdata.net/record/data/104836/1034725/1"
+    },
+    {
+      "doi": "10.17182/hepdata.104836.v1/t18",
+      "headers": [
+        "Inclusive jet transverse momentum $p_T$ at the parton level ($|\\eta|<1$) [GeV/$c$]",
+        "Dijet invariant mass $M_{inv}$ at the parton level ($\\textrm{sign}(\\eta_1) \\neq \\textrm{sign}(\\eta_2)$) [GeV/$c^2$]",
+        "Correlation"
+      ],
+      "name": "Table 10 Supplemental Material",
+      "number": 18,
+      "path": "data/phenomenology/STAR_2021_I1850855/raw/t18.json",
+      "rows": 77,
+      "sha256": "f1a18ea9f2cdd683b2d04e4bdd533c1ae1829eb4197efa8c235a45aa65034f00",
+      "url": "https://www.hepdata.net/record/data/104836/1034726/1"
+    },
+    {
+      "doi": "10.17182/hepdata.104836.v1/t19",
+      "headers": [
+        "Dijet invariant mass $M_{inv}$ at the parton level ($\\textrm{sign}(\\eta_1) = \\textrm{sign}(\\eta_2)$) [GeV/$c^2$]",
+        "Dijet invariant mass $M_{inv}$ at the parton level ($\\textrm{sign}(\\eta_1) = \\textrm{sign}(\\eta_2)$) [GeV/$c^2$]__1",
+        "Correlation"
+      ],
+      "name": "Table 11 Supplemental Material",
+      "number": 19,
+      "path": "data/phenomenology/STAR_2021_I1850855/raw/t19.json",
+      "rows": 28,
+      "sha256": "38364ea7650027d0f213902965777a8946cfecaeb8ec4745681d811dddcbe45e",
+      "url": "https://www.hepdata.net/record/data/104836/1034727/1"
+    },
+    {
+      "doi": "10.17182/hepdata.104836.v1/t20",
+      "headers": [
+        "Dijet invariant mass $M_{inv}$ at the parton level ($\\textrm{sign}(\\eta_1) \\neq \\textrm{sign}(\\eta_2)$) [GeV/$c^2$]",
+        "Dijet invariant mass $M_{inv}$ at the parton level ($\\textrm{sign}(\\eta_1) \\neq \\textrm{sign}(\\eta_2)$) [GeV/$c^2$]__1",
+        "Correlation"
+      ],
+      "name": "Table 12 Supplemental Material",
+      "number": 20,
+      "path": "data/phenomenology/STAR_2021_I1850855/raw/t20.json",
+      "rows": 28,
+      "sha256": "1dd2bd296cb0512753b096266e8c3efec1fa8526e5e4dd4fe323a9b2e36c3b6e",
+      "url": "https://www.hepdata.net/record/data/104836/1034728/1"
+    },
+    {
+      "doi": "10.17182/hepdata.104836.v1/t21",
+      "headers": [
+        "Dijet invariant mass $M_{inv}$ at the parton level ($\\textrm{sign}(\\eta_1) \\neq \\textrm{sign}(\\eta_2)$) [GeV/$c^2$]",
+        "Dijet invariant mass $M_{inv}$ at the parton level ($\\textrm{sign}(\\eta_1) = \\textrm{sign}(\\eta_2)$) [GeV/$c^2$]",
+        "Correlation"
+      ],
+      "name": "Table 13 Supplemental Material",
+      "number": 21,
+      "path": "data/phenomenology/STAR_2021_I1850855/raw/t21.json",
+      "rows": 49,
+      "sha256": "d14d7cd3fa11480a5281c05e82e511bbbe01f9006425078fb895a0158bc67e47",
+      "url": "https://www.hepdata.net/record/data/104836/1034729/1"
+    }
+  ]
+}

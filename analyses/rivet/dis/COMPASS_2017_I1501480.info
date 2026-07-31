@@ -1,0 +1,50 @@
+Name: COMPASS_2017_I1501480
+Year: 2017
+Summary: Deuteron virtual-photon asymmetry in 160 GeV polarized-muon fixed-target DIS
+Experiment: COMPASS
+Collider: CERN SPS fixed target
+InspireID: 1501480
+Status: UNVALIDATED
+Reentrant: true
+Authors:
+ - Andreas Papaefstathiou <apapaefs@kennesaw.edu>
+References:
+ - Phys.Lett.B 769 (2017) 34-41
+ - arXiv:1612.00620
+RunInfo: Requires independent mu+p and mu+n samples for PP, PM, MP, and MM and separate POSNLO/NEGNLO contributions.
+NumEvents: 100000
+NeedsCrossSection: yes
+Beams: [[ANTIMUON, PROTON], [ANTIMUON, NEUTRON]]
+Energies: [[160.0, 0.938272], [160.0, 0.939565]]
+Description:
+  Implements the final one-dimensional COMPASS deuteron A1 measurement
+  through proton and neutron target components. Laboratory kinematics use
+  the highest-energy prompt outgoing positive muon, excluding leptons from
+  hadron decays, and require Q2 > 1 GeV2, 0.1 < y < 0.9, W > 4 GeV,
+  0.004 < x < 0.7, and
+  Q2 <= 100 GeV2. A Q2 > 4 GeV2 validation selection is also supplied.
+  The external campaign postprocessor constructs the deuteron in an
+  impulse approximation and applies 1-1.5 omegaD = 0.925 to the polarized
+  numerator. D includes the muon mass and E143 R1998. The prediction
+  neglects eta A2, tensor b1, binding, off-shell, and shadowing effects.
+Keywords:
+ - DIS
+ - polarized
+ - fixed-target
+ - muon
+ - deuteron
+ - asymmetry
+BibKey: COMPASS:2016niu
+BibTeX: '@article{COMPASS:2016niu,
+  author = "Adolph, C. and others",
+  collaboration = "COMPASS",
+  title = "{Final COMPASS results on the deuteron spin-dependent structure function g1d and the Bjorken sum rule}",
+  eprint = "1612.00620",
+  archivePrefix = "arXiv",
+  primaryClass = "hep-ex",
+  doi = "10.1016/j.physletb.2017.03.018",
+  journal = "Phys. Lett. B",
+  volume = "769",
+  pages = "34--41",
+  year = "2017"
+}'

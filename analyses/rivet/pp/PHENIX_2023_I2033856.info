@@ -1,0 +1,28 @@
+Name: PHENIX_2023_I2033856
+Year: 2023
+Summary: Inclusive and isolated prompt photons and isolated-photon ALL at 510 GeV
+Experiment: PHENIX
+Collider: RHIC
+InspireID: 2033856
+Status: UNVALIDATED
+Reentrant: true
+Authors:
+ - Andreas Papaefstathiou <apapaefs@kennesaw.edu>
+References:
+ - Phys.Rev.Lett. 130 (2023) 251901
+RunInfo: Requires independent PP, PM, MP, and MM polarized pp samples.
+NumEvents: 100000
+NeedsCrossSection: yes
+Beams: [[p+, p+]]
+Energies: [[255.0, 255.0]]
+Description:
+  Fills every prompt photon with |eta| < 0.25. Isolation uses R=0.5 and
+  requires the accepted cone energy other than the photon to be below 10% of
+  its energy, with 0.2 GeV/c charged and 0.3 GeV neutral thresholds. Both
+  inclusive and isolated invariant cross sections and isolated-photon
+  helicity yields are provided for normalized four-helicity combination.
+Keywords:
+ - polarized
+ - proton-proton
+ - photon
+ - asymmetry

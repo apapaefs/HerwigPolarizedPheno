@@ -1,0 +1,9 @@
+# -*- ThePEG-repository -*-
+read ../HERMES_2007_I726689_LEGACY-Common.in
+set /Herwig/Partons/EPPolarizedExtractor:FirstLongitudinalPolarization 1
+set /Herwig/Partons/EPPolarizedExtractor:SecondLongitudinalPolarization -1
+set /Herwig/MatrixElements/PowhegMEDISNCPol:Contribution PositiveNLO
+set /Herwig/MatrixElements/PowhegMEDISNCPol:UsePOWHEGRealSpinVertex No
+set /Herwig/Shower/ShowerHandler:SpinCorrelations No
+cd /Herwig/Generators
+saverun HERMES_2007_I726689_LEGACY_NOSHOWERSPIN_PM-POSNLO EventGenerator

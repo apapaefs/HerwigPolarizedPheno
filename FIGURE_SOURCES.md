@@ -1,8 +1,10 @@
 # Figure provenance
 
-The figures under `figures/paper-central-3m-20260723/` are copied without
+The figures under `figures/paper-central-3m-20260723/` were copied without
 numerical modification from the `paper_central_3m_20260723` campaign in the
-HerwigPol `DISPOL/campaigns/` area.
+former HerwigPol `DISPOL/campaigns/` run area. Generated campaigns are not
+vendored in this repository; the retained figure files and this manifest are
+the manuscript provenance record.
 
 The displayed prediction uses the nominal polarized full-spin family, the
 central NNPDF4.0 and NNPDFpol2.0 members, and the central hard scale.  The DIS

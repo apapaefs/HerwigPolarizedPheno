@@ -1,0 +1,12 @@
+# -*- ThePEG-repository -*-
+read ../COMPASS_2017_I1501480-Common.in
+set /Herwig/EventHandlers/EventHandler:BeamB /Herwig/Particles/p+
+set /Herwig/EventHandlers/FixedTargetLuminosity:TargetParticle /Herwig/Particles/p+
+set /Herwig/Partons/EPPolarizedExtractor:FirstLongitudinalPolarization -1
+set /Herwig/Partons/EPPolarizedExtractor:SecondLongitudinalPolarization -1
+erase /Herwig/MatrixElements/SubProcess:MatrixElements 0
+insert /Herwig/MatrixElements/SubProcess:MatrixElements[0] /Herwig/MatrixElements/MEDISNCPol
+set /Herwig/MatrixElements/MEDISNCPol:GammaZ Gamma
+set /Herwig/Shower/ShowerHandler:HardEmission None
+cd /Herwig/Generators
+saverun COMPASS_2017_I1501480_LO_P_MM-LO EventGenerator

@@ -1,0 +1,53 @@
+Name: HERMES_2019_I1698889
+Year: 2019
+Summary: Identified-hadron longitudinal double-spin asymmetries in HERMES SIDIS
+Experiment: HERMES
+Collider: HERA fixed target
+InspireID: 1698889
+Status: UNVALIDATED
+Reentrant: true
+Authors:
+ - Andreas Papaefstathiou <apapaefs@kennesaw.edu>
+References:
+ - Phys.Rev.D 99 (2019) 112001
+ - arXiv:1810.07054
+RunInfo: >
+  Requires independent e+p and e+n samples for all four physical
+  lepton-target helicities, with POSNLO and NEGNLO generated separately.
+NumEvents: 100000
+NeedsCrossSection: yes
+Beams: [[e+, p+], [e+, n]]
+Energies: [[27.6, 0.938272], [27.6, 0.939565]]
+Description: >
+  Reconstructs fixed-target DIS and hadron kinematics from the highest-energy
+  prompt outgoing positron, excluding leptons from hadron decays. It applies
+  the main Born-level truth cuts using a circular lepton-angle envelope, not
+  the rectangular year-dependent HERMES spectrometer response, and fills normalized
+  identified-pion and identified-kaon yields in the one-, two-, and
+  three-dimensional HERMES grids. Proton and neutron samples are retained
+  separately for the deuteron impulse approximation. Charge-difference
+  observables are formed externally from normalized positive- and
+  negative-hadron yields; auxiliary histograms retain their same-event
+  covariance. The optional azimuthal output is a helicity-summed unpolarized
+  yield moment; it is diagnostic-only and is not overlaid on the published
+  A_parallel(phi) cosine-fit amplitude.
+Keywords:
+ - DIS
+ - SIDIS
+ - polarized
+ - fixed-target
+ - identified hadrons
+ - asymmetry
+BibKey: HERMES:2018nqw
+BibTeX: '@article{HERMES:2018nqw,
+  author = "Airapetian, A. and others",
+  collaboration = "HERMES",
+  title = "{Longitudinal double-spin asymmetries in semi-inclusive deep-inelastic scattering of electrons and positrons by protons and deuterons}",
+  eprint = "1810.07054",
+  archivePrefix = "arXiv",
+  doi = "10.1103/PhysRevD.99.112001",
+  journal = "Phys. Rev. D",
+  volume = "99",
+  pages = "112001",
+  year = "2019"
+}'

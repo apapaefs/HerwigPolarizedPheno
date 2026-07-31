@@ -1,0 +1,34 @@
+Name: HERMES_2007_I726689_LEGACY
+Year: 2007
+Summary: HERMES Table 7 Born longitudinal proton asymmetry in 45 (x,Q2) bins
+Experiment: HERMES
+Collider: HERA fixed target
+InspireID: 726689
+Status: UNVALIDATED
+Reentrant: true
+Authors:
+ - Andreas Papaefstathiou <apapaefs@kennesaw.edu>
+References:
+ - Phys.Rev.D 75 (2007) 012007
+ - hep-ex/0609039
+RunInfo: Requires independent e+p samples for PP, PM, MP, and MM helicities.
+NumEvents: 100000
+NeedsCrossSection: yes
+Beams: [[e+, p+]]
+Energies: [[27.6, 0.938272]]
+Description:
+  Implements 19 x slices and 45 measured Born A_parallel points for
+  0.18 < Q2 < 20 GeV2, 0.1 < y < 0.91, W2 > 3.24 GeV2, and
+  0.04 < theta < 0.22. The highest-energy prompt outgoing positron is used,
+  excluding leptons from hadron decays. Generator scales below 1 GeV are
+  frozen by the run card, so only the theory prediction there is a
+  nonperturbative extrapolation; the data are measurements. The per-x Q2
+  cell boundaries used by the code were not found in the audited paper,
+  HEPData record, or official archive and remain unverified.
+Keywords:
+ - DIS
+ - polarized
+ - fixed-target
+ - asymmetry
+BibKey: HERMES:2006jyl
+BibTeX: '@article{HERMES:2006jyl, collaboration="HERMES", journal="Phys. Rev. D", volume="75", pages="012007", year="2007"}'

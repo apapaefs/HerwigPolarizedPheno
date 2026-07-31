@@ -1,0 +1,9 @@
+# -*- ThePEG-repository -*-
+read COMPASS_2017_I1501480-Common.in
+set /Herwig/EventHandlers/EventHandler:BeamB /Herwig/Particles/n0
+set /Herwig/EventHandlers/FixedTargetLuminosity:TargetParticle /Herwig/Particles/n0
+set /Herwig/Partons/EPPolarizedExtractor:FirstLongitudinalPolarization 1
+set /Herwig/Partons/EPPolarizedExtractor:SecondLongitudinalPolarization 1
+set /Herwig/MatrixElements/PowhegMEDISNCPol:Contribution PositiveNLO
+cd /Herwig/Generators
+saverun COMPASS_2017_I1501480_N_PP-POSNLO EventGenerator

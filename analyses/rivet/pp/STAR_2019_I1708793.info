@@ -1,0 +1,30 @@
+Name: STAR_2019_I1708793
+Year: 2019
+Summary: Fiducial W+, W-, and Z/gamma* longitudinal-spin yields at 510 GeV
+Experiment: STAR
+Collider: RHIC
+InspireID: 1708793
+Status: UNVALIDATED
+Reentrant: true
+Authors:
+ - Andreas Papaefstathiou <apapaefs@kennesaw.edu>
+References:
+ - Phys.Rev.D 99 (2019) 051102
+ - arXiv:1812.04817
+RunInfo: Requires PP, PM, MP, and MM polarized pp samples for each hard channel.
+NumEvents: 100000
+NeedsCrossSection: yes
+Beams: [[p+, p+]]
+Energies: [[255.0, 255.0]]
+Description:
+  Uses prompt electrons dressed with photons in R=0.1. W candidates satisfy
+  25 < ET < 50 GeV and |eta| < 1.5. Z/gamma* candidates contain two isolated
+  opposite-charge dressed electrons with ET > 14 GeV, |eta| < 1.1, and
+  70 < mee < 110 GeV. Physical-helicity yields are combined externally with
+  beam exchange and eta reflection.
+Keywords:
+ - polarized
+ - proton-proton
+ - W
+ - Drell-Yan
+ - asymmetry

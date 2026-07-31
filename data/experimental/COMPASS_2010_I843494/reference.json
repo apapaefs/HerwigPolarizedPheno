@@ -1,0 +1,230 @@
+{
+  "bin_edges": [
+    0.004,
+    0.005,
+    0.006,
+    0.008,
+    0.01,
+    0.02,
+    0.03,
+    0.04,
+    0.06,
+    0.1,
+    0.15,
+    0.2,
+    0.25,
+    0.35,
+    0.5,
+    0.7
+  ],
+  "measurement": "COMPASS_2010_I843494",
+  "observable": "A1p",
+  "points": [
+    {
+      "bin": 1,
+      "q2_mean": 1.1,
+      "stat": 0.017,
+      "systematic_combined": 0.008,
+      "systematics": {
+        "published_total": 0.008
+      },
+      "value": 0.006,
+      "x_high": 0.005,
+      "x_low": 0.004,
+      "x_mean": 0.0046
+    },
+    {
+      "bin": 2,
+      "q2_mean": 1.2,
+      "stat": 0.013,
+      "systematic_combined": 0.006,
+      "systematics": {
+        "published_total": 0.006
+      },
+      "value": 0.019,
+      "x_high": 0.006,
+      "x_low": 0.005,
+      "x_mean": 0.0055
+    },
+    {
+      "bin": 3,
+      "q2_mean": 1.37,
+      "stat": 0.009,
+      "systematic_combined": 0.005,
+      "systematics": {
+        "published_total": 0.005
+      },
+      "value": 0.035,
+      "x_high": 0.008,
+      "x_low": 0.006,
+      "x_mean": 0.007
+    },
+    {
+      "bin": 4,
+      "q2_mean": 1.59,
+      "stat": 0.01,
+      "systematic_combined": 0.005,
+      "systematics": {
+        "published_total": 0.005
+      },
+      "value": 0.033,
+      "x_high": 0.01,
+      "x_low": 0.008,
+      "x_mean": 0.009
+    },
+    {
+      "bin": 5,
+      "q2_mean": 2.14,
+      "stat": 0.006,
+      "systematic_combined": 0.004,
+      "systematics": {
+        "published_total": 0.004
+      },
+      "value": 0.047,
+      "x_high": 0.02,
+      "x_low": 0.01,
+      "x_mean": 0.0147
+    },
+    {
+      "bin": 6,
+      "q2_mean": 3.24,
+      "stat": 0.009,
+      "systematic_combined": 0.006,
+      "systematics": {
+        "published_total": 0.006
+      },
+      "value": 0.076,
+      "x_high": 0.03,
+      "x_low": 0.02,
+      "x_mean": 0.0247
+    },
+    {
+      "bin": 7,
+      "q2_mean": 4.36,
+      "stat": 0.012,
+      "systematic_combined": 0.009,
+      "systematics": {
+        "published_total": 0.009
+      },
+      "value": 0.115,
+      "x_high": 0.04,
+      "x_low": 0.03,
+      "x_mean": 0.0346
+    },
+    {
+      "bin": 8,
+      "q2_mean": 6.05,
+      "stat": 0.012,
+      "systematic_combined": 0.01,
+      "systematics": {
+        "published_total": 0.01
+      },
+      "value": 0.13,
+      "x_high": 0.06,
+      "x_low": 0.04,
+      "x_mean": 0.0487
+    },
+    {
+      "bin": 9,
+      "q2_mean": 9.42,
+      "stat": 0.013,
+      "systematic_combined": 0.012,
+      "systematics": {
+        "published_total": 0.012
+      },
+      "value": 0.172,
+      "x_high": 0.1,
+      "x_low": 0.06,
+      "x_mean": 0.0765
+    },
+    {
+      "bin": 10,
+      "q2_mean": 14.9,
+      "stat": 0.017,
+      "systematic_combined": 0.015,
+      "systematics": {
+        "published_total": 0.015
+      },
+      "value": 0.218,
+      "x_high": 0.15,
+      "x_low": 0.1,
+      "x_mean": 0.122
+    },
+    {
+      "bin": 11,
+      "q2_mean": 20.9,
+      "stat": 0.024,
+      "systematic_combined": 0.02,
+      "systematics": {
+        "published_total": 0.02
+      },
+      "value": 0.286,
+      "x_high": 0.2,
+      "x_low": 0.15,
+      "x_mean": 0.172
+    },
+    {
+      "bin": 12,
+      "q2_mean": 26.7,
+      "stat": 0.032,
+      "systematic_combined": 0.03,
+      "systematics": {
+        "published_total": 0.03
+      },
+      "value": 0.446,
+      "x_high": 0.25,
+      "x_low": 0.2,
+      "x_mean": 0.222
+    },
+    {
+      "bin": 13,
+      "q2_mean": 34.6,
+      "stat": 0.033,
+      "systematic_combined": 0.032,
+      "systematics": {
+        "published_total": 0.032
+      },
+      "value": 0.453,
+      "x_high": 0.35,
+      "x_low": 0.25,
+      "x_mean": 0.29
+    },
+    {
+      "bin": 14,
+      "q2_mean": 47.1,
+      "stat": 0.049,
+      "systematic_combined": 0.043,
+      "systematics": {
+        "published_total": 0.043
+      },
+      "value": 0.594,
+      "x_high": 0.5,
+      "x_low": 0.35,
+      "x_mean": 0.405
+    },
+    {
+      "bin": 15,
+      "q2_mean": 62.1,
+      "stat": 0.094,
+      "systematic_combined": 0.068,
+      "systematics": {
+        "published_total": 0.068
+      },
+      "value": 0.855,
+      "x_high": 0.7,
+      "x_low": 0.5,
+      "x_mean": 0.568
+    }
+  ],
+  "provenance": {
+    "record_doi": "10.17182/hepdata.61588.v2",
+    "retrieved": "2026-07-21",
+    "source": "HEPData Table 1 v2",
+    "source_sha256": "97514a9cac2987377ff3531533dee5fe6ce58c87f9ffef5ff8abf47ebba06e7a",
+    "source_url": "https://www.hepdata.net/record/data/61588/102092/2",
+    "table_doi": "10.17182/hepdata.61588.v2/t1"
+  },
+  "rivet_path": "/COMPASS_2010_I843494/d01-x01-y01",
+  "schema_version": 2,
+  "selection": "Q2 > 1 GeV2"
+}

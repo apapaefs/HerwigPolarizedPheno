@@ -1,0 +1,502 @@
+{
+  "analysis": {
+    "info": "analyses/rivet/dis/HERMES_2007_I726689_LEGACY.info",
+    "name": "HERMES_2007_I726689_LEGACY",
+    "plot": "analyses/rivet/dis/HERMES_2007_I726689_LEGACY.plot",
+    "plugin": "RivetHERMES_2007_I726689_LEGACY.so",
+    "reference_yoda": "analyses/rivet/dis/HERMES_2007_I726689_LEGACY.yoda.gz",
+    "source": "analyses/rivet/dis/HERMES_2007_I726689_LEGACY.cc"
+  },
+  "campaign": {
+    "comparison_profile": {
+      "families": {
+        "no_real_spin_nlo": {
+          "beam_polarization": "physical PP, PM, MP, MM",
+          "card_directory": "cards/experimental/HERMES_2007_I726689_LEGACY/comparisons",
+          "event_options": {
+            "NEGNLO": "negnlo_events",
+            "POSNLO": "posnlo_events"
+          },
+          "helicities": {
+            "MM": [
+              -1,
+              -1
+            ],
+            "MP": [
+              -1,
+              1
+            ],
+            "PM": [
+              1,
+              -1
+            ],
+            "PP": [
+              1,
+              1
+            ]
+          },
+          "id_prefix": "NOREALSPIN",
+          "label": "NLO+PS (polarized; Born spin only)",
+          "materialized_directory": "comparisons",
+          "orders": {
+            "NEGNLO": "NegativeNLO",
+            "POSNLO": "PositiveNLO"
+          },
+          "perturbative_order": "NLO+PS",
+          "postprocess": "helicity_asymmetry",
+          "real_emission_spin_density": "disabled; Born spin density and shower spin correlations retained",
+          "shower_spin_correlations": "enabled",
+          "stem_pattern": "HERMES_2007_I726689_LEGACY_NOREALSPIN_{helicity}-{order}"
+        },
+        "no_shower_spin_nlo": {
+          "beam_polarization": "physical PP, PM, MP, MM",
+          "card_directory": "cards/experimental/HERMES_2007_I726689_LEGACY/comparisons",
+          "event_options": {
+            "NEGNLO": "negnlo_events",
+            "POSNLO": "posnlo_events"
+          },
+          "helicities": {
+            "MM": [
+              -1,
+              -1
+            ],
+            "MP": [
+              -1,
+              1
+            ],
+            "PM": [
+              1,
+              -1
+            ],
+            "PP": [
+              1,
+              1
+            ]
+          },
+          "id_prefix": "NOSHOWERSPIN",
+          "label": "NLO+PS (polarized; shower spin off)",
+          "materialized_directory": "comparisons",
+          "orders": {
+            "NEGNLO": "NegativeNLO",
+            "POSNLO": "PositiveNLO"
+          },
+          "perturbative_order": "NLO+PS",
+          "postprocess": "helicity_asymmetry",
+          "real_emission_spin_density": "disabled",
+          "shower_spin_correlations": "disabled",
+          "stem_pattern": "HERMES_2007_I726689_LEGACY_NOSHOWERSPIN_{helicity}-{order}"
+        },
+        "polarized_lo": {
+          "beam_polarization": "physical PP, PM, MP, MM",
+          "card_directory": "cards/experimental/HERMES_2007_I726689_LEGACY/comparisons",
+          "event_options": {
+            "LO": "lo_events"
+          },
+          "helicities": {
+            "MM": [
+              -1,
+              -1
+            ],
+            "MP": [
+              -1,
+              1
+            ],
+            "PM": [
+              1,
+              -1
+            ],
+            "PP": [
+              1,
+              1
+            ]
+          },
+          "id_prefix": "LOPOL",
+          "label": "LO+PS (polarized)",
+          "materialized_directory": "comparisons",
+          "orders": {
+            "LO": "Born"
+          },
+          "perturbative_order": "LO+PS with the nominal NLO PDF inputs",
+          "postprocess": "helicity_asymmetry",
+          "real_emission_spin_density": "not applicable",
+          "shower_spin_correlations": "enabled",
+          "stem_pattern": "HERMES_2007_I726689_LEGACY_LO_{helicity}-{order}"
+        },
+        "unpolarized_nlo": {
+          "beam_polarization": "00",
+          "card_directory": "cards/experimental/HERMES_2007_I726689_LEGACY/comparisons",
+          "event_options": {
+            "NEGNLO": "negnlo_events",
+            "POSNLO": "posnlo_events"
+          },
+          "helicities": {
+            "00": [
+              0,
+              0
+            ]
+          },
+          "id_prefix": "UNPOL",
+          "label": "NLO+PS (unpolarized beams)",
+          "materialized_directory": "comparisons",
+          "orders": {
+            "NEGNLO": "NegativeNLO",
+            "POSNLO": "PositiveNLO"
+          },
+          "perturbative_order": "NLO+PS",
+          "postprocess": "direct_unpolarized",
+          "real_emission_spin_density": "enabled with unpolarized density matrices",
+          "shower_spin_correlations": "enabled",
+          "stem_pattern": "HERMES_2007_I726689_LEGACY_UNPOL_{helicity}-{order}"
+        }
+      },
+      "plotting": {
+        "unmatch": [
+          "/HERMES_2007_I726689_LEGACY/SigmaLL_"
+        ]
+      }
+    },
+    "default_events": {
+      "NEGNLO": 10000,
+      "POSNLO": 100000
+    },
+    "default_jobs": 4,
+    "default_seed_base": 1726689,
+    "default_shards": 1,
+    "smoke_events": 100
+  },
+  "cards": {
+    "common": "HERMES_2007_I726689_LEGACY-Common.in",
+    "directory": "cards/experimental/HERMES_2007_I726689_LEGACY",
+    "helicities": {
+      "MM": [
+        -1,
+        -1
+      ],
+      "MP": [
+        -1,
+        1
+      ],
+      "PM": [
+        1,
+        -1
+      ],
+      "PP": [
+        1,
+        1
+      ]
+    },
+    "orders": {
+      "NEGNLO": "NegativeNLO",
+      "POSNLO": "PositiveNLO"
+    },
+    "stem_pattern": "HERMES_2007_I726689_LEGACY_{helicity}-{order}"
+  },
+  "combination": {
+    "longitudinal": {
+      "MM": 0.25,
+      "MP": -0.25,
+      "PM": -0.25,
+      "PP": 0.25
+    },
+    "unpolarized": {
+      "MM": 0.25,
+      "MP": 0.25,
+      "PM": 0.25,
+      "PP": 0.25
+    }
+  },
+  "diagnostics": [
+    "Accepted_X",
+    "Accepted_Q2",
+    "Accepted_Y",
+    "Accepted_W2",
+    "Accepted_Theta",
+    "Accepted_Q2_Below1"
+  ],
+  "id": "HERMES_2007_I726689_LEGACY",
+  "outputs": {
+    "X01": {
+      "a1": "/HERMES_2007_I726689_LEGACY/AParallelAlias_X01",
+      "apar": "/HERMES_2007_I726689_LEGACY/d07-x01-y02",
+      "parity_pm_mp": "/HERMES_2007_I726689_LEGACY/Parity_PM_MP_X01",
+      "parity_pp_mm": "/HERMES_2007_I726689_LEGACY/Parity_PP_MM_X01"
+    },
+    "X02": {
+      "a1": "/HERMES_2007_I726689_LEGACY/AParallelAlias_X02",
+      "apar": "/HERMES_2007_I726689_LEGACY/d07-x02-y02",
+      "parity_pm_mp": "/HERMES_2007_I726689_LEGACY/Parity_PM_MP_X02",
+      "parity_pp_mm": "/HERMES_2007_I726689_LEGACY/Parity_PP_MM_X02"
+    },
+    "X03": {
+      "a1": "/HERMES_2007_I726689_LEGACY/AParallelAlias_X03",
+      "apar": "/HERMES_2007_I726689_LEGACY/d07-x03-y02",
+      "parity_pm_mp": "/HERMES_2007_I726689_LEGACY/Parity_PM_MP_X03",
+      "parity_pp_mm": "/HERMES_2007_I726689_LEGACY/Parity_PP_MM_X03"
+    },
+    "X04": {
+      "a1": "/HERMES_2007_I726689_LEGACY/AParallelAlias_X04",
+      "apar": "/HERMES_2007_I726689_LEGACY/d07-x04-y02",
+      "parity_pm_mp": "/HERMES_2007_I726689_LEGACY/Parity_PM_MP_X04",
+      "parity_pp_mm": "/HERMES_2007_I726689_LEGACY/Parity_PP_MM_X04"
+    },
+    "X05": {
+      "a1": "/HERMES_2007_I726689_LEGACY/AParallelAlias_X05",
+      "apar": "/HERMES_2007_I726689_LEGACY/d07-x05-y02",
+      "parity_pm_mp": "/HERMES_2007_I726689_LEGACY/Parity_PM_MP_X05",
+      "parity_pp_mm": "/HERMES_2007_I726689_LEGACY/Parity_PP_MM_X05"
+    },
+    "X06": {
+      "a1": "/HERMES_2007_I726689_LEGACY/AParallelAlias_X06",
+      "apar": "/HERMES_2007_I726689_LEGACY/d07-x06-y02",
+      "parity_pm_mp": "/HERMES_2007_I726689_LEGACY/Parity_PM_MP_X06",
+      "parity_pp_mm": "/HERMES_2007_I726689_LEGACY/Parity_PP_MM_X06"
+    },
+    "X07": {
+      "a1": "/HERMES_2007_I726689_LEGACY/AParallelAlias_X07",
+      "apar": "/HERMES_2007_I726689_LEGACY/d07-x07-y02",
+      "parity_pm_mp": "/HERMES_2007_I726689_LEGACY/Parity_PM_MP_X07",
+      "parity_pp_mm": "/HERMES_2007_I726689_LEGACY/Parity_PP_MM_X07"
+    },
+    "X08": {
+      "a1": "/HERMES_2007_I726689_LEGACY/AParallelAlias_X08",
+      "apar": "/HERMES_2007_I726689_LEGACY/d07-x08-y02",
+      "parity_pm_mp": "/HERMES_2007_I726689_LEGACY/Parity_PM_MP_X08",
+      "parity_pp_mm": "/HERMES_2007_I726689_LEGACY/Parity_PP_MM_X08"
+    },
+    "X09": {
+      "a1": "/HERMES_2007_I726689_LEGACY/AParallelAlias_X09",
+      "apar": "/HERMES_2007_I726689_LEGACY/d07-x09-y02",
+      "parity_pm_mp": "/HERMES_2007_I726689_LEGACY/Parity_PM_MP_X09",
+      "parity_pp_mm": "/HERMES_2007_I726689_LEGACY/Parity_PP_MM_X09"
+    },
+    "X10": {
+      "a1": "/HERMES_2007_I726689_LEGACY/AParallelAlias_X10",
+      "apar": "/HERMES_2007_I726689_LEGACY/d07-x10-y02",
+      "parity_pm_mp": "/HERMES_2007_I726689_LEGACY/Parity_PM_MP_X10",
+      "parity_pp_mm": "/HERMES_2007_I726689_LEGACY/Parity_PP_MM_X10"
+    },
+    "X11": {
+      "a1": "/HERMES_2007_I726689_LEGACY/AParallelAlias_X11",
+      "apar": "/HERMES_2007_I726689_LEGACY/d07-x11-y02",
+      "parity_pm_mp": "/HERMES_2007_I726689_LEGACY/Parity_PM_MP_X11",
+      "parity_pp_mm": "/HERMES_2007_I726689_LEGACY/Parity_PP_MM_X11"
+    },
+    "X12": {
+      "a1": "/HERMES_2007_I726689_LEGACY/AParallelAlias_X12",
+      "apar": "/HERMES_2007_I726689_LEGACY/d07-x12-y02",
+      "parity_pm_mp": "/HERMES_2007_I726689_LEGACY/Parity_PM_MP_X12",
+      "parity_pp_mm": "/HERMES_2007_I726689_LEGACY/Parity_PP_MM_X12"
+    },
+    "X13": {
+      "a1": "/HERMES_2007_I726689_LEGACY/AParallelAlias_X13",
+      "apar": "/HERMES_2007_I726689_LEGACY/d07-x13-y02",
+      "parity_pm_mp": "/HERMES_2007_I726689_LEGACY/Parity_PM_MP_X13",
+      "parity_pp_mm": "/HERMES_2007_I726689_LEGACY/Parity_PP_MM_X13"
+    },
+    "X14": {
+      "a1": "/HERMES_2007_I726689_LEGACY/AParallelAlias_X14",
+      "apar": "/HERMES_2007_I726689_LEGACY/d07-x14-y02",
+      "parity_pm_mp": "/HERMES_2007_I726689_LEGACY/Parity_PM_MP_X14",
+      "parity_pp_mm": "/HERMES_2007_I726689_LEGACY/Parity_PP_MM_X14"
+    },
+    "X15": {
+      "a1": "/HERMES_2007_I726689_LEGACY/AParallelAlias_X15",
+      "apar": "/HERMES_2007_I726689_LEGACY/d07-x15-y02",
+      "parity_pm_mp": "/HERMES_2007_I726689_LEGACY/Parity_PM_MP_X15",
+      "parity_pp_mm": "/HERMES_2007_I726689_LEGACY/Parity_PP_MM_X15"
+    },
+    "X16": {
+      "a1": "/HERMES_2007_I726689_LEGACY/AParallelAlias_X16",
+      "apar": "/HERMES_2007_I726689_LEGACY/d07-x16-y02",
+      "parity_pm_mp": "/HERMES_2007_I726689_LEGACY/Parity_PM_MP_X16",
+      "parity_pp_mm": "/HERMES_2007_I726689_LEGACY/Parity_PP_MM_X16"
+    },
+    "X17": {
+      "a1": "/HERMES_2007_I726689_LEGACY/AParallelAlias_X17",
+      "apar": "/HERMES_2007_I726689_LEGACY/d07-x17-y02",
+      "parity_pm_mp": "/HERMES_2007_I726689_LEGACY/Parity_PM_MP_X17",
+      "parity_pp_mm": "/HERMES_2007_I726689_LEGACY/Parity_PP_MM_X17"
+    },
+    "X18": {
+      "a1": "/HERMES_2007_I726689_LEGACY/AParallelAlias_X18",
+      "apar": "/HERMES_2007_I726689_LEGACY/d07-x18-y02",
+      "parity_pm_mp": "/HERMES_2007_I726689_LEGACY/Parity_PM_MP_X18",
+      "parity_pp_mm": "/HERMES_2007_I726689_LEGACY/Parity_PP_MM_X18"
+    },
+    "X19": {
+      "a1": "/HERMES_2007_I726689_LEGACY/AParallelAlias_X19",
+      "apar": "/HERMES_2007_I726689_LEGACY/d07-x19-y02",
+      "parity_pm_mp": "/HERMES_2007_I726689_LEGACY/Parity_PM_MP_X19",
+      "parity_pp_mm": "/HERMES_2007_I726689_LEGACY/Parity_PP_MM_X19"
+    }
+  },
+  "physics": {
+    "assumptions": [
+      "Four unit-helicity samples replace the historical two-sample finite-polarization approximation",
+      "PDF and perturbative scales are frozen at 1 GeV below Q2=1 GeV2",
+      "Published points with mean Q2 below 1 GeV2 are not used quantitatively"
+    ],
+    "beam": "27.6 GeV e+ on a fixed proton target",
+    "exchange": "photon",
+    "low_q2_status": "nonperturbative extrapolation; excluded from pulls and goodness-of-fit",
+    "minimum_scale_gev": 1.0,
+    "observable": "Aparallel",
+    "polarized_pdf": "NNPDFpol20_nlo_as_01180",
+    "q2_range_gev2": [
+      0.18,
+      20.0
+    ],
+    "unpolarized_pdf": "NNPDF40_nlo_pch_as_01180"
+  },
+  "plotting": {
+    "unmatch": [
+      "/HERMES_2007_I726689_LEGACY/Sigma(LL|UU)_",
+      "/HERMES_2007_I726689_LEGACY/AParallelAlias_"
+    ]
+  },
+  "raw_observables": {
+    "X01": {
+      "covariance": "CovarianceProxyQ2_X01",
+      "ordinary": "SigmaQ2_X01",
+      "weighted": "SigmaDuplicateQ2_X01"
+    },
+    "X02": {
+      "covariance": "CovarianceProxyQ2_X02",
+      "ordinary": "SigmaQ2_X02",
+      "weighted": "SigmaDuplicateQ2_X02"
+    },
+    "X03": {
+      "covariance": "CovarianceProxyQ2_X03",
+      "ordinary": "SigmaQ2_X03",
+      "weighted": "SigmaDuplicateQ2_X03"
+    },
+    "X04": {
+      "covariance": "CovarianceProxyQ2_X04",
+      "ordinary": "SigmaQ2_X04",
+      "weighted": "SigmaDuplicateQ2_X04"
+    },
+    "X05": {
+      "covariance": "CovarianceProxyQ2_X05",
+      "ordinary": "SigmaQ2_X05",
+      "weighted": "SigmaDuplicateQ2_X05"
+    },
+    "X06": {
+      "covariance": "CovarianceProxyQ2_X06",
+      "ordinary": "SigmaQ2_X06",
+      "weighted": "SigmaDuplicateQ2_X06"
+    },
+    "X07": {
+      "covariance": "CovarianceProxyQ2_X07",
+      "ordinary": "SigmaQ2_X07",
+      "weighted": "SigmaDuplicateQ2_X07"
+    },
+    "X08": {
+      "covariance": "CovarianceProxyQ2_X08",
+      "ordinary": "SigmaQ2_X08",
+      "weighted": "SigmaDuplicateQ2_X08"
+    },
+    "X09": {
+      "covariance": "CovarianceProxyQ2_X09",
+      "ordinary": "SigmaQ2_X09",
+      "weighted": "SigmaDuplicateQ2_X09"
+    },
+    "X10": {
+      "covariance": "CovarianceProxyQ2_X10",
+      "ordinary": "SigmaQ2_X10",
+      "weighted": "SigmaDuplicateQ2_X10"
+    },
+    "X11": {
+      "covariance": "CovarianceProxyQ2_X11",
+      "ordinary": "SigmaQ2_X11",
+      "weighted": "SigmaDuplicateQ2_X11"
+    },
+    "X12": {
+      "covariance": "CovarianceProxyQ2_X12",
+      "ordinary": "SigmaQ2_X12",
+      "weighted": "SigmaDuplicateQ2_X12"
+    },
+    "X13": {
+      "covariance": "CovarianceProxyQ2_X13",
+      "ordinary": "SigmaQ2_X13",
+      "weighted": "SigmaDuplicateQ2_X13"
+    },
+    "X14": {
+      "covariance": "CovarianceProxyQ2_X14",
+      "ordinary": "SigmaQ2_X14",
+      "weighted": "SigmaDuplicateQ2_X14"
+    },
+    "X15": {
+      "covariance": "CovarianceProxyQ2_X15",
+      "ordinary": "SigmaQ2_X15",
+      "weighted": "SigmaDuplicateQ2_X15"
+    },
+    "X16": {
+      "covariance": "CovarianceProxyQ2_X16",
+      "ordinary": "SigmaQ2_X16",
+      "weighted": "SigmaDuplicateQ2_X16"
+    },
+    "X17": {
+      "covariance": "CovarianceProxyQ2_X17",
+      "ordinary": "SigmaQ2_X17",
+      "weighted": "SigmaDuplicateQ2_X17"
+    },
+    "X18": {
+      "covariance": "CovarianceProxyQ2_X18",
+      "ordinary": "SigmaQ2_X18",
+      "weighted": "SigmaDuplicateQ2_X18"
+    },
+    "X19": {
+      "covariance": "CovarianceProxyQ2_X19",
+      "ordinary": "SigmaQ2_X19",
+      "weighted": "SigmaDuplicateQ2_X19"
+    }
+  },
+  "reference": {
+    "columns": {
+      "apar_group": 1,
+      "q2": 2,
+      "x": 0,
+      "y": 1
+    },
+    "expected_headers": [
+      "X",
+      "Y",
+      "Q**2 [GEV**2]",
+      "ASYM(NAME=PARALLEL,C=MEASURED)",
+      "ASYM(NAME=PARALLEL,C=BORN)"
+    ],
+    "expected_rows": 45,
+    "format": "hepdata-table-json-multidataset",
+    "hepdata_table": "https://doi.org/10.17182/hepdata.11211.v1/t7",
+    "prediction_paths": [
+      "/HERMES_2007_I726689_LEGACY/d07-x01-y02",
+      "/HERMES_2007_I726689_LEGACY/d07-x02-y02",
+      "/HERMES_2007_I726689_LEGACY/d07-x03-y02",
+      "/HERMES_2007_I726689_LEGACY/d07-x04-y02",
+      "/HERMES_2007_I726689_LEGACY/d07-x05-y02",
+      "/HERMES_2007_I726689_LEGACY/d07-x06-y02",
+      "/HERMES_2007_I726689_LEGACY/d07-x07-y02",
+      "/HERMES_2007_I726689_LEGACY/d07-x08-y02",
+      "/HERMES_2007_I726689_LEGACY/d07-x09-y02",
+      "/HERMES_2007_I726689_LEGACY/d07-x10-y02",
+      "/HERMES_2007_I726689_LEGACY/d07-x11-y02",
+      "/HERMES_2007_I726689_LEGACY/d07-x12-y02",
+      "/HERMES_2007_I726689_LEGACY/d07-x13-y02",
+      "/HERMES_2007_I726689_LEGACY/d07-x14-y02",
+      "/HERMES_2007_I726689_LEGACY/d07-x15-y02",
+      "/HERMES_2007_I726689_LEGACY/d07-x16-y02",
+      "/HERMES_2007_I726689_LEGACY/d07-x17-y02",
+      "/HERMES_2007_I726689_LEGACY/d07-x18-y02",
+      "/HERMES_2007_I726689_LEGACY/d07-x19-y02"
+    ],
+    "raw_snapshot": "data/experimental/HERMES_2007_I726689_LEGACY/raw-hepdata-table.json",
+    "record_doi": "10.17182/hepdata.11211.v1",
+    "snapshot": "data/experimental/HERMES_2007_I726689_LEGACY/reference.json",
+    "source_sha256": "faa0f3fc562ebd8fc96148a57f43b95367ff0b37a1b747c1f740f6b8613412ae",
+    "source_url": "https://www.hepdata.net/record/data/11211/10813/1",
+    "table_doi": "10.17182/hepdata.11211.v1/t7",
+    "table_name": "Table 7"
+  },
+  "schema_version": 2,
+  "title": "HERMES Table 7 Born A_parallel in 45 (x,Q2) bins"
+}

@@ -1,0 +1,33 @@
+Name: COMPASS_2010_I843494
+Year: 2010
+Summary: Proton virtual-photon asymmetry in 160 GeV polarized muon DIS
+Experiment: COMPASS
+Collider: CERN SPS fixed target
+InspireID: 843494
+Status: UNVALIDATED
+Reentrant: true
+Authors:
+ - Andreas Papaefstathiou <apapaefs@kennesaw.edu>
+References:
+ - Phys.Lett.B 690 (2010) 466-472
+RunInfo: Requires independent mu+p samples for PP, PM, MP, and MM helicities.
+NumEvents: 100000
+NeedsCrossSection: yes
+Beams: [[ANTIMUON, p+]]
+Energies: [[160.0, 0.938272]]
+Description:
+  Reconstructs finite-muon-mass fixed-target DIS kinematics from the
+  highest-energy prompt outgoing positive muon, excluding leptons from
+  hadron decays.
+  The selection is Q2 > 1 GeV2, 0.1 < y < 0.9, and 0.004 < x < 0.7;
+  no unreported W cut is imposed. Fixed 160 GeV generation approximates the
+  published beam-momentum window. R1998 is used in D; eta*A2 is neglected
+  and g2 is not modeled when constructing A1 from four physical helicity
+  samples.
+Keywords:
+ - DIS
+ - polarized
+ - fixed-target
+ - asymmetry
+BibKey: COMPASS:2010wkz
+BibTeX: '@article{COMPASS:2010wkz, collaboration="COMPASS", journal="Phys. Lett. B", volume="690", pages="466", year="2010"}'

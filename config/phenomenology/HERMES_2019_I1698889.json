@@ -1,0 +1,111 @@
+{
+  "schema_version": 4,
+  "id": "HERMES_2019_I1698889",
+  "title": "HERMES identified-hadron SIDIS longitudinal double-spin asymmetries",
+  "process_kind": "polarized_sidis",
+  "analysis": {
+    "name": "HERMES_2019_I1698889",
+    "source": "analyses/rivet/dis/HERMES_2019_I1698889.cc",
+    "info": "analyses/rivet/dis/HERMES_2019_I1698889.info",
+    "plot": "analyses/rivet/dis/HERMES_2019_I1698889.plot",
+    "plugin": "RivetHERMES_2019_I1698889.so",
+    "reference_yoda": "analyses/rivet/dis/HERMES_2019_I1698889.yoda.gz"
+  },
+  "reference": {
+    "snapshot": "data/phenomenology/HERMES_2019_I1698889/reference.json",
+    "source_manifest": "data/phenomenology/HERMES_2019_I1698889/source-manifest.json",
+    "raw_snapshot": "data/phenomenology/HERMES_2019_I1698889/raw-aps-supplement.zip",
+    "publication_doi": "10.1103/PhysRevD.99.112001",
+    "source_url": "https://journals.aps.org/prd/supplemental/10.1103/PhysRevD.99.112001/DB12134_supplemental.zip"
+  },
+  "cards": {
+    "directory": "cards/phenomenology/HERMES_2019_I1698889",
+    "common": "HERMES_2019_I1698889-Common.in",
+    "stem_pattern": "HERMES_2019_I1698889_{target}_{helicity}-{contribution}",
+    "polarized_pdf_object": "/Herwig/Partons/HERMESSIDISDiffPDF",
+    "unpolarized_pdf_object": "/Herwig/Partons/HERMESSIDISPDF",
+    "helicities": {
+      "PP": [1, 1],
+      "PM": [1, -1],
+      "MP": [-1, 1],
+      "MM": [-1, -1]
+    },
+    "contributions": {
+      "POSNLO": "PositiveNLO",
+      "NEGNLO": "NegativeNLO"
+    },
+    "target_components": {
+      "P": "proton",
+      "N": "neutron"
+    },
+    "scale_objects": [
+      "/Herwig/MatrixElements/MEDISNC",
+      "/Herwig/MatrixElements/MEDISNCPol",
+      "/Herwig/MatrixElements/PowhegMEDISNC",
+      "/Herwig/MatrixElements/PowhegMEDISNCPol"
+    ]
+  },
+  "channels": {
+    "sidis": {
+      "label": "identified charged pions and kaons",
+      "targets": ["proton", "deuteron"],
+      "projections": ["x", "xz", "xpt", "xzpt", "charge_difference"],
+      "observable_level": "Born-unfolded hadron level"
+    }
+  },
+  "families": {
+    "nominal": {
+      "label": "NLO+PS (polarized; full spin)",
+      "helicities": ["PP", "PM", "MP", "MM"],
+      "mpi": "off",
+      "observable_level": "stable_particle"
+    }
+  },
+  "campaign": {
+    "default_jobs": 4,
+    "default_shards": 1,
+    "default_seed_base": 1698889,
+    "default_events": {
+      "POSNLO": 300000,
+      "NEGNLO": 30000
+    },
+    "smoke_events": 100
+  },
+  "postprocessor": "hermes_sidis",
+  "scales": {
+    "central": 1.0,
+    "points": [0.5, 1.0, 2.0],
+    "mapping": "DIS ScaleFactor = mu/mu0"
+  },
+  "pdf_ensembles": {
+    "polarized": {"set": "NNPDFpol20_nlo_as_01180", "central_member": 0, "replica_members": [1, 100]},
+    "unpolarized": {"set": "NNPDF40_nlo_pch_as_01180", "central_member": 0, "replica_members": [1, 100]},
+    "combination": "independent replica variances added in quadrature"
+  },
+  "diagnostics": {
+    "azimuthal_moments": true,
+    "closures": ["PP-MM", "PM-MP", "single-spin"],
+    "missing_published_covariance": "deuteron_kminus_xpt"
+  },
+  "goodness_of_fit": {
+    "combine_overlapping_projections": false,
+    "primary_observable": "A_parallel",
+    "charge_difference_observable": "published A1 auxiliary result",
+    "covariance": "projection-specific published unfolding covariance"
+  },
+  "global_uncertainties": {
+    "proton_polarization_relative": 0.066,
+    "deuteron_polarization_relative": 0.057,
+    "treatment": "publication metadata only because the APS tables provide a combined point systematic"
+  },
+  "physics": {
+    "beam": "27.6 GeV positron on fixed proton or neutron",
+    "exchange": "photon",
+    "unpolarized_pdf": "NNPDF40_nlo_pch_as_01180",
+    "polarized_pdf": "NNPDFpol20_nlo_as_01180",
+    "hard_process_accuracy": "POWHEG NLO+PS",
+    "published_deuteron_nucleon_to_nucleus_polarization_ratio": 0.926,
+    "deuteron_theory_treatment": "published A_parallel already includes the 1/f_D correction; free-p+n theory receives no additional 0.926 factor",
+    "event_simulation": "QCD shower with spin correlations, hadronization and remnants; QED shower and MPI off"
+  }
+}

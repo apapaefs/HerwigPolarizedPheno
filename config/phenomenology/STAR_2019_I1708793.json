@@ -1,0 +1,102 @@
+{
+  "schema_version": 3,
+  "id": "STAR_2019_I1708793",
+  "title": "STAR W+/W- and Z/gamma* longitudinal spin asymmetries",
+  "process_kind": "polarized_pp",
+  "analysis": {
+    "name": "STAR_2019_I1708793",
+    "source": "analyses/rivet/pp/STAR_2019_I1708793.cc",
+    "info": "analyses/rivet/pp/STAR_2019_I1708793.info",
+    "plot": "analyses/rivet/pp/STAR_2019_I1708793.plot",
+    "plugin": "RivetSTAR_2019_I1708793.so",
+    "reference_yoda": "analyses/rivet/pp/STAR_2019_I1708793.yoda.gz"
+  },
+  "reference": {
+    "snapshot": "data/phenomenology/STAR_2019_I1708793/reference.json",
+    "sources": [
+      "https://doi.org/10.17182/hepdata.105912.v1/t17",
+      "https://doi.org/10.17182/hepdata.105912.v1/t18",
+      "https://arxiv.org/abs/1812.04817"
+    ]
+  },
+  "cards": {
+    "directory": "cards/phenomenology/STAR_2019_I1708793",
+    "common": "STAR_2019_I1708793-Common.in",
+    "stem_pattern": "STAR_2019_I1708793_{channel}_{helicity}-LO",
+    "polarized_pdf_object": "/Herwig/Partons/STARPolarizedPDF",
+    "helicities": {
+      "PP": [1, 1],
+      "PM": [1, -1],
+      "MP": [-1, 1],
+      "MM": [-1, -1]
+    },
+    "contributions": {"LO": "Born"}
+  },
+  "channels": {
+    "Wplus": {
+      "label": "W+ to e+ nu",
+      "raw_object": "Yield_Wplus_Eta",
+      "observables": ["AL", "ALL"],
+      "scale_object": "/Herwig/MatrixElements/MEqq2W2ff",
+      "scale_interpretation": "factorization"
+    },
+    "Wminus": {
+      "label": "W- to e- nubar",
+      "raw_object": "Yield_Wminus_Eta",
+      "observables": ["AL", "ALL"],
+      "scale_object": "/Herwig/MatrixElements/MEqq2W2ff",
+      "scale_interpretation": "factorization"
+    },
+    "Zgamma": {
+      "label": "Z/gamma* to e+e-",
+      "raw_object": "Yield_Zgamma",
+      "observables": ["AL"],
+      "scale_object": "/Herwig/MatrixElements/MEqq2gZ2ff",
+      "scale_interpretation": "factorization"
+    }
+  },
+  "families": {
+    "nominal": {
+      "label": "LO+PS (polarized; MPI on)",
+      "helicities": ["PP", "PM", "MP", "MM"],
+      "mpi": "on"
+    },
+    "mpi_off": {
+      "label": "LO+PS (polarized; MPI off)",
+      "helicities": ["PP", "PM", "MP", "MM"],
+      "mpi": "off",
+      "paper_only": true
+    },
+    "unpolarized_closure": {
+      "label": "LO+PS (unpolarized closure; MPI on)",
+      "helicities": ["00"],
+      "mpi": "on",
+      "paper_only": true
+    }
+  },
+  "campaign": {
+    "default_jobs": 4,
+    "default_shards": 1,
+    "default_seed_base": 1708793,
+    "default_events": {"LO": 100000},
+    "smoke_events": 100
+  },
+  "postprocessor": "star_weak_bosons",
+  "scales": {
+    "central": 1.0,
+    "points": [0.5, 1.0, 2.0],
+    "mapping": "ScalePreFactor = (mu/mu0)^2"
+  },
+  "pdf_ensembles": {
+    "polarized": {"set": "NNPDFpol20_nlo_as_01180", "central_member": 0, "replica_members": [1, 100]},
+    "unpolarized": {"set": "NNPDF40_nlo_pch_as_01180", "central_member": 0, "replica_members": [1, 100]},
+    "combination": "independent replica variances added in quadrature"
+  },
+  "physics": {
+    "beams": "longitudinally polarized pp",
+    "sqrt_s_gev": 510.0,
+    "hard_process_accuracy": "LO",
+    "event_simulation": "QCD+QED shower, spin-correlated decays, hadronization, remnants, and MPI",
+    "pdf_accuracy": "NLO PDF inputs do not promote the hard prediction to NLO accuracy"
+  }
+}

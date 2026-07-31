@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "measurement": "HERMES_2007_I726689",
+  "observable": "A1p",
+  "selection": "Q2 > 1 GeV2",
+  "rivet_path": "/REF/HERMES_2007_I726689/d14-x01-y01",
+  "units": {
+    "x": "dimensionless",
+    "q2_mean": "GeV2",
+    "value": "dimensionless"
+  },
+  "provenance": {
+    "hepdata_table": "https://doi.org/10.17182/hepdata.11211.v1/t14",
+    "hepdata_record": "https://www.hepdata.net/record/ins726689",
+    "official_archive": "https://www.desy.de/~w3hermes/TRANS/lara.g1_long-1a.dat",
+    "official_archive_sha256": "2567ee83422f8da7c3c602e2aa716c2501cc539820ba0f4f9657515ed2785997",
+    "official_archive_member": "A1p_a15",
+    "official_member_sha256": "f9681449a1b478c89986b72fd17a2598899b703fa06c259b0a8781b8a956f700",
+    "publication": "https://arxiv.org/abs/hep-ex/0609039",
+    "publication_table": "Table XXII",
+    "notes": "Central values, means, statistical errors, and combined systematic errors are cross-checked against the official HERMES archive. The three systematic components are transcribed from Table XXII of the publication."
+  },
+  "bin_edges": [
+    0.0212,
+    0.0295,
+    0.0362,
+    0.0444,
+    0.0568,
+    0.0727,
+    0.0929,
+    0.119,
+    0.152,
+    0.194,
+    0.249,
+    0.318,
+    0.406,
+    0.52,
+    0.665,
+    0.9
+  ],
+  "points": [
+    {"bin": 1, "x_mean": 0.0264, "q2_mean": 1.12, "value": 0.1113, "stat": 0.0351, "systematic_combined": 0.0095, "systematics": {"experimental": 0.0088, "parameterization": 0.0036, "evolution": 0.0}},
+    {"bin": 2, "x_mean": 0.0329, "q2_mean": 1.25, "value": 0.0975, "stat": 0.0268, "systematic_combined": 0.0087, "systematics": {"experimental": 0.0078, "parameterization": 0.0039, "evolution": 0.0}},
+    {"bin": 3, "x_mean": 0.0403, "q2_mean": 1.38, "value": 0.0897, "stat": 0.0236, "systematic_combined": 0.0082, "systematics": {"experimental": 0.0072, "parameterization": 0.0039, "evolution": 0.0}},
+    {"bin": 4, "x_mean": 0.0506, "q2_mean": 1.54, "value": 0.1061, "stat": 0.0201, "systematic_combined": 0.01, "systematics": {"experimental": 0.0089, "parameterization": 0.0046, "evolution": 0.0}},
+    {"bin": 5, "x_mean": 0.0648, "q2_mean": 2.01, "value": 0.109, "stat": 0.0202, "systematic_combined": 0.0093, "systematics": {"experimental": 0.0085, "parameterization": 0.0035, "evolution": 0.0016}},
+    {"bin": 6, "x_mean": 0.0829, "q2_mean": 2.45, "value": 0.1997, "stat": 0.0206, "systematic_combined": 0.0147, "systematics": {"experimental": 0.0129, "parameterization": 0.0067, "evolution": 0.0022}},
+    {"bin": 7, "x_mean": 0.1059, "q2_mean": 2.97, "value": 0.2011, "stat": 0.0218, "systematic_combined": 0.015, "systematics": {"experimental": 0.0131, "parameterization": 0.0069, "evolution": 0.0021}},
+    {"bin": 8, "x_mean": 0.1354, "q2_mean": 3.59, "value": 0.2681, "stat": 0.0236, "systematic_combined": 0.019, "systematics": {"experimental": 0.0166, "parameterization": 0.009, "evolution": 0.0022}},
+    {"bin": 9, "x_mean": 0.173, "q2_mean": 4.31, "value": 0.3246, "stat": 0.0263, "systematic_combined": 0.0223, "systematics": {"experimental": 0.02, "parameterization": 0.0096, "evolution": 0.002}},
+    {"bin": 10, "x_mean": 0.2209, "q2_mean": 5.13, "value": 0.3361, "stat": 0.0305, "systematic_combined": 0.0218, "systematics": {"experimental": 0.0203, "parameterization": 0.0079, "evolution": 0.0013}},
+    {"bin": 11, "x_mean": 0.282, "q2_mean": 6.11, "value": 0.4094, "stat": 0.037, "systematic_combined": 0.0263, "systematics": {"experimental": 0.0249, "parameterization": 0.0083, "evolution": 0.0007}},
+    {"bin": 12, "x_mean": 0.3598, "q2_mean": 7.24, "value": 0.5169, "stat": 0.0486, "systematic_combined": 0.0333, "systematics": {"experimental": 0.0316, "parameterization": 0.0105, "evolution": 0.0008}},
+    {"bin": 13, "x_mean": 0.4583, "q2_mean": 8.53, "value": 0.6573, "stat": 0.0714, "systematic_combined": 0.0416, "systematics": {"experimental": 0.0385, "parameterization": 0.0158, "evolution": 0.0013}},
+    {"bin": 14, "x_mean": 0.5819, "q2_mean": 10.16, "value": 0.6647, "stat": 0.1302, "systematic_combined": 0.0469, "systematics": {"experimental": 0.0413, "parameterization": 0.0221, "evolution": 0.0018}},
+    {"bin": 15, "x_mean": 0.7248, "q2_mean": 12.21, "value": 1.1976, "stat": 0.2763, "systematic_combined": 0.0827, "systematics": {"experimental": 0.0698, "parameterization": 0.0438, "evolution": 0.0071}}
+  ]
+}

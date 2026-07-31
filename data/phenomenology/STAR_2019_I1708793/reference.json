@@ -1,0 +1,273 @@
+{
+  "channels": {
+    "Wminus": {
+      "all": {
+        "abs_eta_bin_edges": [
+          0.0,
+          0.5,
+          1.0,
+          1.5
+        ],
+        "observable": "ALL",
+        "points": [
+          {
+            "abs_eta": 0.27,
+            "point": 1,
+            "stat": 0.101,
+            "systematic_combined": 0.019,
+            "systematics": {
+              "published_total": 0.019
+            },
+            "value": -0.012
+          },
+          {
+            "abs_eta": 0.74,
+            "point": 2,
+            "stat": 0.092,
+            "systematic_combined": 0.02,
+            "systematics": {
+              "published_total": 0.02
+            },
+            "value": -0.028
+          },
+          {
+            "abs_eta": 1.27,
+            "point": 3,
+            "stat": 0.26,
+            "systematic_combined": 0.038,
+            "systematics": {
+              "published_total": 0.038
+            },
+            "value": -0.147
+          }
+        ],
+        "rivet_path": "/STAR_2019_I1708793/Wminus_ALL"
+      },
+      "eta_bin_edges": [
+        -1.5,
+        -1.0,
+        -0.5,
+        0.0,
+        0.5,
+        1.0,
+        1.5
+      ],
+      "hepdata_table_doi": "10.17182/hepdata.105912.v1/t18",
+      "observable": "AL",
+      "points": [
+        {
+          "eta": -1.25,
+          "point": 1,
+          "stat": 0.146,
+          "systematic_combined": 0.002,
+          "systematics": {
+            "published_total": 0.002
+          },
+          "value": 0.241
+        },
+        {
+          "eta": -0.75,
+          "point": 2,
+          "stat": 0.051,
+          "systematic_combined": 0.004,
+          "systematics": {
+            "published_total": 0.004
+          },
+          "value": 0.26
+        },
+        {
+          "eta": -0.27,
+          "point": 3,
+          "stat": 0.056,
+          "systematic_combined": 0.001,
+          "systematics": {
+            "published_total": 0.001
+          },
+          "value": 0.281
+        },
+        {
+          "eta": 0.26,
+          "point": 4,
+          "stat": 0.056,
+          "systematic_combined": 0.002,
+          "systematics": {
+            "published_total": 0.002
+          },
+          "value": 0.239
+        },
+        {
+          "eta": 0.75,
+          "point": 5,
+          "stat": 0.051,
+          "systematic_combined": 0.004,
+          "systematics": {
+            "published_total": 0.004
+          },
+          "value": 0.385
+        },
+        {
+          "eta": 1.25,
+          "point": 6,
+          "stat": 0.148,
+          "systematic_combined": 0.002,
+          "systematics": {
+            "published_total": 0.002
+          },
+          "value": 0.205
+        }
+      ],
+      "rivet_path": "/STAR_2019_I1708793/Wminus_AL"
+    },
+    "Wplus": {
+      "all": {
+        "abs_eta_bin_edges": [
+          0.0,
+          0.5,
+          1.0,
+          1.5
+        ],
+        "observable": "ALL",
+        "points": [
+          {
+            "abs_eta": 0.25,
+            "point": 1,
+            "stat": 0.042,
+            "systematic_combined": 0.011,
+            "systematics": {
+              "published_total": 0.011
+            },
+            "value": 0.016
+          },
+          {
+            "abs_eta": 0.72,
+            "point": 2,
+            "stat": 0.054,
+            "systematic_combined": 0.011,
+            "systematics": {
+              "published_total": 0.011
+            },
+            "value": 0.072
+          },
+          {
+            "abs_eta": 1.24,
+            "point": 3,
+            "stat": 0.262,
+            "systematic_combined": 0.028,
+            "systematics": {
+              "published_total": 0.028
+            },
+            "value": 0.0
+          }
+        ],
+        "rivet_path": "/STAR_2019_I1708793/Wplus_ALL"
+      },
+      "eta_bin_edges": [
+        -1.5,
+        -1.0,
+        -0.5,
+        0.0,
+        0.5,
+        1.0,
+        1.5
+      ],
+      "hepdata_table_doi": "10.17182/hepdata.105912.v1/t17",
+      "observable": "AL",
+      "points": [
+        {
+          "eta": -1.22,
+          "point": 1,
+          "stat": 0.145,
+          "systematic_combined": 0.012,
+          "systematics": {
+            "published_total": 0.012
+          },
+          "value": -0.312
+        },
+        {
+          "eta": -0.71,
+          "point": 2,
+          "stat": 0.03,
+          "systematic_combined": 0.011,
+          "systematics": {
+            "published_total": 0.011
+          },
+          "value": -0.251
+        },
+        {
+          "eta": -0.24,
+          "point": 3,
+          "stat": 0.023,
+          "systematic_combined": 0.007,
+          "systematics": {
+            "published_total": 0.007
+          },
+          "value": -0.331
+        },
+        {
+          "eta": 0.25,
+          "point": 4,
+          "stat": 0.023,
+          "systematic_combined": 0.005,
+          "systematics": {
+            "published_total": 0.005
+          },
+          "value": -0.412
+        },
+        {
+          "eta": 0.72,
+          "point": 5,
+          "stat": 0.029,
+          "systematic_combined": 0.013,
+          "systematics": {
+            "published_total": 0.013
+          },
+          "value": -0.534
+        },
+        {
+          "eta": 1.22,
+          "point": 6,
+          "stat": 0.14,
+          "systematic_combined": 0.014,
+          "systematics": {
+            "published_total": 0.014
+          },
+          "value": -0.482
+        }
+      ],
+      "rivet_path": "/STAR_2019_I1708793/Wplus_AL"
+    },
+    "Zgamma": {
+      "observable": "AL",
+      "points": [
+        {
+          "coordinate": 0.0,
+          "point": 1,
+          "stat": 0.07,
+          "systematic_combined": 0.0,
+          "systematics": {
+            "published_negligible": 0.0
+          },
+          "value": -0.04
+        }
+      ],
+      "rivet_path": "/STAR_2019_I1708793/Zgamma_AL"
+    }
+  },
+  "measurement": "STAR_2019_I1708793",
+  "provenance": {
+    "hepdata_record_doi": "10.17182/hepdata.105912.v1",
+    "publication_arxiv": "1812.04817",
+    "publication_page": 7,
+    "publication_pdf_sha256": "d7fde389ec21927b4869f9b8b772b01326284cd33255b0e84ef5e0511e058a7c",
+    "publication_pdf_url": "https://arxiv.org/pdf/1812.04817",
+    "publication_table": "Table I",
+    "retrieved": "2026-07-21",
+    "table17_sha256": "fb38647137874114997af0ba4303be0431e92c9a83f4495676b561596cf00818",
+    "table17_url": "https://www.hepdata.net/record/data/105912/1134045/1",
+    "table18_sha256": "388aadd7d2eef07b1fbd7c3160904cfd62e335afca8683ca845cf2157e515dd1",
+    "table18_url": "https://www.hepdata.net/record/data/105912/1134046/1",
+    "z_result_page": 7
+  },
+  "schema_version": 3,
+  "sqrt_s_gev": 510.0
+}

@@ -1,0 +1,12 @@
+# -*- ThePEG-repository -*-
+read STAR_2019_I1708793-Common.in
+set /Herwig/Partons/PPPolarizedExtractor:FirstLongitudinalPolarization 1
+set /Herwig/Partons/PPPolarizedExtractor:SecondLongitudinalPolarization -1
+insert /Herwig/MatrixElements/SubProcess:MatrixElements[0] /Herwig/MatrixElements/MEqq2gZ2ff
+set /Herwig/MatrixElements/MEqq2gZ2ff:GammaZ All
+set /Herwig/MatrixElements/MEqq2gZ2ff:Process Electron
+set /Herwig/Cuts/MassCut:MinM 65.0*GeV
+set /Herwig/Cuts/MassCut:MaxM 115.0*GeV
+set /Herwig/Cuts/ChargedLeptonKtCut:MinKT 12.0*GeV
+cd /Herwig/Generators
+saverun STAR_2019_I1708793_Zgamma_PM-LO EventGenerator

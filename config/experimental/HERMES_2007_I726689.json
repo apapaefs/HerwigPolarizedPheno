@@ -1,0 +1,217 @@
+{
+  "schema_version": 1,
+  "id": "HERMES_2007_I726689",
+  "title": "HERMES 15-bin proton virtual-photon asymmetry A1p",
+  "analysis": {
+    "name": "HERMES_2007_I726689",
+    "source": "analyses/rivet/dis/HERMES_2007_I726689.cc",
+    "info": "analyses/rivet/dis/HERMES_2007_I726689.info",
+    "plot": "analyses/rivet/dis/HERMES_2007_I726689.plot",
+    "plugin": "RivetHERMES_2007_I726689.so",
+    "reference_yoda": "analyses/rivet/dis/HERMES_2007_I726689.yoda.gz"
+  },
+  "reference": {
+    "snapshot": "data/experimental/HERMES_2007_I726689/reference.json",
+    "source_url": "https://www.desy.de/~w3hermes/TRANS/lara.g1_long-1a.dat",
+    "source_sha256": "2567ee83422f8da7c3c602e2aa716c2501cc539820ba0f4f9657515ed2785997",
+    "format": "tar-five-column",
+    "expected_rows": 15,
+    "archive_member": "A1p_a15",
+    "member_sha256": "f9681449a1b478c89986b72fd17a2598899b703fa06c259b0a8781b8a956f700",
+    "hepdata_table": "https://doi.org/10.17182/hepdata.11211.v1/t14",
+    "prediction_path": "/HERMES_2007_I726689/d14-x01-y01"
+  },
+  "cards": {
+    "directory": "cards/experimental/HERMES_2007_I726689",
+    "common": "HERMES_2007_I726689-Common.in",
+    "stem_pattern": "HERMES_2007_I726689_{helicity}-{order}",
+    "helicities": {
+      "PP": [1, 1],
+      "PM": [1, -1],
+      "MP": [-1, 1],
+      "MM": [-1, -1]
+    },
+    "orders": {
+      "POSNLO": "PositiveNLO",
+      "NEGNLO": "NegativeNLO"
+    }
+  },
+  "campaign": {
+    "default_jobs": 4,
+    "default_shards": 1,
+    "default_seed_base": 726689,
+    "default_events": {
+      "POSNLO": 100000,
+      "NEGNLO": 10000
+    },
+    "smoke_events": 100,
+    "comparison_profile": {
+      "plotting": {
+        "unmatch": ["/HERMES_2007_I726689/SigmaLL_"]
+      },
+      "families": {
+        "unpolarized_nlo": {
+          "label": "NLO+PS (unpolarized beams)",
+          "id_prefix": "UNPOL",
+          "card_directory": "cards/experimental/HERMES_2007_I726689/comparisons",
+          "materialized_directory": "comparisons",
+          "stem_pattern": "HERMES_2007_I726689_UNPOL_{helicity}-{order}",
+          "helicities": {
+            "00": [0, 0]
+          },
+          "orders": {
+            "POSNLO": "PositiveNLO",
+            "NEGNLO": "NegativeNLO"
+          },
+          "event_options": {
+            "POSNLO": "posnlo_events",
+            "NEGNLO": "negnlo_events"
+          },
+          "postprocess": "direct_unpolarized",
+          "perturbative_order": "NLO+PS",
+          "real_emission_spin_density": "enabled with unpolarized density matrices",
+          "shower_spin_correlations": "enabled",
+          "beam_polarization": "00"
+        },
+        "polarized_lo": {
+          "label": "LO+PS (polarized)",
+          "id_prefix": "LOPOL",
+          "card_directory": "cards/experimental/HERMES_2007_I726689/comparisons",
+          "materialized_directory": "comparisons",
+          "stem_pattern": "HERMES_2007_I726689_LO_{helicity}-{order}",
+          "helicities": {
+            "PP": [1, 1],
+            "PM": [1, -1],
+            "MP": [-1, 1],
+            "MM": [-1, -1]
+          },
+          "orders": {
+            "LO": "Born"
+          },
+          "event_options": {
+            "LO": "lo_events"
+          },
+          "postprocess": "helicity_asymmetry",
+          "perturbative_order": "LO+PS with the nominal NLO PDF inputs",
+          "real_emission_spin_density": "not applicable",
+          "shower_spin_correlations": "enabled",
+          "beam_polarization": "physical PP, PM, MP, MM"
+        },
+        "no_real_spin_nlo": {
+          "label": "NLO+PS (polarized; Born spin only)",
+          "id_prefix": "NOREALSPIN",
+          "card_directory": "cards/experimental/HERMES_2007_I726689/comparisons",
+          "materialized_directory": "comparisons",
+          "stem_pattern": "HERMES_2007_I726689_NOREALSPIN_{helicity}-{order}",
+          "helicities": {
+            "PP": [1, 1],
+            "PM": [1, -1],
+            "MP": [-1, 1],
+            "MM": [-1, -1]
+          },
+          "orders": {
+            "POSNLO": "PositiveNLO",
+            "NEGNLO": "NegativeNLO"
+          },
+          "event_options": {
+            "POSNLO": "posnlo_events",
+            "NEGNLO": "negnlo_events"
+          },
+          "postprocess": "helicity_asymmetry",
+          "perturbative_order": "NLO+PS",
+          "real_emission_spin_density": "disabled; Born spin density and shower spin correlations retained",
+          "shower_spin_correlations": "enabled",
+          "beam_polarization": "physical PP, PM, MP, MM"
+        },
+        "no_shower_spin_nlo": {
+          "label": "NLO+PS (polarized; shower spin off)",
+          "id_prefix": "NOSHOWERSPIN",
+          "card_directory": "cards/experimental/HERMES_2007_I726689/comparisons",
+          "materialized_directory": "comparisons",
+          "stem_pattern": "HERMES_2007_I726689_NOSHOWERSPIN_{helicity}-{order}",
+          "helicities": {
+            "PP": [1, 1],
+            "PM": [1, -1],
+            "MP": [-1, 1],
+            "MM": [-1, -1]
+          },
+          "orders": {
+            "POSNLO": "PositiveNLO",
+            "NEGNLO": "NegativeNLO"
+          },
+          "event_options": {
+            "POSNLO": "posnlo_events",
+            "NEGNLO": "negnlo_events"
+          },
+          "postprocess": "helicity_asymmetry",
+          "perturbative_order": "NLO+PS",
+          "real_emission_spin_density": "disabled",
+          "shower_spin_correlations": "disabled",
+          "beam_polarization": "physical PP, PM, MP, MM"
+        }
+      }
+    }
+  },
+  "raw_observables": {
+    "Q2GT1": {
+      "ordinary": "SigmaX_Q2GT1",
+      "weighted": "SigmaOverD_X_Q2GT1",
+      "covariance": "CovarianceProxy_X_Q2GT1"
+    },
+    "Q2GT4": {
+      "ordinary": "SigmaX_Q2GT4",
+      "weighted": "SigmaOverD_X_Q2GT4",
+      "covariance": "CovarianceProxy_X_Q2GT4"
+    }
+  },
+  "outputs": {
+    "Q2GT1": {
+      "a1": "/HERMES_2007_I726689/d14-x01-y01",
+      "apar": "/HERMES_2007_I726689/AParallel_Q2GT1",
+      "parity_pp_mm": "/HERMES_2007_I726689/Parity_PP_MM_Q2GT1",
+      "parity_pm_mp": "/HERMES_2007_I726689/Parity_PM_MP_Q2GT1"
+    },
+    "Q2GT4": {
+      "a1": "/HERMES_2007_I726689/A1_Q2GT4",
+      "apar": "/HERMES_2007_I726689/AParallel_Q2GT4",
+      "parity_pp_mm": "/HERMES_2007_I726689/Parity_PP_MM_Q2GT4",
+      "parity_pm_mp": "/HERMES_2007_I726689/Parity_PM_MP_Q2GT4"
+    }
+  },
+  "plotting": {
+    "unmatch": ["/HERMES_2007_I726689/Sigma(LL|UU)_"]
+  },
+  "diagnostics": [
+    "Accepted_X_Q2GT1",
+    "Accepted_Q2_Q2GT1",
+    "Accepted_Y_Q2GT1",
+    "Accepted_W2_Q2GT1",
+    "Accepted_Theta_Q2GT1",
+    "Accepted_X_Q2GT4",
+    "Accepted_Q2_Q2GT4",
+    "Accepted_Y_Q2GT4",
+    "Accepted_W2_Q2GT4",
+    "Accepted_Theta_Q2GT4"
+  ],
+  "combination": {
+    "unpolarized": {"PP": 0.25, "PM": 0.25, "MP": 0.25, "MM": 0.25},
+    "longitudinal": {"PP": 0.25, "PM": -0.25, "MP": -0.25, "MM": 0.25}
+  },
+  "physics": {
+    "beam": "27.6 GeV e+ on a fixed proton target",
+    "exchange": "photon",
+    "unpolarized_pdf": "NNPDF40_nlo_pch_as_01180",
+    "polarized_pdf": "NNPDFpol20_nlo_as_01180",
+    "primary_q2_min_gev2": 1.0,
+    "conservative_q2_min_gev2": 4.0,
+    "a2_g2_assumption": "eta*A2 = 0; g2 is not modeled",
+    "depolarization_model": "R1990 fit B",
+    "primary_status": "exploratory at the PDF QMin boundary",
+    "assumptions": [
+      "The eta*A2 term is neglected; g2 is not modeled",
+      "R1990 supplies R(x,Q2) in the depolarization factor",
+      "Q2 > 1 GeV2 touches the QMin=1 GeV boundary of both selected PDFs",
+      "Q2 > 4 GeV2 is the conservative validation selection"
+    ]
+  }
+}

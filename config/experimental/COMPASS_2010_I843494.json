@@ -1,0 +1,306 @@
+{
+  "analysis": {
+    "info": "analyses/rivet/dis/COMPASS_2010_I843494.info",
+    "name": "COMPASS_2010_I843494",
+    "plot": "analyses/rivet/dis/COMPASS_2010_I843494.plot",
+    "plugin": "RivetCOMPASS_2010_I843494.so",
+    "reference_yoda": "analyses/rivet/dis/COMPASS_2010_I843494.yoda.gz",
+    "source": "analyses/rivet/dis/COMPASS_2010_I843494.cc",
+    "support_files": [
+      "analyses/rivet/dis/COMPASSInclusiveDIS.hh"
+    ]
+  },
+  "campaign": {
+    "comparison_profile": {
+      "families": {
+        "no_real_spin_nlo": {
+          "beam_polarization": "physical PP, PM, MP, MM",
+          "card_directory": "cards/experimental/COMPASS_2010_I843494/comparisons",
+          "event_options": {
+            "NEGNLO": "negnlo_events",
+            "POSNLO": "posnlo_events"
+          },
+          "helicities": {
+            "MM": [
+              -1,
+              -1
+            ],
+            "MP": [
+              -1,
+              1
+            ],
+            "PM": [
+              1,
+              -1
+            ],
+            "PP": [
+              1,
+              1
+            ]
+          },
+          "id_prefix": "NOREALSPIN",
+          "label": "NLO+PS (polarized; Born spin only)",
+          "materialized_directory": "comparisons",
+          "orders": {
+            "NEGNLO": "NegativeNLO",
+            "POSNLO": "PositiveNLO"
+          },
+          "perturbative_order": "NLO+PS",
+          "postprocess": "helicity_asymmetry",
+          "real_emission_spin_density": "disabled; Born spin density and shower spin correlations retained",
+          "shower_spin_correlations": "enabled",
+          "stem_pattern": "COMPASS_2010_I843494_NOREALSPIN_{helicity}-{order}"
+        },
+        "no_shower_spin_nlo": {
+          "beam_polarization": "physical PP, PM, MP, MM",
+          "card_directory": "cards/experimental/COMPASS_2010_I843494/comparisons",
+          "event_options": {
+            "NEGNLO": "negnlo_events",
+            "POSNLO": "posnlo_events"
+          },
+          "helicities": {
+            "MM": [
+              -1,
+              -1
+            ],
+            "MP": [
+              -1,
+              1
+            ],
+            "PM": [
+              1,
+              -1
+            ],
+            "PP": [
+              1,
+              1
+            ]
+          },
+          "id_prefix": "NOSHOWERSPIN",
+          "label": "NLO+PS (polarized; shower spin off)",
+          "materialized_directory": "comparisons",
+          "orders": {
+            "NEGNLO": "NegativeNLO",
+            "POSNLO": "PositiveNLO"
+          },
+          "perturbative_order": "NLO+PS",
+          "postprocess": "helicity_asymmetry",
+          "real_emission_spin_density": "disabled",
+          "shower_spin_correlations": "disabled",
+          "stem_pattern": "COMPASS_2010_I843494_NOSHOWERSPIN_{helicity}-{order}"
+        },
+        "polarized_lo": {
+          "beam_polarization": "physical PP, PM, MP, MM",
+          "card_directory": "cards/experimental/COMPASS_2010_I843494/comparisons",
+          "event_options": {
+            "LO": "lo_events"
+          },
+          "helicities": {
+            "MM": [
+              -1,
+              -1
+            ],
+            "MP": [
+              -1,
+              1
+            ],
+            "PM": [
+              1,
+              -1
+            ],
+            "PP": [
+              1,
+              1
+            ]
+          },
+          "id_prefix": "LOPOL",
+          "label": "LO+PS (polarized)",
+          "materialized_directory": "comparisons",
+          "orders": {
+            "LO": "Born"
+          },
+          "perturbative_order": "LO+PS with the nominal NLO PDF inputs",
+          "postprocess": "helicity_asymmetry",
+          "real_emission_spin_density": "not applicable",
+          "shower_spin_correlations": "enabled",
+          "stem_pattern": "COMPASS_2010_I843494_LO_{helicity}-{order}"
+        },
+        "unpolarized_nlo": {
+          "beam_polarization": "00",
+          "card_directory": "cards/experimental/COMPASS_2010_I843494/comparisons",
+          "event_options": {
+            "NEGNLO": "negnlo_events",
+            "POSNLO": "posnlo_events"
+          },
+          "helicities": {
+            "00": [
+              0,
+              0
+            ]
+          },
+          "id_prefix": "UNPOL",
+          "label": "NLO+PS (unpolarized beams)",
+          "materialized_directory": "comparisons",
+          "orders": {
+            "NEGNLO": "NegativeNLO",
+            "POSNLO": "PositiveNLO"
+          },
+          "perturbative_order": "NLO+PS",
+          "postprocess": "direct_unpolarized",
+          "real_emission_spin_density": "enabled with unpolarized density matrices",
+          "shower_spin_correlations": "enabled",
+          "stem_pattern": "COMPASS_2010_I843494_UNPOL_{helicity}-{order}"
+        }
+      },
+      "plotting": {
+        "unmatch": [
+          "/COMPASS_2010_I843494/SigmaLL_"
+        ]
+      }
+    },
+    "default_events": {
+      "NEGNLO": 10000,
+      "POSNLO": 100000
+    },
+    "default_jobs": 4,
+    "default_seed_base": 843494,
+    "default_shards": 1,
+    "smoke_events": 100
+  },
+  "cards": {
+    "common": "COMPASS_2010_I843494-Common.in",
+    "directory": "cards/experimental/COMPASS_2010_I843494",
+    "helicities": {
+      "MM": [
+        -1,
+        -1
+      ],
+      "MP": [
+        -1,
+        1
+      ],
+      "PM": [
+        1,
+        -1
+      ],
+      "PP": [
+        1,
+        1
+      ]
+    },
+    "orders": {
+      "NEGNLO": "NegativeNLO",
+      "POSNLO": "PositiveNLO"
+    },
+    "stem_pattern": "COMPASS_2010_I843494_{helicity}-{order}"
+  },
+  "combination": {
+    "longitudinal": {
+      "MM": 0.25,
+      "MP": -0.25,
+      "PM": -0.25,
+      "PP": 0.25
+    },
+    "unpolarized": {
+      "MM": 0.25,
+      "MP": 0.25,
+      "PM": 0.25,
+      "PP": 0.25
+    }
+  },
+  "diagnostics": [
+    "Accepted_X_Q2GT1",
+    "Accepted_Q2_Q2GT1",
+    "Accepted_Y_Q2GT1",
+    "Accepted_W2_Q2GT1",
+    "Accepted_Theta_Q2GT1",
+    "Accepted_EPrime_Q2GT1",
+    "Accepted_X_Q2GT4",
+    "Accepted_Q2_Q2GT4",
+    "Accepted_Y_Q2GT4",
+    "Accepted_W2_Q2GT4",
+    "Accepted_Theta_Q2GT4",
+    "Accepted_EPrime_Q2GT4"
+  ],
+  "id": "COMPASS_2010_I843494",
+  "outputs": {
+    "Q2GT1": {
+      "a1": "/COMPASS_2010_I843494/d01-x01-y01",
+      "apar": "/COMPASS_2010_I843494/AParallel_Q2GT1",
+      "parity_pm_mp": "/COMPASS_2010_I843494/Parity_PM_MP_Q2GT1",
+      "parity_pp_mm": "/COMPASS_2010_I843494/Parity_PP_MM_Q2GT1"
+    },
+    "Q2GT4": {
+      "a1": "/COMPASS_2010_I843494/A1_Q2GT4",
+      "apar": "/COMPASS_2010_I843494/AParallel_Q2GT4",
+      "parity_pm_mp": "/COMPASS_2010_I843494/Parity_PM_MP_Q2GT4",
+      "parity_pp_mm": "/COMPASS_2010_I843494/Parity_PP_MM_Q2GT4"
+    }
+  },
+  "physics": {
+    "a2_g2_assumption": "eta*A2 = 0; g2 is not modeled",
+    "assumptions": [
+      "The eta*A2 term is neglected; g2 is not modeled",
+      "R1998 supplies R(x,Q2) with the finite incoming-muon mass retained",
+      "Fixed 160 GeV generation approximates the published 140-180 GeV beam-energy selection",
+      "No unreported W cut is imposed"
+    ],
+    "beam": "nominal 160 GeV mu+ on a fixed proton target; approximation to the published 140-180 GeV selection",
+    "conservative_q2_min_gev2": 4.0,
+    "depolarization_model": "R1998 with finite-muon kinematics",
+    "exchange": "photon",
+    "g1_status": "raw HEPData values retained; no g1 prediction",
+    "polarized_pdf": "NNPDFpol20_nlo_as_01180",
+    "primary_q2_min_gev2": 1.0,
+    "primary_status": "perturbative DIS selection",
+    "reported_w_cut": "none",
+    "unpolarized_pdf": "NNPDF40_nlo_pch_as_01180"
+  },
+  "plotting": {
+    "unmatch": [
+      "/COMPASS_2010_I843494/Sigma(LL|UU)_"
+    ]
+  },
+  "raw_observables": {
+    "Q2GT1": {
+      "covariance": "CovarianceProxy_X_Q2GT1",
+      "ordinary": "SigmaX_Q2GT1",
+      "weighted": "SigmaOverD_X_Q2GT1"
+    },
+    "Q2GT4": {
+      "covariance": "CovarianceProxy_X_Q2GT4",
+      "ordinary": "SigmaX_Q2GT4",
+      "weighted": "SigmaOverD_X_Q2GT4"
+    }
+  },
+  "reference": {
+    "columns": {
+      "a1_group": 0,
+      "g1_group": 1,
+      "q2": 1,
+      "x": 0
+    },
+    "expected_headers": [
+      "X",
+      "Q**2 [GEV**2]",
+      "A1",
+      " G1"
+    ],
+    "expected_qualifiers": {
+      "RE": "MU+ P --> MU+ X"
+    },
+    "expected_rows": 15,
+    "format": "hepdata-table-json",
+    "hepdata_table": "https://doi.org/10.17182/hepdata.61588.v2/t1",
+    "prediction_path": "/COMPASS_2010_I843494/d01-x01-y01",
+    "raw_snapshot": "data/experimental/COMPASS_2010_I843494/raw-hepdata-table.json",
+    "record_doi": "10.17182/hepdata.61588.v2",
+    "snapshot": "data/experimental/COMPASS_2010_I843494/reference.json",
+    "source_sha256": "97514a9cac2987377ff3531533dee5fe6ce58c87f9ffef5ff8abf47ebba06e7a",
+    "source_url": "https://www.hepdata.net/record/data/61588/102092/2",
+    "table_doi": "10.17182/hepdata.61588.v2/t1",
+    "table_name": "Table 1"
+  },
+  "schema_version": 2,
+  "title": "COMPASS 15-bin proton virtual-photon asymmetry A1p at 160 GeV"
+}

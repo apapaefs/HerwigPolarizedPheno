@@ -12,3 +12,19 @@
 main.pdf
 rendered/
 
+# Phenomenology campaigns and generated runtime products
+/campaigns/
+/build/
+*.run
+*.log
+*.out
+*.yoda
+*.so
+*.dylib
+*.root
+*.hepmc
+*.hepmc3
+__pycache__/
+*.py[cod]
+.pytest_cache/
+

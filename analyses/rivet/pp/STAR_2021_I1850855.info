@@ -1,0 +1,24 @@
+Name: STAR_2021_I1850855
+Summary: Inclusive-jet and dijet longitudinal double-spin asymmetries at 200 GeV
+Experiment: STAR
+Collider: RHIC
+Year: 2021
+InspireID: 1850855
+Status: UNVALIDATED
+Reentrant: true
+Authors:
+  - Andreas Papaefstathiou <apapaefs@kennesaw.edu>
+References:
+  - DOI:10.1103/PhysRevD.103.L091103
+  - HEPData:10.17182/hepdata.104836.v1
+RunInfo: Requires independent PP, PM, MP, and MM polarized pp samples.
+NumEvents: 100000
+NeedsCrossSection: yes
+Beams: [p+, p+]
+Energies: [200]
+Options:
+ - LEVEL=HARDPARTON,HADRON
+Description: >
+  The default HARDPARTON option clusters terminal shower partons attached to
+  the signal process and rejects beam-remnant descendants. HADRON is an
+  optional stable-particle modeling diagnostic.
