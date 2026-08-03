@@ -21,7 +21,8 @@ ordinary YODA/plot products.
   engine used by the primary runner;
 - `scripts/tests/`: self-contained campaign, reference, postprocessing, and
   Rivet-source tests;
-- `docs/`: workflow documentation and the experimental-compatibility audit;
+- `docs/`: workflow documentation, the experimental-compatibility audit, and
+  the future EIC polarized-DIS study concept;
 - `main.tex`, `references.bib`, and `figures/`: the Overleaf-compatible paper
   bundle, intentionally kept at repository root.
 
@@ -89,6 +90,18 @@ experimental covariance chains. In particular:
 
 The authoritative measurement-by-measurement assessment is
 [`docs/experimental-analysis-compatibility-audit.md`](docs/experimental-analysis-compatibility-audit.md).
+
+## Future EIC study
+
+The proposed next phenomenology project is a study of longitudinal spin
+asymmetries in EIC jet production at NLO+parton-shower accuracy. Its aim is to
+identify polarized-PDF-sensitive observables that remain stable under QCD
+radiation, hadronization, and DIS reconstruction, without performing a PDF
+fit, reweighting, or projected PDF-set analysis.
+
+The scoped physics programme, measurement hierarchy, uncertainty budget,
+validation requirements, and implementation roadmap are documented in
+[`docs/future-eic-study/README.md`](docs/future-eic-study/README.md).
 
 ## Provenance and paper mirroring
 
