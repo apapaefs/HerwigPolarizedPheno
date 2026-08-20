@@ -1044,6 +1044,64 @@ def normalized_from_raw(measurement: str) -> dict[str, Any]:
     raise NewReferenceDataError(f"Unknown STAR/HERMES measurement {measurement}")
 
 
+def assert_normalized_snapshot_matches(
+    generated: Any,
+    snapshot: Any,
+    path: str = "$",
+) -> None:
+    """Compare normalized records across platforms without accepting drift.
+
+    The STAR covariance contains square roots whose final binary digit can
+    differ between otherwise compatible libm implementations.  Structure,
+    strings, integers, and booleans remain exact; floating-point values allow
+    only a few units in the last place.  Physics-scale changes therefore
+    remain hard failures while macOS/Linux roundoff does not stale a pinned
+    snapshot.
+    """
+
+    if type(generated) is not type(snapshot):
+        raise NewReferenceDataError(
+            f"Normalized snapshot type mismatch at {path}: "
+            f"{type(generated).__name__} != {type(snapshot).__name__}"
+        )
+    if isinstance(generated, Mapping):
+        if set(generated) != set(snapshot):
+            difference = sorted(set(generated) ^ set(snapshot))
+            raise NewReferenceDataError(
+                f"Normalized snapshot key mismatch at {path}: {difference}"
+            )
+        for key in generated:
+            assert_normalized_snapshot_matches(
+                generated[key], snapshot[key], f"{path}.{key}"
+            )
+        return
+    if isinstance(generated, list):
+        if len(generated) != len(snapshot):
+            raise NewReferenceDataError(
+                f"Normalized snapshot length mismatch at {path}: "
+                f"{len(generated)} != {len(snapshot)}"
+            )
+        for index, (actual, expected) in enumerate(zip(generated, snapshot)):
+            assert_normalized_snapshot_matches(
+                actual, expected, f"{path}[{index}]"
+            )
+        return
+    if isinstance(generated, float):
+        if not math.isclose(
+            generated, snapshot, rel_tol=1.0e-15, abs_tol=1.0e-24
+        ):
+            raise NewReferenceDataError(
+                f"Normalized snapshot float mismatch at {path}: "
+                f"{generated!r} != {snapshot!r}"
+            )
+        return
+    if generated != snapshot:
+        raise NewReferenceDataError(
+            f"Normalized snapshot mismatch at {path}: "
+            f"{generated!r} != {snapshot!r}"
+        )
+
+
 def _validate_psd(matrix: Sequence[Sequence[float]], label: str) -> None:
     try:
         import numpy as np
@@ -1065,8 +1123,7 @@ def validate_vendored(measurement: str) -> dict[str, Any]:
         raise NewReferenceDataError(f"Unknown STAR/HERMES measurement {measurement}")
     generated = normalized_from_raw(measurement)
     snapshot = _json(DISPOL_ROOT/REFERENCE_PATHS[measurement])
-    if generated != snapshot:
-        raise NewReferenceDataError(f"Normalized snapshot is stale for {measurement}")
+    assert_normalized_snapshot_matches(generated, snapshot)
     if measurement in STAR_SPECIFICATIONS:
         _validate_psd(
             snapshot["primary_covariance"]["covariance"],

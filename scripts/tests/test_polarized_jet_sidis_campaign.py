@@ -65,8 +65,19 @@ class ReferenceDataTests(unittest.TestCase):
                     DISPOL_ROOT / reference.REFERENCE_PATHS[measurement]
                 ).read_text(encoding="utf-8")
             )
-            self.assertEqual(generated, vendored)
+            reference.assert_normalized_snapshot_matches(generated, vendored)
             self.assertEqual(reference.validate_vendored(measurement), vendored)
+
+    def test_snapshot_comparison_allows_only_last_bit_float_roundoff(self) -> None:
+        reference.assert_normalized_snapshot_matches(
+            {"value": [1.0]}, {"value": [1.0 + 8.0e-16]}
+        )
+        with self.assertRaisesRegex(
+            reference.NewReferenceDataError, "float mismatch"
+        ):
+            reference.assert_normalized_snapshot_matches(
+                {"value": [1.0]}, {"value": [1.0 + 1.0e-12]}
+            )
 
     def test_star_complete_table_inventories_and_checksums(self) -> None:
         for measurement, expected_count in (

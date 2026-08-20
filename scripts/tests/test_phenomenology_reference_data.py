@@ -187,7 +187,7 @@ class PinnedReferenceTests(unittest.TestCase):
             self.assertTrue(all(path.startswith("/REF/") for path in objects))
         phenix = yoda.read(str(DISPOL_ROOT / reference.REFERENCE_YODA_PATHS["PHENIX_2023_I2033856"]))
         self.assertEqual(
-            phenix["/REF/PHENIX_2023_I2033856/d01-x01-y01"].xEdges(),
+            list(phenix["/REF/PHENIX_2023_I2033856/d01-x01-y01"].xEdges()),
             [6.0,6.5,7.0,7.5,8.0,8.5,9.0,9.5,10.0,12.0,14.0,
              16.0,18.0,20.0,22.0,24.0,26.0,28.0,30.0],
         )

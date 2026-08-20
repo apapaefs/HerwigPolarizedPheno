@@ -105,7 +105,7 @@ class HermesReferenceTests(unittest.TestCase):
         reference = DISPOL_ROOT / "analyses" / "rivet" / "dis" / f"{MEASUREMENT_ID}.yoda.gz"
         objects = yoda.read(str(reference))
         obj = objects[f"/REF/{MEASUREMENT_ID}/d14-x01-y01"]
-        self.assertEqual(obj.xEdges(), self.snapshot["bin_edges"])
+        self.assertEqual(list(obj.xEdges()), self.snapshot["bin_edges"])
         self.assertEqual(obj.numBins(), 15)
         self.assertEqual(
             obj.annotation("PublishedXMeans"),
