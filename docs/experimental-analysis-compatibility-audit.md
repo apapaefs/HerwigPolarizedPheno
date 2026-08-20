@@ -1,6 +1,6 @@
 # Experimental-analysis compatibility audit
 
-Audit date: 2026-07-26
+Audit date: 2026-07-26; corrected-production protocol added 2026-08-19
 
 ## Scope and meaning of compatibility
 
@@ -147,6 +147,13 @@ for this reference-only repair, but the current immutable-signature guard
 cannot certify a reference-only migration of a pre-audit manifest.  Until a
 narrow verified migration tool exists, the safe supported workflow is a new
 tag and event run; correlated goodness-of-fit summaries must be regenerated.
+
+The corrected-production protocol additionally requires three independent
+50-million-event-per-helicity generator-cut samples at 3, 4, and 5 GeV. The
+3-versus-4 GeV comparison gates the nominal 4 GeV production, while 5 GeV is
+reported as a stress test. This test addresses sensitivity to the generator
+cut; it does not promote the hard-shower-parton observable to an experimental-
+analysis-level jet definition.
 
 ### DIS PDF-replica variance
 

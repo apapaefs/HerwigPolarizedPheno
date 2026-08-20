@@ -35,6 +35,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable, Mapping, Sequence
 
+import runtime_provenance as provenance
+
 
 SCRIPT_PATH = Path(__file__).resolve()
 DISPOL_ROOT = SCRIPT_PATH.parents[1]
@@ -1055,7 +1057,10 @@ def _find_runtime_library(prefix: Path, relative_directory: str, pattern: str) -
 
 def preflight_runtime(measurement: Mapping[str, Any]) -> dict[str, Any]:
     tools: dict[str, str] = {}
-    for name in ("Herwig", "rivet", "rivet-build", "rivet-mkhtml", "rivet-config", "lhapdf"):
+    for name in (
+        "Herwig", "rivet", "rivet-build", "rivet-mkhtml", "rivet-config",
+        "lhapdf", "lhapdf-config",
+    ):
         resolved = shutil.which(name)
         if not resolved:
             raise CampaignError(
@@ -1065,7 +1070,14 @@ def preflight_runtime(measurement: Mapping[str, Any]) -> dict[str, Any]:
 
     herwig_prefix = Path(tools["Herwig"]).parent.parent.resolve()
     hwmedis = _find_runtime_library(herwig_prefix, "lib/Herwig", "HwMEDIS*.so*")
+    hwmehadron = _find_runtime_library(
+        herwig_prefix, "lib/Herwig", "HwMEHadron*.so*"
+    )
+    hwshower = _find_runtime_library(
+        herwig_prefix, "lib/Herwig", "HwShower*.so*"
+    )
     fixed_target = _find_runtime_library(herwig_prefix, "lib/ThePEG", "FixedTargetLuminosity*.so*")
+    herwig_repository = herwig_prefix / "share" / "Herwig" / "HerwigDefaults.rpo"
     pdfs = [measurement["physics"]["unpolarized_pdf"], measurement["physics"]["polarized_pdf"]]
     for pdf in pdfs:
         _command_output([tools["lhapdf"], "show", str(pdf)])
@@ -1077,6 +1089,28 @@ def preflight_runtime(measurement: Mapping[str, Any]) -> dict[str, Any]:
         candidates = sorted(Path("/opt/homebrew/bin").glob("g++-[0-9]*"), reverse=True)
         compiler = str(candidates[0]) if candidates else ""
 
+    try:
+        file_provenance = provenance.runtime_record(
+            repository=DISPOL_ROOT,
+            tools=tools,
+            herwig_prefix=herwig_prefix,
+            artifact_paths={
+                "Herwig": Path(tools["Herwig"]),
+                "HerwigDefaults.rpo": herwig_repository,
+                "HwMEDIS": hwmedis,
+                "HwMEHadron": hwmehadron,
+                "HwShower": hwshower,
+                "FixedTargetLuminosity": fixed_target,
+                "Rivet": Path(tools["rivet"]),
+            },
+            pdf_sets=[str(pdf) for pdf in pdfs],
+            lhapdf_data_directory=Path(
+                _command_output([tools["lhapdf-config"], "--datadir"])
+            ),
+        )
+    except provenance.ProvenanceError as exc:
+        raise CampaignError(str(exc)) from exc
+
     return {
         "checked_at": utc_now(),
         "tools": tools,
@@ -1085,9 +1119,13 @@ def preflight_runtime(measurement: Mapping[str, Any]) -> dict[str, Any]:
         "rivet_version": _command_output([tools["rivet"], "--version"]),
         "rivet_data_directory": _command_output([tools["rivet-config"], "--datadir"]),
         "hwmedis_library": str(hwmedis),
+        "hwmehadron_library": str(hwmehadron),
+        "hwshower_library": str(hwshower),
+        "herwig_repository": str(herwig_repository.resolve()),
         "fixed_target_library": str(fixed_target),
         "rivet_plugin_compiler": compiler,
         "pdf_sets": pdfs,
+        "provenance": file_provenance,
         "environment": {
             key: os.environ.get(key, "")
             for key in ("HERWIG_ENV", "RIVET_ANALYSIS_PATH", "RIVET_DATA_PATH", "DYLD_LIBRARY_PATH", "LD_LIBRARY_PATH")
@@ -1508,6 +1546,7 @@ def prepare_campaign(args: argparse.Namespace, measurement: Mapping[str, Any]) -
     manifest["updated_at"] = utc_now()
     manifest["runtime"] = runtime
     manifest["plugin"] = str(plugin.relative_to(campaign_dir))
+    manifest["plugin_provenance"] = provenance.file_record(plugin)
     manifest["reference_snapshot"] = {
         "path": measurement["reference"]["snapshot"],
         "sha256": sha256_file(resolve_dispol_path(measurement["reference"]["snapshot"])),
@@ -1534,6 +1573,19 @@ def prepare_campaign(args: argparse.Namespace, measurement: Mapping[str, Any]) -
         if not generated.is_file() or generated.stat().st_size == 0:
             raise CampaignError(f"Herwig read did not create {generated}")
         os.replace(generated, run_destination)
+
+    prepared_records = {
+        str(path.relative_to(campaign_dir)): provenance.file_record(path)
+        for path in sorted(
+            [plugin]
+            + [path for path in (campaign_dir / "cards").rglob("*.in")]
+            + [path for path in (campaign_dir / "runs").glob("*.run")]
+        )
+    }
+    manifest["prepared_artifacts"] = {
+        "files": prepared_records,
+        "inventory_sha256": provenance.inventory_digest(prepared_records),
+    }
 
     manifest["status"] = "prepared"
     manifest["updated_at"] = utc_now()

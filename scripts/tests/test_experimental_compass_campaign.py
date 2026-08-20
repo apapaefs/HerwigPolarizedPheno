@@ -6,6 +6,7 @@ import hashlib
 import io
 import json
 import math
+import re
 import sys
 import tempfile
 import unittest
@@ -33,6 +34,27 @@ def descriptor(identifier: str) -> dict:
 
 
 class CompassReferenceTests(unittest.TestCase):
+    def test_compass_2010_cpp_and_reference_use_the_exact_published_edges(self) -> None:
+        expected = [
+            0.004, 0.005, 0.006, 0.008, 0.010, 0.020, 0.030, 0.040,
+            0.060, 0.100, 0.150, 0.200, 0.250, 0.350, 0.500, 0.700,
+        ]
+        data = snapshot("COMPASS_2010_I843494")
+        self.assertEqual(data["bin_edges"], expected)
+        source = (
+            DISPOL_ROOT / "analyses" / "rivet" / "dis" /
+            "COMPASS_2010_I843494.cc"
+        ).read_text(encoding="utf-8")
+        match = re.search(r"_xEdges\s*=\s*\{([^}]*)\}", source, re.DOTALL)
+        self.assertIsNotNone(match)
+        cpp_edges = [
+            float(token.strip())
+            for token in match.group(1).split(",")
+            if token.strip()
+        ]
+        self.assertEqual(cpp_edges, expected)
+        self.assertNotIn(0.014, cpp_edges)
+
     def test_proton_values_errors_edges_and_means(self) -> None:
         data = snapshot(PROTON_ID)
         self.assertEqual(

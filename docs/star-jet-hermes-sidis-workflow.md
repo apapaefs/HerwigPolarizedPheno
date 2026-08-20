@@ -94,6 +94,23 @@ luminosity is an additive global nuisance and beam polarization is a
 multiplicative global nuisance.  Empty denominators are masked.  Parity,
 single-spin, and beam-exchange closures are diagnostic outputs.
 
+For the 510 GeV data, the published per-point systematic already contains the
+absolute relative-luminosity uncertainty of (4.7\times10^{-4}), whereas the
+published correlation matrices exclude it. The normalized point-to-point
+systematic therefore subtracts that component in quadrature before building
+the covariance. The positive-semidefinite point-to-point covariance is then
+augmented only by Monte Carlo statistical variance, and the luminosity and
+polarization nuisances are profiled once over the complete 63-point vector.
+
+The nominal 4 GeV generator cut is gated by independent 50-million-event per
+helicity samples at 3 and 4 GeV. The first two finite bins of each of the five
+primary observables must agree for both `SigmaUU` and `A_LL` within the larger
+of the fixed tolerance and three combined Monte Carlo standard errors. The
+5 GeV sample is a non-gating stress test. Distinct scan cuts must use
+disjoint initial seeds and the same source commit. The tracked controller
+prevents the 500-million-event per helicity sample from starting until the
+3-versus-4 GeV report passes and its input hashes still match.
+
 ## HERMES SIDIS physics definition
 
 The SIDIS cards generate a 27.6 GeV positron on a fixed proton or neutron

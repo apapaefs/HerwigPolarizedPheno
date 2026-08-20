@@ -4,7 +4,9 @@
 from __future__ import annotations
 
 import argparse
+import contextlib
 import hashlib
+import io
 import json
 import math
 import sys
@@ -37,6 +39,7 @@ def args(profile: str = "central", **updates: object) -> argparse.Namespace:
         "unpolarized_pdf_members": None,
         "scales": None,
         "families": None,
+        "jet_kt_min_gev": None,
     }
     values.update(updates)
     return argparse.Namespace(**values)
@@ -541,6 +544,60 @@ class CampaignMatrixAndCardTests(unittest.TestCase):
         self.assertIn("/Herwig/MatrixElements/MEQCD2to2", base)
         self.assertNotIn("MEQCD2to2Fast", base)
 
+    def test_star_generator_cut_is_immutable_and_star_only(self) -> None:
+        registry = campaign.discover_pp_registry()
+        measurement = registry["STAR_2022_I1949588"]
+        nominal = campaign._resolved_options(args(), measurement)
+        self.assertEqual(nominal["jet_kt_min_gev"], 4.0)
+        nominal_jobs = campaign.build_job_matrix(measurement, nominal)
+        self.assertTrue(
+            all("-kt4gev-" in job["id"] for job in nominal_jobs)
+        )
+        self.assertTrue(
+            all(job["jet_kt_min_gev"] == 4.0 for job in nominal_jobs)
+        )
+        self.assertIn(
+            "set /Herwig/Cuts/JetKtCut:MinKT 4.0*GeV",
+            campaign._card_text(measurement, nominal_jobs[0]),
+        )
+
+        scan = campaign._resolved_options(
+            args(jet_kt_min_gev=3.0), measurement
+        )
+        scan_jobs = campaign.build_job_matrix(measurement, scan)
+        self.assertTrue(all("-kt3gev-" in job["id"] for job in scan_jobs))
+        self.assertIn(
+            "set /Herwig/Cuts/JetKtCut:MinKT 3.0*GeV",
+            campaign._card_text(measurement, scan_jobs[0]),
+        )
+
+        with self.assertRaisesRegex(campaign.CampaignError, "3, 4, and 5"):
+            campaign._resolved_options(
+                args(jet_kt_min_gev=2.0), measurement
+            )
+        with self.assertRaisesRegex(campaign.CampaignError, "only valid"):
+            campaign._resolved_options(
+                args(jet_kt_min_gev=4.0),
+                registry["HERMES_2019_I1698889"],
+            )
+
+        with contextlib.redirect_stderr(io.StringIO()):
+            self.assertEqual(
+                campaign.main(
+                    [
+                        "prepare",
+                        "--measurement",
+                        "COMPASS_2010_I843494",
+                        "--tag",
+                        "unit-invalid-cut",
+                        "--jet-kt-min-gev",
+                        "4",
+                        "--dry-run",
+                    ]
+                ),
+                2,
+            )
+
     def test_sidis_card_invariants_and_scale_mapping(self) -> None:
         measurement = campaign.discover_pp_registry()["HERMES_2019_I1698889"]
         options = campaign._resolved_options(
@@ -701,6 +758,13 @@ class ObservableArithmeticTests(unittest.TestCase):
         prediction = campaign._star_jet_prediction({"inclusive": samples})
         self.assertAlmostEqual(prediction["inclusive"]["values"][0], 0.2)
         self.assertAlmostEqual(
+            prediction["SigmaUU_inclusive"]["values"][0], 10.0
+        )
+        self.assertAlmostEqual(
+            prediction["SigmaUU_inclusive"]["errors"][0],
+            math.sqrt((0.4 + 0.3 + 0.2 + 0.5) / 16.0),
+        )
+        self.assertAlmostEqual(
             prediction["SingleSpinA_inclusive"]["values"][0], 0.0
         )
         self.assertAlmostEqual(
@@ -708,6 +772,35 @@ class ObservableArithmeticTests(unittest.TestCase):
         )
         self.assertAlmostEqual(
             prediction["Parity_PP_MM_inclusive"]["values"][0], 0.0
+        )
+
+    def test_star_global_nuisances_are_profiled_once(self) -> None:
+        result = campaign._star_correlated_goodness_of_fit(
+            {"inclusive": {"values": [1.0], "errors": [0.0]}},
+            {
+                "datasets": {
+                    "inclusive": {"points": [{"value": 0.0}]}
+                },
+                "primary_covariance": {
+                    "ordering": ["inclusive:1"],
+                    "covariance": [[1.0]],
+                },
+                "global_uncertainties": {
+                    "relative_luminosity_absolute": 1.0,
+                    "polarization_relative": 0.0,
+                },
+            },
+        )
+        self.assertAlmostEqual(
+            result["chi2_correlated_without_global_nuisances"], 1.0
+        )
+        self.assertAlmostEqual(result["nuisance_pulls"]["relative_luminosity"], 0.5)
+        self.assertAlmostEqual(result["nuisance_pulls"]["polarization"], 0.0)
+        self.assertAlmostEqual(result["chi2_profiled"], 0.5)
+        self.assertEqual(
+            result["covariance"],
+            "published point-to-point covariance plus diagonal Monte Carlo "
+            "statistical variance",
         )
 
     def test_replica_band_uses_sample_variance_and_independent_quadrature(
@@ -1018,6 +1111,31 @@ class DensityMatrixAndSourceContractTests(unittest.TestCase):
             )
 
 class RivetSourceContractTests(unittest.TestCase):
+    def test_every_fixed_target_analysis_uses_a_prompt_scattered_lepton(self) -> None:
+        contracts = {
+            "COMPASS_2010_I843494.cc": (-13, "PromptMuons"),
+            "COMPASS_2016_I1357198.cc": (-13, "PromptMuons"),
+            "COMPASS_2017_I1501480.cc": (-13, "PromptMuons"),
+            "HERMES_2007_I726689.cc": (-11, "PromptPositrons"),
+            "HERMES_2007_I726689_LEGACY.cc": (-11, "PromptPositrons"),
+            "HERMES_2019_I1698889.cc": (-11, "PromptPositrons"),
+        }
+        for filename, (pid, projection) in contracts.items():
+            source = (
+                DISPOL_ROOT / "analyses" / "rivet" / "dis" / filename
+            ).read_text(encoding="utf-8")
+            self.assertIn("PromptFinalState", source, filename)
+            self.assertIn(
+                f'PromptFinalState(Cuts::pid == {pid}), "{projection}"',
+                source,
+                filename,
+            )
+            self.assertIn(
+                f'apply<PromptFinalState>(event, "{projection}")',
+                source,
+                filename,
+            )
+
     def test_star_algorithms_provenance_bins_and_topologies(self) -> None:
         helper = (
             DISPOL_ROOT / "analyses/rivet/pp/STARPolarizedJets.hh"
@@ -1094,6 +1212,7 @@ class RivetSourceContractTests(unittest.TestCase):
         )
         self.assertIn("std::sqrt(positive*negative)", source)
         self.assertIn("counts.moment[index]*counts.momentDenominator[index]", source)
+        self.assertNotIn("0.926", source)
 
 
 if __name__ == "__main__":

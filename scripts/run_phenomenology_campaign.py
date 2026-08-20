@@ -30,6 +30,7 @@ from typing import Any, Mapping, Sequence
 
 import run_experimental_campaign as experimental
 import polarized_sidis_postprocess as sidis
+import runtime_provenance as provenance
 from phenomenology_reference_data import (
     REFERENCE_YODA_PATHS,
     ReferenceDataError,
@@ -86,6 +87,14 @@ def _validate_descriptor(measurement: Mapping[str, Any], path: Path) -> None:
             raise CampaignError(f"{measurement['id']} SIDIS requires proton and neutron components")
     if "nominal" not in measurement["families"]:
         raise CampaignError(f"{measurement['id']} has no nominal family")
+    if process_kind == "polarized_pp_jets":
+        generator_cuts = measurement.get("generator_cuts", {})
+        allowed = generator_cuts.get("jet_kt_min_scan_gev")
+        nominal = generator_cuts.get("jet_kt_min_gev")
+        if nominal not in {3.0, 4.0, 5.0} or allowed != [3.0, 4.0, 5.0]:
+            raise CampaignError(
+                f"{measurement['id']} must pin the 3, 4, and 5 GeV jet-cut scan"
+            )
     for axis in ("polarized", "unpolarized"):
         ensemble = measurement["pdf_ensembles"][axis]
         if int(ensemble["central_member"]) != 0 or list(ensemble["replica_members"]) != [1, 100]:
@@ -222,6 +231,27 @@ def _resolved_options(args: argparse.Namespace, measurement: Mapping[str, Any]) 
                         (getattr(args, "lo_events", None) or
                          defaults["default_events"]["LO"]))
         events_by_contribution = {"LO": lo_events}
+    requested_jet_cut = getattr(args, "jet_kt_min_gev", None)
+    if process_kind == "polarized_pp_jets":
+        generator_cuts = measurement["generator_cuts"]
+        jet_kt_min_gev = float(
+            generator_cuts["jet_kt_min_gev"]
+            if requested_jet_cut is None else requested_jet_cut
+        )
+        allowed_cuts = {
+            float(value) for value in generator_cuts["jet_kt_min_scan_gev"]
+        }
+        if jet_kt_min_gev not in allowed_cuts:
+            raise CampaignError(
+                "STAR jet generator cuts must be selected from 3, 4, and 5 GeV"
+            )
+    else:
+        if requested_jet_cut is not None:
+            raise CampaignError(
+                "--jet-kt-min-gev is only valid for polarized pp jet measurements"
+            )
+        jet_kt_min_gev = None
+
     options = {
         "profile": args.profile,
         "families": _family_selector(getattr(args, "families", None), measurement),
@@ -235,6 +265,8 @@ def _resolved_options(args: argparse.Namespace, measurement: Mapping[str, Any]) 
         # compares equal after the on-disk JSON has been reloaded.
         "variation_points": [list(point) for point in _variation_points(args)],
     }
+    if jet_kt_min_gev is not None:
+        options["jet_kt_min_gev"] = jet_kt_min_gev
     if (options["jobs"] <= 0 or options["shards"] <= 0 or
             any(int(value) <= 0 for value in events_by_contribution.values())):
         raise CampaignError("Jobs, shards, and event counts must be positive")
@@ -272,6 +304,10 @@ def build_job_matrix(measurement: Mapping[str, Any], options: Mapping[str, Any])
                                 f"p{polarized_member:03d}-u{unpolarized_member:03d}-"
                                 f"mu{_scale_token(scale)}-mpi{family['mpi']}"
                             )
+                            if measurement["process_kind"] == "polarized_pp_jets":
+                                logical += (
+                                    f"-kt{float(options['jet_kt_min_gev']):.0f}gev"
+                                )
                             run_stem = f"{measurement['id']}_{logical}"
                             for shard, events in enumerate(event_splits, start=1):
                                 job_id = (
@@ -287,6 +323,7 @@ def build_job_matrix(measurement: Mapping[str, Any], options: Mapping[str, Any])
                                     "polarized_pdf_member": polarized_member,
                                     "unpolarized_pdf_member": unpolarized_member,
                                     "scale": scale, "mpi": family["mpi"],
+                                    "jet_kt_min_gev": options.get("jet_kt_min_gev"),
                                     "shard": shard, "shards": len(event_splits),
                                     "events": events,
                                     "seed": int(options["seed_base"])+seed_slot,
@@ -321,15 +358,28 @@ def _runtime(measurement: Mapping[str, Any]) -> dict[str, Any]:
     if measurement["process_kind"] == "polarized_sidis":
         return experimental.preflight_runtime(measurement)
     tools: dict[str, str] = {}
-    for name in ("Herwig", "rivet", "rivet-build", "rivet-mkhtml", "rivet-config", "lhapdf"):
+    for name in (
+        "Herwig", "rivet", "rivet-build", "rivet-mkhtml", "rivet-config",
+        "lhapdf", "lhapdf-config",
+    ):
         executable = shutil.which(name)
         if not executable:
             raise CampaignError(f"Required executable {name!r} is not active; load herwig/pol")
         tools[name] = str(Path(executable).resolve())
     prefix = Path(tools["Herwig"]).parent.parent.resolve()
-    libraries = sorted((prefix/"lib"/"Herwig").glob("HwMEHadron*.so*"))
-    if not any(path.is_file() for path in libraries):
-        raise CampaignError(f"Active Herwig prefix {prefix} has no HwMEHadron library")
+    hwmedis = experimental._find_runtime_library(
+        prefix, "lib/Herwig", "HwMEDIS*.so*"
+    )
+    hwmehadron = experimental._find_runtime_library(
+        prefix, "lib/Herwig", "HwMEHadron*.so*"
+    )
+    hwshower = experimental._find_runtime_library(
+        prefix, "lib/Herwig", "HwShower*.so*"
+    )
+    fixed_target = experimental._find_runtime_library(
+        prefix, "lib/ThePEG", "FixedTargetLuminosity*.so*"
+    )
+    herwig_repository = prefix / "share" / "Herwig" / "HerwigDefaults.rpo"
     for axis in ("unpolarized", "polarized"):
         ensemble = measurement["pdf_ensembles"][axis]
         experimental._command_output([tools["lhapdf"], "show", ensemble["set"]])
@@ -337,15 +387,48 @@ def _runtime(measurement: Mapping[str, Any]) -> dict[str, Any]:
     if sys.platform == "darwin":
         candidates = sorted(Path("/opt/homebrew/bin").glob("g++-[0-9]*"), reverse=True)
         compiler = str(candidates[0]) if candidates else ""
+    pdf_sets = [
+        measurement["pdf_ensembles"][name]["set"]
+        for name in ("unpolarized", "polarized")
+    ]
+    try:
+        file_provenance = provenance.runtime_record(
+            repository=DISPOL_ROOT,
+            tools=tools,
+            herwig_prefix=prefix,
+            artifact_paths={
+                "Herwig": Path(tools["Herwig"]),
+                "HerwigDefaults.rpo": herwig_repository,
+                "HwMEDIS": hwmedis,
+                "HwMEHadron": hwmehadron,
+                "HwShower": hwshower,
+                "FixedTargetLuminosity": fixed_target,
+                "Rivet": Path(tools["rivet"]),
+            },
+            pdf_sets=pdf_sets,
+            lhapdf_data_directory=Path(
+                experimental._command_output(
+                    [tools["lhapdf-config"], "--datadir"]
+                )
+            ),
+        )
+    except provenance.ProvenanceError as exc:
+        raise CampaignError(str(exc)) from exc
+
     return {
         "checked_at": experimental.utc_now(), "tools": tools,
         "herwig_prefix": str(prefix),
         "herwig_version": experimental._command_output([tools["Herwig"], "--version"]),
         "rivet_version": experimental._command_output([tools["rivet"], "--version"]),
         "rivet_data_directory": experimental._command_output([tools["rivet-config"], "--datadir"]),
-        "hwmehadron_library": str(next(path.resolve() for path in libraries if path.is_file())),
+        "hwmedis_library": str(hwmedis),
+        "hwmehadron_library": str(hwmehadron),
+        "hwshower_library": str(hwshower),
+        "fixed_target_library": str(fixed_target),
+        "herwig_repository": str(herwig_repository.resolve()),
         "rivet_plugin_compiler": compiler,
-        "pdf_sets": [measurement["pdf_ensembles"][name]["set"] for name in ("unpolarized", "polarized")],
+        "pdf_sets": pdf_sets,
+        "provenance": file_provenance,
         "environment": {key: os.environ.get(key, "") for key in
                         ("HERWIG_ENV", "RIVET_ANALYSIS_PATH", "RIVET_DATA_PATH",
                          "DYLD_LIBRARY_PATH", "LD_LIBRARY_PATH")},
@@ -440,6 +523,11 @@ def _card_text(measurement: Mapping[str, Any], job: Mapping[str, Any]) -> str:
             "set /Herwig/Shower/PowhegShowerHandler:MPIHandler /Herwig/UnderlyingEvent/MPIHandler",
             "set /Herwig/DipoleShower/DipoleShowerHandler:MPIHandler /Herwig/UnderlyingEvent/MPIHandler",
         ])
+    if measurement["process_kind"] == "polarized_pp_jets":
+        jet_kt_min_gev = float(job["jet_kt_min_gev"])
+        overrides.append(
+            f"set /Herwig/Cuts/JetKtCut:MinKT {jet_kt_min_gev:.1f}*GeV"
+        )
     family = measurement["families"][job["family"]]
     analysis_options = family.get("analysis_options", {})
     if analysis_options:
@@ -509,6 +597,7 @@ def prepare_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> Path
     }
     manifest.update({"status": "preparing", "updated_at": experimental.utc_now(),
                      "runtime": runtime, "plugin": str(plugin.relative_to(campaign_dir)),
+                     "plugin_provenance": provenance.file_record(plugin),
                      "reference_snapshot": {"path": measurement["reference"]["snapshot"],
                      "sha256": experimental.sha256_file(DISPOL_ROOT/measurement["reference"]["snapshot"])}})
     manifest["history"].append({"at": experimental.utc_now(), "action": "prepare"})
@@ -524,6 +613,18 @@ def prepare_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> Path
         if not generated.is_file() or generated.stat().st_size == 0:
             raise CampaignError(f"Herwig read did not create {generated}")
         os.replace(generated, destination)
+    prepared_records = {
+        str(path.relative_to(campaign_dir)): provenance.file_record(path)
+        for path in sorted(
+            [plugin]
+            + [path for path in (campaign_dir / "cards").rglob("*.in")]
+            + [path for path in (campaign_dir / "runs").glob("*.run")]
+        )
+    }
+    manifest["prepared_artifacts"] = {
+        "files": prepared_records,
+        "inventory_sha256": provenance.inventory_digest(prepared_records),
+    }
     manifest["status"] = "prepared"
     manifest["updated_at"] = experimental.utc_now()
     manifest["history"].append({"at": experimental.utc_now(), "action": "prepared"})
@@ -957,6 +1058,17 @@ def _star_jet_prediction(
 ) -> dict[str, dict[str, Any]]:
     output: dict[str, dict[str, Any]] = {}
     for observable, samples in samples_by_object.items():
+        sigma_uu = experimental.linear_combine_series(
+            samples, {label: 0.25 for label in DENOMINATOR}
+        )
+        output[f"SigmaUU_{observable}"] = {
+            "edges": list(sigma_uu.edges),
+            "values": list(sigma_uu.values),
+            "errors": [
+                math.sqrt(max(0.0, variance))
+                for variance in sigma_uu.variances
+            ],
+        }
         values, errors = _ratio_arrays(samples, ALL_NUMERATOR, DENOMINATOR)
         edges = list(next(iter(samples.values())).edges)
         output[observable] = {"edges": edges, "values": values, "errors": errors}
@@ -1893,6 +2005,9 @@ def postprocess_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> 
                 "Channel": key[1], "PolarizedPDFMember": key[2],
                 "UnpolarizedPDFMember": key[3], "HardScaleFactor": key[4],
                 "MPI": key[5], "HelicityCombination": "independent PP,PM,MP,MM samples",
+                "JetKtMinGeV": manifest["configuration"].get(
+                    "jet_kt_min_gev"
+                ),
             }
             objects_by_family.setdefault(str(key[0]), []).append(_estimate_with_bands(
                 yoda, prediction, path, annotation,
@@ -1999,6 +2114,7 @@ def postprocess_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> 
         "uncertainties": bands, "pulls": pulls_summary,
         "correlated_goodness_of_fit": correlated_goodness_of_fit,
         "global_experimental_uncertainties": measurement.get("global_uncertainties", {}),
+        "jet_kt_min_gev": manifest["configuration"].get("jet_kt_min_gev"),
         "include_diagnostics": include_diagnostics,
         "variations": summary_variations,
     }
@@ -2241,6 +2357,14 @@ def _add_campaign_options(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--unpolarized-pdf-members",
                         help="central, all, or comma-separated member numbers")
     parser.add_argument("--scales", help="central, all, or comma-separated 0.5,1,2")
+    parser.add_argument(
+        "--jet-kt-min-gev",
+        type=float,
+        help=(
+            "STAR jet generator cut in GeV; only the pinned 3, 4, and 5 GeV "
+            "scan points are accepted"
+        ),
+    )
     parser.add_argument("--smoke", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--recover-failed", "--rerun-failed-random-seed",
@@ -2315,6 +2439,11 @@ def main(argv: Sequence[str] | None = None) -> int:
             raise CampaignError(f"Unknown measurement {args.measurement!r}")
         measurement = registry[args.measurement]
         if measurement["process_kind"] == "fixed_target_dis":
+            if getattr(args, "jet_kt_min_gev", None) is not None:
+                raise CampaignError(
+                    "--jet-kt-min-gev is only valid for polarized pp jet "
+                    "measurements"
+                )
             return experimental.main(_legacy_arguments(args))
         if getattr(args, "comparisons", False):
             args.profile = "paper"

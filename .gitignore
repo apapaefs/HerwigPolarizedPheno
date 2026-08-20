@@ -12,8 +12,13 @@
 main.pdf
 rendered/
 
-# Phenomenology campaigns and generated runtime products
-/campaigns/
+# Phenomenology campaigns and generated runtime products.  The one tracked
+# compatibility controller is an exception; its runtime state remains ignored.
+/campaigns/*
+!/campaigns/control/
+/campaigns/control/*
+!/campaigns/control/compatibility-corrected-20260819/
+/campaigns/control/compatibility-corrected-20260819/runtime/
 /build/
 *.run
 *.log
@@ -27,4 +32,3 @@ rendered/
 __pycache__/
 *.py[cod]
 .pytest_cache/
-

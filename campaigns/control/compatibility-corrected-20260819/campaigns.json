@@ -1,0 +1,117 @@
+{
+  "schema_version": 1,
+  "fixed": [
+    {
+      "measurement": "HERMES_2007_I726689",
+      "storage": "experimental",
+      "tag": "compat-central-3m-20260819-v1",
+      "seed_base": 260726689,
+      "posnlo_events": 3000000,
+      "negnlo_events": 300000,
+      "shards": 100,
+      "jobs": 100,
+      "expected_shards": 800
+    },
+    {
+      "measurement": "COMPASS_2010_I843494",
+      "storage": "experimental",
+      "tag": "compat-central-3m-20260819-v1",
+      "seed_base": 260843494,
+      "posnlo_events": 3000000,
+      "negnlo_events": 300000,
+      "shards": 100,
+      "jobs": 100,
+      "expected_shards": 800
+    },
+    {
+      "measurement": "COMPASS_2016_I1357198",
+      "storage": "experimental",
+      "tag": "compat-central-3m-20260819-v1",
+      "seed_base": 261357198,
+      "posnlo_events": 3000000,
+      "negnlo_events": 300000,
+      "shards": 100,
+      "jobs": 100,
+      "expected_shards": 800
+    },
+    {
+      "measurement": "COMPASS_2017_I1501480",
+      "storage": "experimental",
+      "tag": "compat-central-3m-20260819-v1",
+      "seed_base": 261501480,
+      "posnlo_events": 3000000,
+      "negnlo_events": 300000,
+      "shards": 100,
+      "jobs": 100,
+      "expected_shards": 1600
+    },
+    {
+      "measurement": "HERMES_2019_I1698889",
+      "storage": "phenomenology",
+      "tag": "compat-central-3m-20260819-v1",
+      "seed_base": 261698889,
+      "posnlo_events": 3000000,
+      "negnlo_events": 300000,
+      "shards": 100,
+      "jobs": 100,
+      "expected_shards": 1600
+    }
+  ],
+  "star_cut_scan": [
+    {
+      "measurement": "STAR_2022_I1949588",
+      "storage": "phenomenology",
+      "tag": "compat-star510-gencut-3gev-50m-20260819-v1",
+      "seed_base": 262249588,
+      "lo_events": 50000000,
+      "jet_kt_min_gev": 3.0,
+      "shards": 100,
+      "jobs": 100,
+      "expected_shards": 400
+    },
+    {
+      "measurement": "STAR_2022_I1949588",
+      "storage": "phenomenology",
+      "tag": "compat-star510-gencut-4gev-50m-20260819-v1",
+      "seed_base": 262449588,
+      "lo_events": 50000000,
+      "jet_kt_min_gev": 4.0,
+      "shards": 100,
+      "jobs": 100,
+      "expected_shards": 400
+    },
+    {
+      "measurement": "STAR_2022_I1949588",
+      "storage": "phenomenology",
+      "tag": "compat-star510-gencut-5gev-50m-20260819-v1",
+      "seed_base": 262649588,
+      "lo_events": 50000000,
+      "jet_kt_min_gev": 5.0,
+      "shards": 100,
+      "jobs": 100,
+      "expected_shards": 400
+    }
+  ],
+  "star510": [
+    {
+      "measurement": "STAR_2022_I1949588",
+      "storage": "phenomenology",
+      "tag": "compat-star510-500m-20260819-v1",
+      "seed_base": 261949588,
+      "lo_events": 500000000,
+      "jet_kt_min_gev": 4.0,
+      "shards": 500,
+      "jobs": 100,
+      "expected_shards": 2000
+    }
+  ],
+  "smoke_measurements": [
+    "HERMES_2007_I726689",
+    "HERMES_2007_I726689_LEGACY",
+    "COMPASS_2010_I843494",
+    "COMPASS_2016_I1357198",
+    "COMPASS_2017_I1501480",
+    "HERMES_2019_I1698889",
+    "STAR_2022_I1949588"
+  ]
+}

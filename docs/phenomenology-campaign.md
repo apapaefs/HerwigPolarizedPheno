@@ -118,6 +118,23 @@ python3 scripts/run_phenomenology_campaign.py full \
   --lo-events 300000 --jobs 4
 ```
 
+STAR jet campaigns also pin the generator-level `JetKtCut` in the immutable
+job identity and generated card. The nominal value is 4 GeV; only the audited
+3, 4, and 5 GeV scan points are accepted:
+
+```bash
+python3 scripts/run_phenomenology_campaign.py prepare \
+  --measurement STAR_2022_I1949588 \
+  --tag star510-cut3 \
+  --profile central --jet-kt-min-gev 3 \
+  --lo-events 50000000 --shards 100 --jobs 100
+```
+
+The option is rejected for non-jet measurements. STAR postprocessing retains
+the normalized unpolarized yield `SigmaUU_<observable>` in the signed summary
+alongside each `A_LL`; those yields are used by the independent generator-cut
+stability audit and are not experimental cross-section overlays.
+
 Add `--families hadron_mpi_on` only when the stable-particle MPI diagnostic is
 wanted.  `--include-diagnostics` exposes alternate reference projections and
 closure observables during postprocessing and plotting.

@@ -9,8 +9,8 @@ requires an installed Herwig Polarized environment.
 - Python 3.10 or newer;
 - the Python bindings shipped with the active YODA/Rivet installation;
 - NumPy, with PrettyTable optional for richer live status output;
-- `Herwig`, `rivet`, `rivet-build`, `rivet-mkhtml`, `rivet-config`, and
-  `lhapdf` on `PATH`;
+- `Herwig`, `rivet`, `rivet-build`, `rivet-mkhtml`, `rivet-config`, `lhapdf`,
+  and `lhapdf-config` on `PATH`;
 - `NNPDF40_nlo_pch_as_01180` and `NNPDFpol20_nlo_as_01180`; the `paper`
   profile needs all members 0--100 of both ensembles;
 - `latexmk` and TeX only when building the manuscript.
@@ -27,6 +27,7 @@ The active Herwig installation must provide:
   POWHEG DIS setup;
 - the polarized hadron matrix elements (`HwMEHadron`) used for STAR and
   PHENIX samples;
+- the active shower library (`HwShower`) used by the generated event samples;
 - `FixedTargetLuminosity` and the installed snippets `EPCollider.in`,
   `PolarizedEP.in`, `FixedTarget.in`, `PPCollider.in`, and `PolarizedPP.in`;
 - `DISBase::MinimumScale` for the low-scale HERMES projection;
@@ -57,7 +58,20 @@ make check-rivet
 ```
 
 The campaign runner performs additional executable, library, PDF, card, and
-manifest checks during `prepare` or `full`.
+manifest checks during `prepare` or `full`. Every prepared manifest records
+SHA-256 identities for `Herwig`, `HerwigDefaults.rpo`, `HwMEDIS`,
+`HwMEHadron`, `HwShower`, `FixedTargetLuminosity`, the Rivet executable, the
+campaign-specific Rivet plugin, every generated card and `.run` file, and
+every file in both LHAPDF sets. A path without a matching file hash is not a
+runtime identity.
+
+The compatibility-corrected Odysseus controller adds a checked-in runtime
+lock and refuses validation or production when the checkout is dirty,
+detached, on the wrong branch, or different from the corresponding GitHub
+branch. Its production mode additionally requires the canonical path
+`/home/apapaefs/Projects/HerwigPolarizedPheno`. The validation report is
+commit- and runtime-lock-specific, so switching commits invalidates it even
+when the executable paths are unchanged.
 
 The Makefile first uses the compiler reported by `rivet-config` when that
 executable still exists, then falls back to versioned GNU C++ installations.

@@ -19,6 +19,8 @@ ordinary YODA/plot products.
 - `scripts/run_phenomenology_campaign.py`: primary campaign entry point;
 - `scripts/run_experimental_campaign.py`: backward-compatible fixed-target
   engine used by the primary runner;
+- `campaigns/control/compatibility-corrected-20260819/`: tracked, runtime-
+  locked controller for the compatibility-corrected production handoff;
 - `scripts/tests/`: self-contained campaign, reference, postprocessing, and
   Rivet-source tests;
 - `docs/`: workflow documentation, the experimental-compatibility audit, and
@@ -26,7 +28,9 @@ ordinary YODA/plot products.
 - `main.tex`, `references.bib`, and `figures/`: the Overleaf-compatible paper
   bundle, intentionally kept at repository root.
 
-Generated work is written below `campaigns/` and ignored by Git.
+Generated work is written below `campaigns/` and ignored by Git. The tracked
+compatibility controller is the sole exception; its generated runtime reports
+remain ignored.
 
 ## Quick start
 
@@ -61,6 +65,11 @@ hadron SIDIS, STAR weak-boson and jet measurements, and the diagnostic PHENIX
 prompt-photon comparison. See [`docs/phenomenology-campaign.md`](docs/phenomenology-campaign.md)
 for profiles, physics families, PDF replicas, scale points, sharding, resume,
 and recovery.
+
+The synchronized 2026-08-19 corrected-production workflow, including the
+STAR 510 GeV generator-cut gate and the explicit no-production preparation
+boundary, is documented in
+[`campaigns/control/compatibility-corrected-20260819/README.md`](campaigns/control/compatibility-corrected-20260819/README.md).
 
 Build the paper with:
 
