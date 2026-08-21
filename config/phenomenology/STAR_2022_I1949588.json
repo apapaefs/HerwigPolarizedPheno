@@ -97,6 +97,16 @@
     "relative_luminosity_absolute": 0.00047,
     "polarization_relative": 0.064
   },
+  "comparison_policy": {
+    "primary_bin_masks": {
+      "inclusive": {
+        "first_bin": 5,
+        "minimum_analysis_low_gev": 13.1,
+        "excluded_treatment": "diagnostic_only"
+      }
+    },
+    "covariance_points": 59
+  },
   "goodness_of_fit": {
     "primary_datasets": ["inclusive", "dijet_A", "dijet_B", "dijet_C", "dijet_D"],
     "alternate_display_only": [],

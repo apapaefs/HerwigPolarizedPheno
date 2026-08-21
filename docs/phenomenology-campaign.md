@@ -134,6 +134,12 @@ The option is rejected for non-jet measurements. STAR postprocessing retains
 the normalized unpolarized yield `SigmaUU_<observable>` in the signed summary
 alongside each `A_LL`; those yields are used by the independent generator-cut
 stability audit and are not experimental cross-section overlays.
+For the 510 GeV inclusive comparison, analysis bins 1--4 remain in the full
+summary, central CSV, and a diagnostic YODA object with
+`comparison_role=diagnostic_only`. The primary overlay, pulls, uncertainty
+band, and covariance fit start at bin 5, whose analysis lower edge is checked
+to be exactly 13.1 GeV. The resulting primary covariance selection contains
+59 points; dijet selections are unchanged.
 
 Add `--families hadron_mpi_on` only when the stable-particle MPI diagnostic is
 wanted.  `--include-diagnostics` exposes alternate reference projections and

@@ -11,11 +11,17 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Mapping, Sequence
+import star_comparison_policy as star_policy
+from phenomenology_reference_data import validate_vendored
+
 
 
 MEASUREMENT = "STAR_2022_I1949588"
 PRIMARY_OBSERVABLES = ("inclusive", "dijet_A", "dijet_B", "dijet_C", "dijet_D")
 NOMINAL_VARIATION = "nominal-jets-p000-u000-mu1-mpioff"
+SCRIPT_PATH = Path(__file__).resolve()
+REPOSITORY_ROOT = SCRIPT_PATH.parents[1]
+MEASUREMENT_PATH = REPOSITORY_ROOT / "config" / "phenomenology" / f"{MEASUREMENT}.json"
 
 
 class StabilityError(RuntimeError):
@@ -108,6 +114,8 @@ def compare_campaigns(
     alternate: Mapping[str, Any],
     *,
     gate: bool,
+    measurement: Mapping[str, Any],
+    snapshot: Mapping[str, Any],
     gate_bins_per_observable: int = 2,
     sigma_relative_floor: float = 0.02,
     asymmetry_absolute_floor: float = 5.0e-4,
@@ -124,6 +132,12 @@ def compare_campaigns(
             second = _series(alternate["prediction"], series_name)
             if first["edges"] != second["edges"]:
                 raise StabilityError(f"{series_name} binning differs across cut samples")
+            try:
+                eligible_mask = star_policy.primary_bin_mask(
+                    measurement, snapshot, observable, len(first["values"])
+                )
+            except star_policy.ComparisonPolicyError as exc:
+                raise StabilityError(str(exc)) from exc
             finite_rank = 0
             for index, (a_value_raw, b_value_raw, a_error_raw, b_error_raw) in enumerate(
                 zip(first["values"], second["values"], first["errors"], second["errors"])
@@ -133,10 +147,12 @@ def compare_campaigns(
                 a_error = _finite_number(a_error_raw)
                 b_error = _finite_number(b_error_raw)
                 finite = None not in (a_value, b_value, a_error, b_error)
+                eligible = eligible_mask[index]
                 is_gate_bin = False
-                if finite:
+                if finite and eligible:
                     is_gate_bin = finite_rank < gate_bins_per_observable
                     finite_rank += 1
+                if finite:
                     difference = abs(float(b_value) - float(a_value))
                     combined_error = math.hypot(float(a_error), float(b_error))
                     if quantity == "sigma_uu":
@@ -178,6 +194,7 @@ def compare_campaigns(
                         "metric": metric,
                         "tolerance": tolerance,
                         "finite": finite,
+                        "eligible": eligible,
                         "gated": gated,
                         "passed": passed,
                     }
@@ -196,7 +213,11 @@ def compare_campaigns(
     }
 
 
-def build_report(campaigns: Mapping[float, Mapping[str, Any]]) -> dict[str, Any]:
+def build_report(
+    campaigns: Mapping[float, Mapping[str, Any]],
+    measurement: Mapping[str, Any],
+    snapshot: Mapping[str, Any],
+) -> dict[str, Any]:
     commits = {campaign.get("source_commit") for campaign in campaigns.values()}
     if None in commits or len(commits) != 1:
         raise StabilityError("Cut-scan campaigns do not share one pinned Git commit")
@@ -204,15 +225,28 @@ def build_report(campaigns: Mapping[float, Mapping[str, Any]]) -> dict[str, Any]
     for first, second in zip(cuts, cuts[1:]):
         if campaigns[first]["initial_seeds"] & campaigns[second]["initial_seeds"]:
             raise StabilityError("Cut-scan campaigns reuse initial random seeds")
-    gate = compare_campaigns(campaigns[3.0], campaigns[4.0], gate=True)
-    stress = compare_campaigns(campaigns[4.0], campaigns[5.0], gate=False)
+    gate = compare_campaigns(
+        campaigns[3.0], campaigns[4.0], gate=True,
+        measurement=measurement, snapshot=snapshot,
+    )
+    stress = compare_campaigns(
+        campaigns[4.0], campaigns[5.0], gate=False,
+        measurement=measurement, snapshot=snapshot,
+    )
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "measurement": MEASUREMENT,
         "created_at": datetime.now(timezone.utc).isoformat(),
-        "source_commit": next(iter(commits)),
+        "campaign_source_commit": next(iter(commits)),
+        "checker_sha256": _sha256(SCRIPT_PATH),
+        "measurement_descriptor_sha256": _sha256(MEASUREMENT_PATH),
+        "comparison_policy": star_policy.policy_payload(measurement),
+        "comparison_policy_sha256": star_policy.policy_sha256(measurement),
         "criteria": {
-            "gated_bins": "first two finite bins of every primary observable",
+            "gated_bins": (
+                "inclusive bins 5 and 6 (first two eligible finite bins, "
+                "analysis pT >= 13.1 GeV); first two finite bins of each dijet topology"
+            ),
             "sigma_uu": "relative difference <= max(2%, 3 combined MC standard errors)",
             "a_ll": "absolute difference <= max(5e-4, 3 combined MC standard errors)",
             "five_gev": "reported as a non-gating stress test",
@@ -257,7 +291,10 @@ def markdown_report(report: Mapping[str, Any]) -> str:
     lines.extend(
         [
             "",
-            f"Pinned source commit: `{report['source_commit']}`.",
+            f"Immutable campaign source commit: "
+            f"`{report['campaign_source_commit']}`.",
+            f"Comparison-policy hash: "
+            f"`{report['comparison_policy_sha256']}`.",
             "",
         ]
     )
@@ -285,7 +322,9 @@ def main(argv: Sequence[str] | None = None) -> int:
                 (5.0, args.campaign_5),
             )
         }
-        report = build_report(campaigns)
+        measurement = _load_json(MEASUREMENT_PATH)
+        snapshot = validate_vendored(MEASUREMENT)
+        report = build_report(campaigns, measurement, snapshot)
         args.output_json.parent.mkdir(parents=True, exist_ok=True)
         args.output_markdown.parent.mkdir(parents=True, exist_ok=True)
         args.output_json.write_text(

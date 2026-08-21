@@ -31,6 +31,7 @@ from typing import Any, Mapping, Sequence
 import run_experimental_campaign as experimental
 import polarized_sidis_postprocess as sidis
 import runtime_provenance as provenance
+import star_comparison_policy as star_policy
 from phenomenology_reference_data import (
     REFERENCE_YODA_PATHS,
     ReferenceDataError,
@@ -1308,6 +1309,32 @@ def _reference_points(measurement: Mapping[str, Any], snapshot: Mapping[str, Any
     return None
 
 
+def _comparison_mask(
+    measurement: Mapping[str, Any],
+    snapshot: Mapping[str, Any],
+    observable: str,
+    size: int,
+) -> list[bool]:
+    if measurement["postprocessor"] != "star_jet_all":
+        return [True] * size
+    try:
+        return star_policy.primary_bin_mask(
+            measurement, snapshot, observable, size
+        )
+    except star_policy.ComparisonPolicyError as exc:
+        raise CampaignError(str(exc)) from exc
+
+
+def _masked_bands(
+    bands: Mapping[str, Any], mask: Sequence[bool]
+) -> dict[str, Any]:
+    result = copy.deepcopy(dict(bands))
+    for key, values in list(result.items()):
+        if isinstance(values, list) and len(values) == len(mask):
+            result[key] = [value if keep else None for value, keep in zip(values, mask)]
+    return result
+
+
 def _pp_reference_overlay_points(
     measurement: Mapping[str, Any], snapshot: Mapping[str, Any], plot_stem: str
 ) -> list[dict[str, Any]] | None:
@@ -1354,8 +1381,13 @@ def _pp_reference_overlay_points(
                 }
                 for point in points
             ]
-        return [{**dict(point), "plot_x": float(point[coordinate])}
-                for point in points]
+        mask = _comparison_mask(
+            measurement, snapshot, observable, len(points)
+        )
+        return [
+            {**dict(point), "plot_x": float(point[coordinate])}
+            for point, keep in zip(points, mask) if keep
+        ]
     return None
 
 
@@ -1371,15 +1403,32 @@ def _pp_theory_uncertainty_bands(
     for observable, bands in uncertainties.items():
         reference_path = _reference_path(measurement, str(observable), snapshot)
         if reference_path and Path(reference_path).name == plot_stem:
-            return bands if isinstance(bands, Mapping) else None
+            if not isinstance(bands, Mapping):
+                return None
+            values = bands.get("monte_carlo", [])
+            mask = _comparison_mask(
+                measurement, snapshot, str(observable), len(values)
+            )
+            return _masked_bands(bands, mask)
     return None
 
 
-def _pulls(prediction: Mapping[str, Any], points: Sequence[Mapping[str, Any]]) -> tuple[list[float | None], float, int]:
+def _pulls(
+    prediction: Mapping[str, Any],
+    points: Sequence[Mapping[str, Any]],
+    mask: Sequence[bool] | None = None,
+) -> tuple[list[float | None], float, int]:
     values: list[float | None] = []
     chi2 = 0.0
     count = 0
-    for theory, theory_error, point in zip(prediction["values"], prediction["errors"], points):
+    selected = list(mask) if mask is not None else [True] * len(points)
+    if len(selected) != len(points):
+        raise CampaignError("pull mask and reference points differ in size")
+    for theory, theory_error, point, keep in zip(
+        prediction["values"], prediction["errors"], points, selected
+    ):
+        if not keep:
+            values.append(None); continue
         if theory is None or theory_error is None:
             values.append(None); continue
         data_error = math.hypot(float(point["stat"]), float(point["systematic_combined"]))
@@ -1394,6 +1443,7 @@ def _pulls(prediction: Mapping[str, Any], points: Sequence[Mapping[str, Any]]) -
 def _star_correlated_goodness_of_fit(
     prediction_set: Mapping[str, Mapping[str, Any]],
     snapshot: Mapping[str, Any],
+    measurement: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     try:
         import numpy as np
@@ -1414,6 +1464,14 @@ def _star_correlated_goodness_of_fit(
         point = snapshot["datasets"][dataset_id]["points"][int(point_token)-1]
         if prediction is None:
             continue
+        mask = _comparison_mask(
+            measurement or {"postprocessor": "star_jet_all"},
+            snapshot,
+            dataset_id,
+            len(prediction["values"]),
+        )
+        if not mask[int(point_token)-1]:
+            continue
         value = prediction["values"][int(point_token)-1]
         error = prediction["errors"][int(point_token)-1]
         if value is None or error is None:
@@ -1423,6 +1481,15 @@ def _star_correlated_goodness_of_fit(
         theory_variance.append(float(error)**2)
         retained_indices.append(covariance_index)
         retained_labels.append(str(label))
+    if measurement is not None:
+        expected_points = measurement.get(
+            "comparison_policy", {}
+        ).get("covariance_points")
+        if expected_points is not None and len(retained_indices) != int(expected_points):
+            raise CampaignError(
+                f"STAR primary covariance retained {len(retained_indices)} points, "
+                f"expected {int(expected_points)}"
+            )
     if not retained_indices:
         return {"points": 0, "status": "no finite theory bins"}
 
@@ -1959,7 +2026,7 @@ def postprocess_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> 
     correlated_goodness_of_fit = None
     if measurement["postprocessor"] == "star_jet_all":
         correlated_goodness_of_fit = _star_correlated_goodness_of_fit(
-            predictions[central_keys[0]], snapshot
+            predictions[central_keys[0]], snapshot, measurement
         )
     yoda = experimental._import_yoda()
     include_diagnostics = bool(
@@ -1986,6 +2053,14 @@ def postprocess_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> 
             primary = _primary_reference_observable(
                 measurement, snapshot, observable
             )
+            mask = (
+                _comparison_mask(
+                    measurement, snapshot, observable, len(prediction["values"])
+                )
+                if primary
+                else [True] * len(prediction["values"])
+            )
+            displayed_prediction = star_policy.masked_copy(prediction, mask)
             if not is_family_central:
                 # PDF replicas and scale points contribute to named bands,
                 # not a forest of individual curves.
@@ -2009,16 +2084,40 @@ def postprocess_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> 
                     "jet_kt_min_gev"
                 ),
             }
+            annotation["ComparisonRole"] = (
+                "primary with excluded bins stored under DIAGNOSTICS"
+                if not all(mask) else "primary"
+            )
             objects_by_family.setdefault(str(key[0]), []).append(_estimate_with_bands(
-                yoda, prediction, path, annotation,
-                bands.get(observable)
-                if is_nominal_central and primary else None))
+                yoda, displayed_prediction, path, annotation,
+                _masked_bands(bands[observable], mask)
+                if (
+                    is_nominal_central
+                    and primary
+                    and observable in bands
+                )
+                else None))
+            if is_nominal_central and primary and not all(mask):
+                objects_by_family["nominal"].append(
+                    _estimate_with_bands(
+                        yoda,
+                        prediction,
+                        f"/{analysis}/DIAGNOSTICS/{observable}_full",
+                        {
+                            **annotation,
+                            "ComparisonRole":
+                            "diagnostic_only below the configured primary threshold",
+                        },
+                    )
+                )
             if is_nominal_central and primary:
                 points = _reference_points(measurement, snapshot, observable)
                 if points:
-                    pull_values, chi2, count = _pulls(prediction, points)
+                    pull_values, chi2, count = _pulls(prediction, points, mask)
                     pulls_summary[observable] = {"chi2": chi2, "points": count,
                                                  "values": pull_values,
+                                                 "comparison_roles":
+                                                 star_policy.comparison_roles(mask),
                                                  "note": "PDF fit overlap prevents interpreting this as an independent PDF validation"}
                     if count:
                         objects_by_family["nominal"].append(
@@ -2053,6 +2152,8 @@ def postprocess_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> 
                             "display_high": prediction["edges"][index],
                             "value": value,
                             "mc_stat": error,
+                            "comparison_role":
+                            star_policy.comparison_roles(mask)[index - 1],
                         }
                     )
 
@@ -2116,6 +2217,9 @@ def postprocess_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> 
         "global_experimental_uncertainties": measurement.get("global_uncertainties", {}),
         "jet_kt_min_gev": manifest["configuration"].get("jet_kt_min_gev"),
         "include_diagnostics": include_diagnostics,
+        "comparison_policy": star_policy.policy_payload(measurement),
+        "comparison_policy_sha256": star_policy.policy_sha256(measurement),
+        "primary_covariance_points": 0 if correlated_goodness_of_fit is None else correlated_goodness_of_fit.get("points"),
         "variations": summary_variations,
     }
     experimental.atomic_write_json(output_dir/"summary.json", summary)

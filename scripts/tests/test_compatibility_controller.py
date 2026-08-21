@@ -202,16 +202,44 @@ def fake_prediction() -> dict[str, dict[str, list[float]]]:
     result: dict[str, dict[str, list[float]]] = {}
     for observable in stability.PRIMARY_OBSERVABLES:
         result[f"SigmaUU_{observable}"] = {
-            "edges": [0.0, 1.0, 2.0, 3.0],
-            "values": [100.0, 80.0, 60.0],
-            "errors": [0.0, 0.0, 0.0],
+            "edges": [float(index) for index in range(7)],
+            "values": [100.0, 80.0, 60.0, 50.0, 40.0, 30.0],
+            "errors": [0.0] * 6,
         }
         result[observable] = {
-            "edges": [0.0, 1.0, 2.0, 3.0],
-            "values": [0.01, 0.02, 0.03],
-            "errors": [0.0, 0.0, 0.0],
+            "edges": [float(index) for index in range(7)],
+            "values": [0.01, 0.02, 0.03, 0.04, 0.05, 0.06],
+            "errors": [0.0] * 6,
         }
     return result
+
+
+def fake_policy_inputs() -> tuple[dict[str, object], dict[str, object]]:
+    measurement = {
+        "comparison_policy": {
+            "primary_bin_masks": {
+                "inclusive": {
+                    "first_bin": 5,
+                    "minimum_analysis_low_gev": 13.1,
+                    "excluded_treatment": "diagnostic_only",
+                }
+            },
+            "covariance_points": 59,
+        }
+    }
+    snapshot = {
+        "datasets": {
+            observable: {
+                "bin_edges": (
+                    [7.0, 8.2, 9.6, 11.2, 13.1, 15.3, 17.9]
+                    if observable == "inclusive"
+                    else [float(index) for index in range(7)]
+                )
+            }
+            for observable in stability.PRIMARY_OBSERVABLES
+        }
+    }
+    return measurement, snapshot
 
 
 def fake_campaign(cut: float, seed: int) -> dict[str, object]:
@@ -230,19 +258,33 @@ class StarGeneratorCutStabilityTests(unittest.TestCase):
     def test_first_two_finite_bins_form_the_only_gate(self) -> None:
         reference = fake_campaign(3.0, 1)
         alternate = fake_campaign(4.0, 2)
+        measurement, snapshot = fake_policy_inputs()
         report = stability.compare_campaigns(
-            reference, alternate, gate=True
+            reference, alternate, gate=True,
+            measurement=measurement, snapshot=snapshot,
         )
         self.assertTrue(report["passed"])
         gated = [row for row in report["rows"] if row["gated"]]
         self.assertEqual(len(gated), 20)
-        self.assertEqual({row["bin"] for row in gated}, {1, 2})
+        inclusive = [row for row in gated if row["observable"] == "inclusive"]
+        dijets = [row for row in gated if row["observable"] != "inclusive"]
+        self.assertEqual({row["bin"] for row in inclusive}, {5, 6})
+        self.assertEqual({row["bin"] for row in dijets}, {1, 2})
 
         failed = copy.deepcopy(alternate)
-        failed["prediction"]["SigmaUU_inclusive"]["values"][0] = 103.0
-        report = stability.compare_campaigns(reference, failed, gate=True)
+        failed["prediction"]["SigmaUU_inclusive"]["values"][0] = 200.0
+        report = stability.compare_campaigns(
+            reference, failed, gate=True,
+            measurement=measurement, snapshot=snapshot,
+        )
+        self.assertTrue(report["passed"])
+        failed["prediction"]["SigmaUU_inclusive"]["values"][4] = 80.0
+        report = stability.compare_campaigns(
+            reference, failed, gate=True,
+            measurement=measurement, snapshot=snapshot,
+        )
         self.assertFalse(report["passed"])
-        self.assertIn("inclusive:sigma_uu:bin1", report["failures"])
+        self.assertIn("inclusive:sigma_uu:bin5", report["failures"])
 
     def test_report_requires_one_commit_and_disjoint_seeds(self) -> None:
         campaigns = {
@@ -250,12 +292,15 @@ class StarGeneratorCutStabilityTests(unittest.TestCase):
             4.0: fake_campaign(4.0, 2),
             5.0: fake_campaign(5.0, 3),
         }
-        report = stability.build_report(campaigns)
+        measurement, snapshot = fake_policy_inputs()
+        report = stability.build_report(campaigns, measurement, snapshot)
         self.assertTrue(report["gate_passed"])
+        self.assertEqual(report["schema_version"], 2)
+        self.assertEqual(report["campaign_source_commit"], "b" * 40)
         self.assertFalse(report["four_vs_five_gev_stress"]["gate"])
         campaigns[5.0]["initial_seeds"] = {2}
         with self.assertRaisesRegex(stability.StabilityError, "reuse"):
-            stability.build_report(campaigns)
+            stability.build_report(campaigns, measurement, snapshot)
 
 
 class CorrectedPlotPackageTests(unittest.TestCase):

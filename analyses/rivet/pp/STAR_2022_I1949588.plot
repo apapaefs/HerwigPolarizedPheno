@@ -18,6 +18,7 @@ END PLOT
 
 BEGIN PLOT /STAR_2022_I1949588/inclusive*
 XLabel=Parton-jet $p_T$ [GeV]
+XMin=13.1
 END PLOT
 
 BEGIN PLOT /STAR_2022_I1949588/dijet_*

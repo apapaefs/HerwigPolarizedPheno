@@ -708,6 +708,87 @@ class CampaignMatrixAndCardTests(unittest.TestCase):
             campaign._apply_star_display_binning(wrong, snapshot)
 
 
+class StarComparisonPolicyTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.measurement = campaign.discover_pp_registry()["STAR_2022_I1949588"]
+        self.snapshot = reference.validate_vendored("STAR_2022_I1949588")
+
+    def test_inclusive_mask_starts_at_analysis_bin_five(self) -> None:
+        size = len(self.snapshot["datasets"]["inclusive"]["points"])
+        mask = campaign._comparison_mask(
+            self.measurement, self.snapshot, "inclusive", size
+        )
+        self.assertEqual(mask[:6], [False, False, False, False, True, True])
+        self.assertEqual(sum(mask), 10)
+
+        invalid = json.loads(json.dumps(self.measurement))
+        invalid["comparison_policy"]["primary_bin_masks"]["inclusive"][
+            "minimum_analysis_low_gev"
+        ] = 13.2
+        with self.assertRaisesRegex(campaign.CampaignError, "not the configured"):
+            campaign._comparison_mask(
+                invalid, self.snapshot, "inclusive", size
+            )
+
+    def test_primary_pulls_and_overlays_exclude_low_bins(self) -> None:
+        dataset = self.snapshot["datasets"]["inclusive"]
+        size = len(dataset["points"])
+        prediction = {
+            "values": [float(index) for index in range(size)],
+            "errors": [0.0] * size,
+        }
+        mask = campaign._comparison_mask(
+            self.measurement, self.snapshot, "inclusive", size
+        )
+        pulls, _chi2, count = campaign._pulls(
+            prediction, dataset["points"], mask
+        )
+        self.assertEqual(pulls[:4], [None, None, None, None])
+        self.assertEqual(count, 10)
+
+        points = campaign._pp_reference_overlay_points(
+            self.measurement,
+            self.snapshot,
+            Path(dataset["rivet_path"]).name,
+        )
+        self.assertIsNotNone(points)
+        self.assertEqual(len(points or []), 10)
+
+        summary = {
+            "uncertainties": {
+                "inclusive": {
+                    "monte_carlo": [1.0] * size,
+                    "pdf_68": [2.0] * size,
+                }
+            }
+        }
+        bands = campaign._pp_theory_uncertainty_bands(
+            self.measurement,
+            self.snapshot,
+            summary,
+            Path(dataset["rivet_path"]).name,
+        )
+        self.assertEqual(bands["monte_carlo"][:4], [None] * 4)
+        self.assertEqual(bands["pdf_68"][4:], [2.0] * 10)
+
+    def test_correlated_fit_selects_exactly_59_points(self) -> None:
+        prediction = {
+            observable: {
+                "values": [0.0] * len(dataset["points"]),
+                "errors": [0.0] * len(dataset["points"]),
+            }
+            for observable, dataset in self.snapshot["datasets"].items()
+            if not dataset.get("alternate_projection")
+        }
+        result = campaign._star_correlated_goodness_of_fit(
+            prediction, self.snapshot, self.measurement
+        )
+        self.assertEqual(result["points"], 59)
+        self.assertNotIn("inclusive:1", result["ordering"])
+        self.assertNotIn("inclusive:4", result["ordering"])
+        self.assertIn("inclusive:5", result["ordering"])
+
+
 class ObservableArithmeticTests(unittest.TestCase):
     def test_posneg_charge_difference_and_covariance(self) -> None:
         positive = series([10.0], [4.0])
