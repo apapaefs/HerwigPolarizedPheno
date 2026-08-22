@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Package the 33 corrected data overlays as vector PDF and 600-dpi PNG."""
+"""Package corrected data overlays as vector PDF and 600-dpi PNG."""
 
 from __future__ import annotations
 
@@ -154,15 +154,68 @@ def star_plot_specs(config: Mapping[str, Any]) -> list[dict[str, Any]]:
 
 
 def package(
-    config_path: Path, output_root: Path, source_commit: str
+    config_path: Path,
+    output_root: Path,
+    source_commit: str,
+    *,
+    selection: str = "all",
 ) -> Path:
     config = load_json(config_path)
-    entries = fixed_plot_specs(config) + sidis_plot_specs(config) + star_plot_specs(config)
-    if len(entries) != 33:
-        raise PackageError(f"Expected 33 primary overlays, found {len(entries)}")
-    destination_root = (
-        output_root / f"compatibility-corrected-20260819-{source_commit[:12]}-600dpi"
-    )
+    if selection == "all":
+        entries = (
+            fixed_plot_specs(config)
+            + sidis_plot_specs(config)
+            + star_plot_specs(config)
+        )
+        expected = 33
+        destination_name = (
+            f"compatibility-corrected-20260819-{source_commit[:12]}-600dpi"
+        )
+        selection_record = {
+            "inclusive_fixed_target": 4,
+            "hermes_sidis": 24,
+            "star_510": 5,
+            "total": 33,
+            "withheld": [
+                "HERMES_2007_I726689_LEGACY",
+                "PHENIX_2023_I2033856",
+            ],
+        }
+        description = (
+            "four corrected inclusive fixed-target overlays, 24 HERMES SIDIS "
+            "overlays, and five STAR 510 GeV overlays"
+        )
+    elif selection == "star510":
+        entries = star_plot_specs(config)
+        expected = 5
+        destination_name = (
+            f"star510-pt13p1-bloch-20260822-{source_commit[:12]}-600dpi"
+        )
+        selection_record = {
+            "inclusive_fixed_target": 0,
+            "hermes_sidis": 0,
+            "star_510": 5,
+            "total": 5,
+            "inclusive_primary_bins": "5-14 (analysis pT >= 13.1 GeV)",
+            "inclusive_diagnostic_only_bins": "1-4",
+            "dijet_policy": "all published bins remain primary",
+            "spin_density_policy": "radial_bloch_ball_projection",
+            "withheld": [
+                "HERMES_2007_I726689_LEGACY",
+                "PHENIX_2023_I2033856",
+            ],
+        }
+        description = (
+            "five STAR 510 GeV overlays using inclusive analysis bins 5--14 "
+            "(pT >= 13.1 GeV) and all dijet bins"
+        )
+    else:
+        raise PackageError(f"Unknown plot selection {selection!r}")
+    if len(entries) != expected:
+        raise PackageError(
+            f"Expected {expected} primary overlays for {selection}, found {len(entries)}"
+        )
+    destination_root = output_root / destination_name
     if destination_root.exists():
         raise PackageError(
             f"Refusing to overwrite existing curated package {destination_root}"
@@ -215,11 +268,7 @@ def package(
         "schema_version": 1,
         "created_at": datetime.now(timezone.utc).isoformat(),
         "source_commit": source_commit,
-        "selection": {
-            "inclusive_fixed_target": 4, "hermes_sidis": 24,
-            "star_510": 5, "total": 33,
-            "withheld": ["HERMES_2007_I726689_LEGACY", "PHENIX_2023_I2033856"],
-        },
+        "selection": selection_record,
         "campaigns": campaign_records,
         "plots": provenance_entries,
     }
@@ -228,14 +277,13 @@ def package(
     )
     (destination_root / "README.md").write_text(
         "# Corrected experimental comparisons\n\n"
-        "This bundle contains four corrected inclusive fixed-target overlays, "
-        "24 HERMES SIDIS overlays, and five STAR 510 GeV overlays. Each vector "
+        f"This bundle contains {description}. Each vector "
         "PDF has a 600-dpi PNG sibling. HERMES low-Q2 and PHENIX are deliberately "
         "withheld. Exact campaign, runtime, plugin, and file hashes are recorded "
         "in `PROVENANCE.json`.\n",
         encoding="utf-8",
     )
-    print(f"Packaged 33 corrected overlays at {destination_root}")
+    print(f"Packaged {expected} corrected overlays at {destination_root}")
     return destination_root
 
 
@@ -244,13 +292,19 @@ def make_parser() -> argparse.ArgumentParser:
     parser.add_argument("--campaign-config", type=Path, required=True)
     parser.add_argument("--output-root", type=Path, required=True)
     parser.add_argument("--source-commit", required=True)
+    parser.add_argument("--selection", choices=("all", "star510"), default="all")
     return parser
 
 
 def main(argv: Sequence[str] | None = None) -> int:
     args = make_parser().parse_args(argv)
     try:
-        package(args.campaign_config, args.output_root, args.source_commit)
+        package(
+            args.campaign_config,
+            args.output_root,
+            args.source_commit,
+            selection=args.selection,
+        )
     except PackageError as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 2

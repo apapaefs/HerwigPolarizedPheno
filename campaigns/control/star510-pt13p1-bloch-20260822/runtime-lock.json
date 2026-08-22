@@ -1,0 +1,90 @@
+{
+  "schema_version": 2,
+  "repository": {
+    "canonical_path": "/home/apapaefs/Projects/HerwigPolarizedPheno",
+    "origin_url": "git@github.com:apapaefs/HerwigPolarizedPheno.git",
+    "production_branch": "main",
+    "validation_branch": "main"
+  },
+  "herwig_source": {
+    "canonical_path": "/home/apapaefs/Projects/HerwigPol-main-fixed-isr",
+    "origin_url": "git@github.com:apapaefs/HerwigPol.git",
+    "branch": "main",
+    "commit": "ad0c5486ad137e0e34c6274959c1fbf8323c5937"
+  },
+  "herwig": {
+    "prefix": "/home/apapaefs/Projects/Herwig/Herwig-Pol",
+    "rivet_version": "rivet v4.1.3",
+    "artifacts": {
+      "Herwig": {
+        "path": "/home/apapaefs/Projects/Herwig/Herwig-Pol/bin/Herwig",
+        "sha256": "24f6369dcb46ef2ae4200ca6e02cb5139c70ed33880fea54ca3664a49cb4975e"
+      },
+      "HerwigCore": {
+        "path": "/home/apapaefs/Projects/Herwig/Herwig-Pol/lib/Herwig/Herwig.so.27.0.0",
+        "sha256": "424b73c72b90ff6103a89522e6c1d1215c007552c9fc67fa84858feff2151d5c"
+      },
+      "HerwigDefaults.rpo": {
+        "path": "/home/apapaefs/Projects/Herwig/Herwig-Pol/share/Herwig/HerwigDefaults.rpo",
+        "sha256": "8c27ab3217a3426279373f4cd2819bbb9ed8ebec1b1fbde22d6880b5467957e5"
+      },
+      "HwMEDIS": {
+        "path": "/home/apapaefs/Projects/Herwig/Herwig-Pol/lib/Herwig/HwMEDIS.so.7.1.0",
+        "sha256": "33d696b1e16b4d3d3f14d7840040de7d009d4c2c5d8a863daf390e14114e3eda"
+      },
+      "HwMEHadron": {
+        "path": "/home/apapaefs/Projects/Herwig/Herwig-Pol/lib/Herwig/HwMEHadron.so.11.0.0",
+        "sha256": "21da8ae521a5670dfab486a78c1f20f0b35cdd50854bbdca4bde9054de070528"
+      },
+      "HwShower": {
+        "path": "/home/apapaefs/Projects/Herwig/Herwig-Pol/lib/Herwig/HwShower.so.30.0.0",
+        "sha256": "757f02fa9c218078c8660b264ccace7fc042585dc50521f3f6531d6deb25fae0"
+      },
+      "FixedTargetLuminosity": {
+        "path": "/home/apapaefs/Projects/Herwig/Herwig-Pol/lib/ThePEG/FixedTargetLuminosity.so.30.0.0",
+        "sha256": "53d19d42917ac05480e31b3224541b8a4f642a5d235c7331e8505510a90f69e2"
+      }
+    }
+  },
+  "thepeg_overlay": {
+    "prefix": "/home/apapaefs/Projects/Herwig/production/star510-bloch-ad0c5486/prefix",
+    "library_directory": "/home/apapaefs/Projects/Herwig/production/star510-bloch-ad0c5486/prefix/lib/ThePEG",
+    "library": {
+      "path": "/home/apapaefs/Projects/Herwig/production/star510-bloch-ad0c5486/prefix/lib/ThePEG/libThePEG.so.30.0.0",
+      "sha256": "a2f659017db104cc73d9e6ffe4d2fd485d5a367f19e8a067e75590c0d1f2cd9f"
+    }
+  },
+  "spin_density_policy": {
+    "name": "radial_bloch_ball_projection",
+    "status": "interim_star_production",
+    "herwigpol_source_commit": "ad0c5486ad137e0e34c6274959c1fbf8323c5937",
+    "strict_negative_isr_guard": true,
+    "event_or_branching_veto": false
+  },
+  "projection_evidence": {
+    "three_seed_projection_audit": {
+      "path": "/home/apapaefs/Projects/Herwig/debug/isr-diagnostics-1922bf2/audit/combined/report.json",
+      "sha256": "1fe3fe8c3684ef0e9276f6566271084d5f756816a44c9eb3bfc27d3e1f1f612a"
+    },
+    "counterfactual_replay": {
+      "path": "/home/apapaefs/Projects/Herwig/debug/isr-diagnostics-1922bf2/audit/counterfactual-comparison/report.json",
+      "sha256": "4e2abd52a341d14cb232d46ee7a53fe6b7566b1d1c569c36e355e25c006cd9b5"
+    }
+  },
+  "star_cut_scan": {
+    "campaign_source_commit": "60da223dcc9ad2c78a5109e2bb1b1513fb131ef9",
+    "access": "read_only"
+  },
+  "pdf_sets": {
+    "NNPDF40_nlo_pch_as_01180": {
+      "file_count": 102,
+      "member_file_count": 101,
+      "inventory_sha256": "905360aa3865da936c46d04c7fbc31533ac16a94ed9d5dc3fa0755e4f178d0fc"
+    },
+    "NNPDFpol20_nlo_as_01180": {
+      "file_count": 102,
+      "member_file_count": 101,
+      "inventory_sha256": "513d65d2e1fba5a97330e2d722db3b6cfad85afce152118f0f311b96ef3ce8d3"
+    }
+  }
+}

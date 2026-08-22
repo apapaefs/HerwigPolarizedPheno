@@ -19,6 +19,8 @@ rendered/
 /campaigns/control/*
 !/campaigns/control/compatibility-corrected-20260819/
 /campaigns/control/compatibility-corrected-20260819/runtime/
+!/campaigns/control/star510-pt13p1-bloch-20260822/
+/campaigns/control/star510-pt13p1-bloch-20260822/runtime/
 /build/
 *.run
 *.log

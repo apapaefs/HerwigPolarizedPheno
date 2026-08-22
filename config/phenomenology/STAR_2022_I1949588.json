@@ -117,7 +117,7 @@
   "goodness_of_fit": {
     "primary_datasets": ["inclusive", "dijet_A", "dijet_B", "dijet_C", "dijet_D"],
     "alternate_display_only": [],
-    "covariance": "complete 63x63 point-to-point covariance from HEPData Tables 6-20",
+    "covariance": "59-point primary submatrix of the complete 63x63 point-to-point covariance from HEPData Tables 6-20; inclusive bins 1-4 are diagnostic-only",
     "global_nuisances": ["relative_luminosity_absolute", "polarization_relative"]
   },
   "physics": {

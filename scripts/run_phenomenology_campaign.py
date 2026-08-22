@@ -368,6 +368,9 @@ def _runtime(measurement: Mapping[str, Any]) -> dict[str, Any]:
             raise CampaignError(f"Required executable {name!r} is not active; load herwig/pol")
         tools[name] = str(Path(executable).resolve())
     prefix = Path(tools["Herwig"]).parent.parent.resolve()
+    herwig_core = experimental._find_runtime_library(
+        prefix, "lib/Herwig", "Herwig.so*"
+    )
     hwmedis = experimental._find_runtime_library(
         prefix, "lib/Herwig", "HwMEDIS*.so*"
     )
@@ -399,6 +402,7 @@ def _runtime(measurement: Mapping[str, Any]) -> dict[str, Any]:
             herwig_prefix=prefix,
             artifact_paths={
                 "Herwig": Path(tools["Herwig"]),
+                "HerwigCore": herwig_core,
                 "HerwigDefaults.rpo": herwig_repository,
                 "HwMEDIS": hwmedis,
                 "HwMEHadron": hwmehadron,
@@ -422,6 +426,7 @@ def _runtime(measurement: Mapping[str, Any]) -> dict[str, Any]:
         "herwig_version": experimental._command_output([tools["Herwig"], "--version"]),
         "rivet_version": experimental._command_output([tools["rivet"], "--version"]),
         "rivet_data_directory": experimental._command_output([tools["rivet-config"], "--datadir"]),
+        "herwig_core_library": str(herwig_core),
         "hwmedis_library": str(hwmedis),
         "hwmehadron_library": str(hwmehadron),
         "hwshower_library": str(hwshower),

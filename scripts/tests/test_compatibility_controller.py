@@ -317,6 +317,21 @@ class CorrectedPlotPackageTests(unittest.TestCase):
         ]
         self.assertEqual(len(destinations), len(set(destinations)))
 
+    def test_star_only_high_resolution_selection_is_explicit(self) -> None:
+        arguments = packager.make_parser().parse_args(
+            [
+                "--campaign-config",
+                "campaigns.json",
+                "--output-root",
+                "figures",
+                "--source-commit",
+                "a" * 40,
+                "--selection",
+                "star510",
+            ]
+        )
+        self.assertEqual(arguments.selection, "star510")
+
 
 if __name__ == "__main__":
     unittest.main()
