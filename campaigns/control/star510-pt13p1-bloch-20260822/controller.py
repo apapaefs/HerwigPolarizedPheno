@@ -636,7 +636,7 @@ def action_validate() -> None:
             "strict negative-ISR guard; no event or branching veto",
             "STAR inclusive primary bins 5-14 (analysis pT >= 13.1 GeV)",
             "59-point covariance selection and unchanged dijet bins",
-            "complete four-helicity matrix, nonempty YODA, and finite summary",
+            "complete four-helicity matrix with nonempty, finite YODA content",
         ],
     }
     atomic_json(RUNTIME_DIR / "validation-report.json", report)
@@ -695,7 +695,7 @@ def action_check_star_cut() -> None:
     run(command)
 
 
-def _require_star_gate(commit: str) -> None:
+def _require_star_gate() -> None:
     report_path = RUNTIME_DIR / "star-cut-stability.json"
     report = load_json(report_path)
     lock = load_json(LOCK_PATH)
@@ -726,7 +726,7 @@ def action_star510() -> None:
     verification = verify(production=True)
     commit = str(verification["repository"]["commit"])
     require_validation(commit)
-    _require_star_gate(commit)
+    _require_star_gate()
     _require_prepared_group("star510", commit)
     for spec in specs("star510"):
         run(stage_command("campaign", spec))
@@ -790,8 +790,8 @@ def action_commands() -> None:
     for command in (
         '"$CONTROL/run.sh" verify', '"$CONTROL/run.sh" commands',
         '"$CONTROL/run.sh" status', '"$CONTROL/run.sh" check-star-cut',
-        '"$CONTROL/run.sh" recover star510', '"$CONTROL/run.sh" postprocess',
-        '"$CONTROL/run.sh" star510', '"$CONTROL/run.sh" plot',
+        '"$CONTROL/run.sh" star510', '"$CONTROL/run.sh" recover star510',
+        '"$CONTROL/run.sh" postprocess', '"$CONTROL/run.sh" plot',
         '"$CONTROL/run.sh" package',
     ):
         print(f"  {command}")
