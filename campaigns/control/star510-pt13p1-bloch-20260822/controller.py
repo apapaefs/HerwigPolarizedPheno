@@ -9,6 +9,7 @@ import hashlib
 import json
 import math
 import os
+import re
 import shlex
 import subprocess
 import sys
@@ -544,14 +545,14 @@ def assert_handoff(commit: str) -> dict[str, Any]:
     return report
 
 
-def _finite_count(value: Any) -> int:
-    if isinstance(value, Mapping):
-        return sum(_finite_count(item) for item in value.values())
-    if isinstance(value, list):
-        return sum(_finite_count(item) for item in value)
-    if isinstance(value, (int, float)) and math.isfinite(float(value)):
-        return 1
-    return 0
+def _finite_yoda_count(path: Path) -> int:
+    numeric = re.compile(
+        r"(?<![A-Za-z_])[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?"
+    )
+    return sum(
+        math.isfinite(float(token))
+        for token in numeric.findall(path.read_text(encoding="utf-8", errors="replace"))
+    )
 
 
 def smoke_spec(measurement: str, index: int, commit: str) -> dict[str, Any]:
@@ -575,7 +576,7 @@ def validate_smokes(verification: Mapping[str, Any]) -> dict[str, Any]:
     reports = []
     for index, measurement in enumerate(measurements):
         spec = smoke_spec(str(measurement), index, commit)
-        command = [sys.executable, str(RUNNER), "full"] + generation_arguments(spec)
+        command = [sys.executable, str(RUNNER), "campaign"] + generation_arguments(spec)
         command.append("--smoke")
         run(command)
         manifest = _manifest(spec)
@@ -584,22 +585,25 @@ def validate_smokes(verification: Mapping[str, Any]) -> dict[str, Any]:
         jobs = manifest.get("jobs", [])
         if not jobs or any(job.get("status") != "success" for job in jobs):
             raise ControllerError(f"Smoke campaign has an incomplete matrix: {measurement}")
+        finite = 0
+        output_hashes: dict[str, str] = {}
         for job in jobs:
             output = campaign_directory(spec) / str(job["output_yoda"])
             if not output.is_file() or output.stat().st_size == 0:
                 raise ControllerError(f"Smoke campaign has an empty YODA: {output}")
+            finite += _finite_yoda_count(output)
+            output_hashes[str(job["id"])] = sha256_file(output)
         verify_manifest_provenance(manifest, commit)
-        summary_path = campaign_directory(spec) / "postprocess" / "summary.json"
-        summary = load_json(summary_path)
-        finite = _finite_count(summary)
         if finite == 0:
-            raise ControllerError(f"Smoke campaign has no finite summary values: {measurement}")
+            raise ControllerError(f"Smoke campaign has no finite YODA values: {measurement}")
         reports.append(
             {
                 "measurement": measurement, "tag": spec["tag"],
                 "manifest_sha256": sha256_file(campaign_directory(spec) / "manifest.json"),
-                "summary_sha256": sha256_file(summary_path), "finite_summary_values": finite,
-                "shards": len(jobs), "diagnostic_only": measurement == "HERMES_2007_I726689_LEGACY",
+                "yoda_sha256": output_hashes, "finite_yoda_values": finite,
+                "shards": len(jobs), "postprocess_policy": (
+                    "Production alone must populate all 59 primary covariance points"
+                ),
             }
         )
     return {"smokes": reports}

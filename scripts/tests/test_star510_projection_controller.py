@@ -7,6 +7,7 @@ import contextlib
 import importlib.util
 import io
 import json
+import tempfile
 import unittest
 from pathlib import Path
 from unittest import mock
@@ -112,6 +113,12 @@ class Star510ProjectionControllerTests(unittest.TestCase):
             controller.action_package()
         command = run.call_args.args[0]
         self.assertEqual(command[-2:], ["--selection", "star510"])
+
+    def test_smoke_yoda_validation_requires_finite_numeric_content(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / "smoke.yoda"
+            path.write_text("nan inf -inf 1.0 -2.5e-3\n", encoding="utf-8")
+            self.assertEqual(controller._finite_yoda_count(path), 2)
 
 
 if __name__ == "__main__":
