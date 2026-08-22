@@ -107,6 +107,13 @@
     },
     "covariance_points": 59
   },
+  "spin_density_policy": {
+    "name": "radial_bloch_ball_projection",
+    "status": "interim_star_production",
+    "herwigpol_source_commit": "ad0c5486ad137e0e34c6274959c1fbf8323c5937",
+    "strict_negative_isr_guard": true,
+    "event_or_branching_veto": false
+  },
   "goodness_of_fit": {
     "primary_datasets": ["inclusive", "dijet_A", "dijet_B", "dijet_C", "dijet_D"],
     "alternate_display_only": [],

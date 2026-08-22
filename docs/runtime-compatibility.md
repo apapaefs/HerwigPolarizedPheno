@@ -36,6 +36,15 @@ The active Herwig installation must provide:
 - the corrected polarized QTilde backward-ISR normalization and parent-density
   arguments for physical-helicity shower samples.
 
+For the interim high-statistics STAR 510 GeV production, the incoming
+spin-half density is constructed with the radial unit-Bloch-ball projection
+in `PolarizedPartonExtractor`. The required HerwigPol source identity is
+`ad0c5486ad137e0e34c6274959c1fbf8323c5937`. This is a documented model
+prescription for PDF-derived polarization ratios outside the physical density
+domain: it is not an event or branching veto, and the strict downstream
+negative-ISR guard remains active. The production controller must pin the
+effective `libThePEG` separately from the base `herwig/pol` module.
+
 The imported workflow is the audited `apapaefs/HerwigPol` tree at
 `822911203d431daa2a026fc697aabf5eeeb060b2`; the published descendant
 `04ada4408aa71e0674d0e0c494933badaf6eb688` adds the polarized QTilde ISR
@@ -60,7 +69,8 @@ make check-rivet
 The campaign runner performs additional executable, library, PDF, card, and
 manifest checks during `prepare` or `full`. Every prepared manifest records
 SHA-256 identities for `Herwig`, `HerwigDefaults.rpo`, `HwMEDIS`,
-`HwMEHadron`, `HwShower`, `FixedTargetLuminosity`, the Rivet executable, the
+`HwMEHadron`, `HwShower`, the effective `libThePEG`,
+`FixedTargetLuminosity`, the Rivet executable, the
 campaign-specific Rivet plugin, every generated card and `.run` file, and
 every file in both LHAPDF sets. A path without a matching file hash is not a
 runtime identity.

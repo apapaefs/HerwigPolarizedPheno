@@ -116,6 +116,15 @@ commit. The report separately records the checker, measurement descriptor,
 and comparison-policy hashes. Existing scan summaries are consumed read-only;
 they are not re-postprocessed under the changed measurement signature.
 
+The nominal high-statistics sample uses the interim radial Bloch-ball
+projection for PDF-derived incoming spin densities, pinned to HerwigPol commit
+`ad0c5486ad137e0e34c6274959c1fbf8323c5937`. The preserved cut-scan samples
+predate that prescription and certify the 3-versus-4 GeV generator-cut plateau;
+the separate exact-seed projection audit certifies that the prescription
+removes the nonphysical density without a veto and finds no projected accepted
+entry in the retained inclusive or dijet bins. These are two distinct gates,
+and their source and evidence hashes must remain separate in provenance.
+
 ## HERMES SIDIS physics definition
 
 The SIDIS cards generate a 27.6 GeV positron on a fixed proton or neutron

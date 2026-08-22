@@ -2219,6 +2219,9 @@ def postprocess_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> 
         "include_diagnostics": include_diagnostics,
         "comparison_policy": star_policy.policy_payload(measurement),
         "comparison_policy_sha256": star_policy.policy_sha256(measurement),
+        "spin_density_policy": copy.deepcopy(
+            measurement.get("spin_density_policy", {})
+        ),
         "primary_covariance_points": 0 if correlated_goodness_of_fit is None else correlated_goodness_of_fit.get("points"),
         "variations": summary_variations,
     }

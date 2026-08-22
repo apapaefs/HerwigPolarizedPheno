@@ -720,6 +720,17 @@ class StarComparisonPolicyTests(unittest.TestCase):
         )
         self.assertEqual(mask[:6], [False, False, False, False, True, True])
         self.assertEqual(sum(mask), 10)
+        self.assertEqual(
+            self.measurement["spin_density_policy"],
+            {
+                "name": "radial_bloch_ball_projection",
+                "status": "interim_star_production",
+                "herwigpol_source_commit":
+                "ad0c5486ad137e0e34c6274959c1fbf8323c5937",
+                "strict_negative_isr_guard": True,
+                "event_or_branching_veto": False,
+            },
+        )
 
         invalid = json.loads(json.dumps(self.measurement))
         invalid["comparison_policy"]["primary_bin_masks"]["inclusive"][

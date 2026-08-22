@@ -141,6 +141,13 @@ band, and covariance fit start at bin 5, whose analysis lower edge is checked
 to be exactly 13.1 GeV. The resulting primary covariance selection contains
 59 points; dijet selections are unchanged.
 
+The high-statistics STAR 510 GeV production additionally records the interim
+incoming-spin-density prescription from the measurement descriptor. Its
+radial Bloch-ball projection is supplied by the pinned HerwigPol runtime; it
+does not veto an event or branching, and the strict negative-ISR guard remains
+enabled. The summary preserves this prescription independently of the
+comparison-bin policy hash.
+
 Add `--families hadron_mpi_on` only when the stable-particle MPI diagnostic is
 wanted.  `--include-diagnostics` exposes alternate reference projections and
 closure observables during postprocessing and plotting.
