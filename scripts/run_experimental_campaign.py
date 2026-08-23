@@ -33,7 +33,7 @@ import urllib.request
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Iterable, Mapping, Sequence
+from typing import Any, Callable, Iterable, Mapping, Sequence
 
 import runtime_provenance as provenance
 
@@ -1150,7 +1150,9 @@ def analysis_environment(measurement: Mapping[str, Any], campaign_dir: Path, run
     return environment
 
 
-def measurement_signature(measurement: Mapping[str, Any]) -> str:
+def measurement_signature(
+    measurement: Mapping[str, Any], *, plot_bytes: bytes | None = None
+) -> str:
     registry_copy = copy.deepcopy(
         {key: value for key, value in measurement.items() if not key.startswith("_")}
     )
@@ -1161,6 +1163,7 @@ def measurement_signature(measurement: Mapping[str, Any]) -> str:
         # descriptor block are covered by comparison_signature().
         campaign_config.pop("comparison_profile", None)
     digest = hashlib.sha256(canonical_json_bytes(registry_copy))
+    plot_path = resolve_dispol_path(measurement["analysis"]["plot"])
     files = [
         resolve_dispol_path(measurement["analysis"][key])
         for key in ("source", "info", "plot")
@@ -1176,7 +1179,10 @@ def measurement_signature(measurement: Mapping[str, Any]) -> str:
     files.extend(sorted(card_dir.glob("*.in")))
     for path in files:
         digest.update(str(path.relative_to(DISPOL_ROOT)).encode("utf-8"))
-        digest.update(path.read_bytes())
+        digest.update(
+            plot_bytes if plot_bytes is not None and path == plot_path
+            else path.read_bytes()
+        )
     return digest.hexdigest()
 
 
@@ -1208,20 +1214,32 @@ def comparison_signature(measurement: Mapping[str, Any]) -> str:
 
 
 def _assert_manifest_signatures_current(
-    manifest: Mapping[str, Any], measurement: Mapping[str, Any]
-) -> None:
+    manifest: Mapping[str, Any], measurement: Mapping[str, Any], *,
+    allow_plot_metadata_refresh: bool = False,
+) -> dict[str, Any] | None:
     """Refuse to reinterpret event products made with another definition."""
 
     configuration = manifest.get("configuration", {})
     recorded = configuration.get("measurement_signature")
     current = measurement_signature(measurement)
+    refresh: dict[str, Any] | None = None
     if recorded != current:
-        raise CampaignError(
-            f"{measurement['id']} campaign products were generated with a "
-            "different analysis, reference, card, or metadata signature. "
-            "Postprocessing and plotting are intentionally refused; use a "
-            "new immutable tag and rerun the event campaign."
-        )
+        if allow_plot_metadata_refresh:
+            refresh = authorize_plot_metadata_refresh(
+                manifest,
+                measurement,
+                current_signature=current,
+                signature_with_plot_bytes=lambda payload: measurement_signature(
+                    measurement, plot_bytes=payload
+                ),
+            )
+        else:
+            raise CampaignError(
+                f"{measurement['id']} campaign products were generated with a "
+                "different analysis, reference, card, or metadata signature. "
+                "Postprocessing and plotting are intentionally refused; use a "
+                "new immutable tag and rerun the event campaign."
+            )
     if bool(configuration.get("comparisons", False)):
         recorded_comparison = configuration.get("comparison_signature")
         current_comparison = comparison_signature(measurement)
@@ -1230,6 +1248,89 @@ def _assert_manifest_signatures_current(
                 f"{measurement['id']} comparison-family products have a "
                 "stale signature. Use a new immutable tag and rerun them."
             )
+    return refresh
+
+
+def _git_file_at_commit(commit: str, relative_path: Path) -> bytes:
+    if not re.fullmatch(r"[0-9a-f]{40}", commit):
+        raise CampaignError(
+            f"Cannot verify plot-only refresh against invalid source commit {commit!r}"
+        )
+    completed = subprocess.run(
+        ["git", "-C", str(DISPOL_ROOT), "show", f"{commit}:{relative_path.as_posix()}"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        check=False,
+    )
+    if completed.returncode != 0:
+        detail = completed.stderr.decode("utf-8", errors="replace").strip()
+        raise CampaignError(
+            f"Cannot read {relative_path} from generation commit {commit}: {detail}"
+        )
+    return completed.stdout
+
+
+def authorize_plot_metadata_refresh(
+    manifest: Mapping[str, Any],
+    measurement: Mapping[str, Any],
+    *,
+    current_signature: str,
+    signature_with_plot_bytes: Callable[[bytes], str],
+) -> dict[str, Any]:
+    """Prove that a stale campaign differs only in presentation metadata.
+
+    The generation commit supplies the historical ``.plot`` bytes. Replacing
+    only the current plot bytes with that historical payload must reproduce
+    the immutable signature stored in the manifest. This keeps source,
+    reference, cards, descriptor content, and postprocessed physics products
+    under the original lock while permitting a recorded label/style refresh.
+    """
+
+    configuration = manifest.get("configuration", {})
+    recorded = str(configuration.get("measurement_signature", ""))
+    if manifest.get("status") != "complete":
+        raise CampaignError(
+            "Plot-metadata refresh is allowed only for a complete campaign"
+        )
+    jobs = manifest.get("jobs")
+    if not isinstance(jobs, list) or not jobs or any(
+        job.get("status") != "success" for job in jobs
+    ):
+        raise CampaignError(
+            "Plot-metadata refresh requires a nonempty all-success job matrix"
+        )
+    source_control = (
+        (manifest.get("runtime") or {}).get("provenance") or {}
+    ).get("source_control") or {}
+    generation_commit = str(source_control.get("commit", ""))
+    plot_path = resolve_dispol_path(str(measurement["analysis"]["plot"]))
+    relative_plot_path = plot_path.relative_to(DISPOL_ROOT)
+    generation_plot_bytes = _git_file_at_commit(
+        generation_commit, relative_plot_path
+    )
+    reconstructed = signature_with_plot_bytes(generation_plot_bytes)
+    if reconstructed != recorded:
+        raise CampaignError(
+            f"{measurement['id']} differs from its generation signature in "
+            "more than the Rivet .plot metadata; the presentation-only "
+            "refresh is refused."
+        )
+    current_plot_bytes = plot_path.read_bytes()
+    if current_plot_bytes == generation_plot_bytes:
+        raise CampaignError(
+            f"{measurement['id']} has unchanged .plot metadata, so its stale "
+            "signature cannot be refreshed as presentation-only."
+        )
+    return {
+        "mode": "presentation_only_plot_metadata_refresh",
+        "generation_measurement_signature": recorded,
+        "current_measurement_signature": current_signature,
+        "generation_source_commit": generation_commit,
+        "plot_path": relative_plot_path.as_posix(),
+        "generation_plot_sha256": sha256_bytes(generation_plot_bytes),
+        "current_plot_sha256": sha256_bytes(current_plot_bytes),
+        "verified_at": utc_now(),
+    }
 
 
 def _resolved_campaign_options(args: argparse.Namespace, measurement: Mapping[str, Any]) -> dict[str, Any]:
@@ -3649,7 +3750,13 @@ def plot_campaign(args: argparse.Namespace, measurement: Mapping[str, Any]) -> P
     if not manifest_path.exists():
         raise CampaignError(f"No prepared campaign at {campaign_dir}")
     manifest = load_json(manifest_path)
-    _assert_manifest_signatures_current(manifest, measurement)
+    plot_metadata_refresh = _assert_manifest_signatures_current(
+        manifest,
+        measurement,
+        allow_plot_metadata_refresh=bool(
+            getattr(args, "allow_plot_metadata_refresh", False)
+        ),
+    )
     postprocess = manifest.get("postprocess", {})
     all_prediction_entries = postprocess.get("predictions")
     if not isinstance(all_prediction_entries, list) or not all_prediction_entries:
@@ -3771,9 +3878,25 @@ def plot_campaign(args: argparse.Namespace, measurement: Mapping[str, Any]) -> P
     index = write_plot_indexes(output_dir, measurement, rendered_scripts)
     if not _nonempty(index):
         raise CampaignError(f"Could not create Rivet plot index {index}")
-    manifest["plots"] = {"created_at": utc_now(), "index": str(index.relative_to(campaign_dir))}
+    manifest["plots"] = {
+        "created_at": utc_now(),
+        "index": str(index.relative_to(campaign_dir)),
+        "plot_metadata_sha256": sha256_file(
+            resolve_dispol_path(str(measurement["analysis"]["plot"]))
+        ),
+    }
+    if plot_metadata_refresh is not None:
+        manifest["plots"]["presentation_only_refresh"] = plot_metadata_refresh
     manifest["updated_at"] = utc_now()
-    manifest["history"].append({"at": utc_now(), "action": "plot"})
+    manifest["history"].append(
+        {
+            "at": utc_now(),
+            "action": (
+                "plot-metadata-refresh"
+                if plot_metadata_refresh is not None else "plot"
+            ),
+        }
+    )
     atomic_write_json(manifest_path, manifest)
     write_campaign_monitor_files(
         campaign_dir,
@@ -3908,6 +4031,15 @@ def make_parser() -> argparse.ArgumentParser:
     _add_measurement(plot)
     _add_tag(plot)
     plot.add_argument("--dry-run", action="store_true")
+    plot.add_argument(
+        "--allow-plot-metadata-refresh",
+        action="store_true",
+        help=(
+            "Replot a complete campaign only when its immutable generation "
+            "signature can be reconstructed by restoring the historical "
+            "Rivet .plot file; no event or postprocess products are changed"
+        ),
+    )
     _add_plot_options(plot)
 
     full = subparsers.add_parser("full", help="Prepare, run, postprocess, and plot")

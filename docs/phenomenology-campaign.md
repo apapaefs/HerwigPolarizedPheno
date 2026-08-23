@@ -220,6 +220,14 @@ Fixed-target plots show only the nominal
 postprocessed families.  The low-$Q^2$ HERMES projection additionally marks
 display-only points with open squares.
 
+Rivet axis-label or style metadata may be refreshed without regenerating
+events by passing `--allow-plot-metadata-refresh` to the `plot` stage.  This is
+not a general signature bypass: it is accepted only for a complete,
+all-success campaign when replacing the current `.plot` bytes with those from
+the campaign's recorded Git commit exactly reconstructs the immutable
+generation signature.  The manifest retains that generation signature and
+records both plot hashes and the presentation-only refresh provenance.
+
 ## Combination rules
 
 Four physical helicity samples define every nominal asymmetry.  For DIS,

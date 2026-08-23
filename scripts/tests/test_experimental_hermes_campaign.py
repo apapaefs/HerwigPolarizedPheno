@@ -397,6 +397,61 @@ class CampaignRegistryAndCardTests(unittest.TestCase):
                 stale, self.measurement
             )
 
+    def test_plot_metadata_refresh_proves_only_the_plot_file_changed(self) -> None:
+        historical_plot = b"historical plot metadata\n"
+        recorded_signature = "generation-signature"
+        manifest = {
+            "status": "complete",
+            "configuration": {
+                "measurement_signature": recorded_signature,
+            },
+            "jobs": [{"status": "success"}],
+            "runtime": {
+                "provenance": {
+                    "source_control": {"commit": "a" * 40}
+                }
+            },
+        }
+        signature = lambda payload: (
+            recorded_signature if payload == historical_plot else "unexpected"
+        )
+        with mock.patch.object(
+            campaign,
+            "_git_file_at_commit",
+            return_value=historical_plot,
+        ):
+            provenance = campaign.authorize_plot_metadata_refresh(
+                manifest,
+                self.measurement,
+                current_signature="current-signature",
+                signature_with_plot_bytes=signature,
+            )
+        self.assertEqual(
+            provenance["mode"], "presentation_only_plot_metadata_refresh"
+        )
+        self.assertEqual(
+            provenance["generation_measurement_signature"],
+            recorded_signature,
+        )
+        self.assertEqual(
+            provenance["current_measurement_signature"], "current-signature"
+        )
+
+        with mock.patch.object(
+            campaign,
+            "_git_file_at_commit",
+            return_value=historical_plot,
+        ):
+            with self.assertRaisesRegex(
+                campaign.CampaignError, "more than the Rivet .plot metadata"
+            ):
+                campaign.authorize_plot_metadata_refresh(
+                    manifest,
+                    self.measurement,
+                    current_signature="current-signature",
+                    signature_with_plot_bytes=lambda _payload: "other-change",
+                )
+
     def test_card_family_invariants(self) -> None:
         common = (CARD_DIR / f"{MEASUREMENT_ID}-Common.in").read_text(encoding="utf-8")
         for required in (

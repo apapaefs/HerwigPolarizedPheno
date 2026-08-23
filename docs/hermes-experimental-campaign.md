@@ -200,6 +200,13 @@ python3 scripts/run_experimental_campaign.py plot \
   --plot-comparisons
 ```
 
+For a label/style-only correction to Rivet `.plot` metadata on an already
+complete campaign, `plot --allow-plot-metadata-refresh` permits re-rendering
+only if the runner can reconstruct the stored generation signature from the
+historical `.plot` file at the campaign's pinned Git commit.  Any concurrent
+change to the descriptor, analysis, cards, reference data, or support files is
+still refused, and the refresh hashes are written to the manifest.
+
 Campaign configuration is immutable. In particular, do not add
 `--comparisons` while resuming the existing nominal-only
 `hermes_prod_300k_20260721` tag; use a fresh tag. A 300,000 POSNLO / 30,000

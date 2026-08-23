@@ -9,6 +9,7 @@ import hashlib
 import io
 import json
 import math
+import re
 import sys
 import unittest
 from pathlib import Path
@@ -23,6 +24,24 @@ import polarized_jet_sidis_reference_data as reference  # noqa: E402
 import polarized_sidis_postprocess as sidis  # noqa: E402
 import run_experimental_campaign as experimental  # noqa: E402
 import run_phenomenology_campaign as campaign  # noqa: E402
+
+
+def plot_metadata(path: Path, object_path: str) -> dict[str, str]:
+    metadata: dict[str, str] = {}
+    text = path.read_text(encoding="utf-8")
+    blocks = re.finditer(
+        r"(?ms)^\s*#?\s*BEGIN PLOT\s+(.+?)\s*$\n(.*?)"
+        r"^\s*#?\s*END PLOT\s*$",
+        text,
+    )
+    for block in blocks:
+        if re.match(block.group(1), object_path) is None:
+            continue
+        for line in block.group(2).splitlines():
+            if "=" in line and not line.lstrip().startswith("#"):
+                key, value = line.split("=", 1)
+                metadata[key.strip()] = value.strip()
+    return metadata
 
 
 def args(profile: str = "central", **updates: object) -> argparse.Namespace:
@@ -57,6 +76,46 @@ def series(
 
 
 class ReferenceDataTests(unittest.TestCase):
+    def test_hermes_sidis_primary_and_pull_coordinates_are_labeled(self) -> None:
+        plot = (
+            DISPOL_ROOT / "analyses" / "rivet" / "dis" /
+            "HERMES_2019_I1698889.plot"
+        )
+        expected = {
+            "x": "$x$",
+            "xz": "Flattened $(x,z)$ bin",
+            "xpt": "Flattened $(x,P_{hT})$ bin",
+            "xzpt": "Flattened $(x,z,P_{hT})$ bin",
+        }
+        for suffix, label in expected.items():
+            for prefix in ("", "Pull_"):
+                stem = f"{prefix}proton_piplus_{suffix}"
+                with self.subTest(stem=stem):
+                    metadata = plot_metadata(
+                        plot, f"/HERMES_2019_I1698889/{stem}"
+                    )
+                    self.assertEqual(metadata.get("XLabel"), label)
+                    self.assertTrue(metadata.get("YLabel"))
+
+    def test_star_primary_and_pull_coordinates_are_labeled(self) -> None:
+        plot = (
+            DISPOL_ROOT / "analyses" / "rivet" / "pp" /
+            "STAR_2022_I1949588.plot"
+        )
+        expected = {
+            "inclusive_ALL": "Parton-jet $p_T$ [GeV]",
+            "dijet_A_ALL": "Parton-dijet mass [GeV]",
+            "Pull_inclusive": "Parton-jet $p_T$ [GeV]",
+            "Pull_dijet_A": "Parton-dijet mass [GeV]",
+        }
+        for stem, label in expected.items():
+            with self.subTest(stem=stem):
+                metadata = plot_metadata(
+                    plot, f"/STAR_2022_I1949588/{stem}"
+                )
+                self.assertEqual(metadata.get("XLabel"), label)
+                self.assertTrue(metadata.get("YLabel"))
+
     def test_every_vendored_value_reconstructs_from_pinned_sources(self) -> None:
         for measurement in sorted(reference.MEASUREMENTS):
             generated = reference.normalized_from_raw(measurement)
@@ -378,13 +437,13 @@ class ReferenceDataTests(unittest.TestCase):
         ).read_text(encoding="utf-8")
         self.assertIn(
             "BEGIN PLOT /HERMES_2019_I1698889/DIAGNOSTICS/"
-            "UnpolarizedCosPhi_*",
+            "UnpolarizedCosPhi_.*",
             plot,
         )
         self.assertIn(r"YLabel=$2\langle\cos\phi\rangle_{UU}$", plot)
         self.assertIn(
             "BEGIN PLOT /HERMES_2019_I1698889/"
-            "PUBLISHED_AParallelCosPhi/*",
+            "PUBLISHED_AParallelCosPhi/.*",
             plot,
         )
 

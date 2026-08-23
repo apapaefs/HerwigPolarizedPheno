@@ -234,6 +234,22 @@ class RegistryAndMatrixTests(unittest.TestCase):
         ])
         self.assertTrue(experimental_components.plot_data_components)
 
+        refresh = campaign.make_parser().parse_args([
+            "plot", "--measurement", "HERMES_2007_I726689",
+            "--tag", "plot-label-refresh",
+            "--allow-plot-metadata-refresh",
+        ])
+        self.assertIn(
+            "--allow-plot-metadata-refresh",
+            campaign._legacy_arguments(refresh),
+        )
+        experimental_refresh = experimental.make_parser().parse_args([
+            "plot", "--measurement", "HERMES_2007_I726689",
+            "--tag", "plot-label-refresh",
+            "--allow-plot-metadata-refresh",
+        ])
+        self.assertTrue(experimental_refresh.allow_plot_metadata_refresh)
+
 
 class ObservableArithmeticTests(unittest.TestCase):
     def test_star_beam_symmetrization_eta_folding_and_exchange_closure(self) -> None:

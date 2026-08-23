@@ -33,7 +33,43 @@ def descriptor(identifier: str) -> dict:
     return campaign.get_measurement(identifier)
 
 
+def plot_metadata(path: Path, object_path: str) -> dict[str, str]:
+    metadata: dict[str, str] = {}
+    text = path.read_text(encoding="utf-8")
+    blocks = re.finditer(
+        r"(?ms)^\s*#?\s*BEGIN PLOT\s+(.+?)\s*$\n(.*?)"
+        r"^\s*#?\s*END PLOT\s*$",
+        text,
+    )
+    for block in blocks:
+        if re.match(block.group(1), object_path) is None:
+            continue
+        for line in block.group(2).splitlines():
+            if "=" in line and not line.lstrip().startswith("#"):
+                key, value = line.split("=", 1)
+                metadata[key.strip()] = value.strip()
+    return metadata
+
+
 class CompassReferenceTests(unittest.TestCase):
+    def test_compass_2010_all_rendered_observables_have_axis_labels(self) -> None:
+        plot = (
+            DISPOL_ROOT / "analyses" / "rivet" / "dis" /
+            "COMPASS_2010_I843494.plot"
+        )
+        objects = ["A1_Q2GT4"] + [
+            f"UU_Accepted_{observable}_Q2GT{cut}"
+            for observable in ("X", "Q2", "Y", "W2", "Theta", "EPrime")
+            for cut in (1, 4)
+        ]
+        for stem in objects:
+            with self.subTest(stem=stem):
+                metadata = plot_metadata(
+                    plot, f"/COMPASS_2010_I843494/{stem}"
+                )
+                self.assertTrue(metadata.get("XLabel"))
+                self.assertTrue(metadata.get("YLabel"))
+
     def test_compass_2010_cpp_and_reference_use_the_exact_published_edges(self) -> None:
         expected = [
             0.004, 0.005, 0.006, 0.008, 0.010, 0.020, 0.030, 0.040,

@@ -441,9 +441,12 @@ def _runtime(measurement: Mapping[str, Any]) -> dict[str, Any]:
     }
 
 
-def _signature(measurement: Mapping[str, Any]) -> str:
+def _signature(
+    measurement: Mapping[str, Any], *, plot_bytes: bytes | None = None
+) -> str:
     digest = hashlib.sha256(experimental.canonical_json_bytes(
         {key: value for key, value in measurement.items() if not key.startswith("_")}))
+    plot_path = DISPOL_ROOT / measurement["analysis"]["plot"]
     files = [DISPOL_ROOT/measurement["analysis"][key] for key in ("source", "info", "plot")]
     files.extend(
         DISPOL_ROOT/str(path)
@@ -457,24 +460,41 @@ def _signature(measurement: Mapping[str, Any]) -> str:
     files.extend(sorted(card_dir.glob("*.in")))
     for path in files:
         digest.update(str(path.relative_to(DISPOL_ROOT)).encode())
-        digest.update(path.read_bytes())
+        digest.update(
+            plot_bytes if plot_bytes is not None and path == plot_path
+            else path.read_bytes()
+        )
     return digest.hexdigest()
 
 
 def _assert_manifest_signature_current(
-    manifest: Mapping[str, Any], measurement: Mapping[str, Any]
-) -> None:
+    manifest: Mapping[str, Any], measurement: Mapping[str, Any], *,
+    allow_plot_metadata_refresh: bool = False,
+) -> dict[str, Any] | None:
     """Refuse to reinterpret shards produced by another measurement definition."""
 
     recorded = manifest.get("configuration", {}).get("measurement_signature")
     current = _signature(measurement)
     if recorded != current:
+        if allow_plot_metadata_refresh:
+            try:
+                return experimental.authorize_plot_metadata_refresh(
+                    manifest,
+                    measurement,
+                    current_signature=current,
+                    signature_with_plot_bytes=lambda payload: _signature(
+                        measurement, plot_bytes=payload
+                    ),
+                )
+            except experimental.CampaignError as exc:
+                raise CampaignError(str(exc)) from exc
         raise CampaignError(
             f"{measurement['id']} campaign products were generated with a "
             "different analysis, reference, card, or metadata signature. "
             "Postprocessing and plotting are intentionally refused; use a "
             "new immutable tag and rerun the event campaign."
         )
+    return None
 
 
 def _card_text(measurement: Mapping[str, Any], job: Mapping[str, Any]) -> str:
@@ -2255,7 +2275,13 @@ def plot_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> Path:
     if not manifest_path.exists():
         raise CampaignError(f"No prepared campaign at {campaign_dir}")
     manifest = _load_json(manifest_path)
-    _assert_manifest_signature_current(manifest, measurement)
+    plot_metadata_refresh = _assert_manifest_signature_current(
+        manifest,
+        measurement,
+        allow_plot_metadata_refresh=bool(
+            getattr(args, "allow_plot_metadata_refresh", False)
+        ),
+    )
     postprocess = manifest.get("postprocess", {})
     entries = postprocess.get("predictions")
     if not isinstance(entries, list) or not entries:
@@ -2379,10 +2405,25 @@ def plot_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> Path:
     index = experimental.write_plot_indexes(output, measurement, rendered_scripts)
     if not index.is_file() or not any(output.rglob("*.png")):
         raise CampaignError(f"Rivet plotting produced no complete HTML below {output}")
-    manifest["plots"] = {"created_at": experimental.utc_now(),
-                          "index": str(index.relative_to(campaign_dir))}
+    manifest["plots"] = {
+        "created_at": experimental.utc_now(),
+        "index": str(index.relative_to(campaign_dir)),
+        "plot_metadata_sha256": experimental.sha256_file(
+            DISPOL_ROOT / str(measurement["analysis"]["plot"])
+        ),
+    }
+    if plot_metadata_refresh is not None:
+        manifest["plots"]["presentation_only_refresh"] = plot_metadata_refresh
     manifest["updated_at"] = experimental.utc_now()
-    manifest["history"].append({"at": experimental.utc_now(), "action": "plot"})
+    manifest["history"].append(
+        {
+            "at": experimental.utc_now(),
+            "action": (
+                "plot-metadata-refresh"
+                if plot_metadata_refresh is not None else "plot"
+            ),
+        }
+    )
     experimental.atomic_write_json(manifest_path, manifest)
     print(f"Wrote Rivet HTML to {index}")
     return output
@@ -2425,6 +2466,8 @@ def _legacy_arguments(args: argparse.Namespace) -> list[str]:
         command.extend(["--tag", args.tag])
         if args.dry_run: command.append("--dry-run")
         if args.command == "plot":
+            if args.allow_plot_metadata_refresh:
+                command.append("--allow-plot-metadata-refresh")
             if args.plot_comparisons:
                 command.append("--plot-comparisons")
             if args.plot_data_components:
@@ -2534,6 +2577,14 @@ def make_parser() -> argparse.ArgumentParser:
     plot = commands.add_parser("plot")
     _add_measurement(plot); _add_tag(plot)
     plot.add_argument("--dry-run", action="store_true")
+    plot.add_argument(
+        "--allow-plot-metadata-refresh",
+        action="store_true",
+        help=(
+            "Replot a complete campaign only when restoring its historical "
+            "Rivet .plot file reproduces the immutable generation signature"
+        ),
+    )
     _add_plot_options(plot)
     return parser
 
