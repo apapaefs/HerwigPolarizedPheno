@@ -272,6 +272,7 @@ python3 scripts/run_phenomenology_campaign.py full \
   --tag star510_shower_spin_off_500m \
   --families shower_spin_off \
   --lo-events 500000000 \
+  --seed-base 2949588 \
   --shards 500 --jobs 100 \
   --plot-comparisons \
   --nominal-prediction "$STAR510_NOMINAL"
@@ -283,6 +284,8 @@ the four `shower_spin_off` samples.  In both cases the postprocessor forms each
 $A_{LL}$ independently before overlaying the nominal and blue
 spin-averaged-shower curves.  An external nominal YODA path and SHA-256, plus
 the adjacent `summary.json` when present, are recorded in the plot manifest.
+The explicit control seed base must be disjoint from the nominal campaign
+because the comparison does not model cross-family Monte Carlo covariance.
 Because campaign generation manifests are immutable, do not add the control
 family to an existing nominal-only tag.
 

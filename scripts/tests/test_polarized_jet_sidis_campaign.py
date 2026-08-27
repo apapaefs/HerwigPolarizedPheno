@@ -827,6 +827,8 @@ class CampaignMatrixAndCardTests(unittest.TestCase):
                 "reuse",
                 "--families",
                 "shower_spin_off",
+                "--seed-base",
+                "2949588",
                 "--plot-comparisons",
                 "--nominal-prediction",
                 "/tmp/nominal/prediction.yoda",
@@ -854,7 +856,19 @@ class CampaignMatrixAndCardTests(unittest.TestCase):
                 args(
                     families="shower_spin_off",
                     nominal_prediction=Path("/tmp/nominal/prediction.yoda"),
+                    seed_base=2949588,
                     plot_comparisons=False,
+                ),
+                measurement,
+            )
+        with self.assertRaisesRegex(
+            campaign.CampaignError, "explicit --seed-base"
+        ):
+            campaign._resolved_options(
+                args(
+                    families="shower_spin_off",
+                    nominal_prediction=Path("/tmp/nominal/prediction.yoda"),
+                    plot_comparisons=True,
                 ),
                 measurement,
             )

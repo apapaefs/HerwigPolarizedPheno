@@ -294,6 +294,14 @@ def _resolved_options(args: argparse.Namespace, measurement: Mapping[str, Any]) 
         raise CampaignError(
             "--nominal-prediction requires --plot-comparisons"
         )
+    if (
+        getattr(args, "nominal_prediction", None) is not None
+        and getattr(args, "seed_base", None) is None
+    ):
+        raise CampaignError(
+            "--nominal-prediction requires an explicit --seed-base disjoint "
+            "from the nominal campaign"
+        )
     options = {
         "profile": args.profile,
         "families": selected_families,
