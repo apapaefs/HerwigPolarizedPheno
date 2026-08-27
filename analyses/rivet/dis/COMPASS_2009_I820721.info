@@ -1,0 +1,49 @@
+Name: COMPASS_2009_I820721
+Year: 2009
+Summary: Charged-pion and charged-kaon longitudinal SIDIS asymmetries on deuterium
+Experiment: COMPASS
+Collider: CERN SPS fixed target
+InspireID: 820721
+Status: UNVALIDATED
+Reentrant: true
+Authors:
+ - Andreas Papaefstathiou <apapaefs@kennesaw.edu>
+References:
+ - Phys.Lett.B 680 (2009) 217-224
+ - arXiv:0905.2828
+RunInfo: >
+  Requires independent 160 GeV mu+ p and mu+ n samples in PP, PM, MP, and
+  MM helicities, with POSNLO and NEGNLO generated separately.
+NumEvents: 100000
+NeedsCrossSection: yes
+Beams: [[ANTIMUON, PROTON], [ANTIMUON, NEUTRON]]
+Energies: [[160.0, 0.938272], [160.0, 0.939565]]
+Description: >
+  Reconstructs Lorentz-invariant DIS and identified pi+/-, K+/- kinematics
+  from the highest-energy prompt scattered positive muon. Event-aggregated
+  ordinary, inverse-depolarization, and same-event covariance-proxy yields
+  are filled in the ten published x bins. The campaign postprocessor forms
+  sigma_UU=(p+n)/2 and sigma_LL=0.925(p+n)/2, uses the finite-muon-mass
+  COMPASS depolarization factor with R1998, and sets eta*A2 to zero. HEPData
+  v1 is the numerical authority; differences from the paper TeX table are
+  retained in a checksum-pinned audit.
+Keywords:
+ - DIS
+ - SIDIS
+ - polarized
+ - fixed-target
+ - identified hadrons
+ - asymmetry
+BibKey: COMPASS:2009ktg
+BibTeX: '@article{COMPASS:2009ktg,
+  author = "Alekseev, M. and others",
+  collaboration = "COMPASS",
+  title = "{Flavour Separation of Helicity Distributions from Deep Inelastic Muon-Deuteron Scattering}",
+  eprint = "0905.2828",
+  archivePrefix = "arXiv",
+  doi = "10.1016/j.physletb.2009.08.065",
+  journal = "Phys. Lett. B",
+  volume = "680",
+  pages = "217--224",
+  year = "2009"
+}'

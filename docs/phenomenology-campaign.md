@@ -10,6 +10,9 @@ comparisons are:
   $A_\parallel(x,Q^2)$ projection;
 - COMPASS 2010 and 2016 proton $A_1^p$, and COMPASS 2017 deuteron
   $A_1^d$;
+- COMPASS 2009 identified-pion/kaon deuteron $A_1^h(x)$;
+- COMPASS 2017 charged-pion, unidentified-charged-hadron, and charged-kaon
+  multiplicities in the published sparse $(x,y,z)$ cells;
 - HERMES identified-hadron SIDIS $A_\parallel$ for proton and deuteron
   targets;
 - STAR $W^\pm A_L$, $W^\pm A_{LL}$, and integrated
@@ -93,7 +96,30 @@ python3 scripts/run_phenomenology_campaign.py full \
   --measurement HERMES_2019_I1698889 \
   --tag hermes_sidis_smoke \
   --smoke --jobs 4
+
+python3 scripts/run_phenomenology_campaign.py full \
+  --measurement COMPASS_2009_I820721 \
+  --tag compass2009_smoke \
+  --smoke --jobs 4
+
+python3 scripts/run_phenomenology_campaign.py full \
+  --measurement COMPASS_2017_I1444985 \
+  --tag compass2017_pion_hadron_smoke \
+  --smoke --jobs 4
+
+python3 scripts/run_phenomenology_campaign.py full \
+  --measurement COMPASS_2017_I1483098 \
+  --tag compass2017_kaon_smoke \
+  --smoke --jobs 4
 ```
+
+The COMPASS 2009 central matrix contains 16 logical jobs: proton/neutron,
+four physical helicities, and POSNLO/NEGNLO. Each unpolarized COMPASS 2017
+matrix contains four jobs: proton/neutron, explicit `00` helicity, and the two
+signed NLO contributions. The standard SIDIS defaults are 300,000 POSNLO and
+30,000 NEGNLO events per logical job, one shard, and 100 events for `--smoke`.
+The 2017 observables are high-dimensional; physics-quality work should pass an
+explicitly justified larger event and shard configuration.
 
 inspect a paper-profile plan without launching it:
 
@@ -263,6 +289,17 @@ Charge-difference predictions subtract normalized positive- and
 negative-hadron yields before taking the ratio; asymmetries are never
 subtracted directly.  Overlapping one-, two-, and three-dimensional projections
 retain separate covariance-aware goodness-of-fit results.
+
+For COMPASS 2009, the deuteron denominator is $(p+n)/2$ and the longitudinal
+numerator is $0.925(p+n)/2$. The latter is formed from inverse-depolarization-
+weighted yields using the finite-muon-mass COMPASS factor with R1998 and
+$\eta A_2=0$. For both 2017 multiplicity records, the proton/neutron isoscalar
+sum is performed separately for the hadron and inclusive-DIS yields before
+their ratio is divided by the published $z$-bin width. The runner masks absent
+cells and non-positive denominators. It never creates a Cartesian completion
+of the released sparse cell map. See
+[`compass-sidis-workflow.md`](compass-sidis-workflow.md) for the complete data
+and covariance policy.
 
 ## Reproducibility limitations
 

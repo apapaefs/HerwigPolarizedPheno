@@ -1,7 +1,7 @@
 # Herwig Polarized Phenomenology
 
 This repository contains the experimental-data phenomenology layer built on
-Herwig Polarized: ten Rivet analyses, the registry-driven campaign runner,
+Herwig Polarized: thirteen Rivet analyses, the registry-driven campaign runner,
 checksum-pinned reference inputs, postprocessing and plotting code, focused
 tests, and the JHEP manuscript *Phenomenological Investigations of Polarized
 Collisions in Herwig 7*.
@@ -12,7 +12,7 @@ ordinary YODA/plot products.
 
 ## Repository layout
 
-- `analyses/rivet/{dis,pp}/`: the ten data-linked Rivet analyses and their
+- `analyses/rivet/{dis,pp}/`: the thirteen data-linked Rivet analyses and their
   vendored reference YODA files;
 - `cards/`, `config/`, and `data/`: Herwig cards, measurement registries, raw
   provenance inputs, normalized snapshots, and checksums;
@@ -60,11 +60,17 @@ python3 scripts/run_phenomenology_campaign.py full \
   --jobs 4
 ```
 
-The primary runner also supports COMPASS inclusive DIS, HERMES identified-
-hadron SIDIS, STAR weak-boson and jet measurements, and the diagnostic PHENIX
-prompt-photon comparison. See [`docs/phenomenology-campaign.md`](docs/phenomenology-campaign.md)
+The primary runner also supports COMPASS inclusive DIS, polarized COMPASS and
+HERMES identified-hadron SIDIS, unpolarized COMPASS pion/hadron and kaon
+multiplicities, STAR weak-boson and jet measurements, and the diagnostic
+PHENIX prompt-photon comparison. See
+[`docs/phenomenology-campaign.md`](docs/phenomenology-campaign.md)
 for profiles, physics families, PDF replicas, scale points, sharding, resume,
 and recovery.
+
+The three COMPASS SIDIS reference-data, estimator, and campaign contracts are
+documented in
+[`docs/compass-sidis-workflow.md`](docs/compass-sidis-workflow.md).
 
 The synchronized 2026-08-19 corrected-production workflow, including the
 STAR 510 GeV generator-cut gate and the explicit no-production preparation

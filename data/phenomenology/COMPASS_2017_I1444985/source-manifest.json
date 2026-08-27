@@ -1,0 +1,50 @@
+{
+  "measurement": "COMPASS_2017_I1444985",
+  "retrieved": "2026-08-27",
+  "record_doi": "10.17182/hepdata.76800.v1",
+  "record_version": 1,
+  "record_path": "data/phenomenology/COMPASS_2017_I1444985/raw/record.json",
+  "record_sha256": "3d3050f205f30d751d731febab651800ad4925f4bfbe51edb7b9fa418c4cebfa",
+  "tables": [
+    {
+      "number": 1,
+      "name": "Table 1",
+      "doi": "10.17182/hepdata.76800.v1/t1",
+      "path": "data/phenomenology/COMPASS_2017_I1444985/raw/t01.json",
+      "url": "https://www.hepdata.net/record/data/76800/88667/1/",
+      "sha256": "e8894a682b4451b9ac48eb0046b4713f9913c2691e9b9a2f0820ae8ec4a84876",
+      "headers": ["$x$", "$y$", "$<Q^2> (GeV/c)^2$", "$z^{\\pi^{+}}$", "$M^{\\pi^{+}}$", "$DVM^{\\pi^{+}}$", "$DVM^{DIS}$", "$\\eta^{\\pi^{+}}$", "$\\eta^{DIS}$"],
+      "rows": 311
+    },
+    {
+      "number": 2,
+      "name": "Table 2",
+      "doi": "10.17182/hepdata.76800.v1/t2",
+      "path": "data/phenomenology/COMPASS_2017_I1444985/raw/t02.json",
+      "url": "https://www.hepdata.net/record/data/76800/88668/1/",
+      "sha256": "6ff532732c32b8927cc1a35fad20cfa35f1e3d008144aa1c2fbcecdfe69a0169",
+      "headers": ["$x$", "$y$", "$<Q^2> (GeV/c)^2$", "$z^{\\pi^{-}}$", "$M^{\\pi^{-}}$", "$DVM^{\\pi^{-}}$", "$DVM^{DIS}$", "$\\eta^{\\pi^{-}}$", "$\\eta^{DIS}$"],
+      "rows": 311
+    },
+    {
+      "number": 3,
+      "name": "Table 3",
+      "doi": "10.17182/hepdata.76800.v1/t3",
+      "path": "data/phenomenology/COMPASS_2017_I1444985/raw/t03.json",
+      "url": "https://www.hepdata.net/record/data/76800/88669/1/",
+      "sha256": "bdc9fbf268e37bef310eca8a3008ce8daa3c65ac16d9e675b0d7244814806e9d",
+      "headers": ["$x$", "$y$", "$<Q^2> (GeV/c)^2$", "$z^{h^{+}}$", "$M^{h^{+}}$", "$DVM^{h^{+}}$", "$DVM^{DIS}$", "$\\eta^{h^{+}}$", "$\\eta^{DIS}$"],
+      "rows": 311
+    },
+    {
+      "number": 4,
+      "name": "Table 4",
+      "doi": "10.17182/hepdata.76800.v1/t4",
+      "path": "data/phenomenology/COMPASS_2017_I1444985/raw/t04.json",
+      "url": "https://www.hepdata.net/record/data/76800/88670/1/",
+      "sha256": "54ace807b5e35e488324231068acdca4eecb8ca8e827f24a557de71a9d31c0cd",
+      "headers": ["$x$", "$y$", "$<Q^2> (GeV/c)^2$", "$z^{h^{-}}$", "$M^{h^{-}}$", "$DVM^{h^{-}}$", "$DVM^{DIS}$", "$\\eta^{h^{-}}$", "$\\eta^{DIS}$"],
+      "rows": 311
+    }
+  ]
+}

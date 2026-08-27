@@ -2,8 +2,11 @@
 
 RIVET_PLUGIN := build/RivetHerwigPolarizedPheno.so
 RIVET_SOURCES := \
+	analyses/rivet/dis/COMPASS_2009_I820721.cc \
 	analyses/rivet/dis/COMPASS_2010_I843494.cc \
 	analyses/rivet/dis/COMPASS_2016_I1357198.cc \
+	analyses/rivet/dis/COMPASS_2017_I1444985.cc \
+	analyses/rivet/dis/COMPASS_2017_I1483098.cc \
 	analyses/rivet/dis/COMPASS_2017_I1501480.cc \
 	analyses/rivet/dis/HERMES_2007_I726689.cc \
 	analyses/rivet/dis/HERMES_2007_I726689_LEGACY.cc \
@@ -13,7 +16,8 @@ RIVET_SOURCES := \
 	analyses/rivet/pp/STAR_2022_I1949588.cc \
 	analyses/rivet/pp/PHENIX_2023_I2033856.cc
 RIVET_ANALYSES := \
-	COMPASS_2010_I843494 COMPASS_2016_I1357198 COMPASS_2017_I1501480 \
+	COMPASS_2009_I820721 COMPASS_2010_I843494 COMPASS_2016_I1357198 \
+	COMPASS_2017_I1444985 COMPASS_2017_I1483098 COMPASS_2017_I1501480 \
 	HERMES_2007_I726689 HERMES_2007_I726689_LEGACY HERMES_2019_I1698889 \
 	STAR_2019_I1708793 STAR_2021_I1850855 STAR_2022_I1949588 \
 	PHENIX_2023_I2033856
@@ -40,7 +44,7 @@ list:
 
 rivet: $(RIVET_PLUGIN)
 
-$(RIVET_PLUGIN): $(RIVET_SOURCES) analyses/rivet/dis/COMPASSInclusiveDIS.hh analyses/rivet/pp/STARPolarizedJets.hh
+$(RIVET_PLUGIN): $(RIVET_SOURCES) analyses/rivet/dis/COMPASSInclusiveDIS.hh analyses/rivet/dis/COMPASSSIDIS.hh analyses/rivet/dis/COMPASSSIDISBinning.hh analyses/rivet/pp/STARPolarizedJets.hh
 	mkdir -p build
 	CXX="$(RIVET_CXX)" rivet-build $@ $(RIVET_SOURCES) \
 		-I$(CURDIR)/analyses/rivet/dis -I$(CURDIR)/analyses/rivet/pp

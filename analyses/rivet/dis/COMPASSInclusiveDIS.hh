@@ -15,6 +15,7 @@ namespace COMPASSInclusiveDIS {
   struct Kinematics {
     bool valid = false;
     int targetPid = 0;
+    FourMomentum k, kp, target, q;
     double Q2 = -1.0;
     double x = -1.0;
     double y = -1.0;
@@ -66,6 +67,10 @@ namespace COMPASSInclusiveDIS {
     if (Pdotq <= 0.0 || Pdotk <= 0.0) return out;
 
     out.targetPid = hadron.pid();
+    out.k = k;
+    out.kp = kp;
+    out.target = P;
+    out.q = q;
     out.Q2 = -q.mass2() / GeV2;
     out.x = (-q.mass2()) / (2.0 * Pdotq);
     out.y = Pdotq / Pdotk;

@@ -1,0 +1,30 @@
+{
+  "measurement": "COMPASS_2017_I1483098",
+  "retrieved": "2026-08-27",
+  "record_doi": "10.17182/hepdata.77892.v1",
+  "record_version": 1,
+  "record_path": "data/phenomenology/COMPASS_2017_I1483098/raw/record.json",
+  "record_sha256": "c77cf9f6440b13ebf5665610ed5c893bf0a1ac39b2c52155c962ccfe46b4eed8",
+  "tables": [
+    {
+      "number": 1,
+      "name": "Table 1",
+      "doi": "10.17182/hepdata.77892.v1/t1",
+      "path": "data/phenomenology/COMPASS_2017_I1483098/raw/t01.json",
+      "url": "https://www.hepdata.net/record/data/77892/88671/1/",
+      "sha256": "5aa9e13ac21bb847d7be301cc154083508fc7375389568586109ac35aa5502c2",
+      "headers": ["$x$", "$y$", "$<Q^2> (GeV/c)^2$", "$z^{K^{+}}$", "$M^{K^{+}}$", "$DVM^{K^{+}}$", "$DVM^{DIS}$", "$\\eta^{K^{+}}$", "$\\eta^{DIS}$"],
+      "rows": 309
+    },
+    {
+      "number": 2,
+      "name": "Table 2",
+      "doi": "10.17182/hepdata.77892.v1/t2",
+      "path": "data/phenomenology/COMPASS_2017_I1483098/raw/t02.json",
+      "url": "https://www.hepdata.net/record/data/77892/88672/1/",
+      "sha256": "9815395fbf0ac8947b8d3bae534bba0725700c7e784083bd3c9cd9fc7ce6176f",
+      "headers": ["$x$", "$y$", "$<Q^2> (GeV/c)^2$", "$z^{K^{-}}$", "$M^{K^{-}}$", "$DVM^{K^{-}}$", "$DVM^{DIS}$", "$\\eta^{K^{-}}$", "$\\eta^{DIS}$"],
+      "rows": 309
+    }
+  ]
+}

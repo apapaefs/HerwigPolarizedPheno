@@ -1078,7 +1078,19 @@ def preflight_runtime(measurement: Mapping[str, Any]) -> dict[str, Any]:
     )
     fixed_target = _find_runtime_library(herwig_prefix, "lib/ThePEG", "FixedTargetLuminosity*.so*")
     herwig_repository = herwig_prefix / "share" / "Herwig" / "HerwigDefaults.rpo"
-    pdfs = [measurement["physics"]["unpolarized_pdf"], measurement["physics"]["polarized_pdf"]]
+    physics = measurement.get("physics", {})
+    ensembles = measurement.get("pdf_ensembles", {})
+    try:
+        pdfs = [
+            physics.get("unpolarized_pdf")
+            or ensembles["unpolarized"]["set"],
+            physics.get("polarized_pdf")
+            or ensembles["polarized"]["set"],
+        ]
+    except (KeyError, TypeError) as exc:
+        raise CampaignError(
+            "Measurement does not define its polarized and unpolarized PDF sets"
+        ) from exc
     for pdf in pdfs:
         _command_output([tools["lhapdf"], "show", str(pdf)])
 

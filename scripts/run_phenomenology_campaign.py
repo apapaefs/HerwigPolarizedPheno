@@ -29,6 +29,7 @@ from pathlib import Path
 from typing import Any, Mapping, Sequence
 
 import run_experimental_campaign as experimental
+import compass_sidis_postprocess as compass_sidis
 import polarized_sidis_postprocess as sidis
 import runtime_provenance as provenance
 import star_comparison_policy as star_policy
@@ -70,18 +71,25 @@ def _validate_descriptor(measurement: Mapping[str, Any], path: Path) -> None:
     if missing:
         raise CampaignError(f"{path} is missing: {', '.join(missing)}")
     process_kind = str(measurement["process_kind"])
-    if int(measurement["schema_version"]) not in {3, 4} or process_kind not in {
-        "polarized_pp", "polarized_pp_jets", "polarized_sidis"
+    if int(measurement["schema_version"]) not in {3, 4, 5} or process_kind not in {
+        "polarized_pp", "polarized_pp_jets", "polarized_sidis",
+        "unpolarized_sidis",
     }:
         raise CampaignError(f"Unsupported schema/process kind in {path}")
     if path.stem != measurement["id"]:
         raise CampaignError(f"Registry filename must match id in {path}")
-    if set(measurement["cards"]["helicities"]) != {"PP", "PM", "MP", "MM"}:
+    helicities = set(measurement["cards"]["helicities"])
+    if process_kind == "unpolarized_sidis":
+        if helicities != {"00"}:
+            raise CampaignError(
+                f"{measurement['id']} unpolarized SIDIS must define only 00"
+            )
+    elif helicities != {"PP", "PM", "MP", "MM"}:
         raise CampaignError(f"{measurement['id']} must define four physical helicities")
     contributions = set(measurement["cards"]["contributions"])
     if process_kind in {"polarized_pp", "polarized_pp_jets"} and contributions != {"LO"}:
         raise CampaignError(f"{measurement['id']} RHIC hard processes must be labelled LO")
-    if process_kind == "polarized_sidis":
+    if process_kind in {"polarized_sidis", "unpolarized_sidis"}:
         if contributions != {"POSNLO", "NEGNLO"}:
             raise CampaignError(f"{measurement['id']} SIDIS requires POSNLO and NEGNLO")
         if set(measurement["cards"].get("target_components", {})) != {"P", "N"}:
@@ -122,6 +130,10 @@ def _validate_descriptor(measurement: Mapping[str, Any], path: Path) -> None:
             )
     for axis in ("polarized", "unpolarized"):
         ensemble = measurement["pdf_ensembles"][axis]
+        if not isinstance(ensemble.get("active", True), bool):
+            raise CampaignError(
+                f"{measurement['id']} {axis} active flag must be boolean"
+            )
         if int(ensemble["central_member"]) != 0 or list(ensemble["replica_members"]) != [1, 100]:
             raise CampaignError(f"{measurement['id']} {axis} ensemble is not the pinned 101-member set")
 
@@ -183,15 +195,37 @@ def _scale_selector(value: str | None, profile: str) -> list[float]:
     return scales
 
 
-def _variation_points(args: argparse.Namespace) -> list[tuple[int, int, float]]:
-    polarized = _member_selector(args.polarized_pdf_members, args.profile)
-    unpolarized = _member_selector(args.unpolarized_pdf_members, args.profile)
+def _variation_points(
+    args: argparse.Namespace,
+    measurement: Mapping[str, Any] | None = None,
+) -> list[tuple[int, int, float]]:
+    ensembles = measurement.get("pdf_ensembles", {}) if measurement else {}
+    polarized_active = bool(ensembles.get("polarized", {}).get("active", True))
+    unpolarized_active = bool(ensembles.get("unpolarized", {}).get("active", True))
+    if polarized_active:
+        polarized = _member_selector(args.polarized_pdf_members, args.profile)
+    else:
+        requested = _member_selector(args.polarized_pdf_members, "central")
+        if requested != [0]:
+            raise CampaignError(
+                "Unpolarized SIDIS accepts only the central polarized-PDF member"
+            )
+        polarized = [0]
+    if unpolarized_active:
+        unpolarized = _member_selector(args.unpolarized_pdf_members, args.profile)
+    else:
+        requested = _member_selector(args.unpolarized_pdf_members, "central")
+        if requested != [0]:
+            raise CampaignError("This descriptor accepts only the central unpolarized-PDF member")
+        unpolarized = [0]
     scales = _scale_selector(args.scales, args.profile)
     # The two PDF ensembles are varied independently; a Cartesian product
     # would not represent the prescribed uncertainty construction.
     points = {(0, 0, 1.0)}
-    points.update((member, 0, 1.0) for member in polarized)
-    points.update((0, member, 1.0) for member in unpolarized)
+    if polarized_active:
+        points.update((member, 0, 1.0) for member in polarized)
+    if unpolarized_active:
+        points.update((0, member, 1.0) for member in unpolarized)
     points.update((0, 0, scale) for scale in scales)
     return sorted(points, key=lambda item: (item[2] != 1.0, item[0] != 0,
                                              item[1] != 0, item))
@@ -242,7 +276,7 @@ def _resolved_options(args: argparse.Namespace, measurement: Mapping[str, Any]) 
     defaults = measurement["campaign"]
     smoke = bool(args.smoke)
     process_kind = str(measurement["process_kind"])
-    if process_kind == "polarized_sidis":
+    if process_kind in {"polarized_sidis", "unpolarized_sidis"}:
         posnlo = int(defaults["smoke_events"] if smoke else
                      (getattr(args, "posnlo_events", None) or
                       defaults["default_events"]["POSNLO"]))
@@ -313,7 +347,9 @@ def _resolved_options(args: argparse.Namespace, measurement: Mapping[str, Any]) 
         "smoke": smoke,
         # Keep the manifest representation JSON-native so a resumed campaign
         # compares equal after the on-disk JSON has been reloaded.
-        "variation_points": [list(point) for point in _variation_points(args)],
+        "variation_points": [
+            list(point) for point in _variation_points(args, measurement)
+        ],
     }
     if jet_kt_min_gev is not None:
         options["jet_kt_min_gev"] = jet_kt_min_gev
@@ -334,7 +370,9 @@ def build_job_matrix(measurement: Mapping[str, Any], options: Mapping[str, Any])
         for channel in measurement["channels"]:
             for polarized_member, unpolarized_member, scale in variation_points:
                 targets = (measurement["cards"].get("target_components", {"none": "none"})
-                           if measurement["process_kind"] == "polarized_sidis"
+                           if measurement["process_kind"] in {
+                               "polarized_sidis", "unpolarized_sidis"
+                           }
                            else {"none": "none"})
                 contributions = measurement["cards"]["contributions"]
                 for target_component in targets:
@@ -408,7 +446,7 @@ def _plan(measurement: Mapping[str, Any], args: argparse.Namespace) -> dict[str,
 
 
 def _runtime(measurement: Mapping[str, Any]) -> dict[str, Any]:
-    if measurement["process_kind"] == "polarized_sidis":
+    if measurement["process_kind"] in {"polarized_sidis", "unpolarized_sidis"}:
         return experimental.preflight_runtime(measurement)
     tools: dict[str, str] = {}
     for name in (
@@ -551,13 +589,19 @@ def _assert_manifest_signature_current(
 
 def _card_text(measurement: Mapping[str, Any], job: Mapping[str, Any]) -> str:
     cards = measurement["cards"]
-    source_helicity = job["helicity"] if job["helicity"] != "00" else "PP"
     source_stem = cards["stem_pattern"].format(
-        channel=job["channel"], helicity=source_helicity,
+        channel=job["channel"], helicity=job["helicity"],
         target=job.get("target_component", "none"),
         contribution=job["contribution"], order=job["contribution"],
     )
     source = DISPOL_ROOT/cards["directory"]/f"{source_stem}.in"
+    if not source.is_file() and job["helicity"] == "00":
+        source_stem = cards["stem_pattern"].format(
+            channel=job["channel"], helicity="PP",
+            target=job.get("target_component", "none"),
+            contribution=job["contribution"], order=job["contribution"],
+        )
+        source = DISPOL_ROOT/cards["directory"]/f"{source_stem}.in"
     if not source.is_file():
         raise CampaignError(f"Missing base card {source}")
     text = source.read_text(encoding="utf-8")
@@ -585,7 +629,7 @@ def _card_text(measurement: Mapping[str, Any], job: Mapping[str, Any]) -> str:
             + ("Yes" if shower_spin == "on" else "No")
         )
     if not math.isclose(float(job["scale"]), 1.0):
-        if measurement["process_kind"] == "polarized_sidis":
+        if measurement["process_kind"] in {"polarized_sidis", "unpolarized_sidis"}:
             overrides.extend(
                 f"set {scale_object}:ScaleFactor {float(job['scale']):.8g}"
                 for scale_object in cards["scale_objects"]
@@ -874,7 +918,9 @@ def _load_series(jobs: Sequence[Mapping[str, Any]], campaign_dir: Path,
 
 
 def _logical_sidis_groups(
-    manifest: Mapping[str, Any], campaign_dir: Path
+    manifest: Mapping[str, Any],
+    campaign_dir: Path,
+    measurement: Mapping[str, Any],
 ) -> dict[
     tuple[Any, ...],
     dict[str, dict[str, list[Mapping[str, Any]]]],
@@ -914,9 +960,14 @@ def _logical_sidis_groups(
         groups.setdefault(key, {}).setdefault(
             str(job["helicity"]), {}
         ).setdefault(str(job["contribution"]), []).append(job)
-    for helicities in groups.values():
-        if set(helicities) != set(sidis.HELICITIES):
-            raise CampaignError("SIDIS postprocessing requires PP, PM, MP, and MM")
+    for key, helicities in groups.items():
+        family = str(key[0])
+        expected_helicities = set(measurement["families"][family]["helicities"])
+        if set(helicities) != expected_helicities:
+            raise CampaignError(
+                f"SIDIS postprocessing requires {sorted(expected_helicities)} "
+                f"for family {family}"
+            )
         for contributions in helicities.values():
             if set(contributions) != {"POSNLO", "NEGNLO"}:
                 raise CampaignError(
@@ -933,11 +984,15 @@ def _load_sidis_object(
     analysis: str,
     object_name: str,
     cache: dict[tuple[str, str, str], experimental.BinSeries] | None = None,
+    helicities: Sequence[str] | None = None,
 ) -> dict[str, experimental.BinSeries]:
     """Load shards and add normalized NLO components for every helicity."""
 
     output: dict[str, experimental.BinSeries] = {}
-    for helicity in sidis.HELICITIES:
+    selected_helicities = tuple(helicities or group.keys())
+    if set(selected_helicities) != set(group):
+        raise CampaignError("SIDIS raw-object helicities do not match the job group")
+    for helicity in selected_helicities:
         by_contribution: dict[str, experimental.BinSeries] = {}
         for contribution in ("POSNLO", "NEGNLO"):
             jobs = group[helicity][contribution]
@@ -1228,6 +1283,19 @@ def _variation_id(key: tuple[Any, ...]) -> str:
             f"mu{_scale_token(float(scale))}-mpi{mpi}")
 
 
+def _compass_reference_entry(
+    snapshot: Mapping[str, Any], observable: str
+) -> tuple[Mapping[str, Any], Mapping[str, Any] | None] | None:
+    dataset = snapshot.get("datasets", {}).get(observable)
+    if dataset is not None:
+        return dataset, None
+    for candidate in snapshot.get("datasets", {}).values():
+        for slice_spec in candidate.get("slices", []):
+            if Path(str(slice_spec["rivet_path"])).name == observable:
+                return candidate, slice_spec
+    return None
+
+
 def _reference_path(measurement: Mapping[str, Any], observable: str,
                     snapshot: Mapping[str, Any]) -> str | None:
     if measurement["postprocessor"] == "star_weak_bosons":
@@ -1248,6 +1316,16 @@ def _reference_path(measurement: Mapping[str, Any], observable: str,
         dataset = snapshot.get("datasets", {}).get(observable)
         if dataset and dataset.get("observable") == "A_parallel":
             return str(dataset["rivet_path"])
+    if measurement["postprocessor"] in {
+        "compass_sidis_a1", "compass_sidis_multiplicity"
+    }:
+        entry = _compass_reference_entry(snapshot, observable)
+        if entry is None:
+            return None
+        dataset, slice_spec = entry
+        if slice_spec is not None:
+            return str(slice_spec["rivet_path"])
+        return str(dataset.get("rivet_path") or dataset["flat_rivet_path"])
     return None
 
 
@@ -1389,6 +1467,19 @@ def _reference_points(measurement: Mapping[str, Any], snapshot: Mapping[str, Any
         dataset = snapshot.get("datasets", {}).get(observable)
         if dataset and dataset.get("observable") == "A_parallel":
             return dataset["points"]
+    if measurement["postprocessor"] in {
+        "compass_sidis_a1", "compass_sidis_multiplicity"
+    }:
+        entry = _compass_reference_entry(snapshot, observable)
+        if entry is None:
+            return None
+        dataset, slice_spec = entry
+        if slice_spec is None:
+            return dataset["points"]
+        return [
+            dataset["points"][int(index)]
+            for index in slice_spec["flat_bins"]
+        ]
     return None
 
 
@@ -1431,6 +1522,14 @@ def _pp_reference_overlay_points(
         observables = tuple(snapshot.get("datasets", {}))
     elif measurement["postprocessor"] == "hermes_sidis":
         observables = tuple(snapshot.get("datasets", {}))
+    elif measurement["postprocessor"] in {
+        "compass_sidis_a1", "compass_sidis_multiplicity"
+    }:
+        observables = tuple(snapshot.get("datasets", {})) + tuple(
+            Path(str(slice_spec["rivet_path"])).name
+            for dataset in snapshot.get("datasets", {}).values()
+            for slice_spec in dataset.get("slices", [])
+        )
     else:
         observables = tuple(snapshot.get("channels", {}))
     for observable in observables:
@@ -1461,6 +1560,31 @@ def _pp_reference_overlay_points(
                     ),
                     "value": float(point["aparallel"]),
                     "stat": float(point["aparallel_stat"]),
+                }
+                for point in points
+            ]
+        elif measurement["postprocessor"] in {
+            "compass_sidis_a1", "compass_sidis_multiplicity"
+        }:
+            entry = _compass_reference_entry(snapshot, observable)
+            if entry is None:
+                return None
+            dataset, slice_spec = entry
+            is_a1 = measurement["postprocessor"] == "compass_sidis_a1"
+            return [
+                {
+                    **dict(point),
+                    "plot_x": (
+                        float(point["x_mean"])
+                        if is_a1
+                        else (
+                            float(point["z_mean"])
+                            if slice_spec is not None
+                            else float(point["flat_bin"]) + 0.5
+                        )
+                    ),
+                    "value": float(point["a1"] if is_a1 else point["value"]),
+                    "stat": float(point["stat"]),
                 }
                 for point in points
             ]
@@ -1842,6 +1966,133 @@ def _sidis_prediction_sets(
     return output
 
 
+def _compass_component_samples(
+    groups: Mapping[
+        tuple[Any, ...],
+        Mapping[str, Mapping[str, Sequence[Mapping[str, Any]]]],
+    ],
+    variation: tuple[Any, ...],
+    campaign_dir: Path,
+    analysis: str,
+    object_name: str,
+    helicities: Sequence[str],
+    cache: dict[tuple[str, str, str], experimental.BinSeries],
+) -> dict[str, experimental.BinSeries]:
+    """Load P/N COMPASS samples after normalized signed-NLO addition."""
+
+    family, channel, polarized, unpolarized, scale, mpi = variation
+    samples: dict[str, experimental.BinSeries] = {}
+    for component in ("P", "N"):
+        key = (
+            family,
+            channel,
+            component,
+            polarized,
+            unpolarized,
+            scale,
+            mpi,
+        )
+        if key not in groups:
+            raise CampaignError(
+                f"Missing COMPASS target component {component} for "
+                f"{_variation_id(variation)}"
+            )
+        loaded = _load_sidis_object(
+            groups[key],
+            campaign_dir,
+            analysis,
+            object_name,
+            cache,
+            helicities,
+        )
+        for helicity, series in loaded.items():
+            label = component if helicities == ("00",) else f"{component}:{helicity}"
+            samples[label] = series
+    return samples
+
+
+def _compass_sidis_prediction_sets(
+    groups: Mapping[
+        tuple[Any, ...],
+        Mapping[str, Mapping[str, Sequence[Mapping[str, Any]]]],
+    ],
+    campaign_dir: Path,
+    measurement: Mapping[str, Any],
+    snapshot: Mapping[str, Any],
+) -> dict[tuple[Any, ...], dict[str, Any]]:
+    """Construct all COMPASS A1 or multiplicity variations."""
+
+    analysis = str(measurement["analysis"]["name"])
+    variations = sorted(
+        {_sidis_variation_key(key) for key in groups},
+        key=lambda item: tuple(str(value) for value in item),
+    )
+    cache: dict[tuple[str, str, str], experimental.BinSeries] = {}
+    output: dict[tuple[Any, ...], dict[str, Any]] = {}
+    is_a1 = measurement["postprocessor"] == "compass_sidis_a1"
+    helicities = compass_sidis.HELICITIES if is_a1 else ("00",)
+    for variation in variations:
+        prediction_set: dict[str, Any] = {}
+        for species, dataset in snapshot["datasets"].items():
+            raw = dataset["raw_objects"]
+            if is_a1:
+                ordinary = _compass_component_samples(
+                    groups, variation, campaign_dir, analysis,
+                    str(raw["ordinary"]), helicities, cache,
+                )
+                inverse_d = _compass_component_samples(
+                    groups, variation, campaign_dir, analysis,
+                    str(raw["inverse_depolarization"]), helicities, cache,
+                )
+                covariance = _compass_component_samples(
+                    groups, variation, campaign_dir, analysis,
+                    str(raw["covariance"]), helicities, cache,
+                )
+                result = compass_sidis.a1_deuteron(
+                    ordinary, inverse_d, covariance
+                )
+            else:
+                numerator = _compass_component_samples(
+                    groups, variation, campaign_dir, analysis,
+                    str(raw["numerator"]), helicities, cache,
+                )
+                denominator = _compass_component_samples(
+                    groups, variation, campaign_dir, analysis,
+                    str(raw["denominator"]), helicities, cache,
+                )
+                covariance = _compass_component_samples(
+                    groups, variation, campaign_dir, analysis,
+                    str(raw["covariance"]), helicities, cache,
+                )
+                result = compass_sidis.multiplicity_isoscalar(
+                    numerator,
+                    denominator,
+                    covariance,
+                    [
+                        float(point["z_high"]) - float(point["z_low"])
+                        for point in dataset["points"]
+                    ],
+                )
+            prediction_set[str(species)] = {
+                "edges": result["edges"],
+                "values": result["values"],
+                "errors": result["errors"],
+            }
+            if not is_a1:
+                for slice_spec in dataset["slices"]:
+                    observable = Path(str(slice_spec["rivet_path"])).name
+                    indices = [int(index) for index in slice_spec["flat_bins"]]
+                    prediction_set[observable] = {
+                        "edges": [float(value) for value in slice_spec["z_edges"]],
+                        "values": [result["values"][index] for index in indices],
+                        "errors": [result["errors"][index] for index in indices],
+                        "parent_dataset": str(species),
+                        "flat_bins": indices,
+                    }
+        output[variation] = prediction_set
+    return output
+
+
 def _sidis_pull_bins(
     prediction: Mapping[str, Any], dataset: Mapping[str, Any]
 ) -> list[float | None]:
@@ -1880,7 +2131,198 @@ def _primary_reference_observable(
     if measurement["postprocessor"] == "hermes_sidis":
         dataset = snapshot["datasets"].get(observable)
         return bool(dataset) and dataset.get("observable") == "A_parallel"
+    if measurement["postprocessor"] in {
+        "compass_sidis_a1", "compass_sidis_multiplicity"
+    }:
+        return _compass_reference_entry(snapshot, observable) is not None
     return True
+
+
+def postprocess_compass_sidis(
+    args: argparse.Namespace, measurement: Mapping[str, Any]
+) -> Path:
+    """Postprocess one COMPASS SIDIS campaign at normalized-bin level."""
+
+    campaign_dir = _campaign_dir(measurement["id"], args.tag)
+    manifest_path = campaign_dir / experimental.MANIFEST_NAME
+    if not manifest_path.exists():
+        raise CampaignError(f"No prepared campaign at {campaign_dir}")
+    manifest = _load_json(manifest_path)
+    _assert_manifest_signature_current(manifest, measurement)
+    groups = _logical_sidis_groups(manifest, campaign_dir, measurement)
+    prediction_path = campaign_dir / "postprocess" / "prediction.yoda"
+    if args.dry_run:
+        print(
+            json.dumps(
+                {
+                    "measurement": measurement["id"],
+                    "target_variation_groups": len(groups),
+                    "postprocessor": measurement["postprocessor"],
+                    "output": str(prediction_path),
+                },
+                indent=2,
+            )
+        )
+        return prediction_path
+
+    snapshot = validate_vendored(str(measurement["id"]))
+    predictions = _compass_sidis_prediction_sets(
+        groups, campaign_dir, measurement, snapshot
+    )
+    nominal_mpi = measurement["families"]["nominal"]["mpi"]
+    central_key = ("nominal", "sidis", 0, 0, 1.0, nominal_mpi)
+    if central_key not in predictions:
+        raise CampaignError(f"Missing central COMPASS SIDIS prediction {central_key}")
+    central = predictions[central_key]
+    bands = aggregate_uncertainties(predictions, measurement)
+    yoda = experimental._import_yoda()
+    objects: list[Any] = []
+    is_a1 = measurement["postprocessor"] == "compass_sidis_a1"
+
+    for observable, prediction in central.items():
+        reference_path = _reference_path(measurement, observable, snapshot)
+        if reference_path is None:
+            continue
+        annotations = {
+            "Generator": "HerwigPol POWHEG NLO+PS",
+            "HardProcessAccuracy": "NLO",
+            "NLOCombination": "normalized POSNLO+NEGNLO bins",
+            "TargetCombination": (
+                "sigma_UU=(p+n)/2; sigma_LL=0.925*(p+n)/2"
+                if is_a1
+                else "P/N isoscalar sum before numerator/DIS ratio"
+            ),
+            "ObservableDefinition": (
+                "helicity-signed inverse-D yield divided by ordinary yield"
+                if is_a1
+                else "hadron yield per inclusive-DIS event and unit z"
+            ),
+            "ExperimentalCorrectionsAppliedToHerwig": "none",
+        }
+        objects.append(
+            _estimate_with_bands(
+                yoda,
+                prediction,
+                reference_path,
+                annotations,
+                bands.get(observable),
+            )
+        )
+
+    flat_predictions = {
+        species: central[species] for species in snapshot["datasets"]
+    }
+    if is_a1:
+        goodness = compass_sidis.a1_goodness_of_fit(
+            flat_predictions, snapshot
+        )
+    else:
+        goodness = compass_sidis.multiplicity_goodness_of_fit(
+            flat_predictions, snapshot
+        )
+
+    rows: list[dict[str, Any]] = []
+    for species, dataset in snapshot["datasets"].items():
+        prediction = central[species]
+        for index, point in enumerate(dataset["points"]):
+            correction = point.get("corrections", {})
+            rows.append(
+                {
+                    "measurement": measurement["id"],
+                    "species": species,
+                    "bin": index + 1,
+                    "flat_bin": int(point.get("flat_bin", index)),
+                    "slice": point.get("slice"),
+                    "slice_bin": point.get("slice_bin"),
+                    "x_low": point.get("x_low"),
+                    "x_high": point.get("x_high"),
+                    "x_mean": point.get("x_mean"),
+                    "y_low": point.get("y_low"),
+                    "y_high": point.get("y_high"),
+                    "y_mean": point.get("y_mean"),
+                    "z_low": point.get("z_low"),
+                    "z_high": point.get("z_high"),
+                    "z_mean": point.get("z_mean"),
+                    "theory": prediction["values"][index],
+                    "mc_stat": prediction["errors"][index],
+                    "data": point.get("a1", point.get("value")),
+                    "data_stat": point.get("stat"),
+                    "data_systematic": point.get("systematic"),
+                    "radiative_hadron": correction.get("radiative_hadron"),
+                    "radiative_dis": correction.get("radiative_dis"),
+                    "dvm_hadron": correction.get("dvm_hadron"),
+                    "dvm_dis": correction.get("dvm_dis"),
+                }
+            )
+
+    output_dir = campaign_dir / "postprocess"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    experimental._write_yoda_objects(yoda, objects, prediction_path)
+    if not experimental._nonempty(prediction_path):
+        raise CampaignError(f"Postprocessing produced empty output {prediction_path}")
+    summary = {
+        "measurement": measurement["id"],
+        "tag": args.tag,
+        "hard_process_accuracy": "POWHEG NLO+PS",
+        "central_sample_label": measurement["families"]["nominal"]["label"],
+        "nlo_combination": (
+            "shards combined within each contribution, then normalized "
+            "POSNLO and NEGNLO bins added"
+        ),
+        "raw_object_inventory": {
+            species: dict(dataset["raw_objects"])
+            for species, dataset in snapshot["datasets"].items()
+        },
+        "prediction_object_count": len(objects),
+        "uncertainties": bands,
+        "correlated_goodness_of_fit": goodness,
+        "masked_bins": {
+            species: [
+                index + 1
+                for index, value in enumerate(central[species]["values"])
+                if value is None
+            ]
+            for species in snapshot["datasets"]
+        },
+        "systematic_model": snapshot["systematics"],
+        "correction_policy": snapshot.get("corrections"),
+        "reference_provenance": snapshot["provenance"],
+        "variations": {
+            _variation_id(key): {
+                species: prediction_set[species]
+                for species in snapshot["datasets"]
+            }
+            for key, prediction_set in predictions.items()
+        },
+    }
+    experimental.atomic_write_json(output_dir / "summary.json", summary)
+    with (output_dir / "central.csv").open(
+        "w", encoding="utf-8", newline=""
+    ) as stream:
+        writer = csv.DictWriter(stream, fieldnames=list(rows[0]))
+        writer.writeheader()
+        writer.writerows(rows)
+
+    manifest["postprocess"] = {
+        "created_at": experimental.utc_now(),
+        "prediction": str(prediction_path.relative_to(campaign_dir)),
+        "predictions": [
+            {
+                "family": "nominal",
+                "label": measurement["families"]["nominal"]["label"],
+                "path": str(prediction_path.relative_to(campaign_dir)),
+            }
+        ],
+        "summary": "postprocess/summary.json",
+        "central_csv": "postprocess/central.csv",
+    }
+    manifest["updated_at"] = experimental.utc_now()
+    manifest["history"].append(
+        {"at": experimental.utc_now(), "action": "postprocess"}
+    )
+    experimental.atomic_write_json(manifest_path, manifest)
+    print(f"Wrote normalized COMPASS SIDIS predictions to {prediction_path}")
+    return prediction_path
 
 
 def postprocess_sidis(
@@ -1892,7 +2334,7 @@ def postprocess_sidis(
         raise CampaignError(f"No prepared campaign at {campaign_dir}")
     manifest = _load_json(manifest_path)
     _assert_manifest_signature_current(manifest, measurement)
-    groups = _logical_sidis_groups(manifest, campaign_dir)
+    groups = _logical_sidis_groups(manifest, campaign_dir, measurement)
     prediction_path = campaign_dir / "postprocess" / "prediction.yoda"
     if args.dry_run:
         print(
@@ -2821,7 +3263,11 @@ def main(argv: Sequence[str] | None = None) -> int:
         elif args.command == "campaign":
             run_pp(args, measurement)
         elif args.command == "postprocess":
-            if measurement["process_kind"] == "polarized_sidis":
+            if measurement["postprocessor"] in {
+                "compass_sidis_a1", "compass_sidis_multiplicity"
+            }:
+                postprocess_compass_sidis(args, measurement)
+            elif measurement["process_kind"] == "polarized_sidis":
                 postprocess_sidis(args, measurement)
             else:
                 postprocess_pp(args, measurement)
@@ -2831,7 +3277,11 @@ def main(argv: Sequence[str] | None = None) -> int:
             prepare_pp(args, measurement)
             if not args.dry_run:
                 run_pp(args, measurement)
-                if measurement["process_kind"] == "polarized_sidis":
+                if measurement["postprocessor"] in {
+                    "compass_sidis_a1", "compass_sidis_multiplicity"
+                }:
+                    postprocess_compass_sidis(args, measurement)
+                elif measurement["process_kind"] == "polarized_sidis":
                     postprocess_sidis(args, measurement)
                 else:
                     postprocess_pp(args, measurement)

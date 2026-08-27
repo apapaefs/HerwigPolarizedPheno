@@ -1,0 +1,56 @@
+{
+  "measurement": "COMPASS_2009_I820721",
+  "retrieved": "2026-08-27",
+  "record_doi": "10.17182/hepdata.55300.v1",
+  "record_version": 1,
+  "record_path": "data/phenomenology/COMPASS_2009_I820721/raw/record.json",
+  "record_sha256": "15556dbdef08e350e031da3df766b6ebaa606216e7ec3581fe8352baa3b19405",
+  "paper_audit_source": {
+    "url": "https://arxiv.org/e-print/0905.2828",
+    "archive_sha256": "ea66f1b938ed0976b14212867b77181c7bd5c38a1bb324e177a1b72aaa00a7b8",
+    "member": "tables_withRC2.tex",
+    "table_label": "tab:SIDIS_asym"
+  },
+  "tables": [
+    {
+      "number": 1,
+      "name": "Table 1",
+      "doi": "10.17182/hepdata.55300.v1/t1",
+      "path": "data/phenomenology/COMPASS_2009_I820721/raw/t01.json",
+      "url": "https://www.hepdata.net/record/data/55300/48305/1/",
+      "sha256": "5967fdc27843a8d3263893c2f202db0b3b970d1075932d6463b0bdd3a3fa4d9f",
+      "headers": ["X", "MEAN*NAME=Q**2) [GEV**2]", "(SIG(S1=Z,S2=Z)-SIG(S1=Z,S2=-Z))/(SIG(S1=Z,S2=Z)+SIG(S1=Z,S2=-Z))"],
+      "rows": 10
+    },
+    {
+      "number": 2,
+      "name": "Table 2",
+      "doi": "10.17182/hepdata.55300.v1/t2",
+      "path": "data/phenomenology/COMPASS_2009_I820721/raw/t02.json",
+      "url": "https://www.hepdata.net/record/data/55300/48307/1/",
+      "sha256": "858ea4c0cb2762c9fd9f30dfc0a2a14a9d60106397270bb9b6acc43b39bfb545",
+      "headers": ["X", "MEAN*NAME=Q**2) [GEV**2]", "(SIG(S1=Z,S2=Z)-SIG(S1=Z,S2=-Z))/(SIG(S1=Z,S2=Z)+SIG(S1=Z,S2=-Z))"],
+      "rows": 10
+    },
+    {
+      "number": 3,
+      "name": "Table 3",
+      "doi": "10.17182/hepdata.55300.v1/t3",
+      "path": "data/phenomenology/COMPASS_2009_I820721/raw/t03.json",
+      "url": "https://www.hepdata.net/record/data/55300/48309/1/",
+      "sha256": "ebbd5e4af2f4b8c76e793c33661929c63316e5caa25cc3703431fa15d360cd6c",
+      "headers": ["X", "X__1", ""],
+      "rows": 100
+    },
+    {
+      "number": 4,
+      "name": "Table 4",
+      "doi": "10.17182/hepdata.55300.v1/t4",
+      "path": "data/phenomenology/COMPASS_2009_I820721/raw/t04.json",
+      "url": "https://www.hepdata.net/record/data/55300/48311/1/",
+      "sha256": "6f7ccf365104e0aa45c136f7396fcfdecae50dc5e63974dddd07d7459cfe9087",
+      "headers": ["X", "X*DELTA(NAME=HELICITY_S)"],
+      "rows": 10
+    }
+  ]
+}

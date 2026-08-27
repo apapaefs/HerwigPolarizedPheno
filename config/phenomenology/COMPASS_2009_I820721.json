@@ -1,0 +1,92 @@
+{
+  "schema_version": 5,
+  "id": "COMPASS_2009_I820721",
+  "title": "COMPASS identified-pion/kaon deuteron SIDIS asymmetries",
+  "process_kind": "polarized_sidis",
+  "analysis": {
+    "name": "COMPASS_2009_I820721",
+    "source": "analyses/rivet/dis/COMPASS_2009_I820721.cc",
+    "info": "analyses/rivet/dis/COMPASS_2009_I820721.info",
+    "plot": "analyses/rivet/dis/COMPASS_2009_I820721.plot",
+    "support_files": [
+      "analyses/rivet/dis/COMPASSInclusiveDIS.hh",
+      "analyses/rivet/dis/COMPASSSIDIS.hh",
+      "analyses/rivet/dis/COMPASSSIDISBinning.hh"
+    ],
+    "plugin": "RivetCOMPASS_2009_I820721.so",
+    "reference_yoda": "analyses/rivet/dis/COMPASS_2009_I820721.yoda.gz"
+  },
+  "reference": {
+    "snapshot": "data/phenomenology/COMPASS_2009_I820721/reference.json",
+    "source_manifest": "data/phenomenology/COMPASS_2009_I820721/source-manifest.json",
+    "raw_snapshot": "data/phenomenology/COMPASS_2009_I820721/raw/record.json",
+    "paper_audit": "data/phenomenology/COMPASS_2009_I820721/paper-hepdata-discrepancy-audit.json",
+    "record_doi": "10.17182/hepdata.55300.v1",
+    "source_url": "https://www.hepdata.net/record/ins820721?version=1"
+  },
+  "cards": {
+    "directory": "cards/phenomenology/COMPASS_2009_I820721",
+    "common": "COMPASS_2009_I820721-Common.in",
+    "stem_pattern": "COMPASS_2009_I820721_{target}_{helicity}-{contribution}",
+    "polarized_pdf_object": "/Herwig/Partons/COMPASSSIDISDiffPDF",
+    "unpolarized_pdf_object": "/Herwig/Partons/COMPASSSIDISPDF",
+    "helicities": {
+      "PP": [1, 1], "PM": [1, -1], "MP": [-1, 1], "MM": [-1, -1]
+    },
+    "contributions": {"POSNLO": "PositiveNLO", "NEGNLO": "NegativeNLO"},
+    "target_components": {"P": "proton", "N": "neutron"},
+    "scale_objects": [
+      "/Herwig/MatrixElements/MEDISNC",
+      "/Herwig/MatrixElements/MEDISNCPol",
+      "/Herwig/MatrixElements/PowhegMEDISNC",
+      "/Herwig/MatrixElements/PowhegMEDISNCPol"
+    ]
+  },
+  "channels": {
+    "sidis": {
+      "label": "identified pi+/-, K+/-",
+      "targets": ["deuteron"],
+      "projections": ["x"],
+      "observable_level": "stable identified hadron"
+    }
+  },
+  "families": {
+    "nominal": {
+      "label": "NLO+PS (polarized; full spin)",
+      "helicities": ["PP", "PM", "MP", "MM"],
+      "mpi": "off",
+      "observable_level": "stable_particle"
+    }
+  },
+  "campaign": {
+    "default_jobs": 4,
+    "default_shards": 1,
+    "default_seed_base": 820721,
+    "default_events": {"POSNLO": 300000, "NEGNLO": 30000},
+    "smoke_events": 100
+  },
+  "postprocessor": "compass_sidis_a1",
+  "scales": {
+    "central": 1.0,
+    "points": [0.5, 1.0, 2.0],
+    "mapping": "DIS ScaleFactor = mu/mu0"
+  },
+  "pdf_ensembles": {
+    "polarized": {"set": "NNPDFpol20_nlo_as_01180", "central_member": 0, "replica_members": [1, 100], "active": true},
+    "unpolarized": {"set": "NNPDF40_nlo_pch_as_01180", "central_member": 0, "replica_members": [1, 100], "active": true},
+    "combination": "independent replica variances added in quadrature"
+  },
+  "goodness_of_fit": {
+    "primary_observable": "A1d",
+    "statistical_covariance": "published per-x 4x4 SIDIS blocks",
+    "systematic": "one 8% multiplicative nuisance plus diagonal residual"
+  },
+  "physics": {
+    "beam": "160 GeV positive muon on fixed proton or neutron",
+    "exchange": "photon",
+    "target": "sigma_UU=(p+n)/2; sigma_LL=0.925(p+n)/2",
+    "depolarization": "finite muon mass with R1998 and eta*A2=0",
+    "hard_process_accuracy": "POWHEG NLO+PS",
+    "event_simulation": "QCD shower with spin correlations, hadronization and remnants; QED shower and MPI off"
+  }
+}

@@ -1,0 +1,7 @@
+# -*- ThePEG-repository -*-
+read COMPASS_2017_I1483098-Common.in
+set /Herwig/Partons/EPPolarizedExtractor:FirstLongitudinalPolarization 0
+set /Herwig/Partons/EPPolarizedExtractor:SecondLongitudinalPolarization 0
+set /Herwig/MatrixElements/PowhegMEDISNCPol:Contribution NegativeNLO
+cd /Herwig/Generators
+saverun COMPASS_2017_I1483098_P_00-NEGNLO EventGenerator

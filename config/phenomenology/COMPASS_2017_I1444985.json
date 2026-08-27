@@ -1,0 +1,88 @@
+{
+  "schema_version": 5,
+  "id": "COMPASS_2017_I1444985",
+  "title": "COMPASS charged-pion and unidentified-hadron SIDIS multiplicities",
+  "process_kind": "unpolarized_sidis",
+  "analysis": {
+    "name": "COMPASS_2017_I1444985",
+    "source": "analyses/rivet/dis/COMPASS_2017_I1444985.cc",
+    "info": "analyses/rivet/dis/COMPASS_2017_I1444985.info",
+    "plot": "analyses/rivet/dis/COMPASS_2017_I1444985.plot",
+    "support_files": [
+      "analyses/rivet/dis/COMPASSInclusiveDIS.hh",
+      "analyses/rivet/dis/COMPASSSIDIS.hh",
+      "analyses/rivet/dis/COMPASSSIDISBinning.hh"
+    ],
+    "plugin": "RivetCOMPASS_2017_I1444985.so",
+    "reference_yoda": "analyses/rivet/dis/COMPASS_2017_I1444985.yoda.gz"
+  },
+  "reference": {
+    "snapshot": "data/phenomenology/COMPASS_2017_I1444985/reference.json",
+    "source_manifest": "data/phenomenology/COMPASS_2017_I1444985/source-manifest.json",
+    "raw_snapshot": "data/phenomenology/COMPASS_2017_I1444985/raw/record.json",
+    "record_doi": "10.17182/hepdata.76800.v1",
+    "source_url": "https://www.hepdata.net/record/ins1444985?version=1"
+  },
+  "cards": {
+    "directory": "cards/phenomenology/COMPASS_2017_I1444985",
+    "common": "COMPASS_2017_I1444985-Common.in",
+    "stem_pattern": "COMPASS_2017_I1444985_{target}_{helicity}-{contribution}",
+    "polarized_pdf_object": "/Herwig/Partons/COMPASSSIDISDiffPDF",
+    "unpolarized_pdf_object": "/Herwig/Partons/COMPASSSIDISPDF",
+    "helicities": {"00": [0, 0]},
+    "contributions": {"POSNLO": "PositiveNLO", "NEGNLO": "NegativeNLO"},
+    "target_components": {"P": "proton", "N": "neutron"},
+    "scale_objects": [
+      "/Herwig/MatrixElements/MEDISNC",
+      "/Herwig/MatrixElements/MEDISNCPol",
+      "/Herwig/MatrixElements/PowhegMEDISNC",
+      "/Herwig/MatrixElements/PowhegMEDISNCPol"
+    ]
+  },
+  "channels": {
+    "sidis": {
+      "label": "pi+/-, h+/- multiplicities",
+      "targets": ["isoscalar"],
+      "projections": ["published_sparse_xyz_cells", "xy_z_slices"],
+      "observable_level": "stable charged hadron"
+    }
+  },
+  "families": {
+    "nominal": {
+      "label": "NLO+PS (unpolarized explicit 00 mode)",
+      "helicities": ["00"],
+      "mpi": "off",
+      "observable_level": "stable_particle"
+    }
+  },
+  "campaign": {
+    "default_jobs": 4,
+    "default_shards": 1,
+    "default_seed_base": 1444985,
+    "default_events": {"POSNLO": 300000, "NEGNLO": 30000},
+    "smoke_events": 100
+  },
+  "postprocessor": "compass_sidis_multiplicity",
+  "scales": {
+    "central": 1.0,
+    "points": [0.5, 1.0, 2.0],
+    "mapping": "DIS ScaleFactor = mu/mu0"
+  },
+  "pdf_ensembles": {
+    "polarized": {"set": "NNPDFpol20_nlo_as_01180", "central_member": 0, "replica_members": [1, 100], "active": false},
+    "unpolarized": {"set": "NNPDF40_nlo_pch_as_01180", "central_member": 0, "replica_members": [1, 100], "active": true},
+    "combination": "active unpolarized replicas plus hard-scale envelope"
+  },
+  "goodness_of_fit": {
+    "primary_observable": "dM/dz",
+    "statistical_covariance": "diagonal; none published",
+    "systematic": "one record-wide 0.8*sigma_syst vector plus diagonal 0.6*sigma_syst"
+  },
+  "physics": {
+    "beam": "160 GeV positive muon on fixed proton or neutron",
+    "exchange": "photon",
+    "target": "P/N isoscalar sum before the numerator/DIS ratio",
+    "hard_process_accuracy": "POWHEG NLO+PS in explicit zero-polarization mode",
+    "event_simulation": "QCD shower, hadronization and remnants; QED shower and MPI off"
+  }
+}

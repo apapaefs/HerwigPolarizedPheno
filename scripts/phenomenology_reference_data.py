@@ -534,11 +534,16 @@ def write_reference_yoda(measurement: str, snapshot: Mapping[str, Any] | None = 
 # respectively).  Keep their parser isolated while exposing one stable public
 # API to the campaign runner and tests.
 import polarized_jet_sidis_reference_data as _jet_sidis_reference
+import compass_sidis_reference_data as _compass_sidis_reference
 
 for _measurement in _jet_sidis_reference.MEASUREMENTS:
     SOURCES.setdefault(_measurement, [])
+for _measurement in _compass_sidis_reference.MEASUREMENTS:
+    SOURCES.setdefault(_measurement, [])
 REFERENCE_PATHS.update(_jet_sidis_reference.REFERENCE_PATHS)
 REFERENCE_YODA_PATHS.update(_jet_sidis_reference.REFERENCE_YODA_PATHS)
+REFERENCE_PATHS.update(_compass_sidis_reference.REFERENCE_PATHS)
+REFERENCE_YODA_PATHS.update(_compass_sidis_reference.REFERENCE_YODA_PATHS)
 
 _legacy_normalized_from_raw = normalized_from_raw
 _legacy_validate_vendored = validate_vendored
@@ -553,7 +558,20 @@ def _translate_new_reference_error(function: Any, *args: Any, **kwargs: Any) -> 
         raise ReferenceDataError(str(exc)) from exc
 
 
+def _translate_compass_reference_error(
+    function: Any, *args: Any, **kwargs: Any
+) -> Any:
+    try:
+        return function(*args, **kwargs)
+    except _compass_sidis_reference.CompassReferenceDataError as exc:
+        raise ReferenceDataError(str(exc)) from exc
+
+
 def normalized_from_raw(measurement: str) -> dict[str, Any]:
+    if measurement in _compass_sidis_reference.MEASUREMENTS:
+        return _translate_compass_reference_error(
+            _compass_sidis_reference.normalized_from_raw, measurement
+        )
     if measurement in _jet_sidis_reference.MEASUREMENTS:
         return _translate_new_reference_error(
             _jet_sidis_reference.normalized_from_raw, measurement
@@ -562,6 +580,10 @@ def normalized_from_raw(measurement: str) -> dict[str, Any]:
 
 
 def validate_vendored(measurement: str) -> dict[str, Any]:
+    if measurement in _compass_sidis_reference.MEASUREMENTS:
+        return _translate_compass_reference_error(
+            _compass_sidis_reference.validate_vendored, measurement
+        )
     if measurement in _jet_sidis_reference.MEASUREMENTS:
         return _translate_new_reference_error(
             _jet_sidis_reference.validate_vendored, measurement
@@ -574,6 +596,16 @@ def fetch_and_validate(
     cache_directory: Path | None = None,
     source_file: Path | None = None,
 ) -> list[Path]:
+    if measurement in _compass_sidis_reference.MEASUREMENTS:
+        if source_file is not None:
+            raise ReferenceDataError(
+                "--source-file is not used for version-pinned HEPData records"
+            )
+        return _translate_compass_reference_error(
+            _compass_sidis_reference.fetch_and_validate,
+            measurement,
+            cache_directory,
+        )
     if measurement in _jet_sidis_reference.MEASUREMENTS:
         return _translate_new_reference_error(
             _jet_sidis_reference.fetch_and_validate,
@@ -591,6 +623,12 @@ def fetch_and_validate(
 def write_reference_yoda(
     measurement: str, snapshot: Mapping[str, Any] | None = None
 ) -> Path:
+    if measurement in _compass_sidis_reference.MEASUREMENTS:
+        return _translate_compass_reference_error(
+            _compass_sidis_reference.write_reference_yoda,
+            measurement,
+            snapshot,
+        )
     if measurement in _jet_sidis_reference.MEASUREMENTS:
         return _translate_new_reference_error(
             _jet_sidis_reference.write_reference_yoda, measurement, snapshot
