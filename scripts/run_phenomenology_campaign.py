@@ -277,9 +277,26 @@ def _resolved_options(args: argparse.Namespace, measurement: Mapping[str, Any]) 
             )
         jet_kt_min_gev = None
 
+    selected_families = _family_selector(
+        getattr(args, "families", None), measurement
+    )
+    if (
+        getattr(args, "nominal_prediction", None) is not None
+        and "nominal" in selected_families
+    ):
+        raise CampaignError(
+            "--nominal-prediction requires a comparison-family-only campaign"
+        )
+    if (
+        getattr(args, "nominal_prediction", None) is not None
+        and not bool(getattr(args, "plot_comparisons", False))
+    ):
+        raise CampaignError(
+            "--nominal-prediction requires --plot-comparisons"
+        )
     options = {
         "profile": args.profile,
-        "families": _family_selector(getattr(args, "families", None), measurement),
+        "families": selected_families,
         "jobs": int(args.jobs or defaults["default_jobs"]),
         "shards": int(args.shards or defaults["default_shards"]),
         "seed_base": int(args.seed_base or defaults["default_seed_base"]),
@@ -2112,15 +2129,33 @@ def postprocess_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> 
         else:
             raise CampaignError(f"Unknown postprocessor {measurement['postprocessor']}")
 
+    configured_families = list(manifest["configuration"]["families"])
+    physical_families = [
+        family_id
+        for family_id in configured_families
+        if set(measurement["families"][family_id]["helicities"])
+        == set(DENOMINATOR)
+    ]
+    if not physical_families:
+        raise CampaignError("No four-helicity physics family was generated")
+    central_family = (
+        "nominal" if "nominal" in physical_families else physical_families[0]
+    )
+    nominal_available = central_family == "nominal"
     nominal_mpi = measurement["families"]["nominal"]["mpi"]
-    central_keys = [("nominal", channel, 0, 0, 1.0, nominal_mpi)
+    central_mpi = measurement["families"][central_family]["mpi"]
+    central_keys = [(central_family, channel, 0, 0, 1.0, central_mpi)
                     for channel in measurement["channels"]]
     missing_central = [key for key in central_keys if key not in predictions]
     if missing_central:
         raise CampaignError(f"Missing central predictions: {missing_central}")
-    bands = aggregate_uncertainties(predictions, measurement)
+    bands = (
+        aggregate_uncertainties(predictions, measurement)
+        if nominal_available
+        else {}
+    )
     correlated_goodness_of_fit = None
-    if measurement["postprocessor"] == "star_jet_all":
+    if measurement["postprocessor"] == "star_jet_all" and nominal_available:
         correlated_goodness_of_fit = _star_correlated_goodness_of_fit(
             predictions[central_keys[0]],
             snapshot,
@@ -2136,7 +2171,6 @@ def postprocess_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> 
     objects_by_family: dict[str, list[Any]] = {
         family: [] for family in manifest["configuration"]["families"]
     }
-    objects_by_family.setdefault("nominal", [])
     summary_variations: dict[str, Any] = {}
     central_rows: list[dict[str, Any]] = []
     pulls_summary: dict[str, Any] = {}
@@ -2294,6 +2328,7 @@ def postprocess_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> 
     output_dir.mkdir(parents=True, exist_ok=True)
     prediction_path = output_dir/"prediction.yoda"
     prediction_entries: list[dict[str, str]] = []
+    primary_prediction_path: Path | None = None
     for family_id, objects in objects_by_family.items():
         if not objects:
             continue
@@ -2310,12 +2345,16 @@ def postprocess_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> 
                 "path": str(destination.relative_to(campaign_dir)),
             }
         )
-    if not experimental._nonempty(prediction_path):
-        raise CampaignError("Nominal postprocessing produced no prediction objects")
+        if family_id == central_family:
+            primary_prediction_path = destination
+    if primary_prediction_path is None or not experimental._nonempty(
+        primary_prediction_path
+    ):
+        raise CampaignError("Central postprocessing produced no prediction objects")
     summary = {
         "measurement": measurement["id"], "tag": args.tag,
         "hard_process_accuracy": "LO",
-        "central_sample_label": measurement["families"]["nominal"]["label"],
+        "central_sample_label": measurement["families"][central_family]["label"],
         "uncertainties": bands, "pulls": pulls_summary,
         "correlated_goodness_of_fit": correlated_goodness_of_fit,
         "global_experimental_uncertainties": measurement.get("global_uncertainties", {}),
@@ -2336,7 +2375,7 @@ def postprocess_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> 
             writer.writeheader(); writer.writerows(central_rows)
     manifest["postprocess"] = {
         "created_at": experimental.utc_now(),
-        "prediction": str(prediction_path.relative_to(campaign_dir)),
+        "prediction": str(primary_prediction_path.relative_to(campaign_dir)),
         "predictions": prediction_entries,
         "summary": "postprocess/summary.json",
         "include_diagnostics": include_diagnostics,
@@ -2344,8 +2383,8 @@ def postprocess_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> 
     manifest["updated_at"] = experimental.utc_now()
     manifest["history"].append({"at": experimental.utc_now(), "action": "postprocess"})
     experimental.atomic_write_json(manifest_path, manifest)
-    print(f"Wrote normalized-helicity predictions to {prediction_path}")
-    return prediction_path
+    print(f"Wrote normalized-helicity predictions to {primary_prediction_path}")
+    return primary_prediction_path
 
 
 def _prediction_plot_argument(
@@ -2383,6 +2422,33 @@ def plot_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> Path:
                     "prediction", "postprocess/prediction.yoda"
                 ),
             }
+        ]
+    external_nominal_prediction: Path | None = None
+    nominal_prediction_option = getattr(args, "nominal_prediction", None)
+    if nominal_prediction_option is not None:
+        if not bool(getattr(args, "plot_comparisons", False)):
+            raise CampaignError(
+                "--nominal-prediction requires --plot-comparisons"
+            )
+        if any(str(entry.get("family")) == "nominal" for entry in entries):
+            raise CampaignError(
+                "--nominal-prediction is only valid for a campaign without "
+                "its own nominal family"
+            )
+        external_nominal_prediction = Path(nominal_prediction_option).expanduser()
+        if not external_nominal_prediction.is_absolute():
+            external_nominal_prediction = (
+                Path.cwd() / external_nominal_prediction
+            ).resolve()
+        else:
+            external_nominal_prediction = external_nominal_prediction.resolve()
+        entries = [
+            {
+                "family": "nominal",
+                "label": measurement["families"]["nominal"]["label"],
+                "path": str(external_nominal_prediction),
+            },
+            *entries,
         ]
     if not bool(getattr(args, "plot_comparisons", False)):
         entries = [
@@ -2463,6 +2529,12 @@ def plot_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> Path:
     snapshot = validate_vendored(str(measurement["id"]))
     summary_path = campaign_dir/"postprocess"/"summary.json"
     summary = _load_json(summary_path) if summary_path.is_file() else {}
+    external_nominal_summary: Path | None = None
+    if external_nominal_prediction is not None:
+        candidate = external_nominal_prediction.parent / "summary.json"
+        if candidate.is_file():
+            external_nominal_summary = candidate
+            summary = _load_json(candidate)
     with script_log.open("w", encoding="utf-8") as log:
         for script in plot_scripts:
             log.write(f"script: {script}\n")
@@ -2506,6 +2578,16 @@ def plot_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> Path:
             DISPOL_ROOT / str(measurement["analysis"]["plot"])
         ),
     }
+    if external_nominal_prediction is not None:
+        manifest["plots"]["external_nominal_prediction"] = {
+            "path": str(external_nominal_prediction),
+            "sha256": experimental.sha256_file(external_nominal_prediction),
+        }
+        if external_nominal_summary is not None:
+            manifest["plots"]["external_nominal_summary"] = {
+                "path": str(external_nominal_summary),
+                "sha256": experimental.sha256_file(external_nominal_summary),
+            }
     if plot_metadata_refresh is not None:
         manifest["plots"]["presentation_only_refresh"] = plot_metadata_refresh
     manifest["updated_at"] = experimental.utc_now()
@@ -2640,6 +2722,15 @@ def _add_plot_options(parser: argparse.ArgumentParser) -> None:
         ),
     )
     parser.add_argument(
+        "--nominal-prediction",
+        type=Path,
+        help=(
+            "Existing nominal prediction.yoda to prepend when plotting a "
+            "comparison-family-only campaign; its path and SHA-256 are "
+            "recorded in the plot manifest"
+        ),
+    )
+    parser.add_argument(
         "--include-diagnostics",
         action="store_true",
         help=(
@@ -2700,6 +2791,11 @@ def main(argv: Sequence[str] | None = None) -> int:
                 raise CampaignError(
                     "--jet-kt-min-gev is only valid for polarized pp jet "
                     "measurements"
+                )
+            if getattr(args, "nominal_prediction", None) is not None:
+                raise CampaignError(
+                    "--nominal-prediction is only valid for polarized pp "
+                    "campaigns"
                 )
             return experimental.main(_legacy_arguments(args))
         if getattr(args, "comparisons", False):

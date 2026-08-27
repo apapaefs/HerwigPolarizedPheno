@@ -247,8 +247,9 @@ do
 done
 ```
 
-For 50 million events per helicity and per shower treatment, use fresh,
-immutable tags.  One hundred shards correspond to 500,000 events per shard:
+For a new STAR 200 comparison with 50 million events per helicity and per
+shower treatment, use a fresh immutable tag.  Five hundred shards correspond
+to 100,000 events per shard and match the existing Odysseus production shape:
 
 ```bash
 python3 scripts/run_phenomenology_campaign.py full \
@@ -256,23 +257,34 @@ python3 scripts/run_phenomenology_campaign.py full \
   --tag star200_shower_spin_50m \
   --families nominal,shower_spin_off \
   --lo-events 50000000 \
-  --shards 100 --jobs 8 \
-  --plot-comparisons
-
-python3 scripts/run_phenomenology_campaign.py full \
-  --measurement STAR_2022_I1949588 \
-  --tag star510_shower_spin_50m \
-  --families nominal,shower_spin_off \
-  --lo-events 50000000 \
-  --shards 100 --jobs 8 \
+  --shards 500 --jobs 100 \
   --plot-comparisons
 ```
 
-Each command generates eight logical samples: `PP`, `PM`, `MP`, and `MM` for
-the nominal shower and the same four helicities for `shower_spin_off`.  The
-postprocessor forms each $A_{LL}$ independently before overlaying the nominal
-and blue spin-averaged-shower curves.  Because the campaign manifest is
-immutable, do not add the control family to an existing nominal-only tag.
+The completed 500-million-event-per-helicity STAR 510 nominal prediction does
+not need to be regenerated.  Point `--nominal-prediction` at its analyzed
+YODA file and run only the four spin-averaged-shower helicities:
+
+```bash
+STAR510_NOMINAL=/absolute/path/to/completed-star510/postprocess/prediction.yoda
+python3 scripts/run_phenomenology_campaign.py full \
+  --measurement STAR_2022_I1949588 \
+  --tag star510_shower_spin_off_500m \
+  --families shower_spin_off \
+  --lo-events 500000000 \
+  --shards 500 --jobs 100 \
+  --plot-comparisons \
+  --nominal-prediction "$STAR510_NOMINAL"
+```
+
+The STAR 200 command generates eight logical samples: `PP`, `PM`, `MP`, and
+`MM` for each shower treatment.  The STAR 510 reuse command generates only
+the four `shower_spin_off` samples.  In both cases the postprocessor forms each
+$A_{LL}$ independently before overlaying the nominal and blue
+spin-averaged-shower curves.  An external nominal YODA path and SHA-256, plus
+the adjacent `summary.json` when present, are recorded in the plot manifest.
+Because campaign generation manifests are immutable, do not add the control
+family to an existing nominal-only tag.
 
 Run the nominal paper grid without optional modeling families:
 

@@ -637,6 +637,17 @@ class CampaignMatrixAndCardTests(unittest.TestCase):
                 {job["family"] for job in jobs},
                 {"nominal", "shower_spin_off"},
             )
+            control_only = campaign.build_job_matrix(
+                measurement,
+                campaign._resolved_options(
+                    args(families="shower_spin_off"), measurement
+                ),
+            )
+            self.assertEqual(len(control_only), 4)
+            self.assertEqual(
+                {job["family"] for job in control_only},
+                {"shower_spin_off"},
+            )
             self.assertEqual(
                 {
                     job["helicity"]
@@ -792,6 +803,7 @@ class CampaignMatrixAndCardTests(unittest.TestCase):
         )
         self.assertIsNone(parsed.families)
         self.assertFalse(parsed.comparisons)
+        self.assertIsNone(parsed.nominal_prediction)
         explicit = campaign.make_parser().parse_args(
             [
                 "full",
@@ -806,6 +818,46 @@ class CampaignMatrixAndCardTests(unittest.TestCase):
         )
         self.assertEqual(explicit.families, "nominal,hadron_mpi_on")
         self.assertTrue(explicit.include_diagnostics)
+        reuse = campaign.make_parser().parse_args(
+            [
+                "full",
+                "--measurement",
+                "STAR_2022_I1949588",
+                "--tag",
+                "reuse",
+                "--families",
+                "shower_spin_off",
+                "--plot-comparisons",
+                "--nominal-prediction",
+                "/tmp/nominal/prediction.yoda",
+            ]
+        )
+        self.assertEqual(
+            reuse.nominal_prediction, Path("/tmp/nominal/prediction.yoda")
+        )
+        measurement = campaign.discover_pp_registry()["STAR_2022_I1949588"]
+        with self.assertRaisesRegex(
+            campaign.CampaignError, "comparison-family-only"
+        ):
+            campaign._resolved_options(
+                args(
+                    families="nominal,shower_spin_off",
+                    nominal_prediction=Path("/tmp/nominal/prediction.yoda"),
+                    plot_comparisons=True,
+                ),
+                measurement,
+            )
+        with self.assertRaisesRegex(
+            campaign.CampaignError, "requires --plot-comparisons"
+        ):
+            campaign._resolved_options(
+                args(
+                    families="shower_spin_off",
+                    nominal_prediction=Path("/tmp/nominal/prediction.yoda"),
+                    plot_comparisons=False,
+                ),
+                measurement,
+            )
 
     def test_star_operational_bins_are_preserved_before_display_mapping(
         self,
