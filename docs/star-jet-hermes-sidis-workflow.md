@@ -69,6 +69,15 @@ remain active, while MPI and QED showering are disabled.  The optional
 `hadron_mpi_on` family instead clusters stable particles with MPI enabled and
 is excluded from default goodness-of-fit results.
 
+Both STAR measurements also register a `shower_spin_off` control family.  It
+repeats all four physical beam-helicity samples with the same polarized PDFs,
+polarized `MEQCD2to2` hard process, generator cut, hard-parton jet definition,
+MPI setting, and analysis options as the nominal family.  Its only physics
+override is
+`/Herwig/Shower/ShowerHandler:SpinCorrelations No`.  It is therefore a
+spin-averaged-shower control, not a fully unpolarized event sample.  When
+comparison curves are requested, this family is fixed to blue (`#0077BB`).
+
 At 200 GeV the analysis uses anti-$k_T$ with $R=0.6$, the published central
 and forward inclusive regions, and the two leading jets for dijets with
 $p_{T,1}>8$ GeV, $p_{T,2}>6$ GeV, $|\eta|<0.8$, and
@@ -219,6 +228,52 @@ do
 done
 ```
 
+Smoke-mode STAR goodness-of-fit summaries are allowed to retain only finite
+theory bins and are marked `partial smoke sample`.  Non-smoke STAR 510
+campaigns still require all 59 primary covariance points.
+
+Smoke-test the nominal versus spin-averaged-shower comparison for STAR at both
+energies:
+
+```bash
+for measurement in STAR_2021_I1850855 STAR_2022_I1949588
+do
+  python3 scripts/run_phenomenology_campaign.py full \
+    --measurement "$measurement" \
+    --tag "${measurement}_shower_spin_smoke" \
+    --families nominal,shower_spin_off \
+    --smoke --jobs 8 \
+    --plot-comparisons
+done
+```
+
+For 50 million events per helicity and per shower treatment, use fresh,
+immutable tags.  One hundred shards correspond to 500,000 events per shard:
+
+```bash
+python3 scripts/run_phenomenology_campaign.py full \
+  --measurement STAR_2021_I1850855 \
+  --tag star200_shower_spin_50m \
+  --families nominal,shower_spin_off \
+  --lo-events 50000000 \
+  --shards 100 --jobs 8 \
+  --plot-comparisons
+
+python3 scripts/run_phenomenology_campaign.py full \
+  --measurement STAR_2022_I1949588 \
+  --tag star510_shower_spin_50m \
+  --families nominal,shower_spin_off \
+  --lo-events 50000000 \
+  --shards 100 --jobs 8 \
+  --plot-comparisons
+```
+
+Each command generates eight logical samples: `PP`, `PM`, `MP`, and `MM` for
+the nominal shower and the same four helicities for `shower_spin_off`.  The
+postprocessor forms each $A_{LL}$ independently before overlaying the nominal
+and blue spin-averaged-shower curves.  Because the campaign manifest is
+immutable, do not add the control family to an existing nominal-only tag.
+
 Run the nominal paper grid without optional modeling families:
 
 ```bash
@@ -233,8 +288,9 @@ python3 scripts/run_phenomenology_campaign.py full \
   --shards 10 --jobs 4
 ```
 
-Use `--families hadron_mpi_on` to generate only that optional STAR modeling
-family, or `--families all` for all registered families.
+Use `--families shower_spin_off` or `--families hadron_mpi_on` to generate an
+individual optional STAR modeling family, or `--families all` for all
+registered families.
 `--include-diagnostics` adds closures and alternate reference projections.
 `--plot-comparisons` overlays explicitly generated non-nominal families.
 The terminal tracker, resume behavior, immutable manifest checks, and

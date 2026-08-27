@@ -88,6 +88,30 @@ def _validate_descriptor(measurement: Mapping[str, Any], path: Path) -> None:
             raise CampaignError(f"{measurement['id']} SIDIS requires proton and neutron components")
     if "nominal" not in measurement["families"]:
         raise CampaignError(f"{measurement['id']} has no nominal family")
+    for family_id, family in measurement["families"].items():
+        shower_spin = family.get("shower_spin_correlations")
+        if shower_spin not in {None, "on", "off"}:
+            raise CampaignError(
+                f"{measurement['id']} family {family_id!r} has invalid "
+                "shower_spin_correlations; expected 'on' or 'off'"
+            )
+        plot_options = family.get("plot_options", {})
+        if not isinstance(plot_options, dict):
+            raise CampaignError(
+                f"{measurement['id']} family {family_id!r} plot_options "
+                "must be an object"
+            )
+        for key, value in plot_options.items():
+            if not re.fullmatch(r"[A-Za-z][A-Za-z0-9]*", str(key)):
+                raise CampaignError(
+                    f"{measurement['id']} family {family_id!r} has invalid "
+                    f"plot option name {key!r}"
+                )
+            if ":" in str(value):
+                raise CampaignError(
+                    f"{measurement['id']} family {family_id!r} plot option "
+                    f"{key!r} cannot contain ':'"
+                )
     if process_kind == "polarized_pp_jets":
         generator_cuts = measurement.get("generator_cuts", {})
         allowed = generator_cuts.get("jet_kt_min_scan_gev")
@@ -324,6 +348,9 @@ def build_job_matrix(measurement: Mapping[str, Any], options: Mapping[str, Any])
                                     "polarized_pdf_member": polarized_member,
                                     "unpolarized_pdf_member": unpolarized_member,
                                     "scale": scale, "mpi": family["mpi"],
+                                    "shower_spin_correlations": family.get(
+                                        "shower_spin_correlations", "on"
+                                    ),
                                     "jet_kt_min_gev": options.get("jet_kt_min_gev"),
                                     "shard": shard, "shards": len(event_splits),
                                     "events": events,
@@ -525,6 +552,13 @@ def _card_text(measurement: Mapping[str, Any], job: Mapping[str, Any]) -> str:
             f"set {cards['unpolarized_pdf_object']}:Member "
             f"{job['unpolarized_pdf_member']}"
         )
+    family = measurement["families"][job["family"]]
+    shower_spin = family.get("shower_spin_correlations")
+    if shower_spin is not None:
+        overrides.append(
+            "set /Herwig/Shower/ShowerHandler:SpinCorrelations "
+            + ("Yes" if shower_spin == "on" else "No")
+        )
     if not math.isclose(float(job["scale"]), 1.0):
         if measurement["process_kind"] == "polarized_sidis":
             overrides.extend(
@@ -554,7 +588,6 @@ def _card_text(measurement: Mapping[str, Any], job: Mapping[str, Any]) -> str:
         overrides.append(
             f"set /Herwig/Cuts/JetKtCut:MinKT {jet_kt_min_gev:.1f}*GeV"
         )
-    family = measurement["families"][job["family"]]
     analysis_options = family.get("analysis_options", {})
     if analysis_options:
         analysis_name = str(measurement["analysis"]["name"])
@@ -1469,6 +1502,8 @@ def _star_correlated_goodness_of_fit(
     prediction_set: Mapping[str, Mapping[str, Any]],
     snapshot: Mapping[str, Any],
     measurement: Mapping[str, Any] | None = None,
+    *,
+    require_complete: bool = True,
 ) -> dict[str, Any]:
     try:
         import numpy as np
@@ -1506,17 +1541,47 @@ def _star_correlated_goodness_of_fit(
         theory_variance.append(float(error)**2)
         retained_indices.append(covariance_index)
         retained_labels.append(str(label))
+    expected_points: int | None = None
     if measurement is not None:
-        expected_points = measurement.get(
+        configured_points = measurement.get(
             "comparison_policy", {}
         ).get("covariance_points")
-        if expected_points is not None and len(retained_indices) != int(expected_points):
+        if configured_points is not None:
+            expected_points = int(configured_points)
+        if (
+            require_complete
+            and expected_points is not None
+            and len(retained_indices) != expected_points
+        ):
             raise CampaignError(
                 f"STAR primary covariance retained {len(retained_indices)} points, "
-                f"expected {int(expected_points)}"
+                f"expected {expected_points}"
             )
+        if (
+            not require_complete
+            and expected_points is not None
+            and len(retained_indices) != expected_points
+        ):
+            return {
+                "points": len(retained_indices),
+                "expected_points": expected_points,
+                "coverage_status": "partial smoke sample",
+                "ordering": retained_labels,
+                "status": (
+                    "goodness of fit not evaluated for partial smoke coverage"
+                ),
+            }
     if not retained_indices:
-        return {"points": 0, "status": "no finite theory bins"}
+        return {
+            "points": 0,
+            "expected_points": expected_points,
+            "coverage_status": (
+                "complete"
+                if expected_points in {None, 0}
+                else "partial smoke sample"
+            ),
+            "status": "no finite theory bins",
+        }
 
     published = np.asarray(snapshot["primary_covariance"]["covariance"], dtype=float)
     covariance = published[np.ix_(retained_indices, retained_indices)]
@@ -1546,6 +1611,12 @@ def _star_correlated_goodness_of_fit(
         decorrelated = np.full(len(data), np.nan)
     return {
         "points": len(data),
+        "expected_points": expected_points,
+        "coverage_status": (
+            "complete"
+            if expected_points is None or len(data) == expected_points
+            else "partial smoke sample"
+        ),
         "ordering": retained_labels,
         "chi2_correlated_without_global_nuisances": unprofiled,
         "chi2_profiled": profiled,
@@ -2051,7 +2122,12 @@ def postprocess_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> 
     correlated_goodness_of_fit = None
     if measurement["postprocessor"] == "star_jet_all":
         correlated_goodness_of_fit = _star_correlated_goodness_of_fit(
-            predictions[central_keys[0]], snapshot, measurement
+            predictions[central_keys[0]],
+            snapshot,
+            measurement,
+            require_complete=not bool(
+                manifest["configuration"].get("smoke", False)
+            ),
         )
     yoda = experimental._import_yoda()
     include_diagnostics = bool(
@@ -2105,6 +2181,9 @@ def postprocess_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> 
                 "Channel": key[1], "PolarizedPDFMember": key[2],
                 "UnpolarizedPDFMember": key[3], "HardScaleFactor": key[4],
                 "MPI": key[5], "HelicityCombination": "independent PP,PM,MP,MM samples",
+                "ShowerSpinCorrelations": measurement["families"][key[0]].get(
+                    "shower_spin_correlations", "on"
+                ),
                 "JetKtMinGeV": manifest["configuration"].get(
                     "jet_kt_min_gev"
                 ),
@@ -2269,6 +2348,17 @@ def postprocess_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> 
     return prediction_path
 
 
+def _prediction_plot_argument(
+    prediction: Path, label: str, family: Mapping[str, Any]
+) -> str:
+    """Return one rivet-mkhtml input with deterministic family styling."""
+
+    argument = f"{prediction}:Title={label}"
+    for key, value in sorted(family.get("plot_options", {}).items()):
+        argument += f":{key}={value}"
+    return argument
+
+
 def plot_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> Path:
     campaign_dir = _campaign_dir(measurement["id"], args.tag)
     manifest_path = campaign_dir/experimental.MANIFEST_NAME
@@ -2339,8 +2429,12 @@ def plot_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> Path:
                     command.extend(
                         ["-M", re.escape(str(dataset["rivet_path"]))]
                     )
-    for prediction, label, _family_id in predictions:
-        command.append(f"{prediction}:Title={label}")
+    for prediction, label, family_id in predictions:
+        command.append(
+            _prediction_plot_argument(
+                prediction, label, measurement["families"][family_id]
+            )
+        )
     if args.dry_run:
         print(" ".join(command))
         return output

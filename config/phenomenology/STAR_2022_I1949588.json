@@ -53,6 +53,16 @@
       "observable_level": "hard_parton",
       "analysis_options": {"LEVEL": "HARDPARTON"}
     },
+    "shower_spin_off": {
+      "label": "LO+PS (polarized hard; shower spin off)",
+      "helicities": ["PP", "PM", "MP", "MM"],
+      "mpi": "off",
+      "observable_level": "hard_parton",
+      "analysis_options": {"LEVEL": "HARDPARTON"},
+      "shower_spin_correlations": "off",
+      "plot_options": {"LineColor": "#0077BB"},
+      "diagnostic_only": true
+    },
     "hadron_mpi_on": {
       "label": "LO+PS (polarized; hadron level, MPI on)",
       "helicities": ["PP", "PM", "MP", "MM"],

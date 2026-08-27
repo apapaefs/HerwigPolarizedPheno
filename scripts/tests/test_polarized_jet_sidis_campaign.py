@@ -537,7 +537,7 @@ class CampaignMatrixAndCardTests(unittest.TestCase):
             )
             self.assertEqual(len(central), 4)
             self.assertEqual(len(paper), 812)
-            self.assertEqual(len(all_families), 817)
+            self.assertEqual(len(all_families), 821)
             self.assertEqual({job["family"] for job in paper}, {"nominal"})
             self.assertEqual(
                 {job["analysis_instance"] for job in central},
@@ -545,7 +545,12 @@ class CampaignMatrixAndCardTests(unittest.TestCase):
             )
             self.assertEqual(
                 {job["family"] for job in all_families},
-                {"nominal", "hadron_mpi_on", "unpolarized_closure"},
+                {
+                    "nominal",
+                    "shower_spin_off",
+                    "hadron_mpi_on",
+                    "unpolarized_closure",
+                },
             )
             hadron = next(
                 job
@@ -613,6 +618,76 @@ class CampaignMatrixAndCardTests(unittest.TestCase):
         ).read_text(encoding="utf-8")
         self.assertIn("/Herwig/MatrixElements/MEQCD2to2", base)
         self.assertNotIn("MEQCD2to2Fast", base)
+
+    def test_star_shower_spin_off_family_changes_only_the_shower_control(
+        self,
+    ) -> None:
+        registry = campaign.discover_pp_registry()
+        for measurement_id in (
+            "STAR_2021_I1850855",
+            "STAR_2022_I1949588",
+        ):
+            measurement = registry[measurement_id]
+            options = campaign._resolved_options(
+                args(families="nominal,shower_spin_off"), measurement
+            )
+            jobs = campaign.build_job_matrix(measurement, options)
+            self.assertEqual(len(jobs), 8)
+            self.assertEqual(
+                {job["family"] for job in jobs},
+                {"nominal", "shower_spin_off"},
+            )
+            self.assertEqual(
+                {
+                    job["helicity"]
+                    for job in jobs
+                    if job["family"] == "shower_spin_off"
+                },
+                {"PP", "PM", "MP", "MM"},
+            )
+            self.assertTrue(
+                all(
+                    job["shower_spin_correlations"] == "off"
+                    for job in jobs
+                    if job["family"] == "shower_spin_off"
+                )
+            )
+            spin_off = next(
+                job
+                for job in jobs
+                if job["family"] == "shower_spin_off"
+                and job["helicity"] == "PP"
+            )
+            nominal = next(
+                job
+                for job in jobs
+                if job["family"] == "nominal"
+                and job["helicity"] == "PP"
+            )
+            card = campaign._card_text(measurement, spin_off)
+            self.assertIn(
+                "set /Herwig/Shower/ShowerHandler:SpinCorrelations No",
+                card,
+            )
+            self.assertIn("FirstLongitudinalPolarization", card)
+            self.assertIn("SecondLongitudinalPolarization", card)
+            self.assertIn("/Herwig/MatrixElements/MEQCD2to2", card)
+            normalized_control = card.replace(
+                "set /Herwig/Shower/ShowerHandler:SpinCorrelations No\n",
+                "",
+            ).replace(spin_off["stem"], nominal["stem"])
+            self.assertEqual(
+                normalized_control, campaign._card_text(measurement, nominal)
+            )
+
+            family = measurement["families"]["shower_spin_off"]
+            argument = campaign._prediction_plot_argument(
+                Path("prediction-shower_spin_off.yoda"),
+                family["label"],
+                family,
+            )
+            self.assertIn(":LineColor=#0077BB", argument)
+            self.assertIn("polarized hard; shower spin off", argument)
 
     def test_star_generator_cut_is_immutable_and_star_only(self) -> None:
         registry = campaign.discover_pp_registry()
@@ -857,6 +932,31 @@ class StarComparisonPolicyTests(unittest.TestCase):
         self.assertNotIn("inclusive:1", result["ordering"])
         self.assertNotIn("inclusive:4", result["ordering"])
         self.assertIn("inclusive:5", result["ordering"])
+
+    def test_smoke_fit_reports_partial_coverage_without_weakening_production(
+        self,
+    ) -> None:
+        size = len(self.snapshot["datasets"]["inclusive"]["points"])
+        values: list[float | None] = [None] * size
+        errors: list[float | None] = [None] * size
+        values[4] = 0.0
+        errors[4] = 1.0
+        partial = {"inclusive": {"values": values, "errors": errors}}
+        with self.assertRaisesRegex(campaign.CampaignError, "expected 59"):
+            campaign._star_correlated_goodness_of_fit(
+                partial, self.snapshot, self.measurement
+            )
+        result = campaign._star_correlated_goodness_of_fit(
+            partial,
+            self.snapshot,
+            self.measurement,
+            require_complete=False,
+        )
+        self.assertEqual(result["points"], 1)
+        self.assertEqual(result["expected_points"], 59)
+        self.assertEqual(result["coverage_status"], "partial smoke sample")
+        self.assertIn("not evaluated", result["status"])
+        self.assertNotIn("chi2_profiled", result)
 
 
 class ObservableArithmeticTests(unittest.TestCase):
