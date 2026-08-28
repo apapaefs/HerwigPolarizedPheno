@@ -8,6 +8,7 @@ import contextlib
 import io
 import math
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -199,6 +200,28 @@ class MCPOLDIJETSCampaignTests(unittest.TestCase):
             )
         self.assertEqual(status, 0)
         self.assertIn("no external data or reference YODA", output.getvalue())
+
+    def test_plotting_falls_back_to_mathtext_without_dvipng(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            output = Path(temporary)
+            style = output / "default.mplstyle"
+            style.write_text(
+                "font.size: 11\ntext.usetex: True\n",
+                encoding="utf-8",
+            )
+            rendering = campaign._configure_plot_text_rendering(
+                output, {"PATH": str(output / "missing-tools")}
+            )
+            self.assertEqual(
+                rendering,
+                {
+                    "mode": "mathtext",
+                    "missing_tools": ["latex", "dvipng"],
+                },
+            )
+            self.assertIn(
+                "text.usetex: False", style.read_text(encoding="utf-8")
+            )
 
 
 if __name__ == "__main__":

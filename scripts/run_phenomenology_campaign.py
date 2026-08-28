@@ -3213,6 +3213,44 @@ def _prediction_plot_argument(
     return argument
 
 
+def _configure_plot_text_rendering(
+    output: Path, environment: Mapping[str, str]
+) -> dict[str, Any]:
+    """Use Matplotlib MathText when Rivet's TeX toolchain is incomplete."""
+
+    search_path = str(environment.get("PATH", os.environ.get("PATH", "")))
+    required_tools = ("latex", "dvipng")
+    missing_tools = [
+        tool for tool in required_tools
+        if shutil.which(tool, path=search_path) is None
+    ]
+    if not missing_tools:
+        return {"mode": "latex", "missing_tools": []}
+
+    style_path = output / "default.mplstyle"
+    if not style_path.is_file():
+        raise CampaignError(
+            f"Cannot configure MathText fallback; missing {style_path}"
+        )
+    style = style_path.read_text(encoding="utf-8")
+    configured, replacements = re.subn(
+        r"(?m)^(\s*text\.usetex\s*:\s*)True(\s*(?:#.*)?)$",
+        r"\g<1>False\g<2>",
+        style,
+    )
+    if replacements != 1:
+        if not re.search(
+            r"(?m)^\s*text\.usetex\s*:\s*False\s*(?:#.*)?$", style
+        ):
+            raise CampaignError(
+                f"Could not disable text.usetex in {style_path}"
+            )
+        configured = style
+    if configured != style:
+        experimental.atomic_write_text(style_path, configured)
+    return {"mode": "mathtext", "missing_tools": missing_tools}
+
+
 def plot_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> Path:
     campaign_dir = _campaign_dir(measurement["id"], args.tag)
     manifest_path = campaign_dir/experimental.MANIFEST_NAME
@@ -3339,6 +3377,7 @@ def plot_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> Path:
     )
     if not plot_scripts:
         raise CampaignError(f"rivet-mkhtml generated no plot scripts below {output}")
+    text_rendering = _configure_plot_text_rendering(output, environment)
     script_log = campaign_dir/"logs"/"rivet-plot-scripts.log"
     rendered_scripts: list[Path] = []
     snapshot = _measurement_snapshot(measurement)
@@ -3351,6 +3390,11 @@ def plot_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> Path:
             external_nominal_summary = candidate
             summary = _load_json(candidate)
     with script_log.open("w", encoding="utf-8") as log:
+        log.write(
+            "text_rendering: "
+            + json.dumps(text_rendering, sort_keys=True)
+            + "\n"
+        )
         for script in plot_scripts:
             log.write(f"script: {script}\n")
             log.flush()
@@ -3392,6 +3436,7 @@ def plot_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> Path:
         "plot_metadata_sha256": experimental.sha256_file(
             DISPOL_ROOT / str(measurement["analysis"]["plot"])
         ),
+        "text_rendering": text_rendering,
     }
     if external_nominal_prediction is not None:
         manifest["plots"]["external_nominal_prediction"] = {
