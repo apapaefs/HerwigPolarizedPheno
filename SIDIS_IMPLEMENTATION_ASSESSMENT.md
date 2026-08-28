@@ -150,8 +150,11 @@ physics. The smoke runtime was Herwig devel with Rivet 4.1.2 and installed
 `07e78a9d313f3a66d98befeca6bfd0760499a5ba00bd7ba9bb1306c78ce24e8c`.
 
 Pilot, central and paper production are intentionally not part of this
-implementation. On Odysseus, the detached tranche worktree may be used for
-source/checksum/registry/dry-run checks while STAR is active, but the runtime
-must not be rebuilt and SIDIS must not be launched. The primary checkout may
-be fast-forwarded only after STAR workers have stopped and that checkout is
-clean.
+implementation. At synchronization time no matching STAR, campaign-runner or
+Herwig workers remained on Odysseus. The primary checkout and the detached
+`HerwigPolarizedPheno-sidis-tranches-20260828` worktree were synchronized to
+published `main`; the latter passed the runtime/source/checksum/registry gate,
+the full HERMES covariance validation, and all three campaign dry runs. The
+active runtime was not rebuilt and no SIDIS production was prepared or
+launched. The primary checkout's untracked STAR archive was restored unchanged
+after the clean fast-forward.
