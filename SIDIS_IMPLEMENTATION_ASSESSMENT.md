@@ -174,11 +174,15 @@ The smoke runtime was Herwig devel with Rivet 4.1.2 and installed
 `07e78a9d313f3a66d98befeca6bfd0760499a5ba00bd7ba9bb1306c78ce24e8c`.
 
 Pilot, central and paper production are intentionally not part of this
-implementation. At synchronization time no matching STAR, campaign-runner or
-Herwig workers remained on Odysseus. The primary checkout and the detached
-`HerwigPolarizedPheno-sidis-tranches-20260828` worktree were synchronized to
-published `main`; the latter passed the runtime/source/checksum/registry gate,
-the full HERMES covariance validation, and all three campaign dry runs. The
-active runtime was not rebuilt and no SIDIS production was prepared or
-launched. The primary checkout's untracked STAR archive was restored unchanged
-after the clean fast-forward.
+implementation. At synchronization time the new 800M-event `MC_POLDIJETS`
+campaign was actively using the Odysseus primary checkout, so that checkout
+was deliberately left at its pinned production commit `bbd4561`. The detached
+`HerwigPolarizedPheno-sidis-tranches-20260828` worktree was fast-forwarded to
+published `main`; it passed the runtime/source/checksum/registry gate, the full
+HERMES covariance validation, and all three campaign dry runs. The active
+runtime was not rebuilt and no SIDIS production was prepared or launched.
+Local `main`, both GitHub remotes, and the detached Odysseus worktree match;
+the primary checkout must be fast-forwarded only after its active Herwig and
+campaign-runner processes finish. Its untracked STAR archive remains unchanged
+with SHA-256
+`9917945085736df4f086e2901fde7dac15d9e65f348741450f0f2d4e04fa67fc`.
