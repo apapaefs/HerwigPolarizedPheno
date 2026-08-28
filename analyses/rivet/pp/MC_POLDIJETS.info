@@ -1,0 +1,27 @@
+Name: MC_POLDIJETS
+Summary: Loose polarized dijet observables for parton-shower spin comparisons at 510 GeV
+Status: UNVALIDATED
+Reentrant: true
+Authors:
+  - Andreas Papaefstathiou <apapaefs@kennesaw.edu>
+References:
+RunInfo: Requires independent PP, PM, MP, and MM polarized pp samples.
+NumEvents: 100000
+NeedsCrossSection: yes
+Beams: [p+, p+]
+Energies: [510]
+Options:
+ - LEVEL=HARDPARTON,HADRON
+ - R=#
+ - PTJ1MIN=#
+ - PTJ2MIN=#
+ - PTJ3MIN=#
+ - ETAMAX=#
+Description: >
+  An MC_JETS-inspired analysis for comparing spin-correlated and
+  spin-averaged parton showers with the polarized hard process unchanged.
+  The default hard-shower-parton selection uses anti-kT R=0.5,
+  pT1>5 GeV, pT2>4 GeV, and |eta|<1.5, without topology, Delta-phi, or
+  Delta-eta cuts. The campaign postprocessor constructs sigma_UU,
+  Delta sigma_LL, A_LL, and single-spin/parity closure observables from
+  independent PP, PM, MP, and MM samples.

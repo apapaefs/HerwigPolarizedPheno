@@ -1,7 +1,7 @@
 # Herwig Polarized Phenomenology
 
 This repository contains the experimental-data phenomenology layer built on
-Herwig Polarized: eighteen Rivet analyses, the registry-driven campaign runner,
+Herwig Polarized: nineteen Rivet analyses, the registry-driven campaign runner,
 checksum-pinned reference inputs, postprocessing and plotting code, focused
 tests, and the JHEP manuscript *Phenomenological Investigations of Polarized
 Collisions in Herwig 7*.
@@ -12,8 +12,8 @@ ordinary YODA/plot products.
 
 ## Repository layout
 
-- `analyses/rivet/{dis,pp}/`: the eighteen data-linked Rivet analyses and their
-  vendored reference YODA files;
+- `analyses/rivet/{dis,pp}/`: eighteen data-linked Rivet analyses plus the
+  internal `MC_POLDIJETS` shower-spin measurement and their metadata;
 - `cards/`, `config/`, and `data/`: Herwig cards, measurement registries, raw
   provenance inputs, normalized snapshots, and checksums;
 - `scripts/run_phenomenology_campaign.py`: primary campaign entry point;
@@ -69,6 +69,10 @@ PHENIX prompt-photon comparison. See
 [`docs/phenomenology-campaign.md`](docs/phenomenology-campaign.md)
 for profiles, physics families, PDF replicas, scale points, sharding, resume,
 and recovery.
+
+The loose 510 GeV `MC_POLDIJETS` spin-on/spin-off control, its cross-section
+and asymmetry definitions, and ready-to-run commands are documented in
+[`docs/mc-poldijets-workflow.md`](docs/mc-poldijets-workflow.md).
 
 The three COMPASS SIDIS reference-data, estimator, and campaign contracts are
 documented in

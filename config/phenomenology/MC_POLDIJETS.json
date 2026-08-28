@@ -1,0 +1,130 @@
+{
+  "schema_version": 4,
+  "id": "MC_POLDIJETS",
+  "title": "Loose polarized dijets at 510 GeV for shower-spin comparisons",
+  "process_kind": "polarized_pp_jets",
+  "analysis": {
+    "name": "MC_POLDIJETS",
+    "source": "analyses/rivet/pp/MC_POLDIJETS.cc",
+    "info": "analyses/rivet/pp/MC_POLDIJETS.info",
+    "plot": "analyses/rivet/pp/MC_POLDIJETS.plot",
+    "plugin": "RivetMC_POLDIJETS.so",
+    "support_files": ["analyses/rivet/pp/STARPolarizedJets.hh"]
+  },
+  "reference": {
+    "kind": "internal_observable_definition",
+    "snapshot": "data/phenomenology/MC_POLDIJETS/analysis-definition.json"
+  },
+  "cards": {
+    "directory": "cards/phenomenology/MC_POLDIJETS",
+    "common": "MC_POLDIJETS-Common.in",
+    "stem_pattern": "MC_POLDIJETS_{channel}_{helicity}-LO",
+    "polarized_pdf_object": "/Herwig/Partons/MCPOLDIJETSPolarizedPDF",
+    "helicities": {
+      "PP": [1, 1],
+      "PM": [1, -1],
+      "MP": [-1, 1],
+      "MM": [-1, -1]
+    },
+    "contributions": {"LO": "Born"}
+  },
+  "channels": {
+    "dijets": {
+      "label": "loose inclusive dijets and shower-sensitive radiation observables",
+      "raw_objects": {
+        "dijet_rate": "dijet_rate_Yield",
+        "jet1_pt": "jet1_pt_Yield",
+        "jet2_pt": "jet2_pt_Yield",
+        "jet3_pt": "jet3_pt_Yield",
+        "pt_average": "pt_average_Yield",
+        "pt_ratio_21": "pt_ratio_21_Yield",
+        "pt_ratio_31": "pt_ratio_31_Yield",
+        "dijet_mass": "dijet_mass_Yield",
+        "dijet_pt": "dijet_pt_Yield",
+        "dijet_ht": "dijet_ht_Yield",
+        "delta_phi": "delta_phi_Yield",
+        "abs_delta_eta": "abs_delta_eta_Yield",
+        "delta_r": "delta_r_Yield",
+        "eta_boost": "eta_boost_Yield",
+        "cos2_delta_phi": "cos2_delta_phi_Yield"
+      },
+      "scale_object": "/Herwig/MatrixElements/MEQCD2to2",
+      "scale_interpretation": "renormalization and factorization"
+    }
+  },
+  "families": {
+    "nominal": {
+      "label": "Polarized LO+PS (shower spin on)",
+      "helicities": ["PP", "PM", "MP", "MM"],
+      "mpi": "off",
+      "observable_level": "hard_parton",
+      "analysis_options": {
+        "LEVEL": "HARDPARTON",
+        "R": 0.5,
+        "PTJ1MIN": 5.0,
+        "PTJ2MIN": 4.0,
+        "PTJ3MIN": 2.0,
+        "ETAMAX": 1.5
+      },
+      "shower_spin_correlations": "on",
+      "plot_options": {"LineColor": "#CC3311"}
+    },
+    "shower_spin_off": {
+      "label": "Polarized LO+PS (shower spin off)",
+      "helicities": ["PP", "PM", "MP", "MM"],
+      "mpi": "off",
+      "observable_level": "hard_parton",
+      "analysis_options": {
+        "LEVEL": "HARDPARTON",
+        "R": 0.5,
+        "PTJ1MIN": 5.0,
+        "PTJ2MIN": 4.0,
+        "PTJ3MIN": 2.0,
+        "ETAMAX": 1.5
+      },
+      "shower_spin_correlations": "off",
+      "plot_options": {"LineColor": "#0077BB"},
+      "diagnostic_only": true
+    }
+  },
+  "campaign": {
+    "default_jobs": 8,
+    "default_shards": 1,
+    "default_seed_base": 5107000,
+    "default_events": {"LO": 1000000},
+    "smoke_events": 100
+  },
+  "generator_cuts": {
+    "jet_kt_min_gev": 3.0,
+    "jet_kt_min_scan_gev": [3.0, 4.0, 5.0],
+    "production_gate": "The 3 GeV point is the loose default; retain 4 and 5 GeV as generator-cut stability controls"
+  },
+  "postprocessor": "mc_poldijets",
+  "scales": {
+    "central": 1.0,
+    "points": [0.5, 1.0, 2.0],
+    "mapping": "MEQCD2to2 ScalePreFactor = (mu/mu0)^2"
+  },
+  "pdf_ensembles": {
+    "polarized": {"set": "NNPDFpol20_nlo_as_01180", "central_member": 0, "replica_members": [1, 100]},
+    "unpolarized": {"set": "NNPDF40_nlo_pch_as_01180", "central_member": 0, "replica_members": [1, 100]},
+    "combination": "independent replica variances added in quadrature"
+  },
+  "spin_density_policy": {
+    "name": "radial_bloch_ball_projection",
+    "status": "interim_star_production",
+    "herwigpol_source_commit": "ad0c5486ad137e0e34c6274959c1fbf8323c5937",
+    "strict_negative_isr_guard": true,
+    "event_or_branching_veto": false
+  },
+  "physics": {
+    "beams": "longitudinally polarized pp",
+    "sqrt_s_gev": 510.0,
+    "hard_process_accuracy": "LO",
+    "observable_level": "terminal hard-scatter shower partons before hadronization",
+    "event_simulation": "QCD shower with the selected spin treatment; hadronization and remnants run but MPI is off",
+    "polarization_convention": "unit-helicity PP, PM, MP, and MM theory cross sections, matching the STAR 510 GeV campaign",
+    "comparison": "the shower-spin-off family changes only ShowerHandler SpinCorrelations and is drawn in blue",
+    "pdf_accuracy": "NLO PDF inputs do not promote the hard prediction to NLO accuracy"
+  }
+}

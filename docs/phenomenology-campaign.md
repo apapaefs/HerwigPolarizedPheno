@@ -24,6 +24,7 @@ comparisons are:
 - STAR $W^\pm A_L$, $W^\pm A_{LL}$, and integrated
   $Z/\gamma^* A_L$;
 - STAR inclusive-jet and dijet $A_{LL}$ at 200 and 510 GeV;
+- the internal 510 GeV `MC_POLDIJETS` loose-dijet shower-spin control;
 - PHENIX inclusive and isolated prompt-photon cross sections and isolated
   $A_{LL}$.
 
@@ -62,6 +63,9 @@ For STAR jets, the optional `hadron_mpi_on` family is labelled
 the unpolarized hard-parton closure check.  These samples are diagnostics and
 are excluded from the default goodness-of-fit calculation.  All RHIC hard
 predictions remain explicitly labelled LO even though NLO PDF inputs are used.
+`MC_POLDIJETS` is an internal measurement without experimental points; its
+nominal and blue `shower_spin_off` families are documented in
+[`mc-poldijets-workflow.md`](mc-poldijets-workflow.md).
 
 ## Typical commands
 

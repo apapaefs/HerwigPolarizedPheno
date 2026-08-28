@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "measurement": "MC_POLDIJETS",
+  "kind": "internal_observable_definition",
+  "title": "Loose polarized dijet shower-spin control at 510 GeV",
+  "sqrt_s_gev": 510.0,
+  "jet_definition": {
+    "algorithm": "anti-kT",
+    "radius": 0.5,
+    "default_level": "terminal hard-scatter shower partons"
+  },
+  "selection": {
+    "leading_jet_pt_min_gev": 5.0,
+    "subleading_jet_pt_min_gev": 4.0,
+    "third_jet_pt_min_gev": 2.0,
+    "jet_abs_eta_max": 1.5,
+    "topology_cut": null,
+    "delta_phi_cut": null,
+    "delta_eta_cut": null
+  },
+  "generator_cut": {
+    "jet_kt_min_gev": 3.0,
+    "audited_scan_gev": [3.0, 4.0, 5.0]
+  },
+  "observables": {
+    "dijet_rate": {
+      "raw_object": "dijet_rate_Yield",
+      "edges": [0.0, 1.0],
+      "description": "Selected loose-dijet cross section"
+    },
+    "jet1_pt": {
+      "raw_object": "jet1_pt_Yield",
+      "edges": [5.0, 6.0, 7.0, 8.0, 10.0, 12.0, 15.0, 20.0, 30.0, 45.0, 70.0, 110.0, 170.0, 255.0],
+      "description": "Leading-jet transverse momentum"
+    },
+    "jet2_pt": {
+      "raw_object": "jet2_pt_Yield",
+      "edges": [4.0, 5.0, 6.0, 7.0, 8.0, 10.0, 12.0, 15.0, 20.0, 30.0, 45.0, 70.0, 110.0, 170.0],
+      "description": "Subleading-jet transverse momentum"
+    },
+    "jet3_pt": {
+      "raw_object": "jet3_pt_Yield",
+      "edges": [2.0, 3.0, 4.0, 5.0, 6.0, 8.0, 10.0, 15.0, 20.0, 30.0, 50.0, 80.0],
+      "description": "Third-jet transverse momentum when pT3 exceeds 2 GeV"
+    },
+    "pt_average": {
+      "raw_object": "pt_average_Yield",
+      "edges": [4.5, 5.5, 6.5, 8.0, 10.0, 12.0, 15.0, 20.0, 30.0, 45.0, 70.0, 110.0, 170.0, 255.0],
+      "description": "Average transverse momentum of the two leading jets"
+    },
+    "pt_ratio_21": {
+      "raw_object": "pt_ratio_21_Yield",
+      "edges": [0.0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1.0],
+      "description": "Subleading-to-leading jet transverse-momentum ratio"
+    },
+    "pt_ratio_31": {
+      "raw_object": "pt_ratio_31_Yield",
+      "edges": [0.0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1.0],
+      "description": "Third-to-leading jet transverse-momentum ratio"
+    },
+    "dijet_mass": {
+      "raw_object": "dijet_mass_Yield",
+      "edges": [8.0, 10.0, 12.0, 15.0, 20.0, 25.0, 30.0, 40.0, 55.0, 75.0, 100.0, 140.0, 200.0, 300.0, 500.0],
+      "description": "Invariant mass of the two leading jets"
+    },
+    "dijet_pt": {
+      "raw_object": "dijet_pt_Yield",
+      "edges": [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 7.0, 10.0, 15.0, 20.0, 30.0, 50.0, 80.0, 130.0],
+      "description": "Transverse momentum of the leading dijet system"
+    },
+    "dijet_ht": {
+      "raw_object": "dijet_ht_Yield",
+      "edges": [9.0, 11.0, 13.0, 16.0, 20.0, 25.0, 32.0, 45.0, 65.0, 90.0, 130.0, 190.0, 280.0, 500.0],
+      "description": "Scalar transverse-momentum sum of the two leading jets"
+    },
+    "delta_phi": {
+      "raw_object": "delta_phi_Yield",
+      "edges": [0.0, 0.17453292519943295, 0.3490658503988659, 0.5235987755982988, 0.6981317007977318, 0.8726646259971648, 1.0471975511965976, 1.2217304763960306, 1.3962634015954636, 1.5707963267948966, 1.7453292519943295, 1.9198621771937625, 2.0943951023931953, 2.2689280275926285, 2.443460952792061, 2.6179938779914944, 2.792526803190927, 2.9670597283903604, 3.141592653589793],
+      "description": "Azimuthal separation of the two leading jets"
+    },
+    "abs_delta_eta": {
+      "raw_object": "abs_delta_eta_Yield",
+      "edges": [0.0, 0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.25, 2.5, 2.75, 3.0],
+      "description": "Absolute pseudorapidity separation of the two leading jets"
+    },
+    "delta_r": {
+      "raw_object": "delta_r_Yield",
+      "edges": [0.0, 0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.25, 2.5, 2.75, 3.0, 3.25, 3.5, 3.75, 4.0, 4.25, 4.5],
+      "description": "Delta-R separation of the two leading jets"
+    },
+    "eta_boost": {
+      "raw_object": "eta_boost_Yield",
+      "edges": [-1.5, -1.25, -1.0, -0.75, -0.5, -0.25, 0.0, 0.25, 0.5, 0.75, 1.0, 1.25, 1.5],
+      "description": "Mean pseudorapidity of the two leading jets"
+    },
+    "cos2_delta_phi": {
+      "raw_object": "cos2_delta_phi_Yield",
+      "edges": [-1.0, -0.9, -0.8, -0.7, -0.6, -0.5, -0.4, -0.3, -0.2, -0.1, 0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
+      "description": "Cosine of twice the leading-dijet azimuthal separation"
+    }
+  }
+}

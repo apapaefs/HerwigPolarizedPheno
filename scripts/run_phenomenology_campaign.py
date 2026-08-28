@@ -63,6 +63,76 @@ def _load_json(path: Path) -> dict[str, Any]:
     return value
 
 
+def _measurement_snapshot(measurement: Mapping[str, Any]) -> dict[str, Any]:
+    """Load either external reference data or an internal MC definition.
+
+    Internal measurements deliberately have no fabricated data points or
+    reference YODA.  Their checked snapshot instead fixes the selection,
+    raw-object names, and binnings that define the observable contract.
+    """
+
+    reference = measurement["reference"]
+    if reference.get("kind") != "internal_observable_definition":
+        return validate_vendored(str(measurement["id"]))
+
+    snapshot_path = DISPOL_ROOT / str(reference["snapshot"])
+    snapshot = _load_json(snapshot_path)
+    if snapshot.get("kind") != "internal_observable_definition":
+        raise CampaignError(
+            f"{snapshot_path} is not an internal observable definition"
+        )
+    if snapshot.get("measurement") != measurement["id"]:
+        raise CampaignError(
+            f"{snapshot_path} belongs to {snapshot.get('measurement')!r}, "
+            f"not {measurement['id']!r}"
+        )
+    definitions = snapshot.get("observables")
+    if not isinstance(definitions, dict) or not definitions:
+        raise CampaignError(f"{snapshot_path} defines no observables")
+
+    configured: dict[str, str] = {}
+    for channel_id, channel in measurement["channels"].items():
+        raw_objects = channel.get("raw_objects")
+        if not isinstance(raw_objects, dict) or not raw_objects:
+            raise CampaignError(
+                f"{measurement['id']}/{channel_id} defines no raw objects"
+            )
+        for observable, raw_object in raw_objects.items():
+            if observable in configured:
+                raise CampaignError(
+                    f"{measurement['id']} repeats internal observable "
+                    f"{observable!r} across channels"
+                )
+            configured[str(observable)] = str(raw_object)
+    if set(definitions) != set(configured):
+        raise CampaignError(
+            f"{snapshot_path} observable keys differ from the campaign descriptor"
+        )
+    for observable, raw_object in configured.items():
+        definition = definitions[observable]
+        if not isinstance(definition, dict):
+            raise CampaignError(
+                f"{snapshot_path} observable {observable!r} must be an object"
+            )
+        if definition.get("raw_object") != raw_object:
+            raise CampaignError(
+                f"{snapshot_path} raw object for {observable!r} differs from "
+                "the campaign descriptor"
+            )
+        edges = definition.get("edges")
+        if (
+            not isinstance(edges, list)
+            or len(edges) < 2
+            or any(not isinstance(value, (int, float)) for value in edges)
+            or any(not math.isfinite(float(value)) for value in edges)
+            or any(float(high) <= float(low) for low, high in zip(edges, edges[1:]))
+        ):
+            raise CampaignError(
+                f"{snapshot_path} has invalid bin edges for {observable!r}"
+            )
+    return snapshot
+
+
 def _validate_descriptor(measurement: Mapping[str, Any], path: Path) -> None:
     required = {"id", "schema_version", "process_kind", "analysis", "reference",
                 "cards", "channels", "families", "campaign", "postprocessor",
@@ -342,7 +412,8 @@ def _resolved_options(args: argparse.Namespace, measurement: Mapping[str, Any]) 
         }
         if jet_kt_min_gev not in allowed_cuts:
             raise CampaignError(
-                "STAR jet generator cuts must be selected from 3, 4, and 5 GeV"
+                "Polarized-pp jet generator cuts must be selected from "
+                "3, 4, and 5 GeV"
             )
     else:
         if requested_jet_cut is not None:
@@ -740,10 +811,16 @@ def prepare_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> Path
         raise CampaignError("An incompatible manifest exists; use a new immutable tag")
     for directory in ("build", "cards", "runs", "yoda", "logs", "work", "postprocess", "plots"):
         (campaign_dir/directory).mkdir(parents=True, exist_ok=True)
-    snapshot = validate_vendored(str(measurement["id"]))
-    reference_yoda = DISPOL_ROOT/measurement["analysis"]["reference_yoda"]
-    if not reference_yoda.is_file() or reference_yoda.stat().st_size == 0:
-        write_reference_yoda(str(measurement["id"]), snapshot)
+    snapshot = _measurement_snapshot(measurement)
+    if measurement["reference"].get("kind") != "internal_observable_definition":
+        reference_yoda_name = measurement["analysis"].get("reference_yoda")
+        if not reference_yoda_name:
+            raise CampaignError(
+                f"{measurement['id']} external measurement has no reference YODA"
+            )
+        reference_yoda = DISPOL_ROOT / str(reference_yoda_name)
+        if not reference_yoda.is_file() or reference_yoda.stat().st_size == 0:
+            write_reference_yoda(str(measurement["id"]), snapshot)
     common_source = DISPOL_ROOT/measurement["cards"]["directory"]/measurement["cards"]["common"]
     shutil.copy2(common_source, campaign_dir/"cards"/common_source.name)
     logical_cards: dict[str, Mapping[str, Any]] = {}
@@ -1134,6 +1211,9 @@ DENOMINATOR = {"PP": 1.0, "PM": 1.0, "MP": 1.0, "MM": 1.0}
 AL_A_NUMERATOR = {"PP": 1.0, "PM": 1.0, "MP": -1.0, "MM": -1.0}
 AL_B_NUMERATOR = {"PP": 1.0, "PM": -1.0, "MP": 1.0, "MM": -1.0}
 ALL_NUMERATOR = {"PP": 1.0, "PM": -1.0, "MP": -1.0, "MM": 1.0}
+DELTA_SIGMA_LL_COEFFICIENTS = {
+    "PP": 0.25, "PM": -0.25, "MP": -0.25, "MM": 0.25,
+}
 
 
 def _fold_star_all(samples: Mapping[str, experimental.BinSeries]) -> Mapping[str, experimental.BinSeries]:
@@ -1281,6 +1361,77 @@ def _star_jet_prediction(
     return output
 
 
+def _mc_poldijets_prediction(
+    samples_by_object: Mapping[str, Mapping[str, experimental.BinSeries]]
+) -> dict[str, dict[str, Any]]:
+    """Construct cross sections and spin observables for loose MC dijets."""
+
+    output: dict[str, dict[str, Any]] = {}
+    for observable, samples in samples_by_object.items():
+        edges = list(next(iter(samples.values())).edges)
+        sigma_uu = experimental.linear_combine_series(
+            samples, {label: 0.25 for label in DENOMINATOR}
+        )
+        delta_sigma_ll = experimental.linear_combine_series(
+            samples, DELTA_SIGMA_LL_COEFFICIENTS
+        )
+        output[f"SigmaUU_{observable}"] = {
+            "edges": edges,
+            "values": list(sigma_uu.values),
+            "errors": [
+                math.sqrt(max(0.0, variance))
+                for variance in sigma_uu.variances
+            ],
+        }
+        output[f"DeltaSigmaLL_{observable}"] = {
+            "edges": edges,
+            "values": list(delta_sigma_ll.values),
+            "errors": [
+                math.sqrt(max(0.0, variance))
+                for variance in delta_sigma_ll.variances
+            ],
+        }
+        values, errors = _ratio_arrays(
+            samples, ALL_NUMERATOR, DENOMINATOR
+        )
+        output[f"ALL_{observable}"] = {
+            "edges": edges, "values": values, "errors": errors,
+        }
+
+        for label, numerator in (
+            ("SingleSpinA", AL_A_NUMERATOR),
+            ("SingleSpinB", AL_B_NUMERATOR),
+        ):
+            closure_values, closure_errors = _ratio_arrays(
+                samples, numerator, DENOMINATOR
+            )
+            output[f"{label}_{observable}"] = {
+                "edges": edges,
+                "values": closure_values,
+                "errors": closure_errors,
+            }
+        for first, second, label in (
+            ("PP", "MM", "Parity_PP_MM"),
+            ("PM", "MP", "Parity_PM_MP"),
+        ):
+            closure_values, closure_errors = [], []
+            for index in range(len(edges) - 1):
+                value, error = experimental.parity_residual(
+                    samples[first].values[index],
+                    samples[first].variances[index],
+                    samples[second].values[index],
+                    samples[second].variances[index],
+                )
+                closure_values.append(value)
+                closure_errors.append(error)
+            output[f"{label}_{observable}"] = {
+                "edges": edges,
+                "values": closure_values,
+                "errors": closure_errors,
+            }
+    return output
+
+
 def _apply_star_display_binning(
     predictions: dict[str, dict[str, Any]],
     snapshot: Mapping[str, Any],
@@ -1355,6 +1506,13 @@ def _reference_path(measurement: Mapping[str, Any], observable: str,
     if measurement["postprocessor"] == "star_jet_all":
         dataset = snapshot["datasets"].get(observable)
         return str(dataset["rivet_path"]) if dataset else None
+    if measurement["postprocessor"] == "mc_poldijets":
+        for prefix in ("ALL_", "DeltaSigmaLL_", "SigmaUU_"):
+            if observable.startswith(prefix):
+                raw_observable = observable[len(prefix):]
+                if raw_observable in snapshot.get("observables", {}):
+                    return f"/{measurement['analysis']['name']}/{observable}"
+        return None
     if measurement["postprocessor"] == "hermes_sidis":
         dataset = snapshot.get("datasets", {}).get(observable)
         if dataset and dataset.get("observable") == "A_parallel":
@@ -1399,7 +1557,7 @@ def _replica_sigma(predictions: Mapping[tuple[Any, ...], Mapping[str, Any]],
 def aggregate_uncertainties(predictions: Mapping[tuple[Any, ...], Mapping[str, Any]],
                             measurement: Mapping[str, Any]) -> dict[str, Any]:
     bands: dict[str, Any] = {}
-    snapshot = validate_vendored(str(measurement["id"]))
+    snapshot = _measurement_snapshot(measurement)
     for channel in measurement["channels"]:
         nominal_mpi = measurement["families"]["nominal"]["mpi"]
         central_key = ("nominal", channel, 0, 0, 1.0, nominal_mpi)
@@ -2321,7 +2479,7 @@ def postprocess_compass_sidis(
         )
         return prediction_path
 
-    snapshot = validate_vendored(str(measurement["id"]))
+    snapshot = _measurement_snapshot(measurement)
     predictions = _compass_sidis_prediction_sets(
         groups, campaign_dir, measurement, snapshot
     )
@@ -2534,7 +2692,7 @@ def postprocess_sidis(
         )
         return prediction_path
 
-    snapshot = validate_vendored(str(measurement["id"]))
+    snapshot = _measurement_snapshot(measurement)
     include_diagnostics = bool(
         getattr(args, "include_diagnostics", False)
     )
@@ -2722,7 +2880,7 @@ def postprocess_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> 
                           "output": str(campaign_dir/"postprocess"/"prediction.yoda")},
                          indent=2))
         return campaign_dir/"postprocess"/"prediction.yoda"
-    snapshot = validate_vendored(str(measurement["id"]))
+    snapshot = _measurement_snapshot(measurement)
     analysis = str(measurement["analysis"]["name"])
     predictions: dict[tuple[Any, ...], dict[str, Any]] = {}
     raw_samples: dict[tuple[Any, ...], dict[str, Mapping[str, experimental.BinSeries]]] = {}
@@ -2761,6 +2919,8 @@ def postprocess_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> 
         elif measurement["postprocessor"] == "star_jet_all":
             predictions[key] = _star_jet_prediction(objects)
             _apply_star_display_binning(predictions[key], snapshot)
+        elif measurement["postprocessor"] == "mc_poldijets":
+            predictions[key] = _mc_poldijets_prediction(objects)
         else:
             raise CampaignError(f"Unknown postprocessor {measurement['postprocessor']}")
 
@@ -3124,7 +3284,7 @@ def plot_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> Path:
     if not include_diagnostics:
         command.extend(["-M", r".*/DIAGNOSTICS/.*"])
         if measurement["postprocessor"] == "star_jet_all":
-            snapshot = validate_vendored(str(measurement["id"]))
+            snapshot = _measurement_snapshot(measurement)
             for dataset in snapshot["datasets"].values():
                 if dataset.get("alternate_projection"):
                     command.extend(
@@ -3161,7 +3321,7 @@ def plot_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> Path:
         raise CampaignError(f"rivet-mkhtml generated no plot scripts below {output}")
     script_log = campaign_dir/"logs"/"rivet-plot-scripts.log"
     rendered_scripts: list[Path] = []
-    snapshot = validate_vendored(str(measurement["id"]))
+    snapshot = _measurement_snapshot(measurement)
     summary_path = campaign_dir/"postprocess"/"summary.json"
     summary = _load_json(summary_path) if summary_path.is_file() else {}
     external_nominal_summary: Path | None = None
@@ -3327,8 +3487,8 @@ def _add_campaign_options(parser: argparse.ArgumentParser) -> None:
         "--jet-kt-min-gev",
         type=float,
         help=(
-            "STAR jet generator cut in GeV; only the pinned 3, 4, and 5 GeV "
-            "scan points are accepted"
+            "polarized-pp jet generator cut in GeV; only the pinned 3, 4, "
+            "and 5 GeV scan points are accepted"
         ),
     )
     parser.add_argument("--smoke", action="store_true")
@@ -3438,11 +3598,22 @@ def main(argv: Sequence[str] | None = None) -> int:
             if getattr(args, "families", None) is None:
                 args.families = "all"
         if args.command == "fetch-data":
-            outputs = fetch_and_validate(
-                args.measurement,
-                source_file=getattr(args, "source_file", None),
-            )
-            print(f"Checksum- and schema-validated {len(outputs)} source(s); refreshed reference YODA")
+            if measurement["reference"].get("kind") == "internal_observable_definition":
+                snapshot = _measurement_snapshot(measurement)
+                print(
+                    f"Validated internal definition with "
+                    f"{len(snapshot['observables'])} observables; "
+                    "no external data or reference YODA is required"
+                )
+            else:
+                outputs = fetch_and_validate(
+                    args.measurement,
+                    source_file=getattr(args, "source_file", None),
+                )
+                print(
+                    f"Checksum- and schema-validated {len(outputs)} source(s); "
+                    "refreshed reference YODA"
+                )
         elif args.command == "prepare":
             prepare_pp(args, measurement)
         elif args.command == "campaign":
