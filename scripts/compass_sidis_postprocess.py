@@ -39,36 +39,44 @@ def _check_series(
     return first
 
 
-def a1_deuteron(
+def a1_target_combination(
     ordinary: Mapping[str, experimental.BinSeries],
     inverse_depolarization: Mapping[str, experimental.BinSeries],
     covariance_proxy: Mapping[str, experimental.BinSeries],
+    target_weights: Mapping[str, float],
+    longitudinal_target_scale: float,
 ) -> dict[str, Any]:
-    """Form the COMPASS 2009 deuteron ``A1`` estimator.
+    """Form ``A1`` for an explicit target-component combination.
 
-    The ordinary yield is the unpolarized denominator.  The longitudinal
-    helicity difference is formed from the event-wise inverse-depolarization
-    yield.  Proton and neutron each carry the isoscalar factor one half, every
-    helicity carries the averaging factor one quarter, and the longitudinal
-    numerator alone carries the deuteron factor 0.925.
+    The ordinary yield is the denominator and the longitudinal difference is
+    formed from event-wise inverse-depolarization yields.  Each physical
+    helicity receives the averaging factor one quarter.  Target weights and
+    the longitudinal scale are descriptor data, making proton and isoscalar
+    analyses use exactly the same tested arithmetic.
     """
-
+    if not target_weights or not math.isfinite(float(longitudinal_target_scale)):
+        raise experimental.CampaignError("SIDIS A1 target weights/scale are invalid")
+    if any(not math.isfinite(float(value)) for value in target_weights.values()):
+        raise experimental.CampaignError("SIDIS A1 target weights must be finite")
     labels = {
         f"{target}:{helicity}"
-        for target in ("P", "N")
+        for target in target_weights
         for helicity in HELICITIES
     }
     first = _check_series(
         (ordinary, inverse_depolarization, covariance_proxy), labels
     )
-    denominator_coefficients = {label: 0.125 for label in labels}
-    numerator_coefficients = {
-        label: 0.125
-        * DEUTERON_POLARIZATION_FACTOR
-        * LONGITUDINAL_SIGN[label.split(":", 1)[1]]
-        for label in labels
+    denominator_coefficients = {
+        f"{target}:{helicity}": .25 * float(weight)
+        for target, weight in target_weights.items()
+        for helicity in HELICITIES
     }
-
+    numerator_coefficients = {
+        f"{target}:{helicity}": .25 * float(weight)
+        * float(longitudinal_target_scale) * LONGITUDINAL_SIGN[helicity]
+        for target, weight in target_weights.items()
+        for helicity in HELICITIES
+    }
     values: list[float | None] = []
     errors: list[float | None] = []
     numerator_values: list[float] = []
@@ -131,13 +139,26 @@ def a1_deuteron(
     }
 
 
-def multiplicity_isoscalar(
+def a1_deuteron(
+    ordinary: Mapping[str, experimental.BinSeries],
+    inverse_depolarization: Mapping[str, experimental.BinSeries],
+    covariance_proxy: Mapping[str, experimental.BinSeries],
+) -> dict[str, Any]:
+    """Backward-compatible schema-5 COMPASS 2009 estimator."""
+    return a1_target_combination(
+        ordinary, inverse_depolarization, covariance_proxy,
+        {"P": .5, "N": .5}, DEUTERON_POLARIZATION_FACTOR,
+    )
+
+
+def multiplicity_target_combination(
     numerators: Mapping[str, experimental.BinSeries],
     denominators: Mapping[str, experimental.BinSeries],
     covariance_proxies: Mapping[str, experimental.BinSeries],
-    z_widths: Sequence[float],
+    target_weights: Mapping[str, float],
+    density_widths: Sequence[float],
 ) -> dict[str, Any]:
-    """Form ``dM/dz`` after the proton/neutron isoscalar sum.
+    """Form a density after an explicit target-component sum.
 
     Non-finite or non-positive inclusive-DIS denominators are represented by
     masked bins.  The same-event numerator--denominator covariance is retained
@@ -145,14 +166,14 @@ def multiplicity_isoscalar(
     width in ``z``.
     """
 
-    labels = {"P", "N"}
+    labels = set(target_weights)
     first = _check_series((numerators, denominators, covariance_proxies), labels)
-    if len(z_widths) != len(first.values) or any(
+    if not labels or len(density_widths) != len(first.values) or any(
         not math.isfinite(float(width)) or float(width) <= 0.0
-        for width in z_widths
+        for width in density_widths
     ):
         raise experimental.CampaignError(
-            "COMPASS multiplicity z widths do not match the flattened cells"
+            "SIDIS density widths do not match the flattened cells"
         )
 
     values: list[float | None] = []
@@ -160,25 +181,17 @@ def multiplicity_isoscalar(
     numerator_values: list[float] = []
     denominator_values: list[float] = []
     covariances: list[float] = []
-    for index, width in enumerate(z_widths):
-        numerator = 0.5 * (
-            numerators["P"].values[index] + numerators["N"].values[index]
-        )
-        numerator_variance = 0.25 * (
-            numerators["P"].variances[index]
-            + numerators["N"].variances[index]
-        )
-        denominator = 0.5 * (
-            denominators["P"].values[index] + denominators["N"].values[index]
-        )
-        denominator_variance = 0.25 * (
-            denominators["P"].variances[index]
-            + denominators["N"].variances[index]
-        )
-        covariance = 0.25 * (
-            covariance_proxies["P"].variances[index]
-            + covariance_proxies["N"].variances[index]
-        )
+    for index, width in enumerate(density_widths):
+        numerator = sum(float(weight) * numerators[target].values[index]
+                        for target, weight in target_weights.items())
+        numerator_variance = sum(float(weight)**2 * numerators[target].variances[index]
+                                 for target, weight in target_weights.items())
+        denominator = sum(float(weight) * denominators[target].values[index]
+                          for target, weight in target_weights.items())
+        denominator_variance = sum(float(weight)**2 * denominators[target].variances[index]
+                                   for target, weight in target_weights.items())
+        covariance = sum(float(weight)**2 * covariance_proxies[target].variances[index]
+                         for target, weight in target_weights.items())
         if denominator <= 0.0:
             value, error = None, None
         else:
@@ -206,6 +219,19 @@ def multiplicity_isoscalar(
         "isoscalar_denominator": denominator_values,
         "numerator_denominator_covariance": covariances,
     }
+
+
+def multiplicity_isoscalar(
+    numerators: Mapping[str, experimental.BinSeries],
+    denominators: Mapping[str, experimental.BinSeries],
+    covariance_proxies: Mapping[str, experimental.BinSeries],
+    z_widths: Sequence[float],
+) -> dict[str, Any]:
+    """Backward-compatible schema-5 COMPASS 2017 estimator."""
+    return multiplicity_target_combination(
+        numerators, denominators, covariance_proxies,
+        {"P": .5, "N": .5}, z_widths,
+    )
 
 
 def _covariance_result(
@@ -343,7 +369,10 @@ def a1_goodness_of_fit(
         residual.append(float(theory) - float(point["a1"]))
         mc_variance.append(float(error) ** 2)
         diagonal_systematic.append(float(point["systematic_uncorrelated"]) ** 2)
-        correlated_systematic.append(float(point["systematic_correlated_8pct"]))
+        correlated_systematic.append(float(point.get(
+            "systematic_correlated_8pct",
+            point.get("systematic_correlated_6pct", 0.0),
+        )))
     if not retained_indices:
         return {"points": 0, "status": "no finite theory bins"}
 
@@ -357,7 +386,7 @@ def a1_goodness_of_fit(
         covariance,
         retained_labels,
         "published per-x 4x4 statistical blocks plus diagonal residual "
-        "systematics and MC statistics plus one shared 8% multiplicative nuisance",
+        "systematics and MC statistics plus one shared multiplicative nuisance",
     )
 
 
@@ -396,3 +425,88 @@ def multiplicity_goodness_of_fit(
         "diagonal published statistical errors, diagonal 0.6 systematic "
         "component, MC statistics, and one record-wide 0.8 systematic nuisance",
     )
+
+
+def diagonal_multiplicity_goodness_of_fit(
+    predictions: Mapping[str, Mapping[str, Any]],
+    snapshot: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Evaluate multiplicities for records with diagonal released errors."""
+    results: dict[str, Any] = {}
+    for dataset_id, dataset in snapshot["datasets"].items():
+        prediction = predictions[dataset_id]
+        residual: list[float] = []
+        variance: list[float] = []
+        retained: list[str] = []
+        for index, point in enumerate(dataset["points"]):
+            theory, error = prediction["values"][index], prediction["errors"][index]
+            if theory is None or error is None:
+                continue
+            residual.append(float(theory) - float(point["value"]))
+            variance.append(float(point["stat"])**2 + float(point["systematic"])**2
+                            + float(error)**2)
+            retained.append(f"{dataset_id}:cell{index + 1:04d}")
+        if residual:
+            if any(not math.isfinite(value) or value <= 0.0 for value in variance):
+                raise experimental.CampaignError(
+                    f"Non-positive diagonal variance in {dataset_id}"
+                )
+            pulls = [delta / math.sqrt(var) for delta, var in zip(residual, variance)]
+            results[dataset_id] = {
+                "points": len(retained),
+                "retained_points": retained,
+                "chi2_correlated": sum(value * value for value in pulls),
+                "covariance": (
+                    "diagonal published statistical/systematic errors plus "
+                    "MC statistics"
+                ),
+                "decorrelated_pulls": pulls,
+            }
+        else:
+            results[dataset_id] = {"points": 0, "status": "no finite theory bins"}
+    return {
+        "independent_datasets": results,
+        "policy": (
+            "datasets are reported separately because no cross-dataset "
+            "covariance was released"
+        ),
+    }
+
+
+def hermes_multiplicity_goodness_of_fit(
+    predictions: Mapping[str, Mapping[str, Any]],
+    snapshot: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Evaluate each HERMES target/species/binning covariance independently."""
+    try:
+        import numpy as np
+    except ImportError as exc:
+        raise experimental.CampaignError(
+            "NumPy is required for HERMES covariance calculations"
+        ) from exc
+    results: dict[str, Any] = {}
+    for dataset_id, dataset in snapshot["datasets"].items():
+        prediction = predictions[dataset_id]
+        indices: list[int] = []
+        residual: list[float] = []
+        retained: list[str] = []
+        diagonal: list[float] = []
+        for index, point in enumerate(dataset["points"]):
+            theory, error = prediction["values"][index], prediction["errors"][index]
+            if theory is None or error is None:
+                continue
+            indices.append(index)
+            residual.append(float(theory) - float(point["value"]))
+            retained.append(f"{dataset_id}:cell{index + 1:03d}")
+            diagonal.append(float(point["systematic"])**2 + float(error)**2)
+        if not indices:
+            results[dataset_id] = {"points": 0, "status": "no finite theory bins"}
+            continue
+        published = np.asarray(dataset["statistical_covariance"], dtype=float)
+        covariance = published[np.ix_(indices, indices)] + np.diag(diagonal)
+        results[dataset_id] = _covariance_result(
+            residual, covariance, retained,
+            "released dense statistical covariance plus point-to-point systematic and MC variances",
+        )
+    return {"independent_datasets": results,
+            "policy": "the five overlapping binnings are never combined into one chi-square"}

@@ -71,7 +71,8 @@ def _validate_descriptor(measurement: Mapping[str, Any], path: Path) -> None:
     if missing:
         raise CampaignError(f"{path} is missing: {', '.join(missing)}")
     process_kind = str(measurement["process_kind"])
-    if int(measurement["schema_version"]) not in {3, 4, 5} or process_kind not in {
+    schema_version = int(measurement["schema_version"])
+    if schema_version not in {3, 4, 5, 6} or process_kind not in {
         "polarized_pp", "polarized_pp_jets", "polarized_sidis",
         "unpolarized_sidis",
     }:
@@ -92,8 +93,47 @@ def _validate_descriptor(measurement: Mapping[str, Any], path: Path) -> None:
     if process_kind in {"polarized_sidis", "unpolarized_sidis"}:
         if contributions != {"POSNLO", "NEGNLO"}:
             raise CampaignError(f"{measurement['id']} SIDIS requires POSNLO and NEGNLO")
-        if set(measurement["cards"].get("target_components", {})) != {"P", "N"}:
-            raise CampaignError(f"{measurement['id']} SIDIS requires proton and neutron components")
+        components = set(measurement["cards"].get("target_components", {}))
+        if schema_version < 6:
+            if components != {"P", "N"}:
+                raise CampaignError(
+                    f"{measurement['id']} schema-5 SIDIS requires proton and neutron components"
+                )
+        elif not components or not components <= {"P", "N"}:
+            raise CampaignError(
+                f"{measurement['id']} schema-6 SIDIS target components must be a nonempty subset of P/N"
+            )
+        if schema_version == 6:
+            config = measurement.get("postprocess_config")
+            if not isinstance(config, dict):
+                raise CampaignError(
+                    f"{measurement['id']} schema-6 SIDIS requires postprocess_config"
+                )
+            outputs = config.get("target_outputs")
+            if not isinstance(outputs, dict) or not outputs:
+                raise CampaignError(
+                    f"{measurement['id']} target_outputs must be a nonempty object"
+                )
+            for output, weights in outputs.items():
+                if not str(output) or not isinstance(weights, dict) or not weights:
+                    raise CampaignError(
+                        f"{measurement['id']} has an invalid target output {output!r}"
+                    )
+                if not set(weights) <= components:
+                    raise CampaignError(
+                        f"{measurement['id']} target output {output!r} uses an unconfigured component"
+                    )
+                if any(not isinstance(weight, (int, float)) or
+                       not math.isfinite(float(weight)) for weight in weights.values()):
+                    raise CampaignError(
+                        f"{measurement['id']} target output {output!r} has non-finite weights"
+                    )
+            if process_kind == "polarized_sidis":
+                scale = config.get("longitudinal_target_scale")
+                if not isinstance(scale, (int, float)) or not math.isfinite(float(scale)):
+                    raise CampaignError(
+                        f"{measurement['id']} requires a finite longitudinal_target_scale"
+                    )
     if "nominal" not in measurement["families"]:
         raise CampaignError(f"{measurement['id']} has no nominal family")
     for family_id, family in measurement["families"].items():
@@ -1289,6 +1329,9 @@ def _compass_reference_entry(
     dataset = snapshot.get("datasets", {}).get(observable)
     if dataset is not None:
         return dataset, None
+    projection = snapshot.get("readable_projections", {}).get(observable)
+    if projection is not None:
+        return projection, None
     for candidate in snapshot.get("datasets", {}).values():
         for slice_spec in candidate.get("slices", []):
             if Path(str(slice_spec["rivet_path"])).name == observable:
@@ -1317,7 +1360,8 @@ def _reference_path(measurement: Mapping[str, Any], observable: str,
         if dataset and dataset.get("observable") == "A_parallel":
             return str(dataset["rivet_path"])
     if measurement["postprocessor"] in {
-        "compass_sidis_a1", "compass_sidis_multiplicity"
+        "compass_sidis_a1", "compass_sidis_multiplicity",
+        "hermes_sidis_multiplicity",
     }:
         entry = _compass_reference_entry(snapshot, observable)
         if entry is None:
@@ -1468,7 +1512,8 @@ def _reference_points(measurement: Mapping[str, Any], snapshot: Mapping[str, Any
         if dataset and dataset.get("observable") == "A_parallel":
             return dataset["points"]
     if measurement["postprocessor"] in {
-        "compass_sidis_a1", "compass_sidis_multiplicity"
+        "compass_sidis_a1", "compass_sidis_multiplicity",
+        "hermes_sidis_multiplicity",
     }:
         entry = _compass_reference_entry(snapshot, observable)
         if entry is None:
@@ -1512,6 +1557,14 @@ def _masked_bands(
 def _pp_reference_overlay_points(
     measurement: Mapping[str, Any], snapshot: Mapping[str, Any], plot_stem: str
 ) -> list[dict[str, Any]] | None:
+    def mean_coordinate(point: Mapping[str, Any], name: str) -> float:
+        if name in point:
+            return float(point[name])
+        axis = name.removesuffix("_mean")
+        return .5 * (
+            float(point[f"{axis}_low"]) + float(point[f"{axis}_high"])
+        )
+
     if plot_stem.startswith("Pull_"):
         return None
     if measurement["postprocessor"] == "star_weak_bosons":
@@ -1523,13 +1576,14 @@ def _pp_reference_overlay_points(
     elif measurement["postprocessor"] == "hermes_sidis":
         observables = tuple(snapshot.get("datasets", {}))
     elif measurement["postprocessor"] in {
-        "compass_sidis_a1", "compass_sidis_multiplicity"
+        "compass_sidis_a1", "compass_sidis_multiplicity",
+        "hermes_sidis_multiplicity",
     }:
         observables = tuple(snapshot.get("datasets", {})) + tuple(
             Path(str(slice_spec["rivet_path"])).name
             for dataset in snapshot.get("datasets", {}).values()
             for slice_spec in dataset.get("slices", [])
-        )
+        ) + tuple(snapshot.get("readable_projections", {}))
     else:
         observables = tuple(snapshot.get("channels", {}))
     for observable in observables:
@@ -1564,13 +1618,21 @@ def _pp_reference_overlay_points(
                 for point in points
             ]
         elif measurement["postprocessor"] in {
-            "compass_sidis_a1", "compass_sidis_multiplicity"
+            "compass_sidis_a1", "compass_sidis_multiplicity",
+            "hermes_sidis_multiplicity",
         }:
             entry = _compass_reference_entry(snapshot, observable)
             if entry is None:
                 return None
             dataset, slice_spec = entry
             is_a1 = measurement["postprocessor"] == "compass_sidis_a1"
+            plotted_coordinate = "z_mean"
+            if dataset.get("integrated_projection"):
+                plotted_coordinate = f"{dataset['axis']}_mean"
+            elif slice_spec is not None and dataset.get("density_widths") == ["z", "pt2"]:
+                plotted_coordinate = "pt2_mean"
+            elif slice_spec is not None and dataset.get("density_widths") == ["z", "phperp"]:
+                plotted_coordinate = "phperp_mean"
             return [
                 {
                     **dict(point),
@@ -1578,8 +1640,8 @@ def _pp_reference_overlay_points(
                         float(point["x_mean"])
                         if is_a1
                         else (
-                            float(point["z_mean"])
-                            if slice_spec is not None
+                            mean_coordinate(point, plotted_coordinate)
+                            if slice_spec is not None or dataset.get("integrated_projection")
                             else float(point["flat_bin"]) + 0.5
                         )
                     ),
@@ -1977,12 +2039,13 @@ def _compass_component_samples(
     object_name: str,
     helicities: Sequence[str],
     cache: dict[tuple[str, str, str], experimental.BinSeries],
+    components: Sequence[str] = ("P", "N"),
 ) -> dict[str, experimental.BinSeries]:
-    """Load P/N COMPASS samples after normalized signed-NLO addition."""
+    """Load configured target samples after normalized signed-NLO addition."""
 
     family, channel, polarized, unpolarized, scale, mpi = variation
     samples: dict[str, experimental.BinSeries] = {}
-    for component in ("P", "N"):
+    for component in components:
         key = (
             family,
             channel,
@@ -1994,7 +2057,7 @@ def _compass_component_samples(
         )
         if key not in groups:
             raise CampaignError(
-                f"Missing COMPASS target component {component} for "
+                f"Missing SIDIS target component {component} for "
                 f"{_variation_id(variation)}"
             )
         loaded = _load_sidis_object(
@@ -2031,64 +2094,156 @@ def _compass_sidis_prediction_sets(
     output: dict[tuple[Any, ...], dict[str, Any]] = {}
     is_a1 = measurement["postprocessor"] == "compass_sidis_a1"
     helicities = compass_sidis.HELICITIES if is_a1 else ("00",)
+    schema6 = int(measurement.get("schema_version", 5)) >= 6
+    postprocess_config = measurement.get("postprocess_config", {})
+    target_outputs = postprocess_config.get(
+        "target_outputs", {"D": {"P": .5, "N": .5}}
+    )
     for variation in variations:
         prediction_set: dict[str, Any] = {}
         for species, dataset in snapshot["datasets"].items():
             raw = dataset["raw_objects"]
+            published_target = dataset.get("published_target")
+            if published_target is None:
+                if len(target_outputs) != 1:
+                    raise CampaignError(
+                        f"{measurement['id']}/{species} must name its published_target"
+                    )
+                published_target = next(iter(target_outputs))
+            if published_target not in target_outputs:
+                raise CampaignError(
+                    f"{measurement['id']}/{species} has unknown target output {published_target}"
+                )
+            target_weights = {
+                str(component): float(weight)
+                for component, weight in target_outputs[published_target].items()
+            }
+            components = tuple(target_weights)
             if is_a1:
                 ordinary = _compass_component_samples(
                     groups, variation, campaign_dir, analysis,
-                    str(raw["ordinary"]), helicities, cache,
+                    str(raw["ordinary"]), helicities, cache, components,
                 )
                 inverse_d = _compass_component_samples(
                     groups, variation, campaign_dir, analysis,
                     str(raw["inverse_depolarization"]), helicities, cache,
+                    components,
                 )
                 covariance = _compass_component_samples(
                     groups, variation, campaign_dir, analysis,
-                    str(raw["covariance"]), helicities, cache,
+                    str(raw["covariance"]), helicities, cache, components,
                 )
-                result = compass_sidis.a1_deuteron(
-                    ordinary, inverse_d, covariance
-                )
+                if schema6:
+                    result = compass_sidis.a1_target_combination(
+                        ordinary, inverse_d, covariance, target_weights,
+                        float(postprocess_config["longitudinal_target_scale"]),
+                    )
+                else:
+                    result = compass_sidis.a1_deuteron(
+                        ordinary, inverse_d, covariance
+                    )
             else:
                 numerator = _compass_component_samples(
                     groups, variation, campaign_dir, analysis,
-                    str(raw["numerator"]), helicities, cache,
+                    str(raw["numerator"]), helicities, cache, components,
                 )
                 denominator = _compass_component_samples(
                     groups, variation, campaign_dir, analysis,
-                    str(raw["denominator"]), helicities, cache,
+                    str(raw["denominator"]), helicities, cache, components,
                 )
                 covariance = _compass_component_samples(
                     groups, variation, campaign_dir, analysis,
-                    str(raw["covariance"]), helicities, cache,
+                    str(raw["covariance"]), helicities, cache, components,
                 )
-                result = compass_sidis.multiplicity_isoscalar(
-                    numerator,
-                    denominator,
-                    covariance,
-                    [
-                        float(point["z_high"]) - float(point["z_low"])
-                        for point in dataset["points"]
-                    ],
-                )
+                widths = [
+                    math.prod(
+                        float(point[f"{axis}_high"])
+                        - float(point[f"{axis}_low"])
+                        for axis in dataset.get("density_widths", ["z"])
+                    )
+                    for point in dataset["points"]
+                ]
+                if schema6:
+                    result = compass_sidis.multiplicity_target_combination(
+                        numerator, denominator, covariance,
+                        target_weights, widths,
+                    )
+                else:
+                    result = compass_sidis.multiplicity_isoscalar(
+                        numerator, denominator, covariance, widths,
+                    )
             prediction_set[str(species)] = {
                 "edges": result["edges"],
                 "values": result["values"],
                 "errors": result["errors"],
+                "published_target": str(published_target),
             }
             if not is_a1:
                 for slice_spec in dataset["slices"]:
                     observable = Path(str(slice_spec["rivet_path"])).name
                     indices = [int(index) for index in slice_spec["flat_bins"]]
                     prediction_set[observable] = {
-                        "edges": [float(value) for value in slice_spec["z_edges"]],
+                        "edges": [
+                            float(value) for value in
+                            slice_spec.get("edges", slice_spec.get("z_edges", []))
+                        ],
                         "values": [result["values"][index] for index in indices],
                         "errors": [result["errors"][index] for index in indices],
                         "parent_dataset": str(species),
                         "flat_bins": indices,
                     }
+        # HERMES publishes one-dimensional projections of the five independent
+        # 3D binnings.  Load the dedicated event-aggregated raw objects so these
+        # curves are ratios of integrated yields, never averages/projections of
+        # already formed cell multiplicities.
+        if not is_a1:
+            for observable, projection in snapshot.get(
+                "readable_projections", {}
+            ).items():
+                published_target = str(projection["published_target"])
+                if published_target not in target_outputs:
+                    raise CampaignError(
+                        f"{measurement['id']}/{observable} has unknown target "
+                        f"output {published_target}"
+                    )
+                target_weights = {
+                    str(component): float(weight)
+                    for component, weight in
+                    target_outputs[published_target].items()
+                }
+                components = tuple(target_weights)
+                raw = projection["raw_objects"]
+                numerator = _compass_component_samples(
+                    groups, variation, campaign_dir, analysis,
+                    str(raw["numerator"]), helicities, cache, components,
+                )
+                denominator = _compass_component_samples(
+                    groups, variation, campaign_dir, analysis,
+                    str(raw["denominator"]), helicities, cache, components,
+                )
+                covariance = _compass_component_samples(
+                    groups, variation, campaign_dir, analysis,
+                    str(raw["covariance"]), helicities, cache, components,
+                )
+                widths = [
+                    math.prod(
+                        float(point[f"{axis}_high"])
+                        - float(point[f"{axis}_low"])
+                        for axis in projection["density_widths"]
+                    )
+                    for point in projection["points"]
+                ]
+                result = compass_sidis.multiplicity_target_combination(
+                    numerator, denominator, covariance,
+                    target_weights, widths,
+                )
+                prediction_set[str(observable)] = {
+                    "edges": result["edges"],
+                    "values": result["values"],
+                    "errors": result["errors"],
+                    "published_target": published_target,
+                    "integrated_projection": True,
+                }
         output[variation] = prediction_set
     return output
 
@@ -2132,7 +2287,8 @@ def _primary_reference_observable(
         dataset = snapshot["datasets"].get(observable)
         return bool(dataset) and dataset.get("observable") == "A_parallel"
     if measurement["postprocessor"] in {
-        "compass_sidis_a1", "compass_sidis_multiplicity"
+        "compass_sidis_a1", "compass_sidis_multiplicity",
+        "hermes_sidis_multiplicity",
     }:
         return _compass_reference_entry(snapshot, observable) is not None
     return True
@@ -2141,7 +2297,7 @@ def _primary_reference_observable(
 def postprocess_compass_sidis(
     args: argparse.Namespace, measurement: Mapping[str, Any]
 ) -> Path:
-    """Postprocess one COMPASS SIDIS campaign at normalized-bin level."""
+    """Postprocess one schema-5/6 SIDIS campaign at normalized-bin level."""
 
     campaign_dir = _campaign_dir(measurement["id"], args.tag)
     manifest_path = campaign_dir / experimental.MANIFEST_NAME
@@ -2183,19 +2339,25 @@ def postprocess_compass_sidis(
         reference_path = _reference_path(measurement, observable, snapshot)
         if reference_path is None:
             continue
+        target_output = prediction.get("published_target", "D")
+        target_weights = measurement.get("postprocess_config", {}).get(
+            "target_outputs", {}
+        ).get(target_output)
         annotations = {
             "Generator": "HerwigPol POWHEG NLO+PS",
             "HardProcessAccuracy": "NLO",
             "NLOCombination": "normalized POSNLO+NEGNLO bins",
-            "TargetCombination": (
+            "TargetCombination": json.dumps(
+                target_weights,
+                sort_keys=True,
+            ) if target_weights is not None else (
                 "sigma_UU=(p+n)/2; sigma_LL=0.925*(p+n)/2"
-                if is_a1
-                else "P/N isoscalar sum before numerator/DIS ratio"
+                if is_a1 else "P/N isoscalar sum before numerator/DIS ratio"
             ),
             "ObservableDefinition": (
                 "helicity-signed inverse-D yield divided by ordinary yield"
                 if is_a1
-                else "hadron yield per inclusive-DIS event and unit z"
+                else "hadron yield per inclusive-DIS event and published density widths"
             ),
             "ExperimentalCorrectionsAppliedToHerwig": "none",
         }
@@ -2216,8 +2378,20 @@ def postprocess_compass_sidis(
         goodness = compass_sidis.a1_goodness_of_fit(
             flat_predictions, snapshot
         )
-    else:
+    elif measurement["postprocessor"] == "hermes_sidis_multiplicity":
+        goodness = compass_sidis.hermes_multiplicity_goodness_of_fit(
+            flat_predictions, snapshot
+        )
+    elif any(
+        "systematic_correlated_80pct" in dataset["points"][0]
+        for dataset in snapshot["datasets"].values()
+        if dataset["points"]
+    ):
         goodness = compass_sidis.multiplicity_goodness_of_fit(
+            flat_predictions, snapshot
+        )
+    else:
+        goodness = compass_sidis.diagonal_multiplicity_goodness_of_fit(
             flat_predictions, snapshot
         )
 
@@ -2230,6 +2404,8 @@ def postprocess_compass_sidis(
                 {
                     "measurement": measurement["id"],
                     "species": species,
+                    "published_target": dataset.get("published_target"),
+                    "binning": dataset.get("binning"),
                     "bin": index + 1,
                     "flat_bin": int(point.get("flat_bin", index)),
                     "slice": point.get("slice"),
@@ -2240,9 +2416,18 @@ def postprocess_compass_sidis(
                     "y_low": point.get("y_low"),
                     "y_high": point.get("y_high"),
                     "y_mean": point.get("y_mean"),
+                    "q2_low": point.get("q2_low"),
+                    "q2_high": point.get("q2_high"),
+                    "q2_mean": point.get("q2_mean"),
                     "z_low": point.get("z_low"),
                     "z_high": point.get("z_high"),
                     "z_mean": point.get("z_mean"),
+                    "pt2_low": point.get("pt2_low"),
+                    "pt2_high": point.get("pt2_high"),
+                    "pt2_mean": point.get("pt2_mean"),
+                    "phperp_low": point.get("phperp_low"),
+                    "phperp_high": point.get("phperp_high"),
+                    "phperp_mean": point.get("phperp_mean"),
                     "theory": prediction["values"][index],
                     "mc_stat": prediction["errors"][index],
                     "data": point.get("a1", point.get("value")),
@@ -2321,7 +2506,7 @@ def postprocess_compass_sidis(
         {"at": experimental.utc_now(), "action": "postprocess"}
     )
     experimental.atomic_write_json(manifest_path, manifest)
-    print(f"Wrote normalized COMPASS SIDIS predictions to {prediction_path}")
+    print(f"Wrote normalized SIDIS predictions to {prediction_path}")
     return prediction_path
 
 
@@ -3264,7 +3449,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             run_pp(args, measurement)
         elif args.command == "postprocess":
             if measurement["postprocessor"] in {
-                "compass_sidis_a1", "compass_sidis_multiplicity"
+                "compass_sidis_a1", "compass_sidis_multiplicity",
+                "hermes_sidis_multiplicity",
             }:
                 postprocess_compass_sidis(args, measurement)
             elif measurement["process_kind"] == "polarized_sidis":
@@ -3278,7 +3464,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             if not args.dry_run:
                 run_pp(args, measurement)
                 if measurement["postprocessor"] in {
-                    "compass_sidis_a1", "compass_sidis_multiplicity"
+                    "compass_sidis_a1", "compass_sidis_multiplicity",
+                    "hermes_sidis_multiplicity",
                 }:
                     postprocess_compass_sidis(args, measurement)
                 elif measurement["process_kind"] == "polarized_sidis":

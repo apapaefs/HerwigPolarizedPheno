@@ -1,0 +1,29 @@
+Name: COMPASS_2025_I2840545
+Year: 2025
+Summary: Pion, kaon and unidentified-hadron SIDIS multiplicities on hydrogen
+Experiment: COMPASS
+Collider: CERN SPS fixed target
+InspireID: 2840545
+Status: UNVALIDATED
+Reentrant: true
+Authors:
+ - Andreas Papaefstathiou <apapaefs@kennesaw.edu>
+References:
+ - Phys.Rev.D 112 (2025) 012002
+ - arXiv:2410.12005
+RunInfo: Requires a zero-polarization 160 GeV mu+ p sample with separate POSNLO and NEGNLO contributions.
+NumEvents: 100000
+NeedsCrossSection: yes
+Beams: [[ANTIMUON, PROTON]]
+Energies: [[160.0, 0.938272]]
+Description: >
+  Fills event-aggregated raw estimators in the exact species-specific sparse
+  HEPData cells. The hydrogen multiplicity and z density width are formed
+  only after shard and signed-NLO combination.
+Keywords: [DIS, SIDIS, fixed-target, multiplicity, pion, kaon, charged hadron]
+BibKey: COMPASS:2025sidis
+BibTeX: '@article{COMPASS:2025sidis,
+  collaboration = "COMPASS",
+  title = "{Multiplicities of positive and negative pions, kaons and unidentified hadrons from deep-inelastic scattering of muons off a liquid hydrogen target}",
+  eprint = "2410.12005", archivePrefix = "arXiv", doi = "10.1103/q4rb-bhcg",
+  journal = "Phys. Rev. D", volume = "112", pages = "012002", year = "2025"}'

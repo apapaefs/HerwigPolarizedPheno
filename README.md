@@ -1,7 +1,7 @@
 # Herwig Polarized Phenomenology
 
 This repository contains the experimental-data phenomenology layer built on
-Herwig Polarized: thirteen Rivet analyses, the registry-driven campaign runner,
+Herwig Polarized: eighteen Rivet analyses, the registry-driven campaign runner,
 checksum-pinned reference inputs, postprocessing and plotting code, focused
 tests, and the JHEP manuscript *Phenomenological Investigations of Polarized
 Collisions in Herwig 7*.
@@ -12,7 +12,7 @@ ordinary YODA/plot products.
 
 ## Repository layout
 
-- `analyses/rivet/{dis,pp}/`: the thirteen data-linked Rivet analyses and their
+- `analyses/rivet/{dis,pp}/`: the eighteen data-linked Rivet analyses and their
   vendored reference YODA files;
 - `cards/`, `config/`, and `data/`: Herwig cards, measurement registries, raw
   provenance inputs, normalized snapshots, and checksums;
@@ -21,6 +21,8 @@ ordinary YODA/plot products.
   engine used by the primary runner;
 - `campaigns/control/compatibility-corrected-20260819/`: tracked, runtime-
   locked controller for the compatibility-corrected production handoff;
+- `campaigns/control/sidis-tranches-20260828/`: tracked pilot/central SIDIS
+  controller with immutable statistical gating;
 - `scripts/tests/`: self-contained campaign, reference, postprocessing, and
   Rivet-source tests;
 - `docs/`: workflow documentation, the experimental-compatibility audit, and
@@ -71,6 +73,9 @@ and recovery.
 The three COMPASS SIDIS reference-data, estimator, and campaign contracts are
 documented in
 [`docs/compass-sidis-workflow.md`](docs/compass-sidis-workflow.md).
+The five first/second-tranche analyses, schema-6 target contract, source
+hierarchy and production gates are documented in
+[`docs/sidis-tranches-workflow.md`](docs/sidis-tranches-workflow.md).
 
 The synchronized 2026-08-19 corrected-production workflow, including the
 STAR 510 GeV generator-cut gate and the explicit no-production preparation

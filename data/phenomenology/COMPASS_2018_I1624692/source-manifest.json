@@ -1,0 +1,2602 @@
+{
+  "measurement": "COMPASS_2018_I1624692",
+  "retrieved": "2026-08-28",
+  "record_doi": "10.17182/hepdata.83542.v1",
+  "record_version": 1,
+  "record_path": "data/phenomenology/COMPASS_2018_I1624692/raw/record.json",
+  "record_sha256": "533884593938eec3ede1f47fce0eb3bee616b4e377b986f54c6d4bbaab2a789b",
+  "tables": [
+    {
+      "number": 1,
+      "table_id": 396215,
+      "name": "Table 1",
+      "doi": "10.17182/hepdata.83542.v1/t1",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t001.json",
+      "url": "https://www.hepdata.net/record/data/83542/396215/1/",
+      "sha256": "78618e24dc521878e0eed077a88fb834fe5170948d8bee06ff34a2504da2a276",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 27
+    },
+    {
+      "number": 2,
+      "table_id": 396216,
+      "name": "Table 2",
+      "doi": "10.17182/hepdata.83542.v1/t2",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t002.json",
+      "url": "https://www.hepdata.net/record/data/83542/396216/1/",
+      "sha256": "fd427f27ad0129754db37bf5eaa45f9535314885dd68ec0ad3fc829b5041c45b",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 27
+    },
+    {
+      "number": 3,
+      "table_id": 396217,
+      "name": "Table 3",
+      "doi": "10.17182/hepdata.83542.v1/t3",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t003.json",
+      "url": "https://www.hepdata.net/record/data/83542/396217/1/",
+      "sha256": "3365bfac834a90f5a759f64041b28b041cd8ffb2e1903c14a7147c1f3620cfdb",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 27
+    },
+    {
+      "number": 4,
+      "table_id": 396218,
+      "name": "Table 4",
+      "doi": "10.17182/hepdata.83542.v1/t4",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t004.json",
+      "url": "https://www.hepdata.net/record/data/83542/396218/1/",
+      "sha256": "2edd5cab0d1cadd7b20233afbefb6ed127159e5cc851757b6d21aa659627c06c",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 24
+    },
+    {
+      "number": 5,
+      "table_id": 396219,
+      "name": "Table 5",
+      "doi": "10.17182/hepdata.83542.v1/t5",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t005.json",
+      "url": "https://www.hepdata.net/record/data/83542/396219/1/",
+      "sha256": "ed58c5a283e5a0ade2313bed86d265394b1e2aa827890c1e942f9334633de084",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 26
+    },
+    {
+      "number": 6,
+      "table_id": 396220,
+      "name": "Table 6",
+      "doi": "10.17182/hepdata.83542.v1/t6",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t006.json",
+      "url": "https://www.hepdata.net/record/data/83542/396220/1/",
+      "sha256": "41363814d2cc507423a770aac5b99e215ca311475909ddd2c76082b68304b2b5",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 26
+    },
+    {
+      "number": 7,
+      "table_id": 396221,
+      "name": "Table 7",
+      "doi": "10.17182/hepdata.83542.v1/t7",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t007.json",
+      "url": "https://www.hepdata.net/record/data/83542/396221/1/",
+      "sha256": "65a869a68809c13f5a6f32a1101a82e0a843cc77a468a1ea0b62cbab7536e2df",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 26
+    },
+    {
+      "number": 8,
+      "table_id": 396222,
+      "name": "Table 8",
+      "doi": "10.17182/hepdata.83542.v1/t8",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t008.json",
+      "url": "https://www.hepdata.net/record/data/83542/396222/1/",
+      "sha256": "8d01bc020d17a4f59586abb96834dc720db80a24fe9f1faec823c9c1b2ef31cb",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 24
+    },
+    {
+      "number": 9,
+      "table_id": 396223,
+      "name": "Table 9",
+      "doi": "10.17182/hepdata.83542.v1/t9",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t009.json",
+      "url": "https://www.hepdata.net/record/data/83542/396223/1/",
+      "sha256": "609d67cdb17480ece1ffafb6d805877e23f00683b375bcf575d758b34dcbc49d",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 25
+    },
+    {
+      "number": 10,
+      "table_id": 396224,
+      "name": "Table 10",
+      "doi": "10.17182/hepdata.83542.v1/t10",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t010.json",
+      "url": "https://www.hepdata.net/record/data/83542/396224/1/",
+      "sha256": "b7bce4d09071bf5f4220c0f6b77d3f03996384753a04d2c3dd8ad5e4b5f75cce",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 11,
+      "table_id": 396225,
+      "name": "Table 11",
+      "doi": "10.17182/hepdata.83542.v1/t11",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t011.json",
+      "url": "https://www.hepdata.net/record/data/83542/396225/1/",
+      "sha256": "15d2933dbf2b9f8f9ea0bfa1de5048617a5d7d06bbab2ac0efc00d0cac9a0724",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 27
+    },
+    {
+      "number": 12,
+      "table_id": 396226,
+      "name": "Table 12",
+      "doi": "10.17182/hepdata.83542.v1/t12",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t012.json",
+      "url": "https://www.hepdata.net/record/data/83542/396226/1/",
+      "sha256": "617a5f1ea5c2a1691e8c3c38edc7b703dd309554ef6333d7d741760607d365c8",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 25
+    },
+    {
+      "number": 13,
+      "table_id": 396227,
+      "name": "Table 13",
+      "doi": "10.17182/hepdata.83542.v1/t13",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t013.json",
+      "url": "https://www.hepdata.net/record/data/83542/396227/1/",
+      "sha256": "e08af72e1cdd1fc65a1153a4d920d7686a6b0b9b527259fc4473fa64afd57ff1",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 25
+    },
+    {
+      "number": 14,
+      "table_id": 396228,
+      "name": "Table 14",
+      "doi": "10.17182/hepdata.83542.v1/t14",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t014.json",
+      "url": "https://www.hepdata.net/record/data/83542/396228/1/",
+      "sha256": "a9e98344bd2423a8d41165d7194f42e26470033714c09dff623c3a2962e9609b",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 25
+    },
+    {
+      "number": 15,
+      "table_id": 396229,
+      "name": "Table 15",
+      "doi": "10.17182/hepdata.83542.v1/t15",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t015.json",
+      "url": "https://www.hepdata.net/record/data/83542/396229/1/",
+      "sha256": "b344275d6eb58c89821de0c5401f49301e17c2672d35d56b7185da1c5c3ce782",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 27
+    },
+    {
+      "number": 16,
+      "table_id": 396230,
+      "name": "Table 16",
+      "doi": "10.17182/hepdata.83542.v1/t16",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t016.json",
+      "url": "https://www.hepdata.net/record/data/83542/396230/1/",
+      "sha256": "6828bcd053a3fc9d3134c60e7840d74d51c340c23bdd950b7d0fe38ec2816dc5",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 25
+    },
+    {
+      "number": 17,
+      "table_id": 396231,
+      "name": "Table 17",
+      "doi": "10.17182/hepdata.83542.v1/t17",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t017.json",
+      "url": "https://www.hepdata.net/record/data/83542/396231/1/",
+      "sha256": "812dce998f8f39aebb13ab3261dbbf00bc26a57c2e367c619bc20eda366fd63b",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 25
+    },
+    {
+      "number": 18,
+      "table_id": 396232,
+      "name": "Table 18",
+      "doi": "10.17182/hepdata.83542.v1/t18",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t018.json",
+      "url": "https://www.hepdata.net/record/data/83542/396232/1/",
+      "sha256": "066025f0029a8b0180f77bc0f00b2d40aa5a96adf607ec8184a7f4fd132514d3",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 25
+    },
+    {
+      "number": 19,
+      "table_id": 396233,
+      "name": "Table 19",
+      "doi": "10.17182/hepdata.83542.v1/t19",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t019.json",
+      "url": "https://www.hepdata.net/record/data/83542/396233/1/",
+      "sha256": "4a05165d07e035d5d3880ed222e87578d04ea8e98e33dc5b32a1ebac58a4356d",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 29
+    },
+    {
+      "number": 20,
+      "table_id": 396234,
+      "name": "Table 20",
+      "doi": "10.17182/hepdata.83542.v1/t20",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t020.json",
+      "url": "https://www.hepdata.net/record/data/83542/396234/1/",
+      "sha256": "0446414e2ead31824252093c8d46ecddf114cbc3a04b48d35bedf2dca0a6dbce",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 21,
+      "table_id": 396235,
+      "name": "Table 21",
+      "doi": "10.17182/hepdata.83542.v1/t21",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t021.json",
+      "url": "https://www.hepdata.net/record/data/83542/396235/1/",
+      "sha256": "9fcbd6337730c57c600b337dce1fd02358b4cb1e460460db8f734c793af90c78",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 22,
+      "table_id": 396236,
+      "name": "Table 22",
+      "doi": "10.17182/hepdata.83542.v1/t22",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t022.json",
+      "url": "https://www.hepdata.net/record/data/83542/396236/1/",
+      "sha256": "70844098085f8f2b40221f56c3a45a2c267c6a1137cb69cf5ffe1b58dc4752dc",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 29
+    },
+    {
+      "number": 23,
+      "table_id": 396237,
+      "name": "Table 23",
+      "doi": "10.17182/hepdata.83542.v1/t23",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t023.json",
+      "url": "https://www.hepdata.net/record/data/83542/396237/1/",
+      "sha256": "800690f26370032888cd1f78e057e540830623afb28f50fd913eddde1290bc0c",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 29
+    },
+    {
+      "number": 24,
+      "table_id": 396238,
+      "name": "Table 24",
+      "doi": "10.17182/hepdata.83542.v1/t24",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t024.json",
+      "url": "https://www.hepdata.net/record/data/83542/396238/1/",
+      "sha256": "ca638633397e4b5327e3f59fb589a35ee0b9d1993896c58c6a9afa433044147e",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 29
+    },
+    {
+      "number": 25,
+      "table_id": 396239,
+      "name": "Table 25",
+      "doi": "10.17182/hepdata.83542.v1/t25",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t025.json",
+      "url": "https://www.hepdata.net/record/data/83542/396239/1/",
+      "sha256": "d0eed8bfba897e8f483fe66d6faf3842cd9a0525d4c601879c8b19a19f405d58",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 26,
+      "table_id": 396240,
+      "name": "Table 26",
+      "doi": "10.17182/hepdata.83542.v1/t26",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t026.json",
+      "url": "https://www.hepdata.net/record/data/83542/396240/1/",
+      "sha256": "7a89ddfa739137b32ba2f3340be520aebe13e5696f2b6e0e5b449cebf4bf0712",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 27,
+      "table_id": 396241,
+      "name": "Table 27",
+      "doi": "10.17182/hepdata.83542.v1/t27",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t027.json",
+      "url": "https://www.hepdata.net/record/data/83542/396241/1/",
+      "sha256": "b805e1724b5b7eb36c2e13ae52162828f2c2f943722c18446a19a185cfa95070",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 28
+    },
+    {
+      "number": 28,
+      "table_id": 396242,
+      "name": "Table 28",
+      "doi": "10.17182/hepdata.83542.v1/t28",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t028.json",
+      "url": "https://www.hepdata.net/record/data/83542/396242/1/",
+      "sha256": "cba4063ae1a8291f78f46dadacd9219c1d53aa163ce91956acfd79abb863f573",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 28
+    },
+    {
+      "number": 29,
+      "table_id": 396243,
+      "name": "Table 29",
+      "doi": "10.17182/hepdata.83542.v1/t29",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t029.json",
+      "url": "https://www.hepdata.net/record/data/83542/396243/1/",
+      "sha256": "101b8a1b96e8d9d7ff26b1917c487fcdf4e74cb7fc217129e2788e586a475ec0",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 28
+    },
+    {
+      "number": 30,
+      "table_id": 396244,
+      "name": "Table 30",
+      "doi": "10.17182/hepdata.83542.v1/t30",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t030.json",
+      "url": "https://www.hepdata.net/record/data/83542/396244/1/",
+      "sha256": "854352ff8e14be3f23e78d0b010bf114fa17c7ece8016a26e0d251b938628893",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 31,
+      "table_id": 396245,
+      "name": "Table 31",
+      "doi": "10.17182/hepdata.83542.v1/t31",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t031.json",
+      "url": "https://www.hepdata.net/record/data/83542/396245/1/",
+      "sha256": "ec4a93b8e13c6f0b2175e735a80ab8df5a47476a3f26d60348c0b6c7b6d04315",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 32,
+      "table_id": 396246,
+      "name": "Table 32",
+      "doi": "10.17182/hepdata.83542.v1/t32",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t032.json",
+      "url": "https://www.hepdata.net/record/data/83542/396246/1/",
+      "sha256": "0bc0ab7ccd886096e7e16865faa289cbf7a6e9fad015c2e6468f990e26c9f835",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 33,
+      "table_id": 396247,
+      "name": "Table 33",
+      "doi": "10.17182/hepdata.83542.v1/t33",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t033.json",
+      "url": "https://www.hepdata.net/record/data/83542/396247/1/",
+      "sha256": "d6632f5ef037a29108aaec622e6e813aba761687b25feb04d2a46f6fe3938d2e",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 28
+    },
+    {
+      "number": 34,
+      "table_id": 396248,
+      "name": "Table 34",
+      "doi": "10.17182/hepdata.83542.v1/t34",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t034.json",
+      "url": "https://www.hepdata.net/record/data/83542/396248/1/",
+      "sha256": "de1352f62ac106111d1fcddbf97a051c16f1065fac7613137ce794bcde0b24b1",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 27
+    },
+    {
+      "number": 35,
+      "table_id": 396249,
+      "name": "Table 35",
+      "doi": "10.17182/hepdata.83542.v1/t35",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t035.json",
+      "url": "https://www.hepdata.net/record/data/83542/396249/1/",
+      "sha256": "ec9a94a0e680e036f0dc6082c8d76c38a4a6cee248c71f9ee2786de8e1cab61c",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 27
+    },
+    {
+      "number": 36,
+      "table_id": 396250,
+      "name": "Table 36",
+      "doi": "10.17182/hepdata.83542.v1/t36",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t036.json",
+      "url": "https://www.hepdata.net/record/data/83542/396250/1/",
+      "sha256": "59aa4111f6bf656132d566417dddda463ab46bccf472d90c2bfb3aff96a2ad04",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 37,
+      "table_id": 396251,
+      "name": "Table 37",
+      "doi": "10.17182/hepdata.83542.v1/t37",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t037.json",
+      "url": "https://www.hepdata.net/record/data/83542/396251/1/",
+      "sha256": "a34bb22d9659b4e24cc9469dc79dcd9d139105e354e99d11052e5f66469b0c5b",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 38,
+      "table_id": 396252,
+      "name": "Table 38",
+      "doi": "10.17182/hepdata.83542.v1/t38",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t038.json",
+      "url": "https://www.hepdata.net/record/data/83542/396252/1/",
+      "sha256": "9ab6681320c1c9bb93a31d3addbc7e9a292cd24f6c09e0869c7259312084b7fe",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 28
+    },
+    {
+      "number": 39,
+      "table_id": 396253,
+      "name": "Table 39",
+      "doi": "10.17182/hepdata.83542.v1/t39",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t039.json",
+      "url": "https://www.hepdata.net/record/data/83542/396253/1/",
+      "sha256": "b5759f504ec82bee742dc75818d087b8b0ef2008c7b5fa534d82172b6a9cb54b",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 28
+    },
+    {
+      "number": 40,
+      "table_id": 396254,
+      "name": "Table 40",
+      "doi": "10.17182/hepdata.83542.v1/t40",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t040.json",
+      "url": "https://www.hepdata.net/record/data/83542/396254/1/",
+      "sha256": "e61f7332267b8418bda28a31e520653db0b82ef4c935c2ce49974c4b3ed0a984",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 28
+    },
+    {
+      "number": 41,
+      "table_id": 396255,
+      "name": "Table 41",
+      "doi": "10.17182/hepdata.83542.v1/t41",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t041.json",
+      "url": "https://www.hepdata.net/record/data/83542/396255/1/",
+      "sha256": "40390d3762829d26d0a28240c4bb406a6a291f282e513c71fc2b5a4bfab9703e",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 42,
+      "table_id": 396256,
+      "name": "Table 42",
+      "doi": "10.17182/hepdata.83542.v1/t42",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t042.json",
+      "url": "https://www.hepdata.net/record/data/83542/396256/1/",
+      "sha256": "1e6e4cc6b2b2f4dc7faa5d59063fac4949062ffed2708898304281848f06de60",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 43,
+      "table_id": 396257,
+      "name": "Table 43",
+      "doi": "10.17182/hepdata.83542.v1/t43",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t043.json",
+      "url": "https://www.hepdata.net/record/data/83542/396257/1/",
+      "sha256": "7a17d7ecc7c4191a3823e55e9b2964d88fc0316cd9ed7096bf768762f3774df4",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 44,
+      "table_id": 396258,
+      "name": "Table 44",
+      "doi": "10.17182/hepdata.83542.v1/t44",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t044.json",
+      "url": "https://www.hepdata.net/record/data/83542/396258/1/",
+      "sha256": "e3925be481bd0c1d4c92a332ceee834d49ba4ab5551d051f71c2059085511e44",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 45,
+      "table_id": 396259,
+      "name": "Table 45",
+      "doi": "10.17182/hepdata.83542.v1/t45",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t045.json",
+      "url": "https://www.hepdata.net/record/data/83542/396259/1/",
+      "sha256": "60a2c5b02fe242ca52fc611f7d1c4b5928b6c4ff1947b4910808a400e46776b3",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 46,
+      "table_id": 396260,
+      "name": "Table 46",
+      "doi": "10.17182/hepdata.83542.v1/t46",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t046.json",
+      "url": "https://www.hepdata.net/record/data/83542/396260/1/",
+      "sha256": "80dce319a05da9fb531ab3c7cbe5cac57c02efc7349e2a578236f3b958127b36",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 47,
+      "table_id": 396261,
+      "name": "Table 47",
+      "doi": "10.17182/hepdata.83542.v1/t47",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t047.json",
+      "url": "https://www.hepdata.net/record/data/83542/396261/1/",
+      "sha256": "9022633d1c31357087f92c523cfc5e4164bf74f56b6d90d666f5be4d9268db5e",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 48,
+      "table_id": 396262,
+      "name": "Table 48",
+      "doi": "10.17182/hepdata.83542.v1/t48",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t048.json",
+      "url": "https://www.hepdata.net/record/data/83542/396262/1/",
+      "sha256": "d6b6a18b3a241f372d36d7331fe35316fb7a805cb99c302d038c0fd0faf877ee",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 49,
+      "table_id": 396263,
+      "name": "Table 49",
+      "doi": "10.17182/hepdata.83542.v1/t49",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t049.json",
+      "url": "https://www.hepdata.net/record/data/83542/396263/1/",
+      "sha256": "1817f74b49b3abc13a11e060ef30fee99e55a1d379a4bf3cac6b27bbed45d31d",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 50,
+      "table_id": 396264,
+      "name": "Table 50",
+      "doi": "10.17182/hepdata.83542.v1/t50",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t050.json",
+      "url": "https://www.hepdata.net/record/data/83542/396264/1/",
+      "sha256": "34ed7ed641843489d448fefdfa98672309a4779be176d169be71b04e6e125009",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 51,
+      "table_id": 396265,
+      "name": "Table 51",
+      "doi": "10.17182/hepdata.83542.v1/t51",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t051.json",
+      "url": "https://www.hepdata.net/record/data/83542/396265/1/",
+      "sha256": "c34151d339497b8a7a7be027ccb7808e1ed3ac4e868f0c252e1106fdd13317c8",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 52,
+      "table_id": 396266,
+      "name": "Table 52",
+      "doi": "10.17182/hepdata.83542.v1/t52",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t052.json",
+      "url": "https://www.hepdata.net/record/data/83542/396266/1/",
+      "sha256": "536d6fa0cb40f6cbee1501b3e92fa91b74ce8b4c6dc98f46805b6fa7b9642387",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 53,
+      "table_id": 396267,
+      "name": "Table 53",
+      "doi": "10.17182/hepdata.83542.v1/t53",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t053.json",
+      "url": "https://www.hepdata.net/record/data/83542/396267/1/",
+      "sha256": "056b063cf4e836258f0f8da1c1980d19d759e81fafc15cbfdc508c0694f14087",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 54,
+      "table_id": 396268,
+      "name": "Table 54",
+      "doi": "10.17182/hepdata.83542.v1/t54",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t054.json",
+      "url": "https://www.hepdata.net/record/data/83542/396268/1/",
+      "sha256": "541150b49eb9e57e2216f99cd439d82230eb88c4b2ea8111e744b0fc044109f2",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 55,
+      "table_id": 396269,
+      "name": "Table 55",
+      "doi": "10.17182/hepdata.83542.v1/t55",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t055.json",
+      "url": "https://www.hepdata.net/record/data/83542/396269/1/",
+      "sha256": "8a834c7c1971f4683e4315df97591ee7ed4a62fa4db7fa32f52b9c6fffe3c075",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 56,
+      "table_id": 396270,
+      "name": "Table 56",
+      "doi": "10.17182/hepdata.83542.v1/t56",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t056.json",
+      "url": "https://www.hepdata.net/record/data/83542/396270/1/",
+      "sha256": "8e202e1f7208d4425f566816fe02e6fa4df7c032bba038d85dc05eba664a9ebb",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 57,
+      "table_id": 396271,
+      "name": "Table 57",
+      "doi": "10.17182/hepdata.83542.v1/t57",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t057.json",
+      "url": "https://www.hepdata.net/record/data/83542/396271/1/",
+      "sha256": "14fd80d0574617a2ab0ce97c0e0ee97624706f2245ba4ccab8ce39b762809c8c",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 58,
+      "table_id": 396272,
+      "name": "Table 58",
+      "doi": "10.17182/hepdata.83542.v1/t58",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t058.json",
+      "url": "https://www.hepdata.net/record/data/83542/396272/1/",
+      "sha256": "4173620aa696c84076151b284cb2824c315eafd7d1b183ac947568230988ad8f",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 59,
+      "table_id": 396273,
+      "name": "Table 59",
+      "doi": "10.17182/hepdata.83542.v1/t59",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t059.json",
+      "url": "https://www.hepdata.net/record/data/83542/396273/1/",
+      "sha256": "31287fe58f7bcb2efa327c9f5794728af92bb4658acd7ce48d55281ea9b0735b",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 60,
+      "table_id": 396274,
+      "name": "Table 60",
+      "doi": "10.17182/hepdata.83542.v1/t60",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t060.json",
+      "url": "https://www.hepdata.net/record/data/83542/396274/1/",
+      "sha256": "ec8ed8fc535a9a8dda7e7f360b8ea213940139636205429a9ce5faf964929da7",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 61,
+      "table_id": 396275,
+      "name": "Table 61",
+      "doi": "10.17182/hepdata.83542.v1/t61",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t061.json",
+      "url": "https://www.hepdata.net/record/data/83542/396275/1/",
+      "sha256": "a3c546d135c073b4c7bddc445e0d28dabdfec628b6c1f6a3e3fbb7721cf2eff7",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 62,
+      "table_id": 396276,
+      "name": "Table 62",
+      "doi": "10.17182/hepdata.83542.v1/t62",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t062.json",
+      "url": "https://www.hepdata.net/record/data/83542/396276/1/",
+      "sha256": "f334b3d3c2cb6f499af222c26adfd74326a508ed71eae529988c645f9a823250",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 63,
+      "table_id": 396277,
+      "name": "Table 63",
+      "doi": "10.17182/hepdata.83542.v1/t63",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t063.json",
+      "url": "https://www.hepdata.net/record/data/83542/396277/1/",
+      "sha256": "b3f9add1197589d1506dc53c03955f52edd4326e7e30764666adf8b0994d91db",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 64,
+      "table_id": 396278,
+      "name": "Table 64",
+      "doi": "10.17182/hepdata.83542.v1/t64",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t064.json",
+      "url": "https://www.hepdata.net/record/data/83542/396278/1/",
+      "sha256": "fe3355d5c33cdc88df7c94978ea77fe13e16e948e6764095a6f2a19b606aea7b",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 65,
+      "table_id": 396279,
+      "name": "Table 65",
+      "doi": "10.17182/hepdata.83542.v1/t65",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t065.json",
+      "url": "https://www.hepdata.net/record/data/83542/396279/1/",
+      "sha256": "1e10c6eaf9457fc168ea5c0990be0e6a8bbbd3636c771e2fe791b958e4d055a6",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 66,
+      "table_id": 396280,
+      "name": "Table 66",
+      "doi": "10.17182/hepdata.83542.v1/t66",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t066.json",
+      "url": "https://www.hepdata.net/record/data/83542/396280/1/",
+      "sha256": "6b8045c9bd7324811130eb6b14ed9928c9370a01034a12b081423c73ef433448",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 67,
+      "table_id": 396281,
+      "name": "Table 67",
+      "doi": "10.17182/hepdata.83542.v1/t67",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t067.json",
+      "url": "https://www.hepdata.net/record/data/83542/396281/1/",
+      "sha256": "3dd7628d4e310e58912934d8115767c52fac247b37757a93878e14a041fc3524",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 68,
+      "table_id": 396282,
+      "name": "Table 68",
+      "doi": "10.17182/hepdata.83542.v1/t68",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t068.json",
+      "url": "https://www.hepdata.net/record/data/83542/396282/1/",
+      "sha256": "a083f43f339642af7b5bbbf1a4f094ae7ceb6b74ebae3d8a014699fbd4c076fa",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 69,
+      "table_id": 396283,
+      "name": "Table 69",
+      "doi": "10.17182/hepdata.83542.v1/t69",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t069.json",
+      "url": "https://www.hepdata.net/record/data/83542/396283/1/",
+      "sha256": "cd48c8c7252629922ce9af59a2051599295bc8346aa3f7953a9ec33434890332",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 70,
+      "table_id": 396284,
+      "name": "Table 70",
+      "doi": "10.17182/hepdata.83542.v1/t70",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t070.json",
+      "url": "https://www.hepdata.net/record/data/83542/396284/1/",
+      "sha256": "7107a955b7b372f69a5f35acc6f0c794bc9abeacc84a03e266bc29f5786d3ca7",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 71,
+      "table_id": 396285,
+      "name": "Table 71",
+      "doi": "10.17182/hepdata.83542.v1/t71",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t071.json",
+      "url": "https://www.hepdata.net/record/data/83542/396285/1/",
+      "sha256": "f13bcac4e5da61c786ae99dd8f309bed6d082765c292bbe10eb60d29768598f7",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 72,
+      "table_id": 396286,
+      "name": "Table 72",
+      "doi": "10.17182/hepdata.83542.v1/t72",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t072.json",
+      "url": "https://www.hepdata.net/record/data/83542/396286/1/",
+      "sha256": "bf0d3683fcb5fb91fec06eff3f754565ca775da4f507f78f7119d4f5c705336b",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 73,
+      "table_id": 396287,
+      "name": "Table 73",
+      "doi": "10.17182/hepdata.83542.v1/t73",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t073.json",
+      "url": "https://www.hepdata.net/record/data/83542/396287/1/",
+      "sha256": "fc0086cf8a914d9c72972c34eee20f91e369b7fdf66c149d9da0939e1f44582f",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 74,
+      "table_id": 396288,
+      "name": "Table 74",
+      "doi": "10.17182/hepdata.83542.v1/t74",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t074.json",
+      "url": "https://www.hepdata.net/record/data/83542/396288/1/",
+      "sha256": "903077fa2768851f02da2b2d39062183a3cf5350a68b1365c6f8c650ec5da2d1",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 75,
+      "table_id": 396289,
+      "name": "Table 75",
+      "doi": "10.17182/hepdata.83542.v1/t75",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t075.json",
+      "url": "https://www.hepdata.net/record/data/83542/396289/1/",
+      "sha256": "bf01fd0deaf7d8f4e492840d5aec17550e288e3722e53ca7458ef1c7c1fb568f",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 76,
+      "table_id": 396290,
+      "name": "Table 76",
+      "doi": "10.17182/hepdata.83542.v1/t76",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t076.json",
+      "url": "https://www.hepdata.net/record/data/83542/396290/1/",
+      "sha256": "a73eb9968b61c64b09ff1031417680f3b2e76b68749d7595014a78d650977eae",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 77,
+      "table_id": 396291,
+      "name": "Table 77",
+      "doi": "10.17182/hepdata.83542.v1/t77",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t077.json",
+      "url": "https://www.hepdata.net/record/data/83542/396291/1/",
+      "sha256": "68a7feecce4ee4bbb3d8488d63df1f12432b5b799443640b9da5d2794868c834",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 78,
+      "table_id": 396292,
+      "name": "Table 78",
+      "doi": "10.17182/hepdata.83542.v1/t78",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t078.json",
+      "url": "https://www.hepdata.net/record/data/83542/396292/1/",
+      "sha256": "5e4bf1d3f876f5867111a7ed8454c5d804b45666d1377624e97bc9a1afaef7f5",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 79,
+      "table_id": 396293,
+      "name": "Table 79",
+      "doi": "10.17182/hepdata.83542.v1/t79",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t079.json",
+      "url": "https://www.hepdata.net/record/data/83542/396293/1/",
+      "sha256": "2fbe97fae3bea87dc5c5aa2a0585500bd58d034556958cd701cbc1e02e722f8c",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 80,
+      "table_id": 396294,
+      "name": "Table 80",
+      "doi": "10.17182/hepdata.83542.v1/t80",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t080.json",
+      "url": "https://www.hepdata.net/record/data/83542/396294/1/",
+      "sha256": "18d380b93aefe29d55e33e705c0695566af30daf69675b9fa44d0b370307e7e3",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 81,
+      "table_id": 396295,
+      "name": "Table 81",
+      "doi": "10.17182/hepdata.83542.v1/t81",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t081.json",
+      "url": "https://www.hepdata.net/record/data/83542/396295/1/",
+      "sha256": "7151b8c1f3886390e3294412a6fa9285924ba7b2d99cc99ebaed1bdbba6d76d5",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{+}}$",
+        "$C^{h^{+}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 82,
+      "table_id": 396296,
+      "name": "Table 82",
+      "doi": "10.17182/hepdata.83542.v1/t82",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t082.json",
+      "url": "https://www.hepdata.net/record/data/83542/396296/1/",
+      "sha256": "4f01225ff22c7af1b37885d36a52b221ff1679866e74f6ec85f4729ef87ee354",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 27
+    },
+    {
+      "number": 83,
+      "table_id": 396297,
+      "name": "Table 83",
+      "doi": "10.17182/hepdata.83542.v1/t83",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t083.json",
+      "url": "https://www.hepdata.net/record/data/83542/396297/1/",
+      "sha256": "e9eb97bf0e4c17d616ca4770352e33161fb6ce9e0c3f60d972115f680f0abca6",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 27
+    },
+    {
+      "number": 84,
+      "table_id": 396298,
+      "name": "Table 84",
+      "doi": "10.17182/hepdata.83542.v1/t84",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t084.json",
+      "url": "https://www.hepdata.net/record/data/83542/396298/1/",
+      "sha256": "a439c33f273d5c5995353000460a9d305673fe7b336f9d44ffe966fc28da28b0",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 27
+    },
+    {
+      "number": 85,
+      "table_id": 396299,
+      "name": "Table 85",
+      "doi": "10.17182/hepdata.83542.v1/t85",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t085.json",
+      "url": "https://www.hepdata.net/record/data/83542/396299/1/",
+      "sha256": "633fbdee2bcbbd774cc7259829d4b966df6105ecd20ecf518ca997875f40751a",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 24
+    },
+    {
+      "number": 86,
+      "table_id": 396300,
+      "name": "Table 86",
+      "doi": "10.17182/hepdata.83542.v1/t86",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t086.json",
+      "url": "https://www.hepdata.net/record/data/83542/396300/1/",
+      "sha256": "647736595f7a9d1c3d48df0a7e2ba5e594d995b79af0b19f1aa4693178a7fdf0",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 26
+    },
+    {
+      "number": 87,
+      "table_id": 396301,
+      "name": "Table 87",
+      "doi": "10.17182/hepdata.83542.v1/t87",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t087.json",
+      "url": "https://www.hepdata.net/record/data/83542/396301/1/",
+      "sha256": "737f71db379dd017f63130a4751172b55b621f923f81628cf77c9b05d1b21fe7",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 26
+    },
+    {
+      "number": 88,
+      "table_id": 396302,
+      "name": "Table 88",
+      "doi": "10.17182/hepdata.83542.v1/t88",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t088.json",
+      "url": "https://www.hepdata.net/record/data/83542/396302/1/",
+      "sha256": "d8aa076818eec32deca2a8e96a5edb9fab6f55901c6f32f530cf73f4c436db64",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 26
+    },
+    {
+      "number": 89,
+      "table_id": 396303,
+      "name": "Table 89",
+      "doi": "10.17182/hepdata.83542.v1/t89",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t089.json",
+      "url": "https://www.hepdata.net/record/data/83542/396303/1/",
+      "sha256": "9bff028fe6c5120bf96208778c56d32e187b8b20921cdff87564ea4a4afa3cc8",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 24
+    },
+    {
+      "number": 90,
+      "table_id": 396304,
+      "name": "Table 90",
+      "doi": "10.17182/hepdata.83542.v1/t90",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t090.json",
+      "url": "https://www.hepdata.net/record/data/83542/396304/1/",
+      "sha256": "4e1db11ca52f735c973d6555b4c19aed597962d820f71fc024744e92b8675929",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 25
+    },
+    {
+      "number": 91,
+      "table_id": 396305,
+      "name": "Table 91",
+      "doi": "10.17182/hepdata.83542.v1/t91",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t091.json",
+      "url": "https://www.hepdata.net/record/data/83542/396305/1/",
+      "sha256": "6c0a892d1cabc473d27b13ff6feacffea512a93f5047bfa5049db86f097dc3e2",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 92,
+      "table_id": 396306,
+      "name": "Table 92",
+      "doi": "10.17182/hepdata.83542.v1/t92",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t092.json",
+      "url": "https://www.hepdata.net/record/data/83542/396306/1/",
+      "sha256": "a0649b9904a77e8e01228ae44bf72d66ed76070bc2c8222f7258ee87414372ea",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 27
+    },
+    {
+      "number": 93,
+      "table_id": 396307,
+      "name": "Table 93",
+      "doi": "10.17182/hepdata.83542.v1/t93",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t093.json",
+      "url": "https://www.hepdata.net/record/data/83542/396307/1/",
+      "sha256": "47695e41c560ed26ffd75dc9b621e4d8e74f0013005e0b464d1098b8e0931073",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 25
+    },
+    {
+      "number": 94,
+      "table_id": 396308,
+      "name": "Table 94",
+      "doi": "10.17182/hepdata.83542.v1/t94",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t094.json",
+      "url": "https://www.hepdata.net/record/data/83542/396308/1/",
+      "sha256": "271fb5d83e012cabb933ce9ceae91f4838aa50f99d38e6254d44fe5d2315c3ef",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 25
+    },
+    {
+      "number": 95,
+      "table_id": 396309,
+      "name": "Table 95",
+      "doi": "10.17182/hepdata.83542.v1/t95",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t095.json",
+      "url": "https://www.hepdata.net/record/data/83542/396309/1/",
+      "sha256": "42ea7c89d55e23825a84cda48c59616084475c3ec269af940edad02ed46dcf29",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 25
+    },
+    {
+      "number": 96,
+      "table_id": 396310,
+      "name": "Table 96",
+      "doi": "10.17182/hepdata.83542.v1/t96",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t096.json",
+      "url": "https://www.hepdata.net/record/data/83542/396310/1/",
+      "sha256": "0b2fd682dfeb50593c3b8e16ab0d5b498da73840b68f8416b2e011edda2f46be",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 27
+    },
+    {
+      "number": 97,
+      "table_id": 396311,
+      "name": "Table 97",
+      "doi": "10.17182/hepdata.83542.v1/t97",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t097.json",
+      "url": "https://www.hepdata.net/record/data/83542/396311/1/",
+      "sha256": "bd1d7a8b2fcde9b97b1bd1c721d9383d7c501776387ac1c6a6b1010f7253e8e2",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 25
+    },
+    {
+      "number": 98,
+      "table_id": 396312,
+      "name": "Table 98",
+      "doi": "10.17182/hepdata.83542.v1/t98",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t098.json",
+      "url": "https://www.hepdata.net/record/data/83542/396312/1/",
+      "sha256": "12fc656afc4bea9d553d8252114427c8b1aa5720936eaa770d51df1991ec8315",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 25
+    },
+    {
+      "number": 99,
+      "table_id": 396313,
+      "name": "Table 99",
+      "doi": "10.17182/hepdata.83542.v1/t99",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t099.json",
+      "url": "https://www.hepdata.net/record/data/83542/396313/1/",
+      "sha256": "a5c1042f7c7a52b944b52c451f573342ab0b63ff2e3b0eb06dfbb577afedce40",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 25
+    },
+    {
+      "number": 100,
+      "table_id": 396314,
+      "name": "Table 100",
+      "doi": "10.17182/hepdata.83542.v1/t100",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t100.json",
+      "url": "https://www.hepdata.net/record/data/83542/396314/1/",
+      "sha256": "8f1a7ae7fa134bef7d5b80d21f4dc1de2427e832cbfe684dc0844139db39cd90",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 29
+    },
+    {
+      "number": 101,
+      "table_id": 396315,
+      "name": "Table 101",
+      "doi": "10.17182/hepdata.83542.v1/t101",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t101.json",
+      "url": "https://www.hepdata.net/record/data/83542/396315/1/",
+      "sha256": "8b9c62d3058d7c61c567902975be7a68945246306f62f78f03379e561451b402",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 102,
+      "table_id": 396316,
+      "name": "Table 102",
+      "doi": "10.17182/hepdata.83542.v1/t102",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t102.json",
+      "url": "https://www.hepdata.net/record/data/83542/396316/1/",
+      "sha256": "9c6056607806093bc00496f5099b4bae5ae3e0731f2ca9596e7b78870397cdca",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 103,
+      "table_id": 396317,
+      "name": "Table 103",
+      "doi": "10.17182/hepdata.83542.v1/t103",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t103.json",
+      "url": "https://www.hepdata.net/record/data/83542/396317/1/",
+      "sha256": "a57c72ac5229d689121e605a018dfd818a88d9416c8cc41c5eb68cfd15ab07d8",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 29
+    },
+    {
+      "number": 104,
+      "table_id": 396318,
+      "name": "Table 104",
+      "doi": "10.17182/hepdata.83542.v1/t104",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t104.json",
+      "url": "https://www.hepdata.net/record/data/83542/396318/1/",
+      "sha256": "a2635ee5a25abe5fb5ab07cd2aea70d2461e925c60aa7e123574849137c7e6cf",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 29
+    },
+    {
+      "number": 105,
+      "table_id": 396319,
+      "name": "Table 105",
+      "doi": "10.17182/hepdata.83542.v1/t105",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t105.json",
+      "url": "https://www.hepdata.net/record/data/83542/396319/1/",
+      "sha256": "a8bf924fb14522ea445e800f589951362e560325da2f19acd88b68e75bfc0a7a",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 29
+    },
+    {
+      "number": 106,
+      "table_id": 396320,
+      "name": "Table 106",
+      "doi": "10.17182/hepdata.83542.v1/t106",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t106.json",
+      "url": "https://www.hepdata.net/record/data/83542/396320/1/",
+      "sha256": "cc89d5969a1f3fc6eac1d6a9e501ca8b00b371541a3b381878612b7938c3160c",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 107,
+      "table_id": 396321,
+      "name": "Table 107",
+      "doi": "10.17182/hepdata.83542.v1/t107",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t107.json",
+      "url": "https://www.hepdata.net/record/data/83542/396321/1/",
+      "sha256": "ce3bc70882eb01bb263bfc2af258319dbba3a12895213fd429df222f564274c7",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 108,
+      "table_id": 396322,
+      "name": "Table 108",
+      "doi": "10.17182/hepdata.83542.v1/t108",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t108.json",
+      "url": "https://www.hepdata.net/record/data/83542/396322/1/",
+      "sha256": "5f09ee7b5fd05520e02a73230e11f8bab5169835ef4ef0eb005f088a5c85b512",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 28
+    },
+    {
+      "number": 109,
+      "table_id": 396323,
+      "name": "Table 109",
+      "doi": "10.17182/hepdata.83542.v1/t109",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t109.json",
+      "url": "https://www.hepdata.net/record/data/83542/396323/1/",
+      "sha256": "65c4113ef00573c0ce328cf6fda00682f42612ef16176a7c5652e6baa11c7322",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 28
+    },
+    {
+      "number": 110,
+      "table_id": 396324,
+      "name": "Table 110",
+      "doi": "10.17182/hepdata.83542.v1/t110",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t110.json",
+      "url": "https://www.hepdata.net/record/data/83542/396324/1/",
+      "sha256": "a29608a9330f0e0e335504a2e23aa81d56217d3071aec6c580ebdf466aa2fcf5",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 28
+    },
+    {
+      "number": 111,
+      "table_id": 396325,
+      "name": "Table 111",
+      "doi": "10.17182/hepdata.83542.v1/t111",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t111.json",
+      "url": "https://www.hepdata.net/record/data/83542/396325/1/",
+      "sha256": "9910e643a4a097735e76ff23c8652100a29daaf3416a421c2bc8b9e05530810a",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 112,
+      "table_id": 396326,
+      "name": "Table 112",
+      "doi": "10.17182/hepdata.83542.v1/t112",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t112.json",
+      "url": "https://www.hepdata.net/record/data/83542/396326/1/",
+      "sha256": "9cbcefbadf595ea2ee0d627b0946d8f5302d89c241d89d1752e6ddfb4dbdc045",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 113,
+      "table_id": 396327,
+      "name": "Table 113",
+      "doi": "10.17182/hepdata.83542.v1/t113",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t113.json",
+      "url": "https://www.hepdata.net/record/data/83542/396327/1/",
+      "sha256": "0865f4ff316f1a95cf8a53819f663cc61c0ee6c1ea7beda0ac4c543428d78b41",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 114,
+      "table_id": 396328,
+      "name": "Table 114",
+      "doi": "10.17182/hepdata.83542.v1/t114",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t114.json",
+      "url": "https://www.hepdata.net/record/data/83542/396328/1/",
+      "sha256": "0214aa95057a2068140851e2ad6f9056af119bbc617b5811a57e2bda7d48ea4f",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 28
+    },
+    {
+      "number": 115,
+      "table_id": 396329,
+      "name": "Table 115",
+      "doi": "10.17182/hepdata.83542.v1/t115",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t115.json",
+      "url": "https://www.hepdata.net/record/data/83542/396329/1/",
+      "sha256": "bacafedc501c80c56ed61a73041ceee21a9475fb888b9cf5165e7332980cf930",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 27
+    },
+    {
+      "number": 116,
+      "table_id": 396330,
+      "name": "Table 116",
+      "doi": "10.17182/hepdata.83542.v1/t116",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t116.json",
+      "url": "https://www.hepdata.net/record/data/83542/396330/1/",
+      "sha256": "4e4eafd2749161801738f5013d70362024b581f4e8211cb8188b367408185b41",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 27
+    },
+    {
+      "number": 117,
+      "table_id": 396331,
+      "name": "Table 117",
+      "doi": "10.17182/hepdata.83542.v1/t117",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t117.json",
+      "url": "https://www.hepdata.net/record/data/83542/396331/1/",
+      "sha256": "d8ffc5909f8af3ad9677de2df8f82e84a02bd7cd1bd4e47a1e7948e2c09fd265",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 118,
+      "table_id": 396332,
+      "name": "Table 118",
+      "doi": "10.17182/hepdata.83542.v1/t118",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t118.json",
+      "url": "https://www.hepdata.net/record/data/83542/396332/1/",
+      "sha256": "14f603d967b0ecaa11dfd9a2cc46a5031044c86bb8224472d2aff3d14f98b678",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 119,
+      "table_id": 396333,
+      "name": "Table 119",
+      "doi": "10.17182/hepdata.83542.v1/t119",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t119.json",
+      "url": "https://www.hepdata.net/record/data/83542/396333/1/",
+      "sha256": "a83ca6978cf579ca2320c12d7d9f93097bec8ff5a10053a6883f95aec2c1eaa4",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 28
+    },
+    {
+      "number": 120,
+      "table_id": 396334,
+      "name": "Table 120",
+      "doi": "10.17182/hepdata.83542.v1/t120",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t120.json",
+      "url": "https://www.hepdata.net/record/data/83542/396334/1/",
+      "sha256": "95980ca574ac72e7faa44b50878d3a7f7114c84c72c078d7d1c0aefbd3c9ab06",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 28
+    },
+    {
+      "number": 121,
+      "table_id": 396335,
+      "name": "Table 121",
+      "doi": "10.17182/hepdata.83542.v1/t121",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t121.json",
+      "url": "https://www.hepdata.net/record/data/83542/396335/1/",
+      "sha256": "1509b8768411b282a3350b6f707a2497a8be1714fa232523aff2392853831992",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 28
+    },
+    {
+      "number": 122,
+      "table_id": 396336,
+      "name": "Table 122",
+      "doi": "10.17182/hepdata.83542.v1/t122",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t122.json",
+      "url": "https://www.hepdata.net/record/data/83542/396336/1/",
+      "sha256": "a3a0288b40fe6ae93f0e5c1ee3280ead85da33a24639ad02514c4629288e7eb5",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 123,
+      "table_id": 396337,
+      "name": "Table 123",
+      "doi": "10.17182/hepdata.83542.v1/t123",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t123.json",
+      "url": "https://www.hepdata.net/record/data/83542/396337/1/",
+      "sha256": "6ba83dcebf04576ee718dc5a793e1a7db5568111438b14a4392370194e36674c",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 124,
+      "table_id": 396338,
+      "name": "Table 124",
+      "doi": "10.17182/hepdata.83542.v1/t124",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t124.json",
+      "url": "https://www.hepdata.net/record/data/83542/396338/1/",
+      "sha256": "fb8f7fc0a2beb5d191295b88b1dc571a12fca421445a7e3622ffc405ed56a1e2",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 125,
+      "table_id": 396339,
+      "name": "Table 125",
+      "doi": "10.17182/hepdata.83542.v1/t125",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t125.json",
+      "url": "https://www.hepdata.net/record/data/83542/396339/1/",
+      "sha256": "f0b04511215442f3a40250b882388dba9ded899b62b044b2ed9e59a115ac5185",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 126,
+      "table_id": 396340,
+      "name": "Table 126",
+      "doi": "10.17182/hepdata.83542.v1/t126",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t126.json",
+      "url": "https://www.hepdata.net/record/data/83542/396340/1/",
+      "sha256": "58992bb2bd3adcd24978a98ed9edebd4d27d7983e9bcf3816087fdcf65a04c9a",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 127,
+      "table_id": 396341,
+      "name": "Table 127",
+      "doi": "10.17182/hepdata.83542.v1/t127",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t127.json",
+      "url": "https://www.hepdata.net/record/data/83542/396341/1/",
+      "sha256": "ea3027d801e4108a205d0ad63eb0e1489327368fca6f7eb2a6a6fd12fbde8de0",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 128,
+      "table_id": 396342,
+      "name": "Table 128",
+      "doi": "10.17182/hepdata.83542.v1/t128",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t128.json",
+      "url": "https://www.hepdata.net/record/data/83542/396342/1/",
+      "sha256": "9c7621631e0d860ddcc107d314790d88c6e7edc3fa8f6fe3cc7f260d14e08db3",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 129,
+      "table_id": 396343,
+      "name": "Table 129",
+      "doi": "10.17182/hepdata.83542.v1/t129",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t129.json",
+      "url": "https://www.hepdata.net/record/data/83542/396343/1/",
+      "sha256": "70471c1d06bcda20c6773e30bbe81f8294a31723f5615357108863bfc7e64ab2",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 130,
+      "table_id": 396344,
+      "name": "Table 130",
+      "doi": "10.17182/hepdata.83542.v1/t130",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t130.json",
+      "url": "https://www.hepdata.net/record/data/83542/396344/1/",
+      "sha256": "ff96e8d3885a1921a63819742f53b95cb858ae923fe9f1a185d6a184f49bafbc",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 131,
+      "table_id": 396345,
+      "name": "Table 131",
+      "doi": "10.17182/hepdata.83542.v1/t131",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t131.json",
+      "url": "https://www.hepdata.net/record/data/83542/396345/1/",
+      "sha256": "1401e177ed270d485665409a37e9b32911e4d72f5cab111ec4775e66ad820a5c",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 132,
+      "table_id": 396346,
+      "name": "Table 132",
+      "doi": "10.17182/hepdata.83542.v1/t132",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t132.json",
+      "url": "https://www.hepdata.net/record/data/83542/396346/1/",
+      "sha256": "865e306011cf7e483f6eafcfc267178b4a49ad4caf1c25e0a3d8d566a653fe90",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 133,
+      "table_id": 396347,
+      "name": "Table 133",
+      "doi": "10.17182/hepdata.83542.v1/t133",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t133.json",
+      "url": "https://www.hepdata.net/record/data/83542/396347/1/",
+      "sha256": "585baf8d20cbf279eeca73b559fea9d13724e5dfa72da64f55375b7e513e5c01",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 134,
+      "table_id": 396348,
+      "name": "Table 134",
+      "doi": "10.17182/hepdata.83542.v1/t134",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t134.json",
+      "url": "https://www.hepdata.net/record/data/83542/396348/1/",
+      "sha256": "12b13e5365c9c8aae223321f968bd511c1785420e7e75fb9337053fe411c9e58",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 135,
+      "table_id": 396349,
+      "name": "Table 135",
+      "doi": "10.17182/hepdata.83542.v1/t135",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t135.json",
+      "url": "https://www.hepdata.net/record/data/83542/396349/1/",
+      "sha256": "20e2dcac2398ab92ec18fb1021daa9a9bace0a3f39226631980110f05bd8139a",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 136,
+      "table_id": 396350,
+      "name": "Table 136",
+      "doi": "10.17182/hepdata.83542.v1/t136",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t136.json",
+      "url": "https://www.hepdata.net/record/data/83542/396350/1/",
+      "sha256": "97a06fa3e67d38df87a8bcabd9a7e7d1a1df9ff26741f01475669f046a70240b",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 137,
+      "table_id": 396351,
+      "name": "Table 137",
+      "doi": "10.17182/hepdata.83542.v1/t137",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t137.json",
+      "url": "https://www.hepdata.net/record/data/83542/396351/1/",
+      "sha256": "ebfab7a5d0b4485fbbb93b60c4b1f78666fe09480e875cc89f46339b02e9ad92",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 138,
+      "table_id": 396352,
+      "name": "Table 138",
+      "doi": "10.17182/hepdata.83542.v1/t138",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t138.json",
+      "url": "https://www.hepdata.net/record/data/83542/396352/1/",
+      "sha256": "6536c711489c223401ccea45c50382e0c9c9c2cf1a4c9bc81f09105072e67597",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 139,
+      "table_id": 396353,
+      "name": "Table 139",
+      "doi": "10.17182/hepdata.83542.v1/t139",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t139.json",
+      "url": "https://www.hepdata.net/record/data/83542/396353/1/",
+      "sha256": "d63624e5414eb699b6af81c38463bddb501a770e910c373a2deb261ba0b0a7f7",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 140,
+      "table_id": 396354,
+      "name": "Table 140",
+      "doi": "10.17182/hepdata.83542.v1/t140",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t140.json",
+      "url": "https://www.hepdata.net/record/data/83542/396354/1/",
+      "sha256": "fd558ed8d8c3a1c5742ef887d1f2bd6b821258f7158da1bfdd54a7828665f58f",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 141,
+      "table_id": 396355,
+      "name": "Table 141",
+      "doi": "10.17182/hepdata.83542.v1/t141",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t141.json",
+      "url": "https://www.hepdata.net/record/data/83542/396355/1/",
+      "sha256": "b1552596f4691e327c2c779d9380c01c83ec5361bf74482d03b910a99b5b958d",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 142,
+      "table_id": 396356,
+      "name": "Table 142",
+      "doi": "10.17182/hepdata.83542.v1/t142",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t142.json",
+      "url": "https://www.hepdata.net/record/data/83542/396356/1/",
+      "sha256": "711ca8c456dbbf2741f6dc1291d61958b9a3b78ac58d375c9b4257dc1798314e",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 143,
+      "table_id": 396357,
+      "name": "Table 143",
+      "doi": "10.17182/hepdata.83542.v1/t143",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t143.json",
+      "url": "https://www.hepdata.net/record/data/83542/396357/1/",
+      "sha256": "f52473c23b3eceb495f0602732ad35980bc87456e95d44122f5340697ad46660",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 144,
+      "table_id": 396358,
+      "name": "Table 144",
+      "doi": "10.17182/hepdata.83542.v1/t144",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t144.json",
+      "url": "https://www.hepdata.net/record/data/83542/396358/1/",
+      "sha256": "10281d9867e263953babb4c34e0b4af2d2b91e9a034587480e24abdd0d52f150",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 145,
+      "table_id": 396359,
+      "name": "Table 145",
+      "doi": "10.17182/hepdata.83542.v1/t145",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t145.json",
+      "url": "https://www.hepdata.net/record/data/83542/396359/1/",
+      "sha256": "dbf4609e71343481751d5ede0bafe9c30835423fa369545b4ad5e10ffe30f60d",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 146,
+      "table_id": 396360,
+      "name": "Table 146",
+      "doi": "10.17182/hepdata.83542.v1/t146",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t146.json",
+      "url": "https://www.hepdata.net/record/data/83542/396360/1/",
+      "sha256": "9fa5a30d45b8d823d00d33cde9db7cfd00aa8e3360e94776cebf2d052054f41c",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 147,
+      "table_id": 396361,
+      "name": "Table 147",
+      "doi": "10.17182/hepdata.83542.v1/t147",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t147.json",
+      "url": "https://www.hepdata.net/record/data/83542/396361/1/",
+      "sha256": "11602c7f6e7a4f71fff8dafbdb5c14c1ca0c8baea7d85f6f2239b6a7073f931c",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 148,
+      "table_id": 396362,
+      "name": "Table 148",
+      "doi": "10.17182/hepdata.83542.v1/t148",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t148.json",
+      "url": "https://www.hepdata.net/record/data/83542/396362/1/",
+      "sha256": "94622e5da9675699c5a6f9f21831574c68ec40edb7492b18c24fc09dfb2e3d23",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 149,
+      "table_id": 396363,
+      "name": "Table 149",
+      "doi": "10.17182/hepdata.83542.v1/t149",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t149.json",
+      "url": "https://www.hepdata.net/record/data/83542/396363/1/",
+      "sha256": "9d8b2b27fce04a0e96813a08b68135a11af006954439295b654fb9dc9d2dc995",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 150,
+      "table_id": 396364,
+      "name": "Table 150",
+      "doi": "10.17182/hepdata.83542.v1/t150",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t150.json",
+      "url": "https://www.hepdata.net/record/data/83542/396364/1/",
+      "sha256": "db19984c6843e83fcd38c4e34899452b82e4b62cb0138f6f80bc305b9e87ccbe",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 151,
+      "table_id": 396365,
+      "name": "Table 151",
+      "doi": "10.17182/hepdata.83542.v1/t151",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t151.json",
+      "url": "https://www.hepdata.net/record/data/83542/396365/1/",
+      "sha256": "8d9d5302a1c34308626d35f2a956e4841c0b4e9f98c9c1d380065ada438f5279",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 152,
+      "table_id": 396366,
+      "name": "Table 152",
+      "doi": "10.17182/hepdata.83542.v1/t152",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t152.json",
+      "url": "https://www.hepdata.net/record/data/83542/396366/1/",
+      "sha256": "a85b5b9767d11c77185cf4f0d17ee5e4d0c0af8c106682061911f95721ff76dd",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 153,
+      "table_id": 396367,
+      "name": "Table 153",
+      "doi": "10.17182/hepdata.83542.v1/t153",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t153.json",
+      "url": "https://www.hepdata.net/record/data/83542/396367/1/",
+      "sha256": "2c477eccf5a3f0d3afc17505d9cba2d9665c5368d6e2df94863b4cb61698d4fd",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 154,
+      "table_id": 396368,
+      "name": "Table 154",
+      "doi": "10.17182/hepdata.83542.v1/t154",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t154.json",
+      "url": "https://www.hepdata.net/record/data/83542/396368/1/",
+      "sha256": "86c31c5ceeecc611df0c7c9a5bf88bb2b787517749b747ed7684e2ea44267067",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 155,
+      "table_id": 396369,
+      "name": "Table 155",
+      "doi": "10.17182/hepdata.83542.v1/t155",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t155.json",
+      "url": "https://www.hepdata.net/record/data/83542/396369/1/",
+      "sha256": "033463e8f2d6b52df5038806a3539489141dd401772c113784730c649b1c29d4",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 156,
+      "table_id": 396370,
+      "name": "Table 156",
+      "doi": "10.17182/hepdata.83542.v1/t156",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t156.json",
+      "url": "https://www.hepdata.net/record/data/83542/396370/1/",
+      "sha256": "891cce637024f9956cc7b8ac95d1f46b4829671d847166f770dc670914ce384c",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 157,
+      "table_id": 396371,
+      "name": "Table 157",
+      "doi": "10.17182/hepdata.83542.v1/t157",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t157.json",
+      "url": "https://www.hepdata.net/record/data/83542/396371/1/",
+      "sha256": "f3814f64dea5c5c85a91b6a668fddfed5d02c69c4e6dba3aec57401b926a103b",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 158,
+      "table_id": 396372,
+      "name": "Table 158",
+      "doi": "10.17182/hepdata.83542.v1/t158",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t158.json",
+      "url": "https://www.hepdata.net/record/data/83542/396372/1/",
+      "sha256": "53a648d805062e12b8db205698843d2306d2b719cb0a3daf089812c198ecf7f3",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 159,
+      "table_id": 396373,
+      "name": "Table 159",
+      "doi": "10.17182/hepdata.83542.v1/t159",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t159.json",
+      "url": "https://www.hepdata.net/record/data/83542/396373/1/",
+      "sha256": "f13f5588390c48f1d876e9daca5b70eed634fe56fa325ebff1ac75918efeac82",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 160,
+      "table_id": 396374,
+      "name": "Table 160",
+      "doi": "10.17182/hepdata.83542.v1/t160",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t160.json",
+      "url": "https://www.hepdata.net/record/data/83542/396374/1/",
+      "sha256": "ef2aa9bf4ea50018f244974fbb3df4f4080cb18d80b44e66125b0bf4e0ceee2e",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 161,
+      "table_id": 396375,
+      "name": "Table 161",
+      "doi": "10.17182/hepdata.83542.v1/t161",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t161.json",
+      "url": "https://www.hepdata.net/record/data/83542/396375/1/",
+      "sha256": "6936b222e90097f84970c7dc95efa76a6ebcacf62210f28ad4da5b697d8fae04",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    },
+    {
+      "number": 162,
+      "table_id": 396376,
+      "name": "Table 162",
+      "doi": "10.17182/hepdata.83542.v1/t162",
+      "path": "data/phenomenology/COMPASS_2018_I1624692/raw/t162.json",
+      "url": "https://www.hepdata.net/record/data/83542/396376/1/",
+      "sha256": "967dd79e442cec60dd5b397b8b3bedaeada894552be013054a160826284630b4",
+      "headers": [
+        "$P_{hT}^2 (GeV/c)^{2}$",
+        "$M^{h^{-}}$",
+        "$C^{h^{-}}$",
+        "$C^{DIS}$"
+      ],
+      "rows": 30
+    }
+  ]
+}

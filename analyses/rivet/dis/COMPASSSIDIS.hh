@@ -20,6 +20,8 @@ namespace COMPASSSIDIS {
     double z = -1.0;
     double momentum = -1.0;
     double theta = -1.0;
+    double transverseMomentum = -1.0;
+    double transverseMomentum2 = -1.0;
   };
 
   inline HadronKinematics hadronKinematics(
@@ -39,13 +41,24 @@ namespace COMPASSSIDIS {
     out.z = (dis.target * momentum) / denominator;
     out.momentum = observed.p3().mod() / GeV;
     out.theta = dis.k.angle(observed);
+    if (dis.q.p3().mod() > 0.0) {
+      out.transverseMomentum =
+        observed.p3().cross(dis.q.p3()).mod()/dis.q.p3().mod()/GeV;
+      out.transverseMomentum2 = out.transverseMomentum*out.transverseMomentum;
+    }
     out.valid = std::isfinite(out.z) && std::isfinite(out.momentum) &&
-                std::isfinite(out.theta);
+                std::isfinite(out.theta) &&
+                std::isfinite(out.transverseMomentum) &&
+                std::isfinite(out.transverseMomentum2);
     return out;
   }
 
   inline bool fixed160GeVBeam(const DISKinematics& dis) {
     return std::abs(dis.k.E()/GeV - 160.0) < 1.0e-6;
+  }
+
+  inline bool fixedBeamEnergy(const DISKinematics& dis, double energyGeV) {
+    return std::abs(dis.k.E()/GeV - energyGeV) < 1.0e-6;
   }
 
   inline void fillEventCount(

@@ -3,6 +3,10 @@
 Three COMPASS SIDIS measurements are implemented by the primary campaign
 runner:
 
+These schema-5 analyses remain frozen for reproducibility. The corrected 2026
+isoscalar multiplicities are the primary modern comparison; see
+`docs/sidis-tranches-workflow.md` for the schema-6 tranche implementations.
+
 | Analysis | Pinned release | Observable | Central jobs |
 |---|---|---|---:|
 | `COMPASS_2009_I820721` | [HEPData v1](https://www.hepdata.net/record/ins820721?version=1) | $A_{1,d}^{\pi^\pm,K^\pm}(x)$ | 16 |

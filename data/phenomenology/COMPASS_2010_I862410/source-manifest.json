@@ -1,0 +1,18 @@
+{
+  "measurement": "COMPASS_2010_I862410",
+  "retrieved": "2026-08-28",
+  "numerical_authority": "arXiv:1007.4061 source/PDF",
+  "tex_member": "cern-ph-ep_2010-023.tex",
+  "source_archive": {
+    "path": "data/phenomenology/COMPASS_2010_I862410/raw/arXiv-1007.4061-source.tar.gz",
+    "bytes": 74262,
+    "sha256": "ab95b2b797bda6513adcd69912be108834d14983941276d37ebcead7054d3a6b",
+    "url": "https://arxiv.org/e-print/1007.4061"
+  },
+  "paper_pdf": {
+    "path": "data/phenomenology/COMPASS_2010_I862410/raw/arXiv-1007.4061.pdf",
+    "bytes": 232628,
+    "sha256": "a0282340c84edbd703e629f65f75bf2a3c6c0703a16674dfd298020d614aeeb7",
+    "url": "https://arxiv.org/pdf/1007.4061"
+  }
+}

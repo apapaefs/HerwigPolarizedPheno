@@ -1,0 +1,33 @@
+Name: COMPASS_2026_I3096394
+Year: 2026
+Summary: Corrected pion, kaon and unidentified-hadron SIDIS multiplicities on an isoscalar target
+Experiment: COMPASS
+Collider: CERN SPS fixed target
+InspireID: 3096394
+Status: UNVALIDATED
+Reentrant: true
+Authors:
+ - Andreas Papaefstathiou <apapaefs@kennesaw.edu>
+References:
+ - Phys.Lett.B 875 (2026) 140266
+ - arXiv:2512.23727
+RunInfo: >
+  Requires zero-polarization 160 GeV mu+ p and mu+ n samples, with POSNLO
+  and NEGNLO generated separately.
+NumEvents: 100000
+NeedsCrossSection: yes
+Beams: [[ANTIMUON, PROTON], [ANTIMUON, NEUTRON]]
+Energies: [[160.0, 0.938272], [160.0, 0.939565]]
+Description: >
+  Fills event-aggregated hadron numerators, inclusive-DIS denominators and
+  same-event covariance proxies in the exact species-specific sparse cells
+  of the corrected HEPData-v1 release. The postprocessor forms the P/N
+  isoscalar sum before the ratio and applies the published z density width.
+Keywords: [DIS, SIDIS, fixed-target, multiplicity, pion, kaon, charged hadron]
+BibKey: COMPASS:2026sidis
+BibTeX: '@article{COMPASS:2026sidis,
+  collaboration = "COMPASS",
+  title = "{Addendum to multiplicities of charged pions, kaons and unidentified charged hadrons on an isoscalar target measured by COMPASS Collaboration}",
+  eprint = "2512.23727", archivePrefix = "arXiv",
+  doi = "10.1016/j.physletb.2026.140266",
+  journal = "Phys. Lett. B", volume = "875", pages = "140266", year = "2026"}'

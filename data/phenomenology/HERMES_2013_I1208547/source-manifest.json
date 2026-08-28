@@ -1,0 +1,974 @@
+{
+  "measurement": "HERMES_2013_I1208547",
+  "retrieved": "2026-08-28",
+  "record_doi": "10.17182/hepdata.62097.v1",
+  "record_version": 1,
+  "record_path": "data/phenomenology/HERMES_2013_I1208547/raw/record.json",
+  "record_sha256": "b02f89dd0ab45806a2dba06c2301051e10724a60f8a133444f2018bda181440f",
+  "tables": [
+    {
+      "number": 1,
+      "table_id": 54523,
+      "name": "Table 1",
+      "doi": "10.17182/hepdata.62097.v1/t1",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t001.json",
+      "url": "https://www.hepdata.net/record/data/62097/54523/1/",
+      "sha256": "850957d975bc7608e63e8142173805fb71de15ff2dd3b3090383500b42a73600",
+      "headers": [
+        "Z (proton)",
+        "Z (deuterium)",
+        "MULT"
+      ],
+      "rows": 10
+    },
+    {
+      "number": 2,
+      "table_id": 54524,
+      "name": "Table 2",
+      "doi": "10.17182/hepdata.62097.v1/t2",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t002.json",
+      "url": "https://www.hepdata.net/record/data/62097/54524/1/",
+      "sha256": "da19c0b3e2ab6342cb40dc6b8f8e9a475c6ca8f3ddb8c335e8a331d102a860ae",
+      "headers": [
+        "Z (proton)",
+        "Z (deuterium)",
+        "MULT"
+      ],
+      "rows": 10
+    },
+    {
+      "number": 3,
+      "table_id": 54525,
+      "name": "Table 3",
+      "doi": "10.17182/hepdata.62097.v1/t3",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t003.json",
+      "url": "https://www.hepdata.net/record/data/62097/54525/1/",
+      "sha256": "4b5e4395cef258c9de8d74bfa12d65098b266ad9baaa2493fa7e8c2e778b2b6b",
+      "headers": [
+        "Z (proton)",
+        "Z (deuterium)",
+        "MULT"
+      ],
+      "rows": 10
+    },
+    {
+      "number": 4,
+      "table_id": 54526,
+      "name": "Table 4",
+      "doi": "10.17182/hepdata.62097.v1/t4",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t004.json",
+      "url": "https://www.hepdata.net/record/data/62097/54526/1/",
+      "sha256": "bfc7197f7d2aeeae51789910348621054934a5bcc60e6b98b8a04c65c0a45b8d",
+      "headers": [
+        "Z (proton)",
+        "Z (deuterium)",
+        "MULT"
+      ],
+      "rows": 10
+    },
+    {
+      "number": 5,
+      "table_id": 54527,
+      "name": "Table 5",
+      "doi": "10.17182/hepdata.62097.v1/t5",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t005.json",
+      "url": "https://www.hepdata.net/record/data/62097/54527/1/",
+      "sha256": "eab2c08d75a44a51d00bbf869acbed574c6b61863e7ff66401525f6e3c5e893a",
+      "headers": [
+        "Z (vmsub)",
+        "Z (no-vmsub)",
+        "MULT"
+      ],
+      "rows": 10
+    },
+    {
+      "number": 6,
+      "table_id": 54528,
+      "name": "Table 6",
+      "doi": "10.17182/hepdata.62097.v1/t6",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t006.json",
+      "url": "https://www.hepdata.net/record/data/62097/54528/1/",
+      "sha256": "0abf30add88313d53e61ac4914989510c8e3d731c5bd072630a4a915d2ff2f51",
+      "headers": [
+        "Z (vmsub)",
+        "Z (no-vmsub)",
+        "MULT"
+      ],
+      "rows": 10
+    },
+    {
+      "number": 7,
+      "table_id": 54529,
+      "name": "Table 7",
+      "doi": "10.17182/hepdata.62097.v1/t7",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t007.json",
+      "url": "https://www.hepdata.net/record/data/62097/54529/1/",
+      "sha256": "2925b6a738ae1a5ac949fab7e4a269d8510fafe8065c58bd24817764d44bbfd9",
+      "headers": [
+        "Z (vmsub)",
+        "Z (no-vmsub)",
+        "MULT"
+      ],
+      "rows": 10
+    },
+    {
+      "number": 8,
+      "table_id": 54530,
+      "name": "Table 8",
+      "doi": "10.17182/hepdata.62097.v1/t8",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t008.json",
+      "url": "https://www.hepdata.net/record/data/62097/54530/1/",
+      "sha256": "271a29368fd882116fe6f67c16b418af754fdbd9d7636c5377bcccfcc2a1901d",
+      "headers": [
+        "Z (vmsub)",
+        "Z (no-vmsub)",
+        "MULT"
+      ],
+      "rows": 10
+    },
+    {
+      "number": 9,
+      "table_id": 54532,
+      "name": "Table 9",
+      "doi": "10.17182/hepdata.62097.v1/t9",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t009.json",
+      "url": "https://www.hepdata.net/record/data/62097/54532/1/",
+      "sha256": "87bb58524a697ce8ff96245271d8c5ee295d5399dec7bec7c3951bd06c1d1784",
+      "headers": [
+        "Z",
+        "ASYM"
+      ],
+      "rows": 10
+    },
+    {
+      "number": 10,
+      "table_id": 54534,
+      "name": "Table 10",
+      "doi": "10.17182/hepdata.62097.v1/t10",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t010.json",
+      "url": "https://www.hepdata.net/record/data/62097/54534/1/",
+      "sha256": "d6ea3f6f6eabc737f5bea5241f415dc4cac21e0dff02b2a4bb1319a57608a4d4",
+      "headers": [
+        "Z",
+        "ASYM"
+      ],
+      "rows": 10
+    },
+    {
+      "number": 11,
+      "table_id": 54536,
+      "name": "Table 11",
+      "doi": "10.17182/hepdata.62097.v1/t11",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t011.json",
+      "url": "https://www.hepdata.net/record/data/62097/54536/1/",
+      "sha256": "d0146df7345ff53c9c7e85463091ca375bf5d635f56d87da425249aa94fa75ee",
+      "headers": [
+        "Z",
+        "ASYM"
+      ],
+      "rows": 10
+    },
+    {
+      "number": 12,
+      "table_id": 54538,
+      "name": "Table 12",
+      "doi": "10.17182/hepdata.62097.v1/t12",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t012.json",
+      "url": "https://www.hepdata.net/record/data/62097/54538/1/",
+      "sha256": "4c6d8d970c504673296b4f5dd24c76770972e5a72acb822574c3ef6d6c6d54fd",
+      "headers": [
+        "Z",
+        "ASYM"
+      ],
+      "rows": 10
+    },
+    {
+      "number": 13,
+      "table_id": 54540,
+      "name": "Table 13",
+      "doi": "10.17182/hepdata.62097.v1/t13",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t013.json",
+      "url": "https://www.hepdata.net/record/data/62097/54540/1/",
+      "sha256": "3f1560fb10e23a7e20105ad187864e3b6e4ba888d6b2f186ddd5ac6f44df7196",
+      "headers": [
+        "X (pi+) [GEV]",
+        "X (pi-) [GEV]",
+        "ASYM"
+      ],
+      "rows": 9
+    },
+    {
+      "number": 14,
+      "table_id": 54541,
+      "name": "Table 14",
+      "doi": "10.17182/hepdata.62097.v1/t14",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t014.json",
+      "url": "https://www.hepdata.net/record/data/62097/54541/1/",
+      "sha256": "58757d4a1fc90e9f914ec0faa12f4c7d4e046816a2c789e97375426092540151",
+      "headers": [
+        "X (pi+) [GEV]",
+        "X (pi-) [GEV]",
+        "ASYM"
+      ],
+      "rows": 9
+    },
+    {
+      "number": 15,
+      "table_id": 54544,
+      "name": "Table 15",
+      "doi": "10.17182/hepdata.62097.v1/t15",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t015.json",
+      "url": "https://www.hepdata.net/record/data/62097/54544/1/",
+      "sha256": "cc00bdd5a2df8cc3d4c83b2296be7392318a91a34c0f783024714f30b925534f",
+      "headers": [
+        "X (pi+) [GEV]",
+        "X (pi-) [GEV]",
+        "ASYM"
+      ],
+      "rows": 9
+    },
+    {
+      "number": 16,
+      "table_id": 54546,
+      "name": "Table 16",
+      "doi": "10.17182/hepdata.62097.v1/t16",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t016.json",
+      "url": "https://www.hepdata.net/record/data/62097/54546/1/",
+      "sha256": "a23caec9c477445b07df53f32285b88650053a2c8c9ae4116225f95e3b150686",
+      "headers": [
+        "X (pi+) [GEV]",
+        "X (pi-) [GEV]",
+        "ASYM"
+      ],
+      "rows": 9
+    },
+    {
+      "number": 17,
+      "table_id": 54548,
+      "name": "Table 17",
+      "doi": "10.17182/hepdata.62097.v1/t17",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t017.json",
+      "url": "https://www.hepdata.net/record/data/62097/54548/1/",
+      "sha256": "add1cd57dead507705e3ae452558cf7f6227899f23b7f03d546a7facaff503cd",
+      "headers": [
+        "PT (proton) [GEV]",
+        "PT (deuteron) [GEV]",
+        "MULT"
+      ],
+      "rows": 9
+    },
+    {
+      "number": 18,
+      "table_id": 54550,
+      "name": "Table 18",
+      "doi": "10.17182/hepdata.62097.v1/t18",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t018.json",
+      "url": "https://www.hepdata.net/record/data/62097/54550/1/",
+      "sha256": "d7426ae2332db734616f6e66b75b7c282ba47d2ad3bd22458208729c84c71ca3",
+      "headers": [
+        "PT (proton) [GEV]",
+        "PT (deuteron) [GEV]",
+        "MULT"
+      ],
+      "rows": 9
+    },
+    {
+      "number": 19,
+      "table_id": 54551,
+      "name": "Table 19",
+      "doi": "10.17182/hepdata.62097.v1/t19",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t019.json",
+      "url": "https://www.hepdata.net/record/data/62097/54551/1/",
+      "sha256": "06b900313e51e53240665e70d51ae5e0ab7a408070422c033dec46c9ab47f540",
+      "headers": [
+        "PT (proton) [GEV]",
+        "PT (deuteron) [GEV]",
+        "MULT"
+      ],
+      "rows": 9
+    },
+    {
+      "number": 20,
+      "table_id": 54553,
+      "name": "Table 20",
+      "doi": "10.17182/hepdata.62097.v1/t20",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t020.json",
+      "url": "https://www.hepdata.net/record/data/62097/54553/1/",
+      "sha256": "da9452cc92910171b9c6e90b9c2472e40df75388c7f084db25d460c2a000daad",
+      "headers": [
+        "PT (proton) [GEV]",
+        "PT (deuteron) [GEV]",
+        "MULT"
+      ],
+      "rows": 9
+    },
+    {
+      "number": 21,
+      "table_id": 54555,
+      "name": "Table 21",
+      "doi": "10.17182/hepdata.62097.v1/t21",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t021.json",
+      "url": "https://www.hepdata.net/record/data/62097/54555/1/",
+      "sha256": "7ddf021b7df5234a02a95b08e4d7164bebb6821c077d9953613e894d755b121d",
+      "headers": [
+        "PT (proton) [GEV]",
+        "PT (deuteron) [GEV]",
+        "MULT"
+      ],
+      "rows": 9
+    },
+    {
+      "number": 22,
+      "table_id": 54558,
+      "name": "Table 22",
+      "doi": "10.17182/hepdata.62097.v1/t22",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t022.json",
+      "url": "https://www.hepdata.net/record/data/62097/54558/1/",
+      "sha256": "b791dac4b51eb86e9312e62242e5c8556572e6f96e7062c24f011aa535ad05cc",
+      "headers": [
+        "PT (proton) [GEV]",
+        "PT (deuteron) [GEV]",
+        "MULT"
+      ],
+      "rows": 9
+    },
+    {
+      "number": 23,
+      "table_id": 54559,
+      "name": "Table 23",
+      "doi": "10.17182/hepdata.62097.v1/t23",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t023.json",
+      "url": "https://www.hepdata.net/record/data/62097/54559/1/",
+      "sha256": "bbc626e4274da25098d9e6572dea97edc15f69f0d4c02e03007031dd54883898",
+      "headers": [
+        "PT (proton) [GEV]",
+        "PT (deuteron) [GEV]",
+        "MULT"
+      ],
+      "rows": 9
+    },
+    {
+      "number": 24,
+      "table_id": 54560,
+      "name": "Table 24",
+      "doi": "10.17182/hepdata.62097.v1/t24",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t024.json",
+      "url": "https://www.hepdata.net/record/data/62097/54560/1/",
+      "sha256": "b8ff56da91265af4800fb565a5dc71d4499aaf8d57b0313fe1d4ded28f97446e",
+      "headers": [
+        "PT (proton) [GEV]",
+        "PT (deuteron) [GEV]",
+        "MULT"
+      ],
+      "rows": 9
+    },
+    {
+      "number": 25,
+      "table_id": 54561,
+      "name": "Table 25",
+      "doi": "10.17182/hepdata.62097.v1/t25",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t025.json",
+      "url": "https://www.hepdata.net/record/data/62097/54561/1/",
+      "sha256": "0a60d71572dee4627d48697ea823fda7a0944cf7eb127e4e9eed6b0ab230ad2b",
+      "headers": [
+        "PT (proton) [GEV]",
+        "PT (deuteron) [GEV]",
+        "MULT"
+      ],
+      "rows": 9
+    },
+    {
+      "number": 26,
+      "table_id": 54562,
+      "name": "Table 26",
+      "doi": "10.17182/hepdata.62097.v1/t26",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t026.json",
+      "url": "https://www.hepdata.net/record/data/62097/54562/1/",
+      "sha256": "2567097db420424054b5230ba6f7810d201a453d67df0d5172a91e8be93d31cc",
+      "headers": [
+        "PT (proton) [GEV]",
+        "PT (deuteron) [GEV]",
+        "MULT"
+      ],
+      "rows": 9
+    },
+    {
+      "number": 27,
+      "table_id": 54563,
+      "name": "Table 27",
+      "doi": "10.17182/hepdata.62097.v1/t27",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t027.json",
+      "url": "https://www.hepdata.net/record/data/62097/54563/1/",
+      "sha256": "ea1d02bd0bfdc366aac27d584e1ff96ec172db9cf4789d7745cde89c3f2fe277",
+      "headers": [
+        "PT (proton) [GEV]",
+        "PT (deuteron) [GEV]",
+        "MULT"
+      ],
+      "rows": 9
+    },
+    {
+      "number": 28,
+      "table_id": 54564,
+      "name": "Table 28",
+      "doi": "10.17182/hepdata.62097.v1/t28",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t028.json",
+      "url": "https://www.hepdata.net/record/data/62097/54564/1/",
+      "sha256": "a4073d34f8223cb808120e2c0a33235362c93cd210919c2adbfa652b359728b2",
+      "headers": [
+        "PT (proton) [GEV]",
+        "PT (deuteron) [GEV]",
+        "MULT"
+      ],
+      "rows": 9
+    },
+    {
+      "number": 29,
+      "table_id": 54565,
+      "name": "Table 29",
+      "doi": "10.17182/hepdata.62097.v1/t29",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t029.json",
+      "url": "https://www.hepdata.net/record/data/62097/54565/1/",
+      "sha256": "9d855a625ff5a5321a39ff38817f516721ac56e8fe633c74a09ed0c4037cc74f",
+      "headers": [
+        "PT (proton) [GEV]",
+        "PT (deuteron) [GEV]",
+        "MULT"
+      ],
+      "rows": 9
+    },
+    {
+      "number": 30,
+      "table_id": 54566,
+      "name": "Table 30",
+      "doi": "10.17182/hepdata.62097.v1/t30",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t030.json",
+      "url": "https://www.hepdata.net/record/data/62097/54566/1/",
+      "sha256": "d4dd0f1dec24bc61f2c5981fb50f770e3bdbe59907b877a3ef975c11e144f2bd",
+      "headers": [
+        "PT (proton) [GEV]",
+        "PT (deuteron) [GEV]",
+        "MULT"
+      ],
+      "rows": 9
+    },
+    {
+      "number": 31,
+      "table_id": 54567,
+      "name": "Table 31",
+      "doi": "10.17182/hepdata.62097.v1/t31",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t031.json",
+      "url": "https://www.hepdata.net/record/data/62097/54567/1/",
+      "sha256": "9564e7274c953874ba88497b537a5677a2e7825faa4083a2ae763a14a5ff44f5",
+      "headers": [
+        "PT (proton) [GEV]",
+        "PT (deuteron) [GEV]",
+        "MULT"
+      ],
+      "rows": 9
+    },
+    {
+      "number": 32,
+      "table_id": 54568,
+      "name": "Table 32",
+      "doi": "10.17182/hepdata.62097.v1/t32",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t032.json",
+      "url": "https://www.hepdata.net/record/data/62097/54568/1/",
+      "sha256": "f5940ff2b4bdcb20622d23fda9b2eeb1d06d467d04a3225f553863c0fccfd92b",
+      "headers": [
+        "PT (proton) [GEV]",
+        "PT (deuteron) [GEV]",
+        "MULT"
+      ],
+      "rows": 9
+    },
+    {
+      "number": 33,
+      "table_id": 54569,
+      "name": "Table 33",
+      "doi": "10.17182/hepdata.62097.v1/t33",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t033.json",
+      "url": "https://www.hepdata.net/record/data/62097/54569/1/",
+      "sha256": "796edb3d985066aa191f4796ba8f76a1c73a11170ee65646819acf559121edc2",
+      "headers": [
+        "X (proton) [GEV]",
+        "X (deuteron) [GEV]",
+        "MULT"
+      ],
+      "rows": 9
+    },
+    {
+      "number": 34,
+      "table_id": 54570,
+      "name": "Table 34",
+      "doi": "10.17182/hepdata.62097.v1/t34",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t034.json",
+      "url": "https://www.hepdata.net/record/data/62097/54570/1/",
+      "sha256": "ea585e8c5657c79e39295b95eefc68803a09149b75354d1cedf3d1708c41eff0",
+      "headers": [
+        "X (proton) [GEV]",
+        "X (deuteron) [GEV]",
+        "MULT"
+      ],
+      "rows": 9
+    },
+    {
+      "number": 35,
+      "table_id": 54571,
+      "name": "Table 35",
+      "doi": "10.17182/hepdata.62097.v1/t35",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t035.json",
+      "url": "https://www.hepdata.net/record/data/62097/54571/1/",
+      "sha256": "35c635a5bc3465666ac4409a94305fd2354c5e151dcb88c8630a38f63a6d0e38",
+      "headers": [
+        "X (proton) [GEV]",
+        "X (deuteron) [GEV]",
+        "MULT"
+      ],
+      "rows": 9
+    },
+    {
+      "number": 36,
+      "table_id": 54572,
+      "name": "Table 36",
+      "doi": "10.17182/hepdata.62097.v1/t36",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t036.json",
+      "url": "https://www.hepdata.net/record/data/62097/54572/1/",
+      "sha256": "b78f21fdfee4601b23c36e96ba056c7c50787234042814238ed8c8dd6ce17190",
+      "headers": [
+        "X (proton) [GEV]",
+        "X (deuteron) [GEV]",
+        "MULT"
+      ],
+      "rows": 9
+    },
+    {
+      "number": 37,
+      "table_id": 54573,
+      "name": "Table 37",
+      "doi": "10.17182/hepdata.62097.v1/t37",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t037.json",
+      "url": "https://www.hepdata.net/record/data/62097/54573/1/",
+      "sha256": "aa72801d7107427289b64a7683fae70060d91c3ca02630e6e429d80c1786e9bc",
+      "headers": [
+        "X (proton) [GEV]",
+        "X (deuteron) [GEV]",
+        "MULT"
+      ],
+      "rows": 9
+    },
+    {
+      "number": 38,
+      "table_id": 54574,
+      "name": "Table 38",
+      "doi": "10.17182/hepdata.62097.v1/t38",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t038.json",
+      "url": "https://www.hepdata.net/record/data/62097/54574/1/",
+      "sha256": "6d39b78c4a025fcafc92da1432f9c1419abc9d864eb8a1ad15f49232344e580a",
+      "headers": [
+        "X (proton) [GEV]",
+        "X (deuteron) [GEV]",
+        "MULT"
+      ],
+      "rows": 9
+    },
+    {
+      "number": 39,
+      "table_id": 54575,
+      "name": "Table 39",
+      "doi": "10.17182/hepdata.62097.v1/t39",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t039.json",
+      "url": "https://www.hepdata.net/record/data/62097/54575/1/",
+      "sha256": "05f896b55cdf57e74c6cae66c8a6fe80d0626e29b2845670cd765481a610b794",
+      "headers": [
+        "X (proton) [GEV]",
+        "X (deuteron) [GEV]",
+        "MULT"
+      ],
+      "rows": 9
+    },
+    {
+      "number": 40,
+      "table_id": 54576,
+      "name": "Table 40",
+      "doi": "10.17182/hepdata.62097.v1/t40",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t040.json",
+      "url": "https://www.hepdata.net/record/data/62097/54576/1/",
+      "sha256": "96c8833e37dfe8e9180df54abb22b0be6d9cb2c8aed857a1ab64ba397dd5deab",
+      "headers": [
+        "X (proton) [GEV]",
+        "X (deuteron) [GEV]",
+        "MULT"
+      ],
+      "rows": 9
+    },
+    {
+      "number": 41,
+      "table_id": 54577,
+      "name": "Table 41",
+      "doi": "10.17182/hepdata.62097.v1/t41",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t041.json",
+      "url": "https://www.hepdata.net/record/data/62097/54577/1/",
+      "sha256": "a19fde2860a084e585f31a5531ab9d5e9a367301f28068353d1b7e27be70e718",
+      "headers": [
+        "X (proton) [GEV]",
+        "X (deuteron) [GEV]",
+        "MULT"
+      ],
+      "rows": 9
+    },
+    {
+      "number": 42,
+      "table_id": 54578,
+      "name": "Table 42",
+      "doi": "10.17182/hepdata.62097.v1/t42",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t042.json",
+      "url": "https://www.hepdata.net/record/data/62097/54578/1/",
+      "sha256": "c2f36a47f96b0a39ef38348bb212e0057a6e310387c3aba7369716f2abc39fec",
+      "headers": [
+        "X (proton) [GEV]",
+        "X (deuteron) [GEV]",
+        "MULT"
+      ],
+      "rows": 9
+    },
+    {
+      "number": 43,
+      "table_id": 54579,
+      "name": "Table 43",
+      "doi": "10.17182/hepdata.62097.v1/t43",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t043.json",
+      "url": "https://www.hepdata.net/record/data/62097/54579/1/",
+      "sha256": "04c7c0b2833857cb6430e8b9b1205e1c9fd23aa39ef790db3666c9af95505115",
+      "headers": [
+        "X (proton) [GEV]",
+        "X (deuteron) [GEV]",
+        "MULT"
+      ],
+      "rows": 9
+    },
+    {
+      "number": 44,
+      "table_id": 54580,
+      "name": "Table 44",
+      "doi": "10.17182/hepdata.62097.v1/t44",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t044.json",
+      "url": "https://www.hepdata.net/record/data/62097/54580/1/",
+      "sha256": "6f995b694d7bbc3dd0590ab75b5c8c8d5ce6856a00de80e6f0fcfa2acb35a2f7",
+      "headers": [
+        "X (proton) [GEV]",
+        "X (deuteron) [GEV]",
+        "MULT"
+      ],
+      "rows": 9
+    },
+    {
+      "number": 45,
+      "table_id": 54581,
+      "name": "Table 45",
+      "doi": "10.17182/hepdata.62097.v1/t45",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t045.json",
+      "url": "https://www.hepdata.net/record/data/62097/54581/1/",
+      "sha256": "f4b1c3c37e0164f0f36f0cff26f14b024af8071ab2500b95e30eaf55f397745d",
+      "headers": [
+        "X (proton) [GEV]",
+        "X (deuteron) [GEV]",
+        "MULT"
+      ],
+      "rows": 9
+    },
+    {
+      "number": 46,
+      "table_id": 54582,
+      "name": "Table 46",
+      "doi": "10.17182/hepdata.62097.v1/t46",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t046.json",
+      "url": "https://www.hepdata.net/record/data/62097/54582/1/",
+      "sha256": "b014eb21dc86ec1d7f9736c9aec83b497e359c17458c11c7cffbd7ae4ea1f1c8",
+      "headers": [
+        "X (proton) [GEV]",
+        "X (deuteron) [GEV]",
+        "MULT"
+      ],
+      "rows": 9
+    },
+    {
+      "number": 47,
+      "table_id": 54583,
+      "name": "Table 47",
+      "doi": "10.17182/hepdata.62097.v1/t47",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t047.json",
+      "url": "https://www.hepdata.net/record/data/62097/54583/1/",
+      "sha256": "dd664acef2268989453fbbb6528057c78fbd3ee056226fea7c2a6556c95ec4b2",
+      "headers": [
+        "X (proton) [GEV]",
+        "X (deuteron) [GEV]",
+        "MULT"
+      ],
+      "rows": 9
+    },
+    {
+      "number": 48,
+      "table_id": 54584,
+      "name": "Table 48",
+      "doi": "10.17182/hepdata.62097.v1/t48",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t048.json",
+      "url": "https://www.hepdata.net/record/data/62097/54584/1/",
+      "sha256": "c782159131157d1c7f81ac7b13bb088adb8b1094d6077066204abfda301ab354",
+      "headers": [
+        "X (proton) [GEV]",
+        "X (deuteron) [GEV]",
+        "MULT"
+      ],
+      "rows": 9
+    },
+    {
+      "number": 49,
+      "table_id": 54585,
+      "name": "Table 49",
+      "doi": "10.17182/hepdata.62097.v1/t49",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t049.json",
+      "url": "https://www.hepdata.net/record/data/62097/54585/1/",
+      "sha256": "0ac179803fc9419c264876cd109fc58fce545d4877b33b5e538245a0f8b6c8b4",
+      "headers": [
+        "Q**2 (proton) [GEV**2]",
+        "Q**2 (deuteron) [GEV**2]",
+        "MULT"
+      ],
+      "rows": 9
+    },
+    {
+      "number": 50,
+      "table_id": 54586,
+      "name": "Table 50",
+      "doi": "10.17182/hepdata.62097.v1/t50",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t050.json",
+      "url": "https://www.hepdata.net/record/data/62097/54586/1/",
+      "sha256": "95fb71734486196a546d8b4349c08a67e071dc687f554da0369d1b36ae7e790f",
+      "headers": [
+        "Q**2 (proton) [GEV**2]",
+        "Q**2 (deuteron) [GEV**2]",
+        "MULT"
+      ],
+      "rows": 9
+    },
+    {
+      "number": 51,
+      "table_id": 54587,
+      "name": "Table 51",
+      "doi": "10.17182/hepdata.62097.v1/t51",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t051.json",
+      "url": "https://www.hepdata.net/record/data/62097/54587/1/",
+      "sha256": "97e46ff3838f314f2ad442c5050b31be724d92308a788057efae63d259fe33a9",
+      "headers": [
+        "Q**2 (proton) [GEV**2]",
+        "Q**2 (deuteron) [GEV**2]",
+        "MULT"
+      ],
+      "rows": 9
+    },
+    {
+      "number": 52,
+      "table_id": 54588,
+      "name": "Table 52",
+      "doi": "10.17182/hepdata.62097.v1/t52",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t052.json",
+      "url": "https://www.hepdata.net/record/data/62097/54588/1/",
+      "sha256": "65e5dd7455ec5c8d50b5bb8aedfd69808ab8d8a2b7061d8c199c9fe975231868",
+      "headers": [
+        "Q**2 (proton) [GEV**2]",
+        "Q**2 (deuteron) [GEV**2]",
+        "MULT"
+      ],
+      "rows": 9
+    },
+    {
+      "number": 53,
+      "table_id": 54589,
+      "name": "Table 53",
+      "doi": "10.17182/hepdata.62097.v1/t53",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t053.json",
+      "url": "https://www.hepdata.net/record/data/62097/54589/1/",
+      "sha256": "be99d54ff2e1343f6e9d3b2350f5fa564d825952a93a2c9e80fb7380af2c97e8",
+      "headers": [
+        "Q**2 (proton) [GEV**2]",
+        "Q**2 (deuteron) [GEV**2]",
+        "MULT"
+      ],
+      "rows": 9
+    },
+    {
+      "number": 54,
+      "table_id": 54590,
+      "name": "Table 54",
+      "doi": "10.17182/hepdata.62097.v1/t54",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t054.json",
+      "url": "https://www.hepdata.net/record/data/62097/54590/1/",
+      "sha256": "0e162254edd5895f0e2ba7d64ce1cceaf5d640f8a66afbad4a170ec7a157fd28",
+      "headers": [
+        "Q**2 (proton) [GEV**2]",
+        "Q**2 (deuteron) [GEV**2]",
+        "MULT"
+      ],
+      "rows": 9
+    },
+    {
+      "number": 55,
+      "table_id": 54591,
+      "name": "Table 55",
+      "doi": "10.17182/hepdata.62097.v1/t55",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t055.json",
+      "url": "https://www.hepdata.net/record/data/62097/54591/1/",
+      "sha256": "5019594450004985e10fede3c42907030ad89d6bccccec749afa51be75341014",
+      "headers": [
+        "Q**2 (proton) [GEV**2]",
+        "Q**2 (deuteron) [GEV**2]",
+        "MULT"
+      ],
+      "rows": 9
+    },
+    {
+      "number": 56,
+      "table_id": 54592,
+      "name": "Table 56",
+      "doi": "10.17182/hepdata.62097.v1/t56",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t056.json",
+      "url": "https://www.hepdata.net/record/data/62097/54592/1/",
+      "sha256": "e4923b700107f9c50463e299c6cc03346367de54eadc46369c6e08c721261642",
+      "headers": [
+        "Q**2 (proton) [GEV**2]",
+        "Q**2 (deuteron) [GEV**2]",
+        "MULT"
+      ],
+      "rows": 9
+    },
+    {
+      "number": 57,
+      "table_id": 54593,
+      "name": "Table 57",
+      "doi": "10.17182/hepdata.62097.v1/t57",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t057.json",
+      "url": "https://www.hepdata.net/record/data/62097/54593/1/",
+      "sha256": "c7e678d5cd95c95775e570a44bc47d13d4da5eb05720212bf334dd49895b07ab",
+      "headers": [
+        "Q**2 (proton) [GEV**2]",
+        "Q**2 (deuteron) [GEV**2]",
+        "MULT"
+      ],
+      "rows": 9
+    },
+    {
+      "number": 58,
+      "table_id": 54594,
+      "name": "Table 58",
+      "doi": "10.17182/hepdata.62097.v1/t58",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t058.json",
+      "url": "https://www.hepdata.net/record/data/62097/54594/1/",
+      "sha256": "5fbeababefb60573995e2025fea4cc10a740e00cfd31d3e5993523178da67730",
+      "headers": [
+        "Q**2 (proton) [GEV**2]",
+        "Q**2 (deuteron) [GEV**2]",
+        "MULT"
+      ],
+      "rows": 9
+    },
+    {
+      "number": 59,
+      "table_id": 54595,
+      "name": "Table 59",
+      "doi": "10.17182/hepdata.62097.v1/t59",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t059.json",
+      "url": "https://www.hepdata.net/record/data/62097/54595/1/",
+      "sha256": "9fc43a4204340ffbfabe62d3bd47fca4db744d82875a08c8b3e4f5ab0c9ff717",
+      "headers": [
+        "Q**2 (proton) [GEV**2]",
+        "Q**2 (deuteron) [GEV**2]",
+        "MULT"
+      ],
+      "rows": 9
+    },
+    {
+      "number": 60,
+      "table_id": 54596,
+      "name": "Table 60",
+      "doi": "10.17182/hepdata.62097.v1/t60",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t060.json",
+      "url": "https://www.hepdata.net/record/data/62097/54596/1/",
+      "sha256": "c87ec1ec9e0177371ca398dd214d7f66549738a4599405bf2c32f87449fe334e",
+      "headers": [
+        "Q**2 (proton) [GEV**2]",
+        "Q**2 (deuteron) [GEV**2]",
+        "MULT"
+      ],
+      "rows": 9
+    },
+    {
+      "number": 61,
+      "table_id": 54597,
+      "name": "Table 61",
+      "doi": "10.17182/hepdata.62097.v1/t61",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t061.json",
+      "url": "https://www.hepdata.net/record/data/62097/54597/1/",
+      "sha256": "1fdfa4767dbca21a1d4526b23703fbb916dffe6c295f08c47650f84d7f597615",
+      "headers": [
+        "Q**2 (proton) [GEV**2]",
+        "Q**2 (deuteron) [GEV**2]",
+        "MULT"
+      ],
+      "rows": 9
+    },
+    {
+      "number": 62,
+      "table_id": 54598,
+      "name": "Table 62",
+      "doi": "10.17182/hepdata.62097.v1/t62",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t062.json",
+      "url": "https://www.hepdata.net/record/data/62097/54598/1/",
+      "sha256": "7b15f2dfe159db3dc72ae439bb93b98c1620af42944545184f0c8585a497b22e",
+      "headers": [
+        "Q**2 (proton) [GEV**2]",
+        "Q**2 (deuteron) [GEV**2]",
+        "MULT"
+      ],
+      "rows": 9
+    },
+    {
+      "number": 63,
+      "table_id": 54599,
+      "name": "Table 63",
+      "doi": "10.17182/hepdata.62097.v1/t63",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t063.json",
+      "url": "https://www.hepdata.net/record/data/62097/54599/1/",
+      "sha256": "b421ea10ee58191e258b279ba4d54d694b054e5d99290bc553fd1548ba51cb7c",
+      "headers": [
+        "Q**2 (proton) [GEV**2]",
+        "Q**2 (deuteron) [GEV**2]",
+        "MULT"
+      ],
+      "rows": 9
+    },
+    {
+      "number": 64,
+      "table_id": 54600,
+      "name": "Table 64",
+      "doi": "10.17182/hepdata.62097.v1/t64",
+      "path": "data/phenomenology/HERMES_2013_I1208547/raw/t064.json",
+      "url": "https://www.hepdata.net/record/data/62097/54600/1/",
+      "sha256": "f37d60df69acfb2553e9ae252ad0c8d9eb7fe279b1222556473e9f00c74e98be",
+      "headers": [
+        "Q**2 (proton) [GEV**2]",
+        "Q**2 (deuteron) [GEV**2]",
+        "MULT"
+      ],
+      "rows": 9
+    }
+  ],
+  "full_archive": {
+    "path": "data/phenomenology/HERMES_2013_I1208547/raw/HERMES-multiplicities-20161105.tar.gz",
+    "bytes": 25937678,
+    "sha256": "e54ae9e96fb417f43c7845e11319977c21b4c0f7349f00ca987658e00b181e1b",
+    "url": "https://web.archive.org/web/20161105011149id_/http://www-hermes.desy.de/multiplicities/database/data/HERMES-multiplicities.tar.gz",
+    "retrieved": "2026-08-28",
+    "role": "VM-subtracted five-binning 3D numerical authority"
+  }
+}

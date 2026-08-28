@@ -1,0 +1,33 @@
+Name: COMPASS_2010_I862410
+Year: 2010
+Summary: Charged-pion and charged-kaon longitudinal SIDIS asymmetries on hydrogen
+Experiment: COMPASS
+Collider: CERN SPS fixed target
+InspireID: 862410
+Status: UNVALIDATED
+Reentrant: true
+Authors:
+ - Andreas Papaefstathiou <apapaefs@kennesaw.edu>
+References:
+ - Phys.Lett.B 693 (2010) 227-235
+ - arXiv:1007.4061
+RunInfo: >
+  Requires 160 GeV mu+ p samples in PP, PM, MP and MM helicities, with
+  POSNLO and NEGNLO generated separately.
+NumEvents: 100000
+NeedsCrossSection: yes
+Beams: [[ANTIMUON, PROTON]]
+Energies: [[160.0, 0.938272]]
+Description: >
+  Fills ordinary, inverse-depolarization and covariance-proxy identified-
+  hadron yields in the twelve paper bins. The postprocessor uses the finite-
+  muon-mass COMPASS depolarization factor, R1998, eta*A2=0 and proton scale
+  one. Paper values, correlations and deuteron corrections are checksum-audited.
+Keywords: [DIS, SIDIS, polarized, fixed-target, pion, kaon, asymmetry]
+BibKey: COMPASS:2010wkz
+BibTeX: '@article{COMPASS:2010wkz,
+  collaboration = "COMPASS",
+  title = "{Quark helicity distributions from longitudinal spin asymmetries in muon-proton and muon-deuteron scattering}",
+  eprint = "1007.4061", archivePrefix = "arXiv",
+  doi = "10.1016/j.physletb.2010.08.034",
+  journal = "Phys. Lett. B", volume = "693", pages = "227--235", year = "2010"}'

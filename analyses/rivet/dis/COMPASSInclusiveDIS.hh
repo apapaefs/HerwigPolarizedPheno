@@ -8,6 +8,7 @@
 #include <array>
 #include <cmath>
 #include <limits>
+#include <vector>
 
 namespace Rivet {
 namespace COMPASSInclusiveDIS {
@@ -15,6 +16,7 @@ namespace COMPASSInclusiveDIS {
   struct Kinematics {
     bool valid = false;
     int targetPid = 0;
+    int beamPid = 0;
     FourMomentum k, kp, target, q;
     double Q2 = -1.0;
     double x = -1.0;
@@ -36,8 +38,9 @@ namespace COMPASSInclusiveDIS {
       [](const Particle& a, const Particle& b) { return a.E() < b.E(); });
   }
 
-  inline Kinematics reconstruct(const Event& event,
-                                const Particles& finalState) {
+  inline Kinematics reconstructForLeptons(
+      const Event& event, const Particles& finalState,
+      const std::vector<int>& allowedBeamPids) {
     Kinematics out;
     const ParticlePair incoming = Rivet::beams(event);
     Particle lepton;
@@ -53,7 +56,8 @@ namespace COMPASSInclusiveDIS {
     } else {
       return out;
     }
-    if (lepton.pid() != -13 ||
+    if (std::find(allowedBeamPids.begin(), allowedBeamPids.end(),
+                  lepton.pid()) == allowedBeamPids.end() ||
         (hadron.pid() != 2212 && hadron.pid() != 2112)) return out;
 
     const Particle outgoing = scatteredMuon(finalState, lepton);
@@ -67,6 +71,7 @@ namespace COMPASSInclusiveDIS {
     if (Pdotq <= 0.0 || Pdotk <= 0.0) return out;
 
     out.targetPid = hadron.pid();
+    out.beamPid = lepton.pid();
     out.k = k;
     out.kp = kp;
     out.target = P;
@@ -82,6 +87,12 @@ namespace COMPASSInclusiveDIS {
                 std::isfinite(out.theta) &&
                 std::isfinite(out.outgoingEnergy);
     return out;
+  }
+
+  inline Kinematics reconstruct(const Event& event,
+                                const Particles& finalState) {
+    // Backward-compatible COMPASS contract: lepton.pid() != -13 is rejected.
+    return reconstructForLeptons(event, finalState, {-13});
   }
 
   /// E143 R1998: arithmetic mean of the published Ra, Rb, and Rc fits.

@@ -1,0 +1,76 @@
+{
+  "measurement": "COMPASS_2026_I3096394",
+  "retrieved": "2026-08-28",
+  "record_doi": "10.17182/hepdata.169859.v1",
+  "record_version": 1,
+  "record_path": "data/phenomenology/COMPASS_2026_I3096394/raw/record.json",
+  "record_sha256": "42b0851a7d6a839372bc729c6da156686af2627066f38c432ff18c861f454aaf",
+  "tables": [
+    {
+      "number": 1,
+      "table_id": 1935012,
+      "name": "Table h+/h-",
+      "doi": "10.17182/hepdata.169859.v1/t1",
+      "path": "data/phenomenology/COMPASS_2026_I3096394/raw/t001.json",
+      "url": "https://www.hepdata.net/record/data/169859/1935012/1/",
+      "sha256": "9250fee8d15c5bedcd6efe28e35518765f9f8b94546aa84ff4f30569b62ddfa4",
+      "headers": [
+        "x",
+        "y",
+        "z",
+        "h⁺",
+        "h⁻",
+        "VM_h⁺",
+        "VM_h⁻",
+        "VM_DIS",
+        "RC_h⁺",
+        "RC_h⁻"
+      ],
+      "rows": 306
+    },
+    {
+      "number": 2,
+      "table_id": 1935013,
+      "name": "Table pi+/pi-",
+      "doi": "10.17182/hepdata.169859.v1/t2",
+      "path": "data/phenomenology/COMPASS_2026_I3096394/raw/t002.json",
+      "url": "https://www.hepdata.net/record/data/169859/1935013/1/",
+      "sha256": "521033932f658a2d792055e5e5b533d53aeef46bba322b75c8efa00e61727fe6",
+      "headers": [
+        "x",
+        "y",
+        "z",
+        "π⁺",
+        "π⁻",
+        "VM_π⁺",
+        "VM_π⁻",
+        "VM_DIS",
+        "RC_π⁺",
+        "RC_π⁻"
+      ],
+      "rows": 306
+    },
+    {
+      "number": 3,
+      "table_id": 1935014,
+      "name": "Table K+/K-",
+      "doi": "10.17182/hepdata.169859.v1/t3",
+      "path": "data/phenomenology/COMPASS_2026_I3096394/raw/t003.json",
+      "url": "https://www.hepdata.net/record/data/169859/1935014/1/",
+      "sha256": "8dac43e664ba85c2b9c3f481e901a0edbd67bc5b6a31fab06c26173c8ebf42e1",
+      "headers": [
+        "x",
+        "y",
+        "z",
+        "K⁺",
+        "K⁻",
+        "VM_K⁺",
+        "VM_K⁻",
+        "VM_DIS",
+        "RC_K⁺",
+        "RC_K⁻"
+      ],
+      "rows": 305
+    }
+  ]
+}

@@ -123,12 +123,19 @@ def _patch_yoda_write_lists() -> None:
         }
 
     def write_lists(cmd, val_type, *value_dicts):
-        """Delegate to upstream writeLists after coercing scalar values."""
-        return original_write_lists(
-            cmd,
-            val_type,
-            *(_sanitize_plot_values(value_dict) for value_dict in value_dicts),
-        )
+        """Delegate after scalar coercion without NumPy's ``...`` truncation.
+
+        YODA 2.1 serialises arrays through their NumPy representation.  The
+        default threshold abbreviates arrays longer than 1,000 entries with an
+        Ellipsis token, producing syntactically valid but non-numeric generated
+        plot data.  Several sparse SIDIS flat objects exceed that threshold.
+        """
+        with np.printoptions(threshold=sys.maxsize):
+            return original_write_lists(
+                cmd,
+                val_type,
+                *(_sanitize_plot_values(value_dict) for value_dict in value_dicts),
+            )
 
     fetch_data.writeLists = write_lists
 

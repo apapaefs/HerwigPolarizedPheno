@@ -12,6 +12,8 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
+import numpy as np
+
 
 DISPOL_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(DISPOL_ROOT / "scripts"))
@@ -20,6 +22,34 @@ import rivet_mkhtml_safe as safe  # noqa: E402
 
 
 class RivetMkhtmlSafeTests(unittest.TestCase):
+    def test_large_numpy_lists_are_not_serialized_with_ellipsis(self) -> None:
+        yoda_module = types.ModuleType("yoda")
+        yoda_module.__path__ = []  # type: ignore[attr-defined]
+        plotting_module = types.ModuleType("yoda.plotting")
+        plotting_module.__path__ = []  # type: ignore[attr-defined]
+        fetch_module = types.ModuleType("yoda.plotting.fetch_data")
+        rendered: list[str] = []
+
+        def write_lists(_cmd, _value_type, values):
+            rendered.append(str(values["Data"]))
+
+        fetch_module.writeLists = write_lists  # type: ignore[attr-defined]
+        yoda_module.plotting = plotting_module  # type: ignore[attr-defined]
+        plotting_module.fetch_data = fetch_module  # type: ignore[attr-defined]
+        modules = {
+            "yoda": yoda_module,
+            "yoda.plotting": plotting_module,
+            "yoda.plotting.fetch_data": fetch_module,
+        }
+        with mock.patch.dict(sys.modules, modules):
+            safe._patch_yoda_write_lists()
+            fetch_module.writeLists(  # type: ignore[attr-defined]
+                None, "xpoints", {"Data": np.arange(2332, dtype=float)}
+            )
+        self.assertEqual(len(rendered), 1)
+        self.assertNotIn("...", rendered[0])
+        self.assertIn("2.331e+03", rendered[0])
+
     def test_nested_yoda_path_parent_is_created(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             output = Path(temporary)

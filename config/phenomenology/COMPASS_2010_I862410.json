@@ -1,0 +1,152 @@
+{
+  "schema_version": 6,
+  "id": "COMPASS_2010_I862410",
+  "title": "COMPASS proton identified-hadron longitudinal SIDIS asymmetries",
+  "process_kind": "polarized_sidis",
+  "analysis": {
+    "name": "COMPASS_2010_I862410",
+    "source": "analyses/rivet/dis/COMPASS_2010_I862410.cc",
+    "info": "analyses/rivet/dis/COMPASS_2010_I862410.info",
+    "plot": "analyses/rivet/dis/COMPASS_2010_I862410.plot",
+    "support_files": [
+      "analyses/rivet/dis/COMPASSInclusiveDIS.hh",
+      "analyses/rivet/dis/COMPASSSIDIS.hh"
+    ],
+    "plugin": "RivetCOMPASS_2010_I862410.so",
+    "reference_yoda": "analyses/rivet/dis/COMPASS_2010_I862410.yoda.gz"
+  },
+  "reference": {
+    "snapshot": "data/phenomenology/COMPASS_2010_I862410/reference.json",
+    "source_manifest": "data/phenomenology/COMPASS_2010_I862410/source-manifest.json",
+    "source_url": "https://arxiv.org/abs/1007.4061",
+    "raw_snapshot": "data/phenomenology/COMPASS_2010_I862410/raw/arXiv-1007.4061-source.tar.gz"
+  },
+  "cards": {
+    "directory": "cards/phenomenology/COMPASS_2010_I862410",
+    "common": "COMPASS_2010_I862410-Common.in",
+    "stem_pattern": "COMPASS_2010_I862410_{target}_{helicity}-{contribution}",
+    "polarized_pdf_object": "/Herwig/Partons/COMPASSSIDISDiffPDF",
+    "unpolarized_pdf_object": "/Herwig/Partons/COMPASSSIDISPDF",
+    "helicities": {
+      "PP": [
+        1,
+        1
+      ],
+      "PM": [
+        1,
+        -1
+      ],
+      "MP": [
+        -1,
+        1
+      ],
+      "MM": [
+        -1,
+        -1
+      ]
+    },
+    "contributions": {
+      "POSNLO": "PositiveNLO",
+      "NEGNLO": "NegativeNLO"
+    },
+    "target_components": {
+      "P": "proton"
+    },
+    "scale_objects": [
+      "/Herwig/MatrixElements/MEDISNC",
+      "/Herwig/MatrixElements/MEDISNCPol",
+      "/Herwig/MatrixElements/PowhegMEDISNC",
+      "/Herwig/MatrixElements/PowhegMEDISNCPol"
+    ]
+  },
+  "channels": {
+    "sidis": {
+      "label": "A1p pi+/-, K+/-",
+      "targets": [
+        "H"
+      ],
+      "projections": [
+        "published_flattened_cells",
+        "readable_slices"
+      ],
+      "observable_level": "stable charged hadron"
+    }
+  },
+  "families": {
+    "nominal": {
+      "label": "POWHEG NLO+PS",
+      "helicities": [
+        "PP",
+        "PM",
+        "MP",
+        "MM"
+      ],
+      "mpi": "off",
+      "observable_level": "stable_particle"
+    }
+  },
+  "campaign": {
+    "default_jobs": 4,
+    "default_shards": 1,
+    "default_seed_base": 862410,
+    "default_events": {
+      "POSNLO": 300000,
+      "NEGNLO": 30000
+    },
+    "smoke_events": 100
+  },
+  "postprocessor": "compass_sidis_a1",
+  "postprocess_config": {
+    "target_outputs": {
+      "H": {
+        "P": 1.0
+      }
+    },
+    "longitudinal_target_scale": 1.0
+  },
+  "scales": {
+    "central": 1.0,
+    "points": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "mapping": "DIS ScaleFactor = mu/mu0"
+  },
+  "pdf_ensembles": {
+    "polarized": {
+      "set": "NNPDFpol20_nlo_as_01180",
+      "central_member": 0,
+      "replica_members": [
+        1,
+        100
+      ],
+      "active": true
+    },
+    "unpolarized": {
+      "set": "NNPDF40_nlo_pch_as_01180",
+      "central_member": 0,
+      "replica_members": [
+        1,
+        100
+      ],
+      "active": true
+    },
+    "combination": "independent polarized/unpolarized replicas plus scale envelope"
+  },
+  "goodness_of_fit": {
+    "primary_observable": "A1",
+    "source_contract": "see checksum-pinned normalized reference"
+  },
+  "physics": {
+    "beam": "fixed-target lepton DIS",
+    "exchange": "photon",
+    "target": {
+      "H": {
+        "P": 1.0
+      }
+    },
+    "hard_process_accuracy": "POWHEG NLO+PS",
+    "event_simulation": "QCD shower, hadronization and remnants; QED shower and MPI off"
+  }
+}

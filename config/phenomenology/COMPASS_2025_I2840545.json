@@ -1,0 +1,139 @@
+{
+  "schema_version": 6,
+  "id": "COMPASS_2025_I2840545",
+  "title": "COMPASS hydrogen pion, kaon and charged-hadron SIDIS multiplicities",
+  "process_kind": "unpolarized_sidis",
+  "analysis": {
+    "name": "COMPASS_2025_I2840545",
+    "source": "analyses/rivet/dis/COMPASS_2025_I2840545.cc",
+    "info": "analyses/rivet/dis/COMPASS_2025_I2840545.info",
+    "plot": "analyses/rivet/dis/COMPASS_2025_I2840545.plot",
+    "support_files": [
+      "analyses/rivet/dis/COMPASSInclusiveDIS.hh",
+      "analyses/rivet/dis/COMPASSSIDIS.hh",
+      "analyses/rivet/dis/SIDISTrancheBinning.hh",
+      "analyses/rivet/dis/COMPASSModernMultiplicity.hh"
+    ],
+    "plugin": "RivetCOMPASS_2025_I2840545.so",
+    "reference_yoda": "analyses/rivet/dis/COMPASS_2025_I2840545.yoda.gz"
+  },
+  "reference": {
+    "snapshot": "data/phenomenology/COMPASS_2025_I2840545/reference.json",
+    "source_manifest": "data/phenomenology/COMPASS_2025_I2840545/source-manifest.json",
+    "source_url": "https://www.hepdata.net/record/ins2840545?version=1",
+    "raw_snapshot": "data/phenomenology/COMPASS_2025_I2840545/raw/record.json",
+    "record_doi": "10.17182/hepdata.159544.v1"
+  },
+  "cards": {
+    "directory": "cards/phenomenology/COMPASS_2025_I2840545",
+    "common": "COMPASS_2025_I2840545-Common.in",
+    "stem_pattern": "COMPASS_2025_I2840545_{target}_{helicity}-{contribution}",
+    "polarized_pdf_object": "/Herwig/Partons/COMPASSSIDISDiffPDF",
+    "unpolarized_pdf_object": "/Herwig/Partons/COMPASSSIDISPDF",
+    "helicities": {
+      "00": [
+        0,
+        0
+      ]
+    },
+    "contributions": {
+      "POSNLO": "PositiveNLO",
+      "NEGNLO": "NegativeNLO"
+    },
+    "target_components": {
+      "P": "proton"
+    },
+    "scale_objects": [
+      "/Herwig/MatrixElements/MEDISNC",
+      "/Herwig/MatrixElements/MEDISNCPol",
+      "/Herwig/MatrixElements/PowhegMEDISNC",
+      "/Herwig/MatrixElements/PowhegMEDISNCPol"
+    ]
+  },
+  "channels": {
+    "sidis": {
+      "label": "h+/-, pi+/-, K+/- proton multiplicities",
+      "targets": [
+        "H"
+      ],
+      "projections": [
+        "published_flattened_cells",
+        "readable_slices"
+      ],
+      "observable_level": "stable charged hadron"
+    }
+  },
+  "families": {
+    "nominal": {
+      "label": "POWHEG NLO+PS (explicit 00 mode)",
+      "helicities": [
+        "00"
+      ],
+      "mpi": "off",
+      "observable_level": "stable_particle"
+    }
+  },
+  "campaign": {
+    "default_jobs": 4,
+    "default_shards": 1,
+    "default_seed_base": 2840545,
+    "default_events": {
+      "POSNLO": 300000,
+      "NEGNLO": 30000
+    },
+    "smoke_events": 100
+  },
+  "postprocessor": "compass_sidis_multiplicity",
+  "postprocess_config": {
+    "target_outputs": {
+      "H": {
+        "P": 1.0
+      }
+    }
+  },
+  "scales": {
+    "central": 1.0,
+    "points": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "mapping": "DIS ScaleFactor = mu/mu0"
+  },
+  "pdf_ensembles": {
+    "polarized": {
+      "set": "NNPDFpol20_nlo_as_01180",
+      "central_member": 0,
+      "replica_members": [
+        1,
+        100
+      ],
+      "active": false
+    },
+    "unpolarized": {
+      "set": "NNPDF40_nlo_pch_as_01180",
+      "central_member": 0,
+      "replica_members": [
+        1,
+        100
+      ],
+      "active": true
+    },
+    "combination": "active unpolarized replicas plus scale envelope"
+  },
+  "goodness_of_fit": {
+    "primary_observable": "multiplicity",
+    "source_contract": "see checksum-pinned normalized reference"
+  },
+  "physics": {
+    "beam": "fixed-target lepton DIS",
+    "exchange": "photon",
+    "target": {
+      "H": {
+        "P": 1.0
+      }
+    },
+    "hard_process_accuracy": "POWHEG NLO+PS",
+    "event_simulation": "QCD shower, hadronization and remnants; QED shower and MPI off"
+  }
+}

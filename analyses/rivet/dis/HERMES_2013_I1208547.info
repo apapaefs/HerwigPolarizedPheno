@@ -1,0 +1,31 @@
+Name: HERMES_2013_I1208547
+Year: 2013
+Summary: Charged-pion and charged-kaon SIDIS multiplicities on hydrogen and deuterium
+Experiment: HERMES
+Collider: HERA fixed target
+InspireID: 1208547
+Status: UNVALIDATED
+Reentrant: true
+Authors:
+ - Andreas Papaefstathiou <apapaefs@kennesaw.edu>
+References:
+ - Phys.Rev.D 87 (2013) 074029
+ - arXiv:1212.5407
+RunInfo: >
+  Requires zero-polarization 27.6 GeV e+/- p and e+/- n samples, with POSNLO
+  and NEGNLO generated separately.
+NumEvents: 100000
+NeedsCrossSection: yes
+Beams: [[POSITRON, PROTON], [POSITRON, NEUTRON], [ELECTRON, PROTON], [ELECTRON, NEUTRON]]
+Energies: [[27.6, 0.938272], [27.6, 0.939565]]
+Description: >
+  Fills numerator, inclusive-DIS denominator and same-event covariance
+  estimators for 6,592 usable target/species cells in five separately fitted
+  three-dimensional binnings. Projections are formed from integrated yields,
+  not from already-divided multiplicities.
+Keywords: [DIS, SIDIS, fixed-target, multiplicity, pion, kaon, covariance]
+BibKey: HERMES:2012uyd
+BibTeX: '@article{HERMES:2012uyd,
+  collaboration = "HERMES", title = "{Multiplicities of charged pions and kaons from semi-inclusive deep-inelastic scattering by the proton and the deuteron}",
+  eprint = "1212.5407", archivePrefix = "arXiv", doi = "10.1103/PhysRevD.87.074029",
+  journal = "Phys. Rev. D", volume = "87", pages = "074029", year = "2013"}'

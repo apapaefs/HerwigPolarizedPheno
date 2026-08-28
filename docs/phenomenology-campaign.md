@@ -13,6 +13,12 @@ comparisons are:
 - COMPASS 2009 identified-pion/kaon deuteron $A_1^h(x)$;
 - COMPASS 2017 charged-pion, unidentified-charged-hadron, and charged-kaon
   multiplicities in the published sparse $(x,y,z)$ cells;
+- corrected COMPASS 2026 isoscalar and 2025 proton charged-hadron, pion and
+  kaon multiplicities;
+- COMPASS 2010 proton identified-pion/kaon asymmetries and COMPASS 2018
+  transverse-momentum multiplicities;
+- HERMES 2013 hydrogen/deuterium pion and kaon multiplicities in five 3D
+  binnings;
 - HERMES identified-hadron SIDIS $A_\parallel$ for proton and deuteron
   targets;
 - STAR $W^\pm A_L$, $W^\pm A_{LL}$, and integrated
