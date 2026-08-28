@@ -1,0 +1,34 @@
+Name: COMPASS_2020_I1788430
+Year: 2020
+Summary: High-z antiproton/proton and negative/positive kaon SIDIS multiplicity ratios
+Experiment: COMPASS
+Collider: CERN SPS fixed target
+InspireID: 1788430
+Status: UNVALIDATED
+Reentrant: true
+Authors:
+ - Andreas Papaefstathiou <apapaefs@kennesaw.edu>
+References:
+ - Phys.Lett.B 807 (2020) 135600
+ - arXiv:2003.11791
+RunInfo: >
+  Requires zero-polarization 160 GeV mu+ p and mu+ n samples, with POSNLO
+  and NEGNLO generated separately.
+NumEvents: 100000
+NeedsCrossSection: yes
+Beams: [[ANTIMUON, PROTON], [ANTIMUON, NEUTRON]]
+Energies: [[160.0, 0.938272], [160.0, 0.939565]]
+Description: >
+  Fills event-aggregated antiproton/proton and K-/K+ yields and same-event
+  covariance proxies in all 67 paper-table cells. The postprocessor adds
+  signed-NLO normalized bins, forms the isoscalar P/N sum, and only then takes
+  the negative/positive ratio. Paper TeX/PDF are the numerical authority;
+  no official HEPData submission was available on 2026-08-28.
+Keywords: [DIS, SIDIS, unpolarized, fixed-target, proton, antiproton, kaon, multiplicity ratio]
+BibKey: COMPASS:2020hbb
+BibTeX: '@article{COMPASS:2020hbb,
+  collaboration = "COMPASS",
+  title = "{Antiproton over proton and K- over K+ multiplicity ratios at high z in DIS}",
+  eprint = "2003.11791", archivePrefix = "arXiv",
+  doi = "10.1016/j.physletb.2020.135600",
+  journal = "Phys. Lett. B", volume = "807", pages = "135600", year = "2020"}'

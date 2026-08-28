@@ -234,6 +234,33 @@ def multiplicity_isoscalar(
     )
 
 
+def charge_ratio_target_combination(
+    negative_yields: Mapping[str, experimental.BinSeries],
+    positive_yields: Mapping[str, experimental.BinSeries],
+    covariance_proxies: Mapping[str, experimental.BinSeries],
+    target_weights: Mapping[str, float],
+) -> dict[str, Any]:
+    """Form a negative/positive yield ratio after target combination.
+
+    The two charge yields and their same-event covariance are combined across
+    proton/neutron components before division.  Unit density widths make this
+    an ordinary dimensionless ratio while retaining the tested normalized-bin
+    signed-NLO arithmetic used by the multiplicity estimator.
+    """
+
+    first = _check_series(
+        (negative_yields, positive_yields, covariance_proxies),
+        set(target_weights),
+    )
+    result = multiplicity_target_combination(
+        negative_yields, positive_yields, covariance_proxies,
+        target_weights, [1.0] * len(first.values),
+    )
+    result["combined_negative_yield"] = result.pop("isoscalar_numerator")
+    result["combined_positive_yield"] = result.pop("isoscalar_denominator")
+    return result
+
+
 def _covariance_result(
     residual: Sequence[float],
     covariance: Any,
@@ -469,6 +496,52 @@ def diagonal_multiplicity_goodness_of_fit(
         "policy": (
             "datasets are reported separately because no cross-dataset "
             "covariance was released"
+        ),
+    }
+
+
+def charge_ratio_goodness_of_fit(
+    predictions: Mapping[str, Mapping[str, Any]],
+    snapshot: Mapping[str, Any],
+) -> dict[str, Any]:
+    """Evaluate each overlapping COMPASS 2020 paper table independently."""
+
+    results: dict[str, Any] = {}
+    for dataset_id, dataset in snapshot["datasets"].items():
+        prediction = predictions[dataset_id]
+        retained: list[str] = []
+        residual: list[float] = []
+        diagonal_variance: list[float] = []
+        nuisance: list[float] = []
+        for index, point in enumerate(dataset["points"]):
+            theory = prediction["values"][index]
+            error = prediction["errors"][index]
+            if theory is None or error is None:
+                continue
+            retained.append(f"{dataset_id}:cell{index + 1:02d}")
+            residual.append(float(theory) - float(point["value"]))
+            diagonal_variance.append(
+                float(point["stat"])**2
+                + float(point["systematic_uncorrelated_half"])**2
+                + float(error)**2
+            )
+            nuisance.append(float(point["systematic_correlated_sqrt75"]))
+        if retained:
+            results[dataset_id] = _diagonal_plus_rank_one_result(
+                residual, diagonal_variance, nuisance, retained,
+                "diagonal published statistical errors, diagonal half-"
+                "systematic component, MC statistics, and one sqrt(0.75) "
+                "systematic nuisance within this paper table",
+            )
+        else:
+            results[dataset_id] = {
+                "points": 0, "status": "no finite theory bins"
+            }
+    return {
+        "independent_datasets": results,
+        "policy": (
+            "the overlapping x-z and z-momentum tables are never combined "
+            "into one chi-square"
         ),
     }
 

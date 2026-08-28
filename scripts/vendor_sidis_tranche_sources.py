@@ -235,6 +235,53 @@ def vendor_auxiliary_sources(args: argparse.Namespace) -> None:
         "paper_pdf": {**pdf, "url": "https://arxiv.org/pdf/1007.4061"},
     })
 
+    ratio_base = ROOT / "data/phenomenology/COMPASS_2020_I1788430"
+    ratio_source = copy_checked(
+        args.compass_2020_source,
+        ratio_base / "raw/arXiv-2003.11791-source.tar.gz",
+        "1be86deab9f235c9ee316e43fcb67a8d003082b2903432e46b00197a9bb17aa3",
+        94_008,
+    )
+    ratio_pdf = copy_checked(
+        args.compass_2020_pdf,
+        ratio_base / "raw/arXiv-2003.11791.pdf",
+        "421123edc14883620d2a70b7d9da5306a5c048b9c5f9f4a46503d414a10a48e1",
+        437_294,
+    )
+    inherited = copy_checked(
+        args.compass_2018_ratio_source,
+        ratio_base / "raw/arXiv-1802.00584-source.tar.gz",
+        "f4e639143dfc09b6a4ac894a2abc07033f15c8b0c9cc15b21c75d2f16d961303",
+        810_394,
+    )
+    atomic_json(ratio_base / "source-manifest.json", {
+        "measurement": "COMPASS_2020_I1788430",
+        "retrieved": RETRIEVED,
+        "numerical_authority": "arXiv:2003.11791 paper TeX tables 1--3",
+        "source_archive": {
+            **ratio_source, "url": "https://arxiv.org/e-print/2003.11791",
+            "tex_member": "main.tex",
+        },
+        "paper_pdf": {
+            **ratio_pdf, "url": "https://arxiv.org/pdf/2003.11791",
+        },
+        "inherited_kaon_selection_source": {
+            **inherited, "url": "https://arxiv.org/e-print/1802.00584",
+            "tex_member": "paper_v9.tex",
+            "role": "source for the kaon cuts explicitly inherited by arXiv:2003.11791",
+        },
+        "hepdata_audit": {
+            "record_url": "https://www.hepdata.net/record/ins1788430",
+            "record_http_status": 404,
+            "searches": [
+                "inspire id 1788430", "arXiv 2003.11791",
+                "DOI 10.1016/j.physletb.2020.135600", "exact paper title",
+            ],
+            "result": "no official HEPData submission found",
+            "checked": RETRIEVED,
+        },
+    })
+
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
@@ -242,6 +289,9 @@ def main() -> int:
     parser.add_argument("--hermes-archive", type=Path, required=True)
     parser.add_argument("--compass-2010-source", type=Path, required=True)
     parser.add_argument("--compass-2010-pdf", type=Path, required=True)
+    parser.add_argument("--compass-2020-source", type=Path, required=True)
+    parser.add_argument("--compass-2020-pdf", type=Path, required=True)
+    parser.add_argument("--compass-2018-ratio-source", type=Path, required=True)
     parser.add_argument("--workers", type=int, default=12)
     args = parser.parse_args()
     if args.workers <= 0:
@@ -250,7 +300,7 @@ def main() -> int:
         vendor_hepdata(measurement, specification, args.source_cache, args.workers)
         print(f"vendored {measurement}")
     vendor_auxiliary_sources(args)
-    print("vendored HERMES archive and COMPASS 2010 paper sources")
+    print("vendored HERMES archive and COMPASS 2010/2020 paper sources")
     return 0
 
 

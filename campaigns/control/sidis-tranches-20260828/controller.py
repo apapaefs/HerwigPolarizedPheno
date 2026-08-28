@@ -125,8 +125,8 @@ def git(*arguments: str) -> str:
 def configuration() -> dict[str, Any]:
     config = load_json(CONFIG_PATH)
     analyses = config.get("analyses")
-    if not isinstance(analyses, list) or len(analyses) != 5:
-        raise ControllerError("Campaign configuration must contain five analyses")
+    if not isinstance(analyses, list) or len(analyses) != 6:
+        raise ControllerError("Campaign configuration must contain six analyses")
     pilot_total = 0
     central_total = 0
     central_shards = 0
@@ -532,7 +532,7 @@ def action_assess(profile: str, selector: str) -> None:
     if profile not in {"pilot", "pilot2", "central"}:
         raise ControllerError("Only pilot, pilot2, or central campaigns can be assessed")
     if profile in {"pilot", "pilot2"} and selector != "all":
-        raise ControllerError("Pilot extrapolation requires the complete five-analysis selector 'all'")
+        raise ControllerError("Pilot extrapolation requires the complete six-analysis selector 'all'")
     specs = selected_plan(profile, selector, require_gate=profile == "central")
     results = [assess_one(spec) for spec in specs]
     masked = sum(int(item["masked_primary_bins"]) for item in results)

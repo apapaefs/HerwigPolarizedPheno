@@ -2,10 +2,10 @@
 """Pinned reference data for the 2026 SIDIS implementation tranches.
 
 The module turns four complete HEPData-v1 submissions, the full HERMES
-multiplicity archive, and the COMPASS proton-asymmetry paper source into one
-deterministic offline contract.  Raw inputs are immutable: normalisation may
-write the tracked JSON snapshots, audits and reference YODA, but validation
-never repairs or rewrites a source.
+multiplicity archive, and the COMPASS paper sources for the 2010 asymmetries
+and 2020 high-z charge ratios into one deterministic offline contract.  Raw
+inputs are immutable: normalisation may write the tracked JSON snapshots,
+audits and reference YODA, but validation never repairs or rewrites a source.
 """
 
 from __future__ import annotations
@@ -39,9 +39,12 @@ MEASUREMENTS = {
     "COMPASS_2010_I862410",
     "HERMES_2013_I1208547",
     "COMPASS_2018_I1624692",
+    "COMPASS_2020_I1788430",
 }
 
-HEPDATA_MEASUREMENTS = MEASUREMENTS - {"COMPASS_2010_I862410"}
+HEPDATA_MEASUREMENTS = MEASUREMENTS - {
+    "COMPASS_2010_I862410", "COMPASS_2020_I1788430",
+}
 REFERENCE_PATHS = {
     item: f"data/phenomenology/{item}/reference.json" for item in MEASUREMENTS
 }
@@ -58,6 +61,9 @@ AUDIT_PATHS = {
     "HERMES_2013_I1208547": (
         "data/phenomenology/HERMES_2013_I1208547/"
         "archive-hepdata-projection-audit.json"
+    ),
+    "COMPASS_2020_I1788430": (
+        "data/phenomenology/COMPASS_2020_I1788430/paper-extraction-audit.json"
     ),
 }
 
@@ -83,6 +89,21 @@ EXPECTED = {
         # The earlier assessment's 4918 figure is retained as a documented
         # source-count discrepancy; no absent cells are fabricated.
         "cells": 4664,
+    },
+    "COMPASS_2020_I1788430": {
+        "rows": [18, 34, 15],
+        "source_bytes": 94_008,
+        "source_sha256": (
+            "1be86deab9f235c9ee316e43fcb67a8d003082b2903432e46b00197a9bb17aa3"
+        ),
+        "pdf_bytes": 437_294,
+        "pdf_sha256": (
+            "421123edc14883620d2a70b7d9da5306a5c048b9c5f9f4a46503d414a10a48e1"
+        ),
+        "inherited_source_bytes": 810_394,
+        "inherited_source_sha256": (
+            "f4e639143dfc09b6a4ac894a2abc07033f15c8b0c9cc15b21c75d2f16d961303"
+        ),
     },
 }
 
@@ -484,6 +505,365 @@ def normalize_compass_2010() -> dict[str, Any]:
         "paper_extraction_audit": AUDIT_PATHS["COMPASS_2010_I862410"],
         "provenance": {"source_manifest": SOURCE_MANIFEST_PATHS["COMPASS_2010_I862410"],
                        "numerical_authority": "paper TeX", "arxiv": "1007.4061"},
+    }
+
+
+def _checked_manifest_source(
+    measurement: str, key: str,
+) -> tuple[bytes, Mapping[str, Any]]:
+    manifest = _manifest(measurement)
+    record = manifest.get(key)
+    if not isinstance(record, Mapping):
+        raise SIDISTrancheDataError(
+            f"Missing {key} source record for {measurement}"
+        )
+    path = ROOT / str(record["path"])
+    payload = path.read_bytes()
+    if len(payload) != int(record["bytes"]) or _sha256(payload) != record["sha256"]:
+        raise SIDISTrancheDataError(
+            f"Pinned source checksum/size mismatch for {measurement}/{key}"
+        )
+    return payload, record
+
+
+def _tar_member(payload: bytes, member: str, label: str) -> bytes:
+    with tarfile.open(fileobj=io.BytesIO(payload), mode="r:gz") as archive:
+        stream = archive.extractfile(member)
+        if stream is None:
+            raise SIDISTrancheDataError(f"Missing {member} in {label}")
+        return stream.read()
+
+
+def _paper_2020_sources() -> tuple[str, bytes, str, bytes]:
+    measurement = "COMPASS_2020_I1788430"
+    source, source_record = _checked_manifest_source(
+        measurement, "source_archive"
+    )
+    pdf, _ = _checked_manifest_source(measurement, "paper_pdf")
+    inherited, inherited_record = _checked_manifest_source(
+        measurement, "inherited_kaon_selection_source"
+    )
+    expected = EXPECTED[measurement]
+    checks = (
+        (len(source), _sha256(source), expected["source_bytes"], expected["source_sha256"]),
+        (len(pdf), _sha256(pdf), expected["pdf_bytes"], expected["pdf_sha256"]),
+        (len(inherited), _sha256(inherited), expected["inherited_source_bytes"],
+         expected["inherited_source_sha256"]),
+    )
+    if any(actual_size != wanted_size or actual_sha != wanted_sha
+           for actual_size, actual_sha, wanted_size, wanted_sha in checks):
+        raise SIDISTrancheDataError("COMPASS 2020 frozen source identity changed")
+    tex_payload = _tar_member(
+        source, str(source_record["tex_member"]), "COMPASS 2020 source"
+    )
+    inherited_payload = _tar_member(
+        inherited, str(inherited_record["tex_member"]),
+        "COMPASS 2018 inherited kaon-selection source",
+    )
+    return (
+        tex_payload.decode("latin-1"), tex_payload,
+        inherited_payload.decode("latin-1"), inherited_payload,
+    )
+
+
+def _paper_2020_table_rows(
+    tex: str, label: str, *, momentum_ranges: bool,
+) -> list[dict[str, Any]]:
+    marker = rf"\label{{{label}}}"
+    end = tex.find(marker)
+    if end < 0:
+        raise SIDISTrancheDataError(f"Missing COMPASS 2020 table {label}")
+    start = tex.rfind(r"\begin{table}", 0, end)
+    if start < 0:
+        raise SIDISTrancheDataError(f"Missing table start for {label}")
+    rows: list[dict[str, Any]] = []
+    for raw_line in tex[start:end].splitlines():
+        if r"\pm" not in raw_line:
+            continue
+        columns = [column.strip() for column in raw_line.split("&")]
+        if len(columns) != 8 or not re.fullmatch(r"[0-9]+(?:[a-z]+|')?", columns[0]):
+            continue
+        errors = [float(value) for value in re.findall(
+            r"[0-9]+(?:\.[0-9]+)?", columns[7]
+        )]
+        if len(errors) != 3:
+            raise SIDISTrancheDataError(
+                f"Could not parse value/errors in {label}: {raw_line}"
+            )
+        row: dict[str, Any] = {
+            "label": columns[0],
+            "x_mean": float(columns[1]),
+            "q2_mean": float(columns[2]),
+            "value": errors[0], "stat": errors[1], "systematic": errors[2],
+            "source_row": raw_line.strip(),
+        }
+        if momentum_ranges:
+            momentum = [float(value) for value in columns[3].split("--")]
+            zrange = [float(value) for value in columns[4].split("--")]
+            if len(momentum) != 2 or len(zrange) != 2:
+                raise SIDISTrancheDataError(
+                    f"Could not parse momentum/z range in {label}: {raw_line}"
+                )
+            row.update({
+                "momentum_low": momentum[0], "momentum_high": momentum[1],
+                "z_low": zrange[0], "z_high": zrange[1],
+                "z_reconstructed_mean": float(columns[5]),
+                "z_corrected_mean": float(columns[6]),
+            })
+        else:
+            row.update({
+                "z_low": float(columns[3]), "z_high": float(columns[4]),
+                "z_reconstructed_mean": float(columns[5]),
+                "z_corrected_mean": float(columns[6]),
+            })
+        rows.append(row)
+    return rows
+
+
+def paper_2020_audit() -> dict[str, Any]:
+    measurement = "COMPASS_2020_I1788430"
+    tex, tex_payload, inherited_tex, inherited_payload = _paper_2020_sources()
+    specifications = (
+        ("pbar_over_p_xz", "tab:res0", False),
+        ("pbar_over_p_lowx_zp", "tab:res1", True),
+        ("kminus_over_kplus_lowx_zp", "tab:res2", True),
+    )
+    tables: dict[str, Any] = {}
+    for index, (dataset, label, momentum_ranges) in enumerate(specifications):
+        rows = _paper_2020_table_rows(
+            tex, label, momentum_ranges=momentum_ranges
+        )
+        if len(rows) != EXPECTED[measurement]["rows"][index]:
+            raise SIDISTrancheDataError(
+                f"COMPASS 2020 {label} row count changed: {len(rows)}"
+            )
+        tables[dataset] = {
+            "tex_label": label,
+            "row_count": len(rows),
+            "rows_sha256": _sha256(json.dumps(
+                rows, sort_keys=True, separators=(",", ":"), ensure_ascii=False,
+            ).encode("utf-8")),
+            "rows": rows,
+        }
+
+    compact_current = re.sub(r"\s+", "", tex)
+    compact_inherited = re.sub(r"\s+", "", inherited_tex)
+    required_current = (
+        r"Q^2>1", r"W>5", r"largerthan0.1", r"x>0.01",
+        r"z>0.5", r"above20GeV", r"to60GeV", r"onlyperformedfor$x<0.05$",
+        r"upto55GeV",
+    )
+    required_inherited = (
+        r"0.01<x<0.40", r"minimumvalueof0.1", r"restrictedto$z>0.75$",
+        r"momenta between12GeV/$c$and40GeV/$c$".replace(" ", ""),
+    )
+    missing = [
+        f"current:{token}" for token in required_current
+        if token not in compact_current
+    ] + [
+        f"inherited:{token}" for token in required_inherited
+        if token not in compact_inherited
+    ]
+    if missing:
+        raise SIDISTrancheDataError(
+            f"COMPASS 2020 selection-source audit failed: {missing}"
+        )
+    manifest = _manifest(measurement)
+    return {
+        "schema_version": 1,
+        "measurement": measurement,
+        "numerical_authority": "arXiv:2003.11791 paper TeX tables 1--3",
+        "source_archive_sha256": manifest["source_archive"]["sha256"],
+        "tex_member": manifest["source_archive"]["tex_member"],
+        "tex_sha256": _sha256(tex_payload),
+        "inherited_kaon_selection": {
+            "authority": "arXiv:1802.00584 paper TeX",
+            "source_archive_sha256": manifest[
+                "inherited_kaon_selection_source"
+            ]["sha256"],
+            "tex_member": manifest["inherited_kaon_selection_source"]["tex_member"],
+            "tex_sha256": _sha256(inherited_payload),
+        },
+        "tables": tables,
+        "systematic_statement": {
+            "published_bin_to_bin_correlation_range": [0.7, 0.8],
+            "implemented_correlation_coefficient": 0.75,
+            "correlated_amplitude_fraction": math.sqrt(0.75),
+            "uncorrelated_amplitude_fraction": 0.5,
+            "scope": "within each separately reported table",
+        },
+        "hepdata_audit": manifest["hepdata_audit"],
+        "missing_rows": [],
+        "discrepancies": [],
+    }
+
+
+def _ratio_slices(
+    measurement: str, dataset_id: str, points: list[dict[str, Any]],
+    slice_dimension: str, plotted_dimension: str,
+) -> list[dict[str, Any]]:
+    groups: list[dict[str, Any]] = []
+    previous: tuple[float, float] | None = None
+    for point in points:
+        key = (
+            float(point[f"{slice_dimension}_low"]),
+            float(point[f"{slice_dimension}_high"]),
+        )
+        if key != previous:
+            groups.append({
+                "slice": len(groups) + 1,
+                "slice_dimensions": [slice_dimension],
+                "plotted_dimension": plotted_dimension,
+                "bounds": {slice_dimension: list(key)},
+                "flat_bins": [], "edges": [],
+                "rivet_path": (
+                    f"/{measurement}/Ratio_{dataset_id}_slice{len(groups) + 1:02d}"
+                ),
+            })
+            previous = key
+        group = groups[-1]
+        low = float(point[f"{plotted_dimension}_low"])
+        high = float(point[f"{plotted_dimension}_high"])
+        if not group["edges"]:
+            group["edges"].append(low)
+        if not math.isclose(float(group["edges"][-1]), low,
+                            rel_tol=0.0, abs_tol=1.e-12):
+            raise SIDISTrancheDataError(
+                f"Non-contiguous COMPASS 2020 readable slice {dataset_id}/{key}"
+            )
+        group["edges"].append(high)
+        group["flat_bins"].append(int(point["flat_bin"]))
+        point["slice"] = int(group["slice"])
+        point["slice_bin"] = len(group["flat_bins"])
+    return groups
+
+
+def normalize_compass_2020() -> dict[str, Any]:
+    measurement = "COMPASS_2020_I1788430"
+    audit = paper_2020_audit()
+    dataset_specs = {
+        "pbar_over_p_xz": {
+            "numerator": "antiproton", "numerator_pid": -2212,
+            "denominator": "proton", "denominator_pid": 2212,
+            "binning": "x,z (20 < p_h < 60 GeV)",
+            "slice_dimension": "x", "plotted_dimension": "z",
+        },
+        "pbar_over_p_lowx_zp": {
+            "numerator": "antiproton", "numerator_pid": -2212,
+            "denominator": "proton", "denominator_pid": 2212,
+            "binning": "z,p_h (0.01 < x < 0.05)",
+            "slice_dimension": "z", "plotted_dimension": "momentum",
+        },
+        "kminus_over_kplus_lowx_zp": {
+            "numerator": "K-", "numerator_pid": -321,
+            "denominator": "K+", "denominator_pid": 321,
+            "binning": "z,p_h (0.01 < x < 0.05)",
+            "slice_dimension": "z", "plotted_dimension": "momentum",
+        },
+    }
+    datasets: dict[str, Any] = {}
+    for dataset_id, specification in dataset_specs.items():
+        source_rows = audit["tables"][dataset_id]["rows"]
+        points: list[dict[str, Any]] = []
+        for index, source in enumerate(source_rows):
+            row = dict(source)
+            row.pop("source_row")
+            if dataset_id == "pbar_over_p_xz":
+                high_x = str(row["label"]).endswith("'")
+                row.update({
+                    "x_low": .05 if high_x else .01,
+                    "x_high": .4 if high_x else .05,
+                    "momentum_low": 20., "momentum_high": 60.,
+                })
+            else:
+                row.update({"x_low": .01, "x_high": .05})
+            systematic = float(row["systematic"])
+            row.update({
+                "cell": index + 1, "flat_bin": index,
+                # Published points are displayed at the unfolded/corrected
+                # mean while the bin limits remain those of reconstructed z.
+                "z_mean": float(row["z_corrected_mean"]),
+                "momentum_mean": .5 * (
+                    float(row["momentum_low"]) + float(row["momentum_high"])
+                ),
+                "systematic_correlated_sqrt75": math.sqrt(.75) * systematic,
+                "systematic_uncorrelated_half": .5 * systematic,
+            })
+            points.append(row)
+        slices = _ratio_slices(
+            measurement, dataset_id, points,
+            str(specification["slice_dimension"]),
+            str(specification["plotted_dimension"]),
+        )
+        datasets[dataset_id] = {
+            "id": dataset_id, "published_target": "D",
+            "observable": (
+                f"{specification['numerator']}/{specification['denominator']} "
+                "multiplicity ratio"
+            ),
+            "binning": specification["binning"],
+            "numerator_species": specification["numerator"],
+            "numerator_pid": specification["numerator_pid"],
+            "denominator_species": specification["denominator"],
+            "denominator_pid": specification["denominator_pid"],
+            "density_widths": [],
+            "flat_rivet_path": f"/{measurement}/Ratio_{dataset_id}_cells",
+            "raw_objects": {
+                "numerator": f"NegativeHadronYield_{dataset_id}_cells",
+                "denominator": f"PositiveHadronYield_{dataset_id}_cells",
+                "covariance": f"ChargeCovarianceProxy_{dataset_id}_cells",
+            },
+            "valid_cell_map": [
+                _cell_signature(point, ("x", "z", "momentum"))
+                for point in points
+            ],
+            "points": points, "slices": slices,
+            "goodness_of_fit_group": dataset_id,
+        }
+    return {
+        "schema_version": 2, "measurement": measurement,
+        "observable": "high-z negative/positive identified-hadron multiplicity ratios",
+        "beam": {"pid": -13, "energy_gev": 160.0},
+        "selection": {
+            "q2_min_gev2": 1., "w_min_gev": 5., "x": [.01,.4],
+            "y_min": .1, "y_max": "physical endpoint only",
+            "hadron_lab_angle_mrad": [0.,180.],
+            "antiproton_proton": {"z": [.5,1.1], "momentum_gev": [20.,60.]},
+            "kminus_kplus": {
+                "x": [.01,.05], "z": [.75,1.05],
+                "momentum_gev": [40.,55.],
+            },
+        },
+        "datasets": datasets,
+        "target_outputs": {"D": {"P": .5, "N": .5}},
+        "systematics": {
+            "model": (
+                "per published table: diag((0.5*syst)^2) + "
+                "(sqrt(0.75)*syst)(sqrt(0.75)*syst)^T"
+            ),
+            "published_correlation_range": [0.7,0.8],
+            "implemented_correlation_coefficient": .75,
+            "statistical_covariance": "diagonal; no matrix released",
+        },
+        "fit_policy": (
+            "report the three overlapping published tables independently; "
+            "never combine them into one goodness of fit"
+        ),
+        "corrections": {
+            "reference": (
+                "published RICH-efficiency/acceptance-corrected and z-unfolded ratios"
+            ),
+            "herwig": "no detector, acceptance, radiative, or unfolding correction",
+            "binning": "truth z uses the published reconstructed-z bin limits",
+            "display": "reference points use the published corrected-z means",
+        },
+        "paper_extraction_audit": AUDIT_PATHS[measurement],
+        "provenance": {
+            "source_manifest": SOURCE_MANIFEST_PATHS[measurement],
+            "numerical_authority": "arXiv:2003.11791 paper TeX tables 1--3",
+            "arxiv": "2003.11791", "doi": "10.1016/j.physletb.2020.135600",
+            "hepdata": "no official submission found as of 2026-08-28",
+        },
     }
 
 
@@ -1118,6 +1498,8 @@ def normalized_from_raw(measurement: str) -> dict[str, Any]:
         return normalize_compass_2010()
     if measurement == "COMPASS_2018_I1624692":
         return normalize_compass_pt2()
+    if measurement == "COMPASS_2020_I1788430":
+        return normalize_compass_2020()
     if measurement == "HERMES_2013_I1208547":
         return normalize_hermes()[0]
     raise SIDISTrancheDataError(f"Unknown SIDIS tranche measurement {measurement}")
@@ -1164,6 +1546,10 @@ def validate_vendored(measurement: str, *, full_covariance: bool = False) -> dic
     if measurement == "COMPASS_2010_I862410":
         _assert_equal(paper_2010_audit(), _load_json(ROOT / AUDIT_PATHS[measurement]))
         _validate_psd(snapshot["statistical_covariance"], "COMPASS 2010 statistical covariance")
+    elif measurement == "COMPASS_2020_I1788430":
+        _assert_equal(
+            paper_2020_audit(), _load_json(ROOT / AUDIT_PATHS[measurement])
+        )
     elif measurement == "HERMES_2013_I1208547":
         _, audit = normalize_hermes()
         _assert_equal(audit, _load_json(ROOT / AUDIT_PATHS[measurement]))
@@ -1246,6 +1632,8 @@ def write_normalized_snapshot(measurement: str) -> Path:
         snapshot = normalized_from_raw(measurement)
         if measurement == "COMPASS_2010_I862410":
             _atomic_json(ROOT / AUDIT_PATHS[measurement], paper_2010_audit())
+        elif measurement == "COMPASS_2020_I1788430":
+            _atomic_json(ROOT / AUDIT_PATHS[measurement], paper_2020_audit())
     return _atomic_json(ROOT / REFERENCE_PATHS[measurement], snapshot)
 
 

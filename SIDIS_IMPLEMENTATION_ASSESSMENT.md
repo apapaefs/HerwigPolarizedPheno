@@ -6,10 +6,11 @@
 
 ## Current status
 
-The repository now contains eighteen data-linked Rivet analyses. Eight are
+The repository now contains nineteen data-linked Rivet analyses. Nine are
 dedicated COMPASS/HERMES SIDIS implementations: the previously available
 COMPASS 2009 and two 2017 analyses, plus the five first/second-tranche analyses
-listed below. HERMES 2019 longitudinal SIDIS remains available separately.
+and the high-z charge-ratio addition listed below. HERMES 2019 longitudinal
+SIDIS remains available separately.
 
 | Tranche | Analysis | Observable | Source authority | Central jobs | Status |
 |---|---|---|---|---:|---|
@@ -18,6 +19,7 @@ listed below. HERMES 2019 longitudinal SIDIS remains available separately.
 | 1 | `COMPASS_2010_I862410` | proton identified-hadron `A1(x)` | paper TeX/PDF | 8 | implemented with frozen extraction audit |
 | 2 | `HERMES_2013_I1208547` | H/D pion and kaon multiplicities in five 3D binnings | full HERMES archive; HEPData projections as checks | 4 | implemented, 6,592 retained target/species cells |
 | 2 | `COMPASS_2018_I1624692` | isoscalar `d2M/(dz dPhT2)` | HEPData v1 | 4 | implemented, 4,664 released cells |
+| next | `COMPASS_2020_I1788430` | isoscalar high-z antiproton/proton and K-/K+ multiplicity ratios | paper TeX/PDF | 4 | implemented, 67 published cells |
 
 The complete COMPASS 2018 HEPData v1 submission contains 4,664 numerical
 rows, 2,332 per charge, rather than the 4,918 quoted in the earlier planning
@@ -26,12 +28,21 @@ All released rows are retained and the missing 254 claimed cells are not
 invented.
 
 Each implementation vendors the complete source release, normalized JSON,
-checksums, an audit or inventory, and reference YODA. Multiplicity analyses
+checksums, and an audit or inventory. Reference YODA is generated
+deterministically from the normalized snapshot by `fetch-data` or `prepare`;
+under the current workspace guardrail the new 2020 YODA is not committed.
+Multiplicity analyses
 store event-aggregated hadron numerators, inclusive-DIS denominators and
 same-event covariance proxies. Shards are combined within POSNLO and NEGNLO,
 the signed contributions are added at normalized-bin level, target components
 are combined, and only then is the ratio divided by its published density
 width. Missing cells and non-positive denominators are masked.
+
+For the 2020 charge ratios, the event-aggregated numerator and denominator are
+the negative- and positive-hadron yields rather than a hadron and inclusive-DIS
+yield. Their same-event covariance is retained, the P/N isoscalar sum is formed
+before division, and no density width is applied. Non-positive positive-hadron
+denominators are masked.
 
 The descriptor interface is schema version 6. A SIDIS descriptor may request
 a nonempty subset of proton/neutron target components and maps each published
@@ -62,6 +73,14 @@ only the unpolarized PDF axis; non-central polarized-PDF selectors are rejected.
 - COMPASS 2018 compares primarily to the vector-meson-subtracted values while
   retaining corrections and unsubtracted values as provenance. Its released
   statistical and systematic uncertainties are diagonal.
+- COMPASS 2020 has no official HEPData submission as of 2026-08-28. The
+  checksum-pinned arXiv:2003.11791 TeX/PDF tables are the numerical authority;
+  the arXiv:1802.00584 TeX source is also pinned because the new paper inherits
+  its kaon selection. All 67 rows are frozen in an extraction audit. The
+  quoted systematic-correlation range 0.7--0.8 is represented by coefficient
+  0.75 within each published table: a `sqrt(0.75)` correlated amplitude and a
+  `0.5` diagonal amplitude. The overlapping proton x-z and z-momentum tables
+  are never combined into one fit.
 
 These are truth/particle-level generator comparisons, not detector-level
 reproductions. The isoscalar/deuteron predictions use explicit free-proton and
@@ -83,12 +102,14 @@ user action.
 | `COMPASS_2010_I862410` | 1M / 0.1M | 3M / 0.3M | 100 | 13.2M |
 | `HERMES_2013_I1208547` | 3M / 0.3M | 30M / 3M | 300 | 66M |
 | `COMPASS_2018_I1624692` | 10M / 1M | 100M / 10M | 1,000 | 220M |
+| `COMPASS_2020_I1788430` | 10M / 1M | 100M / 10M | 1,000 | 220M |
 
-The pilots total 42.9M events. The starting central suite is 398.2M events in
-7,800 shards. Extrapolation from completed HERMES production and sparse-bin
-smokes suggests about 4.5 hours of pure generation at 100 Odysseus workers;
-8--20 hours is the safer envelope once high-dimensional Rivet work and I/O are
-included. The assessor requires no masked primary bins and recommends samples
+The pilots total 64.9M events. The starting central suite is 618.2M events in
+11,800 shards. Extrapolation from completed HERMES production and sparse-bin
+smokes suggests about 7 hours of pure generation at 100 Odysseus workers;
+12--30 hours is the safer envelope once high-dimensional and rare-high-z Rivet
+work and I/O are included. The assessor requires no masked primary bins and
+recommends samples
 for which at least 90% of bins have `sigma_MC <= 0.5 sigma_exp,total` and every
 finite bin has `sigma_MC <= sigma_exp,total`. It preserves the 10:1 POS/NEG
 ratio and never recommends below the floors. A bin with nonzero experimental
@@ -98,17 +119,17 @@ instead of an invalid `1/sqrt(N)` extrapolation.
 
 The unpolarized paper profiles contain 103 variations; COMPASS 2010 contains
 203. At the central floors the combined paper programme would require about
-42.3 billion events, so it must be staged one analysis at a time after the
+65.0 billion events, so it must be staged one analysis at a time after the
 central gate.
 
 ## Next analysis candidates
 
-The strongest next unpolarized addition is `COMPASS_2020_I1788430`, the
-high-z antiproton/proton and negative/positive kaon ratio measurement. Ratios
-reduce the inclusive-DIS normalization burden and directly probe charge and
-species dependence in fragmentation at the edge of the current acceptance.
-`COMPASS_2018_I1652831` should be retained as the earlier kaon-only comparison
-and source-consistency cross-check, not treated as the primary modern result.
+The strongest recommended unpolarized addition, `COMPASS_2020_I1788430`, is
+now implemented. Ratios remove the inclusive-DIS normalization and directly
+probe charge and species dependence in fragmentation at the edge of the
+current acceptance. `COMPASS_2018_I1652831` remains the logical next
+source-consistency cross-check: it supplies the earlier kaon-only result that
+the 2020 release extends, but should not supersede the later measurement.
 
 After those ratios, the practical hierarchy is:
 
@@ -135,17 +156,20 @@ SHA-256 checksums. `.DS_Store` and generated figures are deliberately excluded.
 
 The implementation gate passed locally. All version/checksum and normalized-
 source reconstructions passed, including a full eigenvalue validation of the
-40 HERMES covariance matrices. The 147-test suite passed with two unrelated
-environment-dependent skips. All eighteen Rivet sources built in the aggregate
-plugin and all eighteen metadata lookups succeeded. The phenomenology paper
-built with no undefined citation or reference.
+40 HERMES covariance matrices. The integrated 155-test suite passed with two
+unrelated environment-dependent skips. All twenty Rivet sources (the nineteen
+data-linked analyses plus the internal `MC_POLDIJETS` control) built in the
+aggregate plugin and all twenty metadata lookups succeeded. The phenomenology
+paper built with no undefined citation or reference.
 
-Five central `full --smoke` campaigns completed their exact 4/2/8/4/4 job
+Six central `full --smoke` campaigns completed their exact 4/2/8/4/4/4 job
 matrices with 100 events per logical job. Every raw job succeeded, all
 postprocessors wrote their flattened outputs, and every plot stage completed.
 The HERMES smoke alone produced all 1,408 expected reference/prediction panels
-as both PDF and PNG. Empty low-statistics regions are not interpreted as
-physics. The smoke runtime was Herwig devel with Rivet 4.1.2 and installed
+as both PDF and PNG. The COMPASS 2020 smoke contained all nine raw estimators
+per target/sign job and produced 19 reference/prediction objects and 19 plots
+in both formats. Empty low-statistics regions are not interpreted as physics.
+The smoke runtime was Herwig devel with Rivet 4.1.2 and installed
 `HwMEDIS.7.so` SHA-256
 `07e78a9d313f3a66d98befeca6bfd0760499a5ba00bd7ba9bb1306c78ce24e8c`.
 

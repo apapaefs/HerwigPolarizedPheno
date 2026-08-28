@@ -1,6 +1,6 @@
-# SIDIS first/second tranches
+# SIDIS first/second tranches and high-z charge ratios
 
-Five schema-6 SIDIS measurements extend the existing COMPASS 2009/2017 and
+Six schema-6 SIDIS measurements extend the existing COMPASS 2009/2017 and
 HERMES 2019 coverage:
 
 | Analysis | Published target | Observable | Central matrix |
@@ -10,11 +10,13 @@ HERMES 2019 coverage:
 | `COMPASS_2010_I862410` | proton | `A1` for identified `pi`, `K` | P x PP/PM/MP/MM x POS/NEG = 8 |
 | `HERMES_2013_I1208547` | H/D | five-binning `pi`, `K` multiplicities | P/N x 00 x POS/NEG = 4 |
 | `COMPASS_2018_I1624692` | isoscalar | `d2M/(dz dPhT2)` | P/N x 00 x POS/NEG = 4 |
+| `COMPASS_2020_I1788430` | isoscalar | high-z antiproton/proton and K-/K+ ratios | P/N x 00 x POS/NEG = 4 |
 
-The versioned sources, normalized snapshots, audits, checksums and reference
-YODA files are under `data/phenomenology/<analysis>` and
-`analyses/rivet/dis`. Rebuild generated sparse-cell C++ only from the validated
-snapshots:
+The versioned sources, normalized snapshots, audits and checksums are under
+`data/phenomenology/<analysis>`. Reference YODA is regenerated from the
+normalized snapshot by `fetch-data` or automatically during `prepare`; it is a
+runtime product and is not committed for the 2020 addition. Rebuild generated
+sparse-cell C++ only from the validated snapshots:
 
 ```bash
 python3 scripts/generate_sidis_tranche_binning.py
@@ -50,6 +52,21 @@ are frozen in the reference audit; no diagonal element is changed.
 
 The complete COMPASS 2018 HEPData v1 source contains 4,664 rather than 4,918
 rows. The source-count audit in `reference.json` freezes that discrepancy.
+
+No official HEPData record exists for `COMPASS_2020_I1788430` as of
+2026-08-28. Its checksum-pinned arXiv TeX/PDF is therefore the numerical
+authority. The TeX source of the earlier kaon-ratio paper is pinned as well,
+because the 2020 publication explicitly inherits its kaon selection. All 67
+paper-table rows are audited. Reconstructed-z bin limits are applied to truth
+`z`; published corrected-z means are retained for display. The paper quotes
+systematic correlations of about 0.7--0.8, modelled within each separately
+reported table with correlation coefficient 0.75. The overlapping x-z and
+z-momentum tables are never combined into one goodness of fit.
+
+Charge ratios use the same ordering guarantees as multiplicities, but their
+event-aggregated negative- and positive-hadron yields replace the hadron/DIS
+pair. Their same-event covariance is retained, P/N yields are combined first,
+and the negative/positive ratio is formed last. No density width is applied.
 
 ## Campaigns
 

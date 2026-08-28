@@ -1519,7 +1519,7 @@ def _reference_path(measurement: Mapping[str, Any], observable: str,
             return str(dataset["rivet_path"])
     if measurement["postprocessor"] in {
         "compass_sidis_a1", "compass_sidis_multiplicity",
-        "hermes_sidis_multiplicity",
+        "hermes_sidis_multiplicity", "compass_sidis_charge_ratio",
     }:
         entry = _compass_reference_entry(snapshot, observable)
         if entry is None:
@@ -1671,7 +1671,7 @@ def _reference_points(measurement: Mapping[str, Any], snapshot: Mapping[str, Any
             return dataset["points"]
     if measurement["postprocessor"] in {
         "compass_sidis_a1", "compass_sidis_multiplicity",
-        "hermes_sidis_multiplicity",
+        "hermes_sidis_multiplicity", "compass_sidis_charge_ratio",
     }:
         entry = _compass_reference_entry(snapshot, observable)
         if entry is None:
@@ -1735,7 +1735,7 @@ def _pp_reference_overlay_points(
         observables = tuple(snapshot.get("datasets", {}))
     elif measurement["postprocessor"] in {
         "compass_sidis_a1", "compass_sidis_multiplicity",
-        "hermes_sidis_multiplicity",
+        "hermes_sidis_multiplicity", "compass_sidis_charge_ratio",
     }:
         observables = tuple(snapshot.get("datasets", {})) + tuple(
             Path(str(slice_spec["rivet_path"])).name
@@ -1777,7 +1777,7 @@ def _pp_reference_overlay_points(
             ]
         elif measurement["postprocessor"] in {
             "compass_sidis_a1", "compass_sidis_multiplicity",
-            "hermes_sidis_multiplicity",
+            "hermes_sidis_multiplicity", "compass_sidis_charge_ratio",
         }:
             entry = _compass_reference_entry(snapshot, observable)
             if entry is None:
@@ -1787,6 +1787,8 @@ def _pp_reference_overlay_points(
             plotted_coordinate = "z_mean"
             if dataset.get("integrated_projection"):
                 plotted_coordinate = f"{dataset['axis']}_mean"
+            elif slice_spec is not None and slice_spec.get("plotted_dimension"):
+                plotted_coordinate = f"{slice_spec['plotted_dimension']}_mean"
             elif slice_spec is not None and dataset.get("density_widths") == ["z", "pt2"]:
                 plotted_coordinate = "pt2_mean"
             elif slice_spec is not None and dataset.get("density_widths") == ["z", "phperp"]:
@@ -2251,6 +2253,7 @@ def _compass_sidis_prediction_sets(
     cache: dict[tuple[str, str, str], experimental.BinSeries] = {}
     output: dict[tuple[Any, ...], dict[str, Any]] = {}
     is_a1 = measurement["postprocessor"] == "compass_sidis_a1"
+    is_ratio = measurement["postprocessor"] == "compass_sidis_charge_ratio"
     helicities = compass_sidis.HELICITIES if is_a1 else ("00",)
     schema6 = int(measurement.get("schema_version", 5)) >= 6
     postprocess_config = measurement.get("postprocess_config", {})
@@ -2321,7 +2324,11 @@ def _compass_sidis_prediction_sets(
                     )
                     for point in dataset["points"]
                 ]
-                if schema6:
+                if schema6 and is_ratio:
+                    result = compass_sidis.charge_ratio_target_combination(
+                        numerator, denominator, covariance, target_weights,
+                    )
+                elif schema6:
                     result = compass_sidis.multiplicity_target_combination(
                         numerator, denominator, covariance,
                         target_weights, widths,
@@ -2446,7 +2453,7 @@ def _primary_reference_observable(
         return bool(dataset) and dataset.get("observable") == "A_parallel"
     if measurement["postprocessor"] in {
         "compass_sidis_a1", "compass_sidis_multiplicity",
-        "hermes_sidis_multiplicity",
+        "hermes_sidis_multiplicity", "compass_sidis_charge_ratio",
     }:
         return _compass_reference_entry(snapshot, observable) is not None
     return True
@@ -2492,6 +2499,7 @@ def postprocess_compass_sidis(
     yoda = experimental._import_yoda()
     objects: list[Any] = []
     is_a1 = measurement["postprocessor"] == "compass_sidis_a1"
+    is_ratio = measurement["postprocessor"] == "compass_sidis_charge_ratio"
 
     for observable, prediction in central.items():
         reference_path = _reference_path(measurement, observable, snapshot)
@@ -2515,7 +2523,12 @@ def postprocess_compass_sidis(
             "ObservableDefinition": (
                 "helicity-signed inverse-D yield divided by ordinary yield"
                 if is_a1
-                else "hadron yield per inclusive-DIS event and published density widths"
+                else (
+                    "negative identified-hadron yield divided by positive "
+                    "identified-hadron yield"
+                    if is_ratio else
+                    "hadron yield per inclusive-DIS event and published density widths"
+                )
             ),
             "ExperimentalCorrectionsAppliedToHerwig": "none",
         }
@@ -2534,6 +2547,10 @@ def postprocess_compass_sidis(
     }
     if is_a1:
         goodness = compass_sidis.a1_goodness_of_fit(
+            flat_predictions, snapshot
+        )
+    elif is_ratio:
+        goodness = compass_sidis.charge_ratio_goodness_of_fit(
             flat_predictions, snapshot
         )
     elif measurement["postprocessor"] == "hermes_sidis_multiplicity":
@@ -2586,6 +2603,9 @@ def postprocess_compass_sidis(
                     "phperp_low": point.get("phperp_low"),
                     "phperp_high": point.get("phperp_high"),
                     "phperp_mean": point.get("phperp_mean"),
+                    "momentum_low": point.get("momentum_low"),
+                    "momentum_high": point.get("momentum_high"),
+                    "momentum_mean": point.get("momentum_mean"),
                     "theory": prediction["values"][index],
                     "mc_stat": prediction["errors"][index],
                     "data": point.get("a1", point.get("value")),
@@ -3621,7 +3641,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         elif args.command == "postprocess":
             if measurement["postprocessor"] in {
                 "compass_sidis_a1", "compass_sidis_multiplicity",
-                "hermes_sidis_multiplicity",
+                "hermes_sidis_multiplicity", "compass_sidis_charge_ratio",
             }:
                 postprocess_compass_sidis(args, measurement)
             elif measurement["process_kind"] == "polarized_sidis":
@@ -3636,7 +3656,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 run_pp(args, measurement)
                 if measurement["postprocessor"] in {
                     "compass_sidis_a1", "compass_sidis_multiplicity",
-                    "hermes_sidis_multiplicity",
+                    "hermes_sidis_multiplicity", "compass_sidis_charge_ratio",
                 }:
                     postprocess_compass_sidis(args, measurement)
                 elif measurement["process_kind"] == "polarized_sidis":

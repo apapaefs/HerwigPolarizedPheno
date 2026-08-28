@@ -72,5 +72,14 @@ namespace COMPASSSIDIS {
     if (count > 0.0) histogram->fill(coordinate, std::sqrt(count));
   }
 
+  inline void fillCountCovariance(
+      const Histo1DPtr& histogram, double coordinate,
+      double firstCount, double secondCount) {
+    // The squared fill weight stores the same-event product needed for the
+    // covariance of two event-aggregated identified-hadron yields.
+    const double product = firstCount*secondCount;
+    if (product > 0.0) histogram->fill(coordinate, std::sqrt(product));
+  }
+
 } // namespace COMPASSSIDIS
 } // namespace Rivet

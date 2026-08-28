@@ -28,6 +28,7 @@ rendered/
 *.log
 *.out
 *.yoda
+*.yoda.gz
 *.so
 *.dylib
 *.root

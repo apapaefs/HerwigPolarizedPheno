@@ -1,0 +1,38 @@
+{
+  "measurement": "COMPASS_2020_I1788430",
+  "retrieved": "2026-08-28",
+  "numerical_authority": "arXiv:2003.11791 paper TeX tables 1--3",
+  "source_archive": {
+    "path": "data/phenomenology/COMPASS_2020_I1788430/raw/arXiv-2003.11791-source.tar.gz",
+    "bytes": 94008,
+    "sha256": "1be86deab9f235c9ee316e43fcb67a8d003082b2903432e46b00197a9bb17aa3",
+    "url": "https://arxiv.org/e-print/2003.11791",
+    "tex_member": "main.tex"
+  },
+  "paper_pdf": {
+    "path": "data/phenomenology/COMPASS_2020_I1788430/raw/arXiv-2003.11791.pdf",
+    "bytes": 437294,
+    "sha256": "421123edc14883620d2a70b7d9da5306a5c048b9c5f9f4a46503d414a10a48e1",
+    "url": "https://arxiv.org/pdf/2003.11791"
+  },
+  "inherited_kaon_selection_source": {
+    "path": "data/phenomenology/COMPASS_2020_I1788430/raw/arXiv-1802.00584-source.tar.gz",
+    "bytes": 810394,
+    "sha256": "f4e639143dfc09b6a4ac894a2abc07033f15c8b0c9cc15b21c75d2f16d961303",
+    "url": "https://arxiv.org/e-print/1802.00584",
+    "tex_member": "paper_v9.tex",
+    "role": "source for the kaon cuts explicitly inherited by arXiv:2003.11791"
+  },
+  "hepdata_audit": {
+    "record_url": "https://www.hepdata.net/record/ins1788430",
+    "record_http_status": 404,
+    "searches": [
+      "inspire id 1788430",
+      "arXiv 2003.11791",
+      "DOI 10.1016/j.physletb.2020.135600",
+      "exact paper title"
+    ],
+    "result": "no official HEPData submission found",
+    "checked": "2026-08-28"
+  }
+}

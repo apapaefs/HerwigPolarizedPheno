@@ -33,6 +33,7 @@ IDS = (
     "COMPASS_2010_I862410",
     "HERMES_2013_I1208547",
     "COMPASS_2018_I1624692",
+    "COMPASS_2020_I1788430",
 )
 
 
@@ -128,6 +129,23 @@ class TrancheReferenceTests(unittest.TestCase):
             self.assertEqual(source.stat().st_size, compass[key]["bytes"])
             self.assertEqual(hashlib.sha256(source.read_bytes()).hexdigest(),
                              compass[key]["sha256"])
+        ratios = json.loads((
+            ROOT / "data/phenomenology/COMPASS_2020_I1788430/source-manifest.json"
+        ).read_text(encoding="utf-8"))
+        self.assertEqual(ratios["hepdata_audit"]["record_http_status"], 404)
+        self.assertEqual(
+            ratios["hepdata_audit"]["result"],
+            "no official HEPData submission found",
+        )
+        for key in (
+            "source_archive", "paper_pdf", "inherited_kaon_selection_source",
+        ):
+            source = ROOT / ratios[key]["path"]
+            self.assertEqual(source.stat().st_size, ratios[key]["bytes"])
+            self.assertEqual(
+                hashlib.sha256(source.read_bytes()).hexdigest(),
+                ratios[key]["sha256"],
+            )
 
     def test_exact_sparse_cell_maps_and_correction_provenance(self) -> None:
         expected = {
@@ -143,6 +161,11 @@ class TrancheReferenceTests(unittest.TestCase):
                 "hminus": (2332, "2c23642ed449b8959fe2a51add91c0660045a33d44f4873d604b2c429651dc81"),
                 "hplus": (2332, "118d5e295d59350f76056c1258af4b153bfd5eeb5723b56385058a8dc94bfe45"),
             },
+            "COMPASS_2020_I1788430": {
+                "pbar_over_p_xz": (18, "8d26d1728ebd0b5da6d3003db51610d7462a9fb323b2a149f0ff51a14b84efd9"),
+                "pbar_over_p_lowx_zp": (34, "0cbf7c6795d6b22438eca42d61b93ec737f589707ce2452c7c664c0544cb2e49"),
+                "kminus_over_kplus_lowx_zp": (15, "594bfd350080835b915e1fc708008f1c507fc4540579c042290a6cbc4770e562"),
+            },
         }
         for identifier, datasets in expected.items():
             for name, (count, digest) in datasets.items():
@@ -154,7 +177,8 @@ class TrancheReferenceTests(unittest.TestCase):
                 self.assertEqual(hashlib.sha256(payload).hexdigest(), digest)
                 for point in dataset["points"]:
                     self.assertGreater(point["z_high"]-point["z_low"], 0.0)
-                    self.assertTrue(point["corrections"])
+                    if identifier != "COMPASS_2020_I1788430":
+                        self.assertTrue(point["corrections"])
         pt = self.snapshots["COMPASS_2018_I1624692"]
         self.assertEqual(pt["source_count_audit"]["hepdata_v1_rows"], 4664)
         self.assertEqual(pt["source_count_audit"]["assessment_claim"], 4918)
@@ -193,6 +217,30 @@ class TrancheReferenceTests(unittest.TestCase):
         self.assertTrue(all(len(row) == 12 for row in audit["correlation_rows"]))
         self.assertEqual(len(audit["deuteron_correction_rows"]), 12)
         self.assertEqual(audit["missing_rows"], [])
+
+        ratios = self.snapshots["COMPASS_2020_I1788430"]
+        self.assertEqual(sum(
+            len(dataset["points"]) for dataset in ratios["datasets"].values()
+        ), 67)
+        for dataset in ratios["datasets"].values():
+            for point in dataset["points"]:
+                self.assertAlmostEqual(
+                    point["systematic"]**2,
+                    point["systematic_correlated_sqrt75"]**2
+                    + point["systematic_uncorrelated_half"]**2,
+                )
+        ratio_audit = json.loads((
+            ROOT / "data/phenomenology/COMPASS_2020_I1788430/"
+            "paper-extraction-audit.json"
+        ).read_text(encoding="utf-8"))
+        self.assertEqual(
+            [ratio_audit["tables"][key]["row_count"] for key in (
+                "pbar_over_p_xz", "pbar_over_p_lowx_zp",
+                "kminus_over_kplus_lowx_zp",
+            )],
+            [18,34,15],
+        )
+        self.assertEqual(ratio_audit["missing_rows"], [])
 
     def test_hermes_full_archive_covariance_and_projection_contract(self) -> None:
         snapshot = reference.validate_vendored(
@@ -267,6 +315,32 @@ class TrancheReferenceTests(unittest.TestCase):
         )
         self.assertEqual(paths, expected)
 
+    def test_compass_2020_reference_yoda_inventory_is_complete(self) -> None:
+        identifier = "COMPASS_2020_I1788430"
+        snapshot = self.snapshots[identifier]
+        expected = {
+            "/REF" + str(dataset["flat_rivet_path"])
+            for dataset in snapshot["datasets"].values()
+        }
+        expected.update(
+            "/REF" + str(item["rivet_path"])
+            for dataset in snapshot["datasets"].values()
+            for item in dataset["slices"]
+        )
+        self.assertEqual(len(expected), 19)
+        # Reference YODA is a generated product under the workspace contract.
+        # When present (after fetch-data/prepare), it must exactly mirror the
+        # authoritative normalized JSON; a clean clone need not contain it.
+        reference_yoda = ROOT / f"analyses/rivet/dis/{identifier}.yoda.gz"
+        if reference_yoda.is_file():
+            with gzip.open(reference_yoda, "rt", encoding="utf-8") as stream:
+                paths = {
+                    line.split(maxsplit=2)[2].strip()
+                    for line in stream
+                    if line.startswith("BEGIN YODA_ESTIMATE1D_V3 ")
+                }
+            self.assertEqual(paths, expected)
+
 
 class TrancheRunnerTests(unittest.TestCase):
     @classmethod
@@ -274,8 +348,8 @@ class TrancheRunnerTests(unittest.TestCase):
         cls.registry = campaign.discover_pp_registry()
 
     def test_schema6_targets_active_axes_and_exact_job_counts(self) -> None:
-        central = dict(zip(IDS, (4, 2, 8, 4, 4)))
-        paper = dict(zip(IDS, (412, 206, 1624, 412, 412)))
+        central = dict(zip(IDS, (4, 2, 8, 4, 4, 4)))
+        paper = dict(zip(IDS, (412, 206, 1624, 412, 412, 412)))
         for identifier in IDS:
             measurement = self.registry[identifier]
             self.assertEqual(measurement["schema_version"], 6)
@@ -346,6 +420,40 @@ class TrancheRunnerTests(unittest.TestCase):
         )
         self.assertEqual(masked["values"], [None])
 
+    def test_charge_ratio_target_order_covariance_and_tablewise_fit(self) -> None:
+        negative = {"P": series([4.0], [1.0]), "N": series([2.0], [1.0])}
+        positive = {"P": series([10.0], [4.0]), "N": series([6.0], [1.0])}
+        covariance = {"P": series([0.0], [.5]), "N": series([0.0], [.25])}
+        ratio = postprocess.charge_ratio_target_combination(
+            negative, positive, covariance, {"P": .5, "N": .5}
+        )
+        self.assertAlmostEqual(ratio["values"][0], 3.0/8.0)
+        self.assertGreater(ratio["errors"][0], 0.0)
+        masked = postprocess.charge_ratio_target_combination(
+            {"P": series([1.0])}, {"P": series([0.0])},
+            {"P": series([0.0])}, {"P": 1.0},
+        )
+        self.assertEqual(masked["values"], [None])
+
+        snapshot = reference.validate_vendored("COMPASS_2020_I1788430")
+        predictions = {
+            dataset_id: {
+                "values": [point["value"] for point in dataset["points"]],
+                "errors": [0.01 for _ in dataset["points"]],
+            }
+            for dataset_id, dataset in snapshot["datasets"].items()
+        }
+        goodness = postprocess.charge_ratio_goodness_of_fit(
+            predictions, snapshot
+        )
+        self.assertEqual(
+            set(goodness["independent_datasets"]), set(snapshot["datasets"])
+        )
+        self.assertTrue(all(
+            result["chi2_correlated"] == 0.0
+            for result in goodness["independent_datasets"].values()
+        ))
+
     def test_hermes_projection_reference_lookup(self) -> None:
         measurement = self.registry["HERMES_2013_I1208547"]
         snapshot = reference.validate_vendored("HERMES_2013_I1208547")
@@ -383,18 +491,18 @@ class TrancheControllerTests(unittest.TestCase):
 
     def test_frozen_totals_and_dry_run(self) -> None:
         config = self.controller.configuration()
-        self.assertEqual(config["expected"]["pilot_events"], 42_900_000)
-        self.assertEqual(config["expected"]["central_floor_events"], 398_200_000)
-        self.assertEqual(config["expected"]["central_floor_shards"], 7_800)
+        self.assertEqual(config["expected"]["pilot_events"], 64_900_000)
+        self.assertEqual(config["expected"]["central_floor_events"], 618_200_000)
+        self.assertEqual(config["expected"]["central_floor_shards"], 11_800)
         with contextlib.redirect_stdout(io.StringIO()) as output:
             self.controller.action_dry_run("paper", "all")
         payload = json.loads(output.getvalue())
         self.assertEqual(
-            sum(item["logical_jobs"] for item in payload["campaigns"]), 3066
+            sum(item["logical_jobs"] for item in payload["campaigns"]), 3478
         )
         self.assertEqual(
             sum(item["total_events"] for item in payload["campaigns"]),
-            42_334_600_000,
+            64_994_600_000,
         )
 
     def test_event_plans_are_checksum_pinned_and_immutable(self) -> None:

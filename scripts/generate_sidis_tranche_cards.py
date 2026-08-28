@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate the finite target/helicity/signed-NLO cards for five SIDIS analyses."""
+"""Generate the finite target/helicity/signed-NLO cards for SIDIS analyses."""
 
 from __future__ import annotations
 
@@ -27,6 +27,8 @@ SPECIFICATIONS = {
                               "hermes": True},
     "COMPASS_2018_I1624692": {"base": BASE_MULTIPLICITY, "targets": ("P","N"),
                                "helicities": ("00",), "maxy": ".90", "minw2": "25.0"},
+    "COMPASS_2020_I1788430": {"base": BASE_MULTIPLICITY, "targets": ("P","N"),
+                               "helicities": ("00",), "maxy": "1.00", "minw2": "25.0"},
 }
 
 

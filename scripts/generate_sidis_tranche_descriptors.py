@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Generate schema-6 registry descriptors for the five SIDIS tranches."""
+"""Generate schema-6 registry descriptors for the SIDIS tranches."""
 
 from __future__ import annotations
 
@@ -62,6 +62,17 @@ SPECIFICATIONS: dict[str, dict[str, Any]] = {
         "source": "https://www.hepdata.net/record/ins1624692?version=1",
         "label": "h+/- multiplicities in z and PhT2", "seed": 1624692,
     },
+    "COMPASS_2020_I1788430": {
+        "title": "COMPASS high-z antiproton/proton and negative/positive kaon SIDIS ratios",
+        "kind": "unpolarized_sidis", "postprocessor": "compass_sidis_charge_ratio",
+        "targets": {"P": "proton", "N": "neutron"},
+        "outputs": {"D": {"P": .5, "N": .5}}, "helicities": {"00": [0,0]},
+        "source": "https://arxiv.org/abs/2003.11791",
+        "raw_source": "arXiv-2003.11791-source.tar.gz",
+        "label": "high-z antiproton/proton and K-/K+ ratios", "seed": 1788430,
+        "observable": "charge_ratio",
+        "observable_level": "stable identified hadron",
+    },
 }
 
 
@@ -85,7 +96,10 @@ def descriptor(measurement: str, specification: dict[str, Any]) -> dict[str, Any
             "record_doi": specification["doi"],
         })
     else:
-        reference["raw_snapshot"] = f"data/phenomenology/{measurement}/raw/arXiv-1007.4061-source.tar.gz"
+        reference["raw_snapshot"] = (
+            f"data/phenomenology/{measurement}/raw/"
+            f"{specification.get('raw_source', 'arXiv-1007.4061-source.tar.gz')}"
+        )
     polarized = specification["kind"] == "polarized_sidis"
     config: dict[str, Any] = {"target_outputs": specification["outputs"]}
     if polarized:
@@ -116,7 +130,9 @@ def descriptor(measurement: str, specification: dict[str, Any]) -> dict[str, Any
             "projections": specification.get(
                 "projections", ["published_flattened_cells", "readable_slices"]
             ),
-            "observable_level": "stable charged hadron",
+            "observable_level": specification.get(
+                "observable_level", "stable charged hadron"
+            ),
         }},
         "families": {"nominal": {
             "label": "POWHEG NLO+PS" + ("" if polarized else " (explicit 00 mode)"),
@@ -142,7 +158,9 @@ def descriptor(measurement: str, specification: dict[str, Any]) -> dict[str, Any
                             if polarized else "active unpolarized replicas plus scale envelope"),
         },
         "goodness_of_fit": {
-            "primary_observable": "A1" if polarized else "multiplicity",
+            "primary_observable": specification.get(
+                "observable", "A1" if polarized else "multiplicity"
+            ),
             "source_contract": "see checksum-pinned normalized reference",
         },
         "physics": {

@@ -37,6 +37,13 @@
       "logical_jobs": 4,
       "pilot": {"posnlo_events": 10000000, "negnlo_events": 1000000, "shards": 100},
       "central_floor": {"posnlo_events": 100000000, "negnlo_events": 10000000, "shards": 1000}
+    },
+    {
+      "measurement": "COMPASS_2020_I1788430",
+      "seed_base": 178843000,
+      "logical_jobs": 4,
+      "pilot": {"posnlo_events": 10000000, "negnlo_events": 1000000, "shards": 100},
+      "central_floor": {"posnlo_events": 100000000, "negnlo_events": 10000000, "shards": 1000}
     }
   ],
   "acceptance": {
@@ -46,16 +53,17 @@
     "pos_to_neg_ratio": 10
   },
   "expected": {
-    "pilot_events": 42900000,
-    "central_floor_events": 398200000,
-    "central_floor_shards": 7800,
-    "paper_events": 42334600000,
+    "pilot_events": 64900000,
+    "central_floor_events": 618200000,
+    "central_floor_shards": 11800,
+    "paper_events": 64994600000,
     "paper_jobs": {
       "COMPASS_2026_I3096394": 412,
       "COMPASS_2025_I2840545": 206,
       "COMPASS_2010_I862410": 1624,
       "HERMES_2013_I1208547": 412,
-      "COMPASS_2018_I1624692": 412
+      "COMPASS_2018_I1624692": 412,
+      "COMPASS_2020_I1788430": 412
     }
   }
 }

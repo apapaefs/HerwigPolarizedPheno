@@ -1,16 +1,17 @@
 # SIDIS tranche campaign controller
 
-This tracked controller prepares the five first/second-tranche SIDIS analyses,
+This tracked controller prepares six SIDIS analyses: the five first/second-
+tranche measurements plus `COMPASS_2020_I1788430`,
 launches only an explicitly selected stage, recovers failed shards without
 replacing successful products, and gates central statistics on a checksum-
 pinned pilot assessment. It never launches a campaign from `verify`,
 `commands`, `dry-run`, `status`, or `assess`.
 
-The initial pilot contains 42.9 million generated events. The starting central
-floor is 398.2 million events in 7,800 shards. At 100 Odysseus workers the
-generation-only extrapolation is about 4.5 hours; allow 8--20 hours for the
-high-dimensional Rivet analyses, filesystem traffic, postprocessing, and
-recovery. The five paper profiles would contain about 42.3 billion events and
+The initial pilot contains 64.9 million generated events. The starting central
+floor is 618.2 million events in 11,800 shards. At 100 Odysseus workers the
+generation-only extrapolation is about 7 hours; allow 12--30 hours for the
+high-dimensional and rare-high-z Rivet analyses, filesystem traffic,
+postprocessing, and recovery. The six paper profiles would contain about 65.0 billion events and
 must be staged per analysis only after its central gate.
 
 The COMPASS 2018 HEPData v1 submission contains 4,664 numerical cells, even
