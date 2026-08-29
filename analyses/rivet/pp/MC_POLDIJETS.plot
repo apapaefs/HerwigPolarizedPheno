@@ -21,6 +21,26 @@ YLabel=$\mathrm{d}\sigma_{UU}/\mathrm{d}X$ [pb / unit]
 LogY=1
 END PLOT
 
+BEGIN PLOT /MC_POLDIJETS/SigmaPP_.*
+YLabel=$\mathrm{d}\sigma^{++}/\mathrm{d}X$ [pb / unit]
+LogY=1
+END PLOT
+
+BEGIN PLOT /MC_POLDIJETS/SigmaPM_.*
+YLabel=$\mathrm{d}\sigma^{+-}/\mathrm{d}X$ [pb / unit]
+LogY=1
+END PLOT
+
+BEGIN PLOT /MC_POLDIJETS/SigmaMP_.*
+YLabel=$\mathrm{d}\sigma^{-+}/\mathrm{d}X$ [pb / unit]
+LogY=1
+END PLOT
+
+BEGIN PLOT /MC_POLDIJETS/SigmaMM_.*
+YLabel=$\mathrm{d}\sigma^{--}/\mathrm{d}X$ [pb / unit]
+LogY=1
+END PLOT
+
 BEGIN PLOT /MC_POLDIJETS/ALL_dijet_rate$
 XLabel=Selected loose-dijet sample
 YLabel=$A_{LL}$
@@ -39,16 +59,36 @@ YLabel=$\sigma_{UU}$ [pb]
 LogY=0
 END PLOT
 
-BEGIN PLOT /MC_POLDIJETS/(ALL|DeltaSigmaLL|SigmaUU)_jet1_pt$
+BEGIN PLOT /MC_POLDIJETS/(ALL|DeltaSigmaLL|SigmaUU|SigmaPP|SigmaPM|SigmaMP|SigmaMM)_jet1_pt$
 XLabel=Leading parton-jet $p_T$ [GeV]
 END PLOT
 
-BEGIN PLOT /MC_POLDIJETS/(ALL|DeltaSigmaLL|SigmaUU)_jet2_pt$
+BEGIN PLOT /MC_POLDIJETS/(ALL|DeltaSigmaLL|SigmaUU|SigmaPP|SigmaPM|SigmaMP|SigmaMM)_jet2_pt$
 XLabel=Subleading parton-jet $p_T$ [GeV]
 END PLOT
 
-BEGIN PLOT /MC_POLDIJETS/(ALL|DeltaSigmaLL|SigmaUU)_jet3_pt$
+BEGIN PLOT /MC_POLDIJETS/(ALL|DeltaSigmaLL|SigmaUU|SigmaPP|SigmaPM|SigmaMP|SigmaMM)_jet3_pt$
 XLabel=Third parton-jet $p_T$ [GeV]
+END PLOT
+
+BEGIN PLOT /MC_POLDIJETS/(ALL|DeltaSigmaLL|SigmaUU|SigmaPP|SigmaPM|SigmaMP|SigmaMM)_jet4_pt$
+XLabel=Fourth parton-jet $p_T$ [GeV]
+END PLOT
+
+BEGIN PLOT /MC_POLDIJETS/(ALL|DeltaSigmaLL|SigmaUU|SigmaPP|SigmaPM|SigmaMP|SigmaMM)_jet1_eta$
+XLabel=Leading parton-jet $\eta$
+END PLOT
+
+BEGIN PLOT /MC_POLDIJETS/(ALL|DeltaSigmaLL|SigmaUU|SigmaPP|SigmaPM|SigmaMP|SigmaMM)_jet2_eta$
+XLabel=Subleading parton-jet $\eta$
+END PLOT
+
+BEGIN PLOT /MC_POLDIJETS/(ALL|DeltaSigmaLL|SigmaUU|SigmaPP|SigmaPM|SigmaMP|SigmaMM)_jet3_eta$
+XLabel=Third parton-jet $\eta$
+END PLOT
+
+BEGIN PLOT /MC_POLDIJETS/(ALL|DeltaSigmaLL|SigmaUU|SigmaPP|SigmaPM|SigmaMP|SigmaMM)_jet4_eta$
+XLabel=Fourth parton-jet $\eta$
 END PLOT
 
 BEGIN PLOT /MC_POLDIJETS/(ALL|DeltaSigmaLL|SigmaUU)_pt_average$
@@ -83,8 +123,20 @@ BEGIN PLOT /MC_POLDIJETS/(ALL|DeltaSigmaLL|SigmaUU)_abs_delta_eta$
 XLabel=$|\Delta\eta(j_1,j_2)|$
 END PLOT
 
-BEGIN PLOT /MC_POLDIJETS/(ALL|DeltaSigmaLL|SigmaUU)_delta_r$
+BEGIN PLOT /MC_POLDIJETS/(ALL|DeltaSigmaLL|SigmaUU|SigmaPP|SigmaPM|SigmaMP|SigmaMM)_delta_r$
 XLabel=$\Delta R(j_1,j_2)$
+END PLOT
+
+BEGIN PLOT /MC_POLDIJETS/(ALL|DeltaSigmaLL|SigmaUU|SigmaPP|SigmaPM|SigmaMP|SigmaMM)_delta_r_13$
+XLabel=$\Delta R(j_1,j_3)$
+END PLOT
+
+BEGIN PLOT /MC_POLDIJETS/(ALL|DeltaSigmaLL|SigmaUU|SigmaPP|SigmaPM|SigmaMP|SigmaMM)_delta_r_24$
+XLabel=$\Delta R(j_2,j_4)$
+END PLOT
+
+BEGIN PLOT /MC_POLDIJETS/(ALL|DeltaSigmaLL|SigmaUU|SigmaPP|SigmaPM|SigmaMP|SigmaMM)_delta_r_14$
+XLabel=$\Delta R(j_1,j_4)$
 END PLOT
 
 BEGIN PLOT /MC_POLDIJETS/(ALL|DeltaSigmaLL|SigmaUU)_eta_boost$

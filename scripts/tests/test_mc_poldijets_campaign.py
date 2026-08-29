@@ -63,11 +63,32 @@ class MCPOLDIJETSCampaignTests(unittest.TestCase):
         self.assertEqual(snapshot["sqrt_s_gev"], 510.0)
         configured = self.measurement["channels"]["dijets"]["raw_objects"]
         self.assertEqual(set(snapshot["observables"]), set(configured))
-        self.assertEqual(len(configured), 15)
+        self.assertEqual(len(configured), 23)
         for observable, raw_object in configured.items():
             self.assertEqual(
                 snapshot["observables"][observable]["raw_object"], raw_object
             )
+        resolved = set(
+            self.measurement["channels"]["dijets"][
+                "helicity_resolved_observables"
+            ]
+        )
+        self.assertEqual(
+            resolved,
+            {
+                "jet1_pt", "jet2_pt", "jet3_pt", "jet4_pt",
+                "jet1_eta", "jet2_eta", "jet3_eta", "jet4_eta",
+                "delta_r", "delta_r_13", "delta_r_24", "delta_r_14",
+            },
+        )
+        self.assertEqual(
+            {
+                observable
+                for observable, definition in snapshot["observables"].items()
+                if definition.get("helicity_resolved")
+            },
+            resolved,
+        )
         self.assertNotIn("reference_yoda", self.measurement["analysis"])
 
     def test_spin_on_off_matrix_and_card_delta(self) -> None:
@@ -83,7 +104,7 @@ class MCPOLDIJETSCampaignTests(unittest.TestCase):
         )
         expected_instance = (
             "MC_POLDIJETS:ETAMAX=1.5:LEVEL=HARDPARTON:PTJ1MIN=5.0:"
-            "PTJ2MIN=4.0:PTJ3MIN=2.0:R=0.5"
+            "PTJ2MIN=4.0:PTJ3MIN=2.0:PTJ4MIN=2.0:R=0.5"
         )
         self.assertEqual(
             {job["analysis_instance"] for job in jobs}, {expected_instance}
@@ -123,7 +144,9 @@ class MCPOLDIJETSCampaignTests(unittest.TestCase):
             "MP": series([8.0], [0.2]),
             "MM": series([12.0], [0.5]),
         }
-        prediction = campaign._mc_poldijets_prediction({"jet1_pt": samples})
+        prediction = campaign._mc_poldijets_prediction(
+            {"jet1_pt": samples}, ["jet1_pt"]
+        )
         self.assertAlmostEqual(
             prediction["SigmaUU_jet1_pt"]["values"][0], 10.0
         )
@@ -149,10 +172,27 @@ class MCPOLDIJETSCampaignTests(unittest.TestCase):
         self.assertAlmostEqual(
             prediction["Parity_PP_MM_jet1_pt"]["values"][0], 0.0
         )
+        for helicity, value, variance in (
+            ("PP", 12.0, 0.4),
+            ("PM", 8.0, 0.3),
+            ("MP", 8.0, 0.2),
+            ("MM", 12.0, 0.5),
+        ):
+            self.assertAlmostEqual(
+                prediction[f"Sigma{helicity}_jet1_pt"]["values"][0],
+                value,
+            )
+            self.assertAlmostEqual(
+                prediction[f"Sigma{helicity}_jet1_pt"]["errors"][0],
+                math.sqrt(variance),
+            )
 
     def test_primary_paths_have_no_external_points(self) -> None:
         snapshot = campaign._measurement_snapshot(self.measurement)
-        for prefix in ("ALL_", "DeltaSigmaLL_", "SigmaUU_"):
+        for prefix in (
+            "ALL_", "DeltaSigmaLL_", "SigmaUU_",
+            "SigmaPP_", "SigmaPM_", "SigmaMP_", "SigmaMM_",
+        ):
             observable = prefix + "jet1_pt"
             self.assertEqual(
                 campaign._reference_path(
@@ -186,6 +226,7 @@ class MCPOLDIJETSCampaignTests(unittest.TestCase):
             self.assertIn(f'"{raw_object}"', source)
         self.assertIn("_leadingPtMin = getOption<double>(\"PTJ1MIN\", 5.0)", source)
         self.assertIn("_subleadingPtMin = getOption<double>(\"PTJ2MIN\", 4.0)", source)
+        self.assertIn("_fourthPtMin = getOption<double>(\"PTJ4MIN\", 2.0)", source)
         self.assertNotIn("dphi <", source)
         self.assertNotIn("deta <", source)
         control = self.measurement["families"]["shower_spin_off"]

@@ -42,4 +42,4 @@ set EventGenerator:DumpPeriod -1
 set EventGenerator:MaxWarnings 20
 set EventGenerator:MaxErrors 1000000
 read snippets/Rivet.in
-insert /Herwig/Analysis/Rivet:Analyses 0 MC_POLDIJETS:LEVEL=HARDPARTON:R=0.5:PTJ1MIN=5.0:PTJ2MIN=4.0:PTJ3MIN=2.0:ETAMAX=1.5
+insert /Herwig/Analysis/Rivet:Analyses 0 MC_POLDIJETS:LEVEL=HARDPARTON:R=0.5:PTJ1MIN=5.0:PTJ2MIN=4.0:PTJ3MIN=2.0:PTJ4MIN=2.0:ETAMAX=1.5

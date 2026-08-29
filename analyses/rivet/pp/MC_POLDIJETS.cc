@@ -19,6 +19,7 @@ namespace Rivet {
       _leadingPtMin = getOption<double>("PTJ1MIN", 5.0)*GeV;
       _subleadingPtMin = getOption<double>("PTJ2MIN", 4.0)*GeV;
       _thirdPtMin = getOption<double>("PTJ3MIN", 2.0)*GeV;
+      _fourthPtMin = getOption<double>("PTJ4MIN", 2.0)*GeV;
       _etaMax = getOption<double>("ETAMAX", 1.5);
 
       book(_dijetRate, "dijet_rate_Yield", {0.0, 1.0});
@@ -31,6 +32,13 @@ namespace Rivet {
       book(_jet3Pt, "jet3_pt_Yield",
            {2.0,3.0,4.0,5.0,6.0,8.0,10.0,15.0,20.0,30.0,
             50.0,80.0});
+      book(_jet4Pt, "jet4_pt_Yield",
+           {2.0,3.0,4.0,5.0,6.0,8.0,10.0,15.0,20.0,30.0,
+            50.0,80.0});
+      book(_jet1Eta, "jet1_eta_Yield", 12, -1.5, 1.5);
+      book(_jet2Eta, "jet2_eta_Yield", 12, -1.5, 1.5);
+      book(_jet3Eta, "jet3_eta_Yield", 12, -1.5, 1.5);
+      book(_jet4Eta, "jet4_eta_Yield", 12, -1.5, 1.5);
       book(_ptAverage, "pt_average_Yield",
            {4.5,5.5,6.5,8.0,10.0,12.0,15.0,20.0,30.0,45.0,
             70.0,110.0,170.0,255.0});
@@ -48,6 +56,9 @@ namespace Rivet {
       book(_deltaPhi, "delta_phi_Yield", 18, 0.0, M_PI);
       book(_absDeltaEta, "abs_delta_eta_Yield", 12, 0.0, 3.0);
       book(_deltaR, "delta_r_Yield", 18, 0.0, 4.5);
+      book(_deltaR13, "delta_r_13_Yield", 16, 0.5, 4.5);
+      book(_deltaR24, "delta_r_24_Yield", 16, 0.5, 4.5);
+      book(_deltaR14, "delta_r_14_Yield", 16, 0.5, 4.5);
       book(_etaBoost, "eta_boost_Yield", 12, -1.5, 1.5);
       book(_cos2DeltaPhi, "cos2_delta_phi_Yield", 20, -1.0, 1.0);
       book(_provenance, "ProvenanceStatus", {0.0, 1.0, 2.0});
@@ -86,6 +97,8 @@ namespace Rivet {
       _dijetRate->fill(0.5);
       _jet1Pt->fill(pt1);
       _jet2Pt->fill(pt2);
+      _jet1Eta->fill(first.eta());
+      _jet2Eta->fill(second.eta());
       _ptAverage->fill(0.5*(pt1+pt2));
       _ptRatio21->fill(pt2/pt1);
       _dijetMass->fill(pair.mass()/GeV);
@@ -98,9 +111,23 @@ namespace Rivet {
       _cos2DeltaPhi->fill(std::cos(2.0*dphi));
 
       if (jets.size() >= 3 && jets[2].pT() > _thirdPtMin) {
-        const double pt3 = jets[2].pT()/GeV;
+        const ClusteredJet& third = jets[2];
+        const double pt3 = third.pT()/GeV;
         _jet3Pt->fill(pt3);
+        _jet3Eta->fill(third.eta());
         _ptRatio31->fill(pt3/pt1);
+        _deltaR13->fill(std::hypot(
+          first.eta()-third.eta(), deltaPhi(first, third)));
+
+        if (jets.size() >= 4 && jets[3].pT() > _fourthPtMin) {
+          const ClusteredJet& fourth = jets[3];
+          _jet4Pt->fill(fourth.pT()/GeV);
+          _jet4Eta->fill(fourth.eta());
+          _deltaR24->fill(std::hypot(
+            second.eta()-fourth.eta(), deltaPhi(second, fourth)));
+          _deltaR14->fill(std::hypot(
+            first.eta()-fourth.eta(), deltaPhi(first, fourth)));
+        }
       }
     }
 
@@ -108,9 +135,11 @@ namespace Rivet {
       if (sumW() == 0.0) return;
       const double factor = crossSection()/picobarn/sumW();
       for (Histo1DPtr histogram : {
-             _dijetRate, _jet1Pt, _jet2Pt, _jet3Pt, _ptAverage,
+             _dijetRate, _jet1Pt, _jet2Pt, _jet3Pt, _jet4Pt,
+             _jet1Eta, _jet2Eta, _jet3Eta, _jet4Eta, _ptAverage,
              _ptRatio21, _ptRatio31, _dijetMass, _dijetPt, _dijetHt,
-             _deltaPhi, _absDeltaEta, _deltaR, _etaBoost,
+             _deltaPhi, _absDeltaEta, _deltaR, _deltaR13,
+             _deltaR24, _deltaR14, _etaBoost,
              _cos2DeltaPhi}) {
         scale(histogram, factor);
       }
@@ -122,11 +151,14 @@ namespace Rivet {
     double _leadingPtMin = 5.0*GeV;
     double _subleadingPtMin = 4.0*GeV;
     double _thirdPtMin = 2.0*GeV;
+    double _fourthPtMin = 2.0*GeV;
     double _etaMax = 1.5;
 
-    Histo1DPtr _dijetRate, _jet1Pt, _jet2Pt, _jet3Pt, _ptAverage;
+    Histo1DPtr _dijetRate, _jet1Pt, _jet2Pt, _jet3Pt, _jet4Pt;
+    Histo1DPtr _jet1Eta, _jet2Eta, _jet3Eta, _jet4Eta, _ptAverage;
     Histo1DPtr _ptRatio21, _ptRatio31, _dijetMass, _dijetPt, _dijetHt;
-    Histo1DPtr _deltaPhi, _absDeltaEta, _deltaR, _etaBoost;
+    Histo1DPtr _deltaPhi, _absDeltaEta, _deltaR, _deltaR13;
+    Histo1DPtr _deltaR24, _deltaR14, _etaBoost;
     Histo1DPtr _cos2DeltaPhi, _provenance;
   };
 

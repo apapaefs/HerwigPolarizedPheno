@@ -16,6 +16,7 @@ Options:
  - PTJ1MIN=#
  - PTJ2MIN=#
  - PTJ3MIN=#
+ - PTJ4MIN=#
  - ETAMAX=#
 Description: >
   An MC_JETS-inspired analysis for comparing spin-correlated and
@@ -23,5 +24,5 @@ Description: >
   The default hard-shower-parton selection uses anti-kT R=0.5,
   pT1>5 GeV, pT2>4 GeV, and |eta|<1.5, without topology, Delta-phi, or
   Delta-eta cuts. The campaign postprocessor constructs sigma_UU,
-  Delta sigma_LL, A_LL, and single-spin/parity closure observables from
-  independent PP, PM, MP, and MM samples.
+  Delta sigma_LL, A_LL, helicity-resolved cross sections, and single-spin/
+  parity closure observables from independent PP, PM, MP, and MM samples.

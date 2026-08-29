@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "measurement": "MC_POLDIJETS",
   "kind": "internal_observable_definition",
   "title": "Loose polarized dijet shower-spin control at 510 GeV",
@@ -13,6 +13,7 @@
     "leading_jet_pt_min_gev": 5.0,
     "subleading_jet_pt_min_gev": 4.0,
     "third_jet_pt_min_gev": 2.0,
+    "fourth_jet_pt_min_gev": 2.0,
     "jet_abs_eta_max": 1.5,
     "topology_cut": null,
     "delta_phi_cut": null,
@@ -31,17 +32,50 @@
     "jet1_pt": {
       "raw_object": "jet1_pt_Yield",
       "edges": [5.0, 6.0, 7.0, 8.0, 10.0, 12.0, 15.0, 20.0, 30.0, 45.0, 70.0, 110.0, 170.0, 255.0],
-      "description": "Leading-jet transverse momentum"
+      "description": "Leading-jet transverse momentum",
+      "helicity_resolved": true
     },
     "jet2_pt": {
       "raw_object": "jet2_pt_Yield",
       "edges": [4.0, 5.0, 6.0, 7.0, 8.0, 10.0, 12.0, 15.0, 20.0, 30.0, 45.0, 70.0, 110.0, 170.0],
-      "description": "Subleading-jet transverse momentum"
+      "description": "Subleading-jet transverse momentum",
+      "helicity_resolved": true
     },
     "jet3_pt": {
       "raw_object": "jet3_pt_Yield",
       "edges": [2.0, 3.0, 4.0, 5.0, 6.0, 8.0, 10.0, 15.0, 20.0, 30.0, 50.0, 80.0],
-      "description": "Third-jet transverse momentum when pT3 exceeds 2 GeV"
+      "description": "Third-jet transverse momentum when pT3 exceeds 2 GeV",
+      "helicity_resolved": true
+    },
+    "jet4_pt": {
+      "raw_object": "jet4_pt_Yield",
+      "edges": [2.0, 3.0, 4.0, 5.0, 6.0, 8.0, 10.0, 15.0, 20.0, 30.0, 50.0, 80.0],
+      "description": "Fourth-jet transverse momentum when pT4 exceeds 2 GeV",
+      "helicity_resolved": true
+    },
+    "jet1_eta": {
+      "raw_object": "jet1_eta_Yield",
+      "edges": [-1.5, -1.25, -1.0, -0.75, -0.5, -0.25, 0.0, 0.25, 0.5, 0.75, 1.0, 1.25, 1.5],
+      "description": "Leading-jet pseudorapidity",
+      "helicity_resolved": true
+    },
+    "jet2_eta": {
+      "raw_object": "jet2_eta_Yield",
+      "edges": [-1.5, -1.25, -1.0, -0.75, -0.5, -0.25, 0.0, 0.25, 0.5, 0.75, 1.0, 1.25, 1.5],
+      "description": "Subleading-jet pseudorapidity",
+      "helicity_resolved": true
+    },
+    "jet3_eta": {
+      "raw_object": "jet3_eta_Yield",
+      "edges": [-1.5, -1.25, -1.0, -0.75, -0.5, -0.25, 0.0, 0.25, 0.5, 0.75, 1.0, 1.25, 1.5],
+      "description": "Third-jet pseudorapidity when pT3 exceeds 2 GeV",
+      "helicity_resolved": true
+    },
+    "jet4_eta": {
+      "raw_object": "jet4_eta_Yield",
+      "edges": [-1.5, -1.25, -1.0, -0.75, -0.5, -0.25, 0.0, 0.25, 0.5, 0.75, 1.0, 1.25, 1.5],
+      "description": "Fourth-jet pseudorapidity when pT4 exceeds 2 GeV",
+      "helicity_resolved": true
     },
     "pt_average": {
       "raw_object": "pt_average_Yield",
@@ -86,7 +120,26 @@
     "delta_r": {
       "raw_object": "delta_r_Yield",
       "edges": [0.0, 0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.25, 2.5, 2.75, 3.0, 3.25, 3.5, 3.75, 4.0, 4.25, 4.5],
-      "description": "Delta-R separation of the two leading jets"
+      "description": "Delta-R separation of the first and second jets",
+      "helicity_resolved": true
+    },
+    "delta_r_13": {
+      "raw_object": "delta_r_13_Yield",
+      "edges": [0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.25, 2.5, 2.75, 3.0, 3.25, 3.5, 3.75, 4.0, 4.25, 4.5],
+      "description": "Delta-R separation of the first and third jets when pT3 exceeds 2 GeV",
+      "helicity_resolved": true
+    },
+    "delta_r_24": {
+      "raw_object": "delta_r_24_Yield",
+      "edges": [0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.25, 2.5, 2.75, 3.0, 3.25, 3.5, 3.75, 4.0, 4.25, 4.5],
+      "description": "Delta-R separation of the second and fourth jets when pT4 exceeds 2 GeV",
+      "helicity_resolved": true
+    },
+    "delta_r_14": {
+      "raw_object": "delta_r_14_Yield",
+      "edges": [0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0, 2.25, 2.5, 2.75, 3.0, 3.25, 3.5, 3.75, 4.0, 4.25, 4.5],
+      "description": "Delta-R separation of the first and fourth jets when pT4 exceeds 2 GeV",
+      "helicity_resolved": true
     },
     "eta_boost": {
       "raw_object": "eta_boost_Yield",

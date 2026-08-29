@@ -91,6 +91,7 @@ def _measurement_snapshot(measurement: Mapping[str, Any]) -> dict[str, Any]:
         raise CampaignError(f"{snapshot_path} defines no observables")
 
     configured: dict[str, str] = {}
+    helicity_resolved: set[str] = set()
     for channel_id, channel in measurement["channels"].items():
         raw_objects = channel.get("raw_objects")
         if not isinstance(raw_objects, dict) or not raw_objects:
@@ -104,6 +105,29 @@ def _measurement_snapshot(measurement: Mapping[str, Any]) -> dict[str, Any]:
                     f"{observable!r} across channels"
                 )
             configured[str(observable)] = str(raw_object)
+        resolved = channel.get("helicity_resolved_observables", [])
+        if (
+            not isinstance(resolved, list)
+            or any(not isinstance(item, str) for item in resolved)
+            or len(resolved) != len(set(resolved))
+        ):
+            raise CampaignError(
+                f"{measurement['id']}/{channel_id} has invalid "
+                "helicity_resolved_observables"
+            )
+        unknown_resolved = sorted(set(resolved) - set(raw_objects))
+        if unknown_resolved:
+            raise CampaignError(
+                f"{measurement['id']}/{channel_id} resolves unknown "
+                f"observables: {', '.join(unknown_resolved)}"
+            )
+        repeated_resolved = sorted(helicity_resolved.intersection(resolved))
+        if repeated_resolved:
+            raise CampaignError(
+                f"{measurement['id']} repeats helicity-resolved observables: "
+                f"{', '.join(repeated_resolved)}"
+            )
+        helicity_resolved.update(resolved)
     if set(definitions) != set(configured):
         raise CampaignError(
             f"{snapshot_path} observable keys differ from the campaign descriptor"
@@ -129,6 +153,17 @@ def _measurement_snapshot(measurement: Mapping[str, Any]) -> dict[str, Any]:
         ):
             raise CampaignError(
                 f"{snapshot_path} has invalid bin edges for {observable!r}"
+            )
+        resolved_flag = definition.get("helicity_resolved", False)
+        if not isinstance(resolved_flag, bool):
+            raise CampaignError(
+                f"{snapshot_path} has a non-boolean helicity_resolved flag "
+                f"for {observable!r}"
+            )
+        if resolved_flag != (observable in helicity_resolved):
+            raise CampaignError(
+                f"{snapshot_path} helicity-resolved contract differs from "
+                f"the campaign descriptor for {observable!r}"
             )
     return snapshot
 
@@ -1362,11 +1397,19 @@ def _star_jet_prediction(
 
 
 def _mc_poldijets_prediction(
-    samples_by_object: Mapping[str, Mapping[str, experimental.BinSeries]]
+    samples_by_object: Mapping[str, Mapping[str, experimental.BinSeries]],
+    helicity_resolved_observables: Sequence[str] = (),
 ) -> dict[str, dict[str, Any]]:
     """Construct cross sections and spin observables for loose MC dijets."""
 
     output: dict[str, dict[str, Any]] = {}
+    resolved = set(helicity_resolved_observables)
+    unknown = sorted(resolved - set(samples_by_object))
+    if unknown:
+        raise CampaignError(
+            "Unknown helicity-resolved MC_POLDIJETS observables: "
+            + ", ".join(unknown)
+        )
     for observable, samples in samples_by_object.items():
         edges = list(next(iter(samples.values())).edges)
         sigma_uu = experimental.linear_combine_series(
@@ -1397,6 +1440,17 @@ def _mc_poldijets_prediction(
         output[f"ALL_{observable}"] = {
             "edges": edges, "values": values, "errors": errors,
         }
+        if observable in resolved:
+            for helicity in DENOMINATOR:
+                series = samples[helicity]
+                output[f"Sigma{helicity}_{observable}"] = {
+                    "edges": edges,
+                    "values": list(series.values),
+                    "errors": [
+                        math.sqrt(max(0.0, variance))
+                        for variance in series.variances
+                    ],
+                }
 
         for label, numerator in (
             ("SingleSpinA", AL_A_NUMERATOR),
@@ -1507,7 +1561,10 @@ def _reference_path(measurement: Mapping[str, Any], observable: str,
         dataset = snapshot["datasets"].get(observable)
         return str(dataset["rivet_path"]) if dataset else None
     if measurement["postprocessor"] == "mc_poldijets":
-        for prefix in ("ALL_", "DeltaSigmaLL_", "SigmaUU_"):
+        for prefix in (
+            "ALL_", "DeltaSigmaLL_", "SigmaUU_",
+            "SigmaPP_", "SigmaPM_", "SigmaMP_", "SigmaMM_",
+        ):
             if observable.startswith(prefix):
                 raw_observable = observable[len(prefix):]
                 if raw_observable in snapshot.get("observables", {}):
@@ -2940,7 +2997,10 @@ def postprocess_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> 
             predictions[key] = _star_jet_prediction(objects)
             _apply_star_display_binning(predictions[key], snapshot)
         elif measurement["postprocessor"] == "mc_poldijets":
-            predictions[key] = _mc_poldijets_prediction(objects)
+            predictions[key] = _mc_poldijets_prediction(
+                objects,
+                channel_spec.get("helicity_resolved_observables", []),
+            )
         else:
             raise CampaignError(f"Unknown postprocessor {measurement['postprocessor']}")
 
@@ -3037,6 +3097,11 @@ def postprocess_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> 
                     "jet_kt_min_gev"
                 ),
             }
+            helicity_match = re.match(
+                r"^Sigma(PP|PM|MP|MM)_", observable
+            )
+            if helicity_match:
+                annotation["HelicityCombination"] = helicity_match.group(1)
             annotation["ComparisonRole"] = (
                 "primary with excluded bins stored under DIAGNOSTICS"
                 if not all(mask) else "primary"
