@@ -61,18 +61,22 @@ END PLOT
 
 BEGIN PLOT /MC_POLDIJETS/(ALL|DeltaSigmaLL|SigmaUU|SigmaPP|SigmaPM|SigmaMP|SigmaMM)_jet1_pt$
 XLabel=Leading parton-jet $p_T$ [GeV]
+XMax=70
 END PLOT
 
 BEGIN PLOT /MC_POLDIJETS/(ALL|DeltaSigmaLL|SigmaUU|SigmaPP|SigmaPM|SigmaMP|SigmaMM)_jet2_pt$
 XLabel=Subleading parton-jet $p_T$ [GeV]
+XMax=45
 END PLOT
 
 BEGIN PLOT /MC_POLDIJETS/(ALL|DeltaSigmaLL|SigmaUU|SigmaPP|SigmaPM|SigmaMP|SigmaMM)_jet3_pt$
 XLabel=Third parton-jet $p_T$ [GeV]
+XMax=20
 END PLOT
 
 BEGIN PLOT /MC_POLDIJETS/(ALL|DeltaSigmaLL|SigmaUU|SigmaPP|SigmaPM|SigmaMP|SigmaMM)_jet4_pt$
 XLabel=Fourth parton-jet $p_T$ [GeV]
+XMax=15
 END PLOT
 
 BEGIN PLOT /MC_POLDIJETS/(ALL|DeltaSigmaLL|SigmaUU|SigmaPP|SigmaPM|SigmaMP|SigmaMM)_jet1_eta$
