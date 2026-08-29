@@ -1,0 +1,46 @@
+# -*- ThePEG-repository -*-
+
+############################################################
+# Particle-level polarized jet shapes at sqrt(s)=510 GeV
+############################################################
+
+read snippets/PPCollider.in
+read snippets/PolarizedPP.in
+
+set /Herwig/EventHandlers/Luminosity:Energy 510.0*GeV
+
+set /Herwig/Partons/HardLOPDF:PDFName NNPDF40_nlo_pch_as_01180
+set /Herwig/Partons/HardNLOPDF:PDFName NNPDF40_nlo_pch_as_01180
+set /Herwig/Partons/ShowerLOPDF:PDFName NNPDF40_nlo_pch_as_01180
+set /Herwig/Partons/ShowerNLOPDF:PDFName NNPDF40_nlo_pch_as_01180
+set /Herwig/Partons/MPIPDF:PDFName NNPDF40_nlo_pch_as_01180
+
+create ThePEG::LHAPDF /Herwig/Partons/MCPOLJETSHAPESPolarizedPDF ThePEGLHAPDF.so
+set /Herwig/Partons/MCPOLJETSHAPESPolarizedPDF:PDFName NNPDFpol20_nlo_as_01180
+set /Herwig/Partons/MCPOLJETSHAPESPolarizedPDF:RemnantHandler /Herwig/Partons/HadronRemnants
+set /Herwig/Partons/PPPolarizedExtractor:FirstPDF /Herwig/Partons/HardLOPDF
+set /Herwig/Partons/PPPolarizedExtractor:SecondPDF /Herwig/Partons/HardLOPDF
+set /Herwig/Partons/PPPolarizedExtractor:FirstLongitudinalDifferencePDF /Herwig/Partons/MCPOLJETSHAPESPolarizedPDF
+set /Herwig/Partons/PPPolarizedExtractor:SecondLongitudinalDifferencePDF /Herwig/Partons/MCPOLJETSHAPESPolarizedPDF
+
+set /Herwig/Shower/ShowerHandler:Interactions QCD
+set /Herwig/Shower/ShowerHandler:SpinCorrelations Yes
+set /Herwig/Shower/ShowerHandler:MPIHandler NULL
+set /Herwig/Shower/PowhegShowerHandler:MPIHandler NULL
+set /Herwig/DipoleShower/DipoleShowerHandler:MPIHandler NULL
+
+set /Herwig/EventHandlers/EventHandler:Cuts:ScaleMin 2.0*GeV2
+set /Herwig/EventHandlers/EventHandler:Cuts:X1Min 1.0e-5
+set /Herwig/EventHandlers/EventHandler:Cuts:X2Min 1.0e-5
+set /Herwig/Cuts/JetKtCut:MinKT 3.0*GeV
+set /Herwig/Samplers/Sampler:BinSampler:InitialPoints 10000
+
+cd /Herwig/Generators
+set EventGenerator:DebugLevel 0
+set EventGenerator:PrintEvent 0
+set EventGenerator:DumpPeriod -1
+set EventGenerator:MaxWarnings 20
+set EventGenerator:MaxErrors 1000000
+read snippets/Rivet.in
+insert /Herwig/Analysis/Rivet:Analyses 0 MC_POLDIJETS:ETAMAX=1.5:LEVEL=HADRON:PTJ1MIN=5.0:PTJ2MIN=4.0:PTJ3MIN=2.0:PTJ4MIN=2.0:R=0.5
+insert /Herwig/Analysis/Rivet:Analyses 1 MC_POLJETSHAPES:ETAMAX=1.5:PTJ1MIN=5.0:PTJ2MIN=4.0:R=0.5

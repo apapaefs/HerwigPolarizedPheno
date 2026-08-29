@@ -1,0 +1,8 @@
+# -*- ThePEG-repository -*-
+read MC_POLJETSHAPES-Common.in
+set /Herwig/Partons/PPPolarizedExtractor:FirstLongitudinalPolarization 1
+set /Herwig/Partons/PPPolarizedExtractor:SecondLongitudinalPolarization -1
+insert /Herwig/MatrixElements/SubProcess:MatrixElements[0] /Herwig/MatrixElements/MEQCD2to2
+set /Herwig/MatrixElements/MEQCD2to2:Process All
+cd /Herwig/Generators
+saverun MC_POLJETSHAPES_combined_PM-LO EventGenerator

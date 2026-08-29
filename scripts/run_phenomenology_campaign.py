@@ -90,7 +90,7 @@ def _measurement_snapshot(measurement: Mapping[str, Any]) -> dict[str, Any]:
     if not isinstance(definitions, dict) or not definitions:
         raise CampaignError(f"{snapshot_path} defines no observables")
 
-    configured: dict[str, str] = {}
+    configured: dict[str, tuple[str, str]] = {}
     helicity_resolved: set[str] = set()
     for channel_id, channel in measurement["channels"].items():
         raw_objects = channel.get("raw_objects")
@@ -104,7 +104,10 @@ def _measurement_snapshot(measurement: Mapping[str, Any]) -> dict[str, Any]:
                     f"{measurement['id']} repeats internal observable "
                     f"{observable!r} across channels"
                 )
-            configured[str(observable)] = str(raw_object)
+            source_analysis, object_name = _raw_object_source(
+                measurement, raw_object
+            )
+            configured[str(observable)] = (source_analysis, object_name)
         resolved = channel.get("helicity_resolved_observables", [])
         if (
             not isinstance(resolved, list)
@@ -132,7 +135,7 @@ def _measurement_snapshot(measurement: Mapping[str, Any]) -> dict[str, Any]:
         raise CampaignError(
             f"{snapshot_path} observable keys differ from the campaign descriptor"
         )
-    for observable, raw_object in configured.items():
+    for observable, (source_analysis, raw_object) in configured.items():
         definition = definitions[observable]
         if not isinstance(definition, dict):
             raise CampaignError(
@@ -142,6 +145,14 @@ def _measurement_snapshot(measurement: Mapping[str, Any]) -> dict[str, Any]:
             raise CampaignError(
                 f"{snapshot_path} raw object for {observable!r} differs from "
                 "the campaign descriptor"
+            )
+        defined_analysis = str(
+            definition.get("source_analysis", measurement["analysis"]["name"])
+        )
+        if defined_analysis != source_analysis:
+            raise CampaignError(
+                f"{snapshot_path} source analysis for {observable!r} differs "
+                "from the campaign descriptor"
             )
         edges = definition.get("edges")
         if (
@@ -175,6 +186,7 @@ def _validate_descriptor(measurement: Mapping[str, Any], path: Path) -> None:
     missing = sorted(required-set(measurement))
     if missing:
         raise CampaignError(f"{path} is missing: {', '.join(missing)}")
+    _analysis_spec_map(measurement)
     process_kind = str(measurement["process_kind"])
     schema_version = int(measurement["schema_version"])
     if schema_version not in {3, 4, 5, 6} or process_kind not in {
@@ -380,20 +392,95 @@ def _scale_token(value: float) -> str:
     return {0.5: "0p5", 1.0: "1", 2.0: "2"}[float(value)]
 
 
-def _analysis_instance(
-    measurement: Mapping[str, Any], family_id: str
-) -> str:
-    """Return the exact Rivet analysis identifier written into YODA paths."""
+def _analysis_spec_map(
+    measurement: Mapping[str, Any],
+) -> dict[str, Mapping[str, Any]]:
+    try:
+        specs = experimental.analysis_specs(measurement)
+    except experimental.CampaignError as exc:
+        raise CampaignError(str(exc)) from exc
+    return {str(spec["name"]): spec for spec in specs}
 
-    name = str(measurement["analysis"]["name"])
-    options = measurement["families"][family_id].get(
-        "analysis_options", {}
-    )
+
+def _analysis_options(
+    measurement: Mapping[str, Any], family_id: str,
+    spec: Mapping[str, Any],
+) -> Mapping[str, Any]:
+    if spec is measurement["analysis"]:
+        options = measurement["families"][family_id].get(
+            "analysis_options", {}
+        )
+    else:
+        options = spec.get("analysis_options", {})
+    if not isinstance(options, Mapping):
+        raise CampaignError(
+            f"{measurement['id']} analysis options for {spec['name']} "
+            "must be an object"
+        )
+    return options
+
+
+def _analysis_instance_for_spec(
+    measurement: Mapping[str, Any], family_id: str,
+    spec: Mapping[str, Any],
+) -> str:
+    """Return one exact Rivet analysis identifier written into YODA paths."""
+
+    name = str(spec["name"])
+    options = _analysis_options(measurement, family_id, spec)
     if not options:
         return name
     return name + ":" + ":".join(
         f"{key}={value}" for key, value in sorted(options.items())
     )
+
+
+def _analysis_instances(
+    measurement: Mapping[str, Any], family_id: str
+) -> dict[str, str]:
+    return {
+        str(spec["name"]): _analysis_instance_for_spec(
+            measurement, family_id, spec
+        )
+        for spec in experimental.analysis_specs(measurement)
+    }
+
+
+def _analysis_instance(
+    measurement: Mapping[str, Any], family_id: str
+) -> str:
+    """Return the primary Rivet analysis identifier (legacy helper)."""
+
+    return _analysis_instance_for_spec(
+        measurement, family_id, measurement["analysis"]
+    )
+
+
+def _raw_object_source(
+    measurement: Mapping[str, Any], raw_object: Any
+) -> tuple[str, str]:
+    """Resolve a backward-compatible raw-object descriptor."""
+
+    primary = str(measurement["analysis"]["name"])
+    if isinstance(raw_object, str):
+        source_analysis, object_name = primary, raw_object
+    elif isinstance(raw_object, Mapping):
+        source_analysis = str(raw_object.get("analysis", primary))
+        object_name = str(raw_object.get("object", ""))
+    else:
+        raise CampaignError(
+            f"{measurement['id']} raw objects must be strings or objects"
+        )
+    if source_analysis not in _analysis_spec_map(measurement):
+        raise CampaignError(
+            f"{measurement['id']} raw object names unknown analysis "
+            f"{source_analysis!r}"
+        )
+    if not object_name or object_name.startswith("/"):
+        raise CampaignError(
+            f"{measurement['id']} raw object has invalid name {object_name!r}"
+        )
+    return source_analysis, object_name
 
 
 def _family_selector(
@@ -507,6 +594,7 @@ def _resolved_options(args: argparse.Namespace, measurement: Mapping[str, Any]) 
 
 def build_job_matrix(measurement: Mapping[str, Any], options: Mapping[str, Any]) -> list[dict[str, Any]]:
     families = measurement["families"]
+    has_companions = bool(measurement["analysis"].get("companions"))
     selected_families = list(options.get("families", ["nominal"]))
     jobs: list[dict[str, Any]] = []
     seed_slot = 0
@@ -532,6 +620,9 @@ def build_job_matrix(measurement: Mapping[str, Any], options: Mapping[str, Any])
                             analysis_instance = _analysis_instance(
                                 measurement, family_id
                             )
+                            analysis_instances = _analysis_instances(
+                                measurement, family_id
+                            )
                             logical = (
                                 f"{channel}-target{target_component}-level{level}-"
                                 f"{family_id}-{helicity}-{contribution}-"
@@ -547,7 +638,7 @@ def build_job_matrix(measurement: Mapping[str, Any], options: Mapping[str, Any])
                                 job_id = (
                                     f"{logical}-s{shard:03d}-of-{len(event_splits):03d}"
                                 )
-                                jobs.append({
+                                job = {
                                     "id": job_id, "measurement": measurement["id"],
                                     "channel": channel, "target_component": target_component,
                                     "observable_level": level, "family": family_id,
@@ -569,7 +660,10 @@ def build_job_matrix(measurement: Mapping[str, Any], options: Mapping[str, Any])
                                     "card_input": f"{run_stem}.in",
                                     "run_file": f"runs/{run_stem}.run",
                                     "output_yoda": f"yoda/{job_id}.yoda",
-                                })
+                                }
+                                if has_companions:
+                                    job["analysis_instances"] = analysis_instances
+                                jobs.append(job)
                                 seed_slot += 1
     ids = [job["id"] for job in jobs]
     seeds = [job["seed"] for job in jobs]
@@ -683,11 +777,16 @@ def _signature(
     digest = hashlib.sha256(experimental.canonical_json_bytes(
         {key: value for key, value in measurement.items() if not key.startswith("_")}))
     plot_path = DISPOL_ROOT / measurement["analysis"]["plot"]
-    files = [DISPOL_ROOT/measurement["analysis"][key] for key in ("source", "info", "plot")]
-    files.extend(
-        DISPOL_ROOT/str(path)
-        for path in measurement["analysis"].get("support_files", [])
-    )
+    files: list[Path] = []
+    for spec in experimental.analysis_specs(measurement):
+        files.extend(
+            DISPOL_ROOT / str(spec[key])
+            for key in ("source", "info", "plot")
+        )
+        files.extend(
+            DISPOL_ROOT / str(path)
+            for path in spec.get("support_files", [])
+        )
     files.append(DISPOL_ROOT/measurement["reference"]["snapshot"])
     for key in ("source_manifest", "raw_snapshot"):
         if measurement["reference"].get(key):
@@ -803,18 +902,38 @@ def _card_text(measurement: Mapping[str, Any], job: Mapping[str, Any]) -> str:
         overrides.append(
             f"set /Herwig/Cuts/JetKtCut:MinKT {jet_kt_min_gev:.1f}*GeV"
         )
-    analysis_options = family.get("analysis_options", {})
-    if analysis_options:
-        analysis_name = str(measurement["analysis"]["name"])
-        analysis_instance = _analysis_instance(
-            measurement, str(job["family"])
+    specs = experimental.analysis_specs(measurement)
+    for spec in specs:
+        analysis_name = str(spec["name"])
+        analysis_instance = _analysis_instance_for_spec(
+            measurement, str(job["family"]), spec
         )
-        text = re.sub(
+        text, analysis_replacements = re.subn(
             rf"(insert\s+/Herwig/Analysis/Rivet:Analyses\s+\d+\s+)"
             rf"{re.escape(analysis_name)}(?::\S+)?",
             rf"\g<1>{analysis_instance}",
             text,
         )
+        if (
+            (len(specs) > 1 or _analysis_options(
+                measurement, str(job["family"]), spec
+            ))
+            and analysis_replacements != 1
+        ):
+            common_path = (
+                DISPOL_ROOT / cards["directory"] / cards["common"]
+            )
+            common_text = common_path.read_text(encoding="utf-8")
+            inherited = re.search(
+                rf"insert\s+/Herwig/Analysis/Rivet:Analyses\s+\d+\s+"
+                rf"{re.escape(analysis_name)}(?::\S+)?(?:\s|$)",
+                common_text,
+            )
+            if analysis_replacements != 0 or inherited is None:
+                raise CampaignError(
+                    f"Expected one {analysis_name} Rivet insertion in "
+                    f"{source} or its common card {common_path}"
+                )
     saverun = f"saverun {job['stem']} EventGenerator"
     text, replacements = re.subn(
         r"saverun\s+\S+\s+EventGenerator",
@@ -828,8 +947,16 @@ def _card_text(measurement: Mapping[str, Any], job: Mapping[str, Any]) -> str:
 
 def _manifest_configuration(measurement: Mapping[str, Any], args: argparse.Namespace,
                             plan: Mapping[str, Any]) -> dict[str, Any]:
-    return {"measurement": measurement["id"], "tag": args.tag,
-            "measurement_signature": _signature(measurement), **plan["options"]}
+    configuration = {
+        "measurement": measurement["id"], "tag": args.tag,
+        "measurement_signature": _signature(measurement), **plan["options"],
+    }
+    if measurement["analysis"].get("companions"):
+        configuration["analysis_instances"] = {
+            family_id: _analysis_instances(measurement, family_id)
+            for family_id in plan["options"]["families"]
+        }
+    return configuration
 
 
 def prepare_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> Path:
@@ -1051,9 +1178,25 @@ def _logical_groups(manifest: Mapping[str, Any], campaign_dir: Path) -> dict[tup
 
 def _load_series(jobs: Sequence[Mapping[str, Any]], campaign_dir: Path,
                  analysis: str, object_name: str) -> experimental.BinSeries:
-    analysis_instances = {
-        str(job.get("analysis_instance", analysis)) for job in jobs
-    }
+    analysis_instances: set[str] = set()
+    for job in jobs:
+        configured = job.get("analysis_instances")
+        if isinstance(configured, Mapping):
+            instance = configured.get(analysis)
+            if instance is None:
+                raise CampaignError(
+                    f"Job {job.get('id')} has no Rivet instance for {analysis}"
+                )
+            analysis_instances.add(str(instance))
+        else:
+            primary = str(job.get("analysis_instance", analysis))
+            primary_name = primary.split(":", 1)[0]
+            if analysis != primary_name:
+                raise CampaignError(
+                    f"Legacy job {job.get('id')} has no companion analysis "
+                    f"instance for {analysis}"
+                )
+            analysis_instances.add(primary)
     if len(analysis_instances) != 1:
         raise CampaignError(
             f"Shards disagree on their Rivet analysis instance: "
@@ -1486,6 +1629,380 @@ def _mc_poldijets_prediction(
     return output
 
 
+def _integrated_series(series: experimental.BinSeries) -> tuple[float, float]:
+    value = 0.0
+    variance = 0.0
+    for index, content in enumerate(series.values):
+        width = series.edges[index + 1] - series.edges[index]
+        value += content * width
+        variance += series.variances[index] * width * width
+    return value, variance
+
+
+def _normalized_shape(series: experimental.BinSeries) -> dict[str, Any]:
+    denominator, denominator_variance = _integrated_series(series)
+    values: list[float | None] = []
+    errors: list[float | None] = []
+    for index, numerator in enumerate(series.values):
+        width = series.edges[index + 1] - series.edges[index]
+        value, error = experimental.ratio_with_covariance(
+            numerator,
+            series.variances[index],
+            denominator,
+            denominator_variance,
+            series.variances[index] * width,
+        )
+        values.append(value)
+        errors.append(error)
+    return {"edges": list(series.edges), "values": values, "errors": errors}
+
+
+def _angular_moment(
+    samples: Mapping[str, experimental.BinSeries],
+    numerator_coefficients: Mapping[str, float],
+    trigonometric: str,
+) -> tuple[float | None, float | None]:
+    """Return an exact binned A2/B2 ratio with shared-sample covariance."""
+
+    first = next(iter(samples.values()))
+    numerator = 0.0
+    denominator = 0.0
+    numerator_variance = 0.0
+    denominator_variance = 0.0
+    covariance = 0.0
+    for helicity, series in samples.items():
+        if not experimental._same_edges(first.edges, series.edges):
+            raise CampaignError("Angular moment inputs have different bin edges")
+        for index, content in enumerate(series.values):
+            low, high = series.edges[index:index + 2]
+            centre = 0.5 * (low + high)
+            width = high - low
+            harmonic = (
+                math.cos(2.0 * centre)
+                if trigonometric == "cos"
+                else math.sin(2.0 * centre)
+            )
+            numerator_weight = (
+                2.0 * float(numerator_coefficients[helicity])
+                * harmonic * width
+            )
+            denominator_weight = 0.25 * width
+            variance = series.variances[index]
+            numerator += numerator_weight * content
+            denominator += denominator_weight * content
+            numerator_variance += numerator_weight**2 * variance
+            denominator_variance += denominator_weight**2 * variance
+            covariance += numerator_weight * denominator_weight * variance
+    return experimental.ratio_with_covariance(
+        numerator, numerator_variance, denominator, denominator_variance,
+        covariance,
+    )
+
+
+def _nested_ratio_prediction(
+    numerator: experimental.BinSeries,
+    denominator: experimental.BinSeries,
+) -> dict[str, Any]:
+    if not experimental._same_edges(numerator.edges, denominator.edges):
+        raise CampaignError("Nested rate scans have different bin edges")
+    values: list[float | None] = []
+    errors: list[float | None] = []
+    for index in range(len(numerator.values)):
+        value, error = experimental.ratio_with_covariance(
+            numerator.values[index], numerator.variances[index],
+            denominator.values[index], denominator.variances[index],
+            # The numerator is an event subset of the denominator.
+            numerator.variances[index],
+        )
+        values.append(value)
+        errors.append(error)
+    return {"edges": list(numerator.edges), "values": values, "errors": errors}
+
+
+def _one_minus_prediction(prediction: Mapping[str, Any]) -> dict[str, Any]:
+    return {
+        "edges": list(prediction["edges"]),
+        "values": [None if value is None else 1.0 - value
+                   for value in prediction["values"]],
+        "errors": list(prediction["errors"]),
+    }
+
+
+def _mc_poljetshapes_prediction(
+    samples_by_object: Mapping[str, Mapping[str, experimental.BinSeries]],
+    angular_observables: Sequence[str],
+) -> dict[str, dict[str, Any]]:
+    """Build helicity spectra, normalized shapes, moments, and rate scans."""
+
+    output = _mc_poldijets_prediction(
+        samples_by_object, tuple(samples_by_object)
+    )
+    angular = set(angular_observables)
+    unknown = sorted(angular - set(samples_by_object))
+    if unknown:
+        raise CampaignError(
+            "Unknown MC_POLJETSHAPES angular observables: "
+            + ", ".join(unknown)
+        )
+    uu_coefficients = {label: 0.25 for label in DENOMINATOR}
+    for observable in sorted(angular):
+        samples = samples_by_object[observable]
+        sigma_uu = experimental.linear_combine_series(samples, uu_coefficients)
+        output[f"ShapeUU_{observable}"] = _normalized_shape(sigma_uu)
+        for helicity in DENOMINATOR:
+            output[f"Shape{helicity}_{observable}"] = _normalized_shape(
+                samples[helicity]
+            )
+        for prefix, coefficients in (
+            ("A2UU", uu_coefficients),
+            ("A2LL", DELTA_SIGMA_LL_COEFFICIENTS),
+        ):
+            value, error = _angular_moment(samples, coefficients, "cos")
+            output[f"{prefix}_{observable}"] = {
+                "edges": [0.0, 1.0], "values": [value], "errors": [error],
+            }
+        for prefix, coefficients in (
+            ("B2UU", uu_coefficients),
+            ("B2LL", DELTA_SIGMA_LL_COEFFICIENTS),
+        ):
+            value, error = _angular_moment(samples, coefficients, "sin")
+            output[f"{prefix}_{observable}"] = {
+                "edges": [0.0, 1.0], "values": [value], "errors": [error],
+            }
+
+    required_rates = {
+        "dijet_threshold_denominator", "ge3_threshold", "ge4_threshold"
+    }
+    if required_rates <= set(samples_by_object):
+        denominator_samples = samples_by_object["dijet_threshold_denominator"]
+        ge3_samples = samples_by_object["ge3_threshold"]
+        ge4_samples = samples_by_object["ge4_threshold"]
+        labels: dict[str, tuple[experimental.BinSeries,
+                               experimental.BinSeries,
+                               experimental.BinSeries]] = {}
+        for helicity in DENOMINATOR:
+            labels[helicity] = (
+                denominator_samples[helicity], ge3_samples[helicity],
+                ge4_samples[helicity],
+            )
+        labels["UU"] = (
+            experimental.linear_combine_series(
+                denominator_samples, uu_coefficients
+            ),
+            experimental.linear_combine_series(ge3_samples, uu_coefficients),
+            experimental.linear_combine_series(ge4_samples, uu_coefficients),
+        )
+        for label, (denominator, ge3, ge4) in labels.items():
+            r32 = _nested_ratio_prediction(ge3, denominator)
+            r43 = _nested_ratio_prediction(ge4, ge3)
+            output[f"R32_{label}"] = r32
+            output[f"R43_{label}"] = r43
+            output[f"ThirdJetVeto_{label}"] = _one_minus_prediction(r32)
+    return output
+
+
+def _independent_difference(
+    spin_on: Mapping[str, Any], spin_off: Mapping[str, Any]
+) -> dict[str, Any]:
+    if not experimental._same_edges(spin_on["edges"], spin_off["edges"]):
+        raise CampaignError("Spin-on/off predictions have different bin edges")
+    values: list[float | None] = []
+    errors: list[float | None] = []
+    for on_value, on_error, off_value, off_error in zip(
+        spin_on["values"], spin_on["errors"],
+        spin_off["values"], spin_off["errors"],
+    ):
+        if None in (on_value, on_error, off_value, off_error):
+            values.append(None)
+            errors.append(None)
+            continue
+        values.append(float(on_value) - float(off_value))
+        errors.append(math.hypot(float(on_error), float(off_error)))
+    return {"edges": list(spin_on["edges"]), "values": values, "errors": errors}
+
+
+def _effective_entries(series: experimental.BinSeries) -> float:
+    value, variance = _integrated_series(series)
+    if variance <= 0.0 or not math.isfinite(value) or not math.isfinite(variance):
+        return 0.0
+    return value * value / variance
+
+
+def _mc_poljetshapes_assessment(
+    measurement: Mapping[str, Any],
+    predictions: Mapping[tuple[Any, ...], Mapping[str, Any]],
+    raw_samples: Mapping[
+        tuple[Any, ...], Mapping[str, Mapping[str, experimental.BinSeries]]
+    ],
+    manifest: Mapping[str, Any],
+) -> tuple[dict[str, Any], dict[str, dict[str, Any]], list[dict[str, Any]]]:
+    """Compare independent shower samples and project bounded production tiers."""
+
+    if not {"nominal", "shower_spin_off"} <= set(
+        manifest["configuration"]["families"]
+    ):
+        return {}, {}, []
+    comparison: dict[str, dict[str, Any]] = {}
+    ranking: list[dict[str, Any]] = []
+    moment_differences: dict[str, Any] = {}
+    baseline_effective: dict[str, dict[str, dict[str, float]]] = {}
+    rare_effective: dict[str, dict[str, dict[str, float]]] = {}
+    baseline_names = ("dpsi12_j1_loose", "dpsi12_j2_loose")
+    rare_names = ("interjet_dpsi11_kt05", "bz_angle")
+
+    for channel_id, channel in measurement["channels"].items():
+        nominal_key = ("nominal", channel_id, 0, 0, 1.0,
+                       measurement["families"]["nominal"]["mpi"])
+        control_key = ("shower_spin_off", channel_id, 0, 0, 1.0,
+                       measurement["families"]["shower_spin_off"]["mpi"])
+        if nominal_key not in predictions or control_key not in predictions:
+            continue
+        nominal = predictions[nominal_key]
+        control = predictions[control_key]
+        for observable in sorted(set(nominal).intersection(control)):
+            if observable.startswith(("SingleSpin", "Parity_")):
+                continue
+            difference = _independent_difference(
+                nominal[observable], control[observable]
+            )
+            comparison[observable] = difference
+            pulls = [
+                float(value) / float(error)
+                for value, error in zip(
+                    difference["values"], difference["errors"]
+                )
+                if value is not None and error is not None and error > 0.0
+            ]
+            if pulls:
+                ranking.append(
+                    {
+                        "observable": observable,
+                        "bins": len(pulls),
+                        "chi2_independent_samples": sum(
+                            pull * pull for pull in pulls
+                        ),
+                        "quadrature_sensitivity": math.sqrt(
+                            sum(pull * pull for pull in pulls)
+                        ),
+                        "maximum_absolute_pull": max(abs(pull) for pull in pulls),
+                    }
+                )
+            if observable.startswith(("A2UU_", "A2LL_", "B2UU_", "B2LL_")):
+                moment_differences[observable] = difference
+
+        for family_id, key in (("nominal", nominal_key),
+                               ("shower_spin_off", control_key)):
+            baseline_effective.setdefault(family_id, {})
+            rare_effective.setdefault(family_id, {})
+            for helicity, series_map in (
+                (helicity, {
+                    name: raw_samples[key][name][helicity]
+                    for name in (*baseline_names, *rare_names)
+                    if name in raw_samples[key]
+                })
+                for helicity in DENOMINATOR
+            ):
+                baseline_effective[family_id][helicity] = {
+                    name: _effective_entries(series_map[name])
+                    for name in baseline_names if name in series_map
+                }
+                rare_effective[family_id][helicity] = {
+                    name: _effective_entries(series_map[name])
+                    for name in rare_names if name in series_map
+                }
+
+    ranking.sort(
+        key=lambda entry: (
+            -float(entry["quadrature_sensitivity"]),
+            str(entry["observable"]),
+        )
+    )
+    pilot_events = int(manifest["configuration"]["lo_events"])
+    candidates = (100_000_000, 250_000_000, 500_000_000)
+    tier_assessments: list[dict[str, Any]] = []
+    selected_events: int | None = None
+    baseline_values = [
+        value
+        for families in baseline_effective.values()
+        for helicities in families.values()
+        for value in helicities.values()
+    ]
+    relevant_moments = [
+        prediction
+        for name, prediction in moment_differences.items()
+        if name in {
+            *(f"A2UU_{observable}" for observable in baseline_names),
+            *(f"A2LL_{observable}" for observable in baseline_names),
+        }
+    ]
+    for candidate in candidates:
+        scale = float(candidate)/pilot_events
+        minimum_effective = (
+            min(baseline_values) * scale if baseline_values else 0.0
+        )
+        projected_moment_errors = [
+            float(prediction["errors"][0]) / math.sqrt(scale)
+            for prediction in relevant_moments
+            if prediction["errors"][0] is not None
+        ]
+        maximum_moment_error = (
+            max(projected_moment_errors)
+            if len(projected_moment_errors) == len(relevant_moments)
+            and projected_moment_errors
+            else None
+        )
+        passes = (
+            minimum_effective >= 250_000.0
+            and maximum_moment_error is not None
+            and maximum_moment_error <= 0.002
+        )
+        tier_assessments.append(
+            {
+                "events_per_helicity_family": candidate,
+                "projected_minimum_effective_baseline_entries": minimum_effective,
+                "projected_maximum_independent_on_off_A2_error": maximum_moment_error,
+                "passes": passes,
+            }
+        )
+        if passes and selected_events is None:
+            selected_events = candidate
+
+    bounded_recommendation = selected_events or candidates[-1]
+    tier_millions = bounded_recommendation // 1_000_000
+    shards = bounded_recommendation // 500_000
+    command = (
+        "python3 scripts/run_mc_poljetshapes_campaign.py full "
+        f"--tag mc_poljetshapes_spin_{tier_millions}m_20260829_v1 "
+        "--families nominal,shower_spin_off "
+        f"--lo-events {bounded_recommendation} --shards {shards} --jobs 100 "
+        "--seed-base 8307000 --plot-comparisons --include-diagnostics"
+    )
+    assessment = {
+        "pilot_events_per_helicity_family": pilot_events,
+        "baseline_effective_entries": baseline_effective,
+        "rare_effective_entries": rare_effective,
+        "moment_differences": moment_differences,
+        "tiers": tier_assessments,
+        "selected_events_per_helicity_family": selected_events,
+        "bounded_recommendation_events_per_helicity_family": bounded_recommendation,
+        "selection_status": (
+            "criteria_satisfied" if selected_events is not None
+            else "no_bounded_tier_satisfies_all_criteria"
+        ),
+        "production_command": command,
+        "criteria": {
+            "minimum_effective_baseline_entries_per_helicity_family": 250000,
+            "maximum_independent_on_off_A2UU_or_A2LL_error": 0.002,
+            "candidate_tiers_events": list(candidates),
+        },
+        "note": (
+            "Rare inter-jet and four-jet channels are reported separately and "
+            "do not force an event tier beyond 500M."
+        ),
+    }
+    return assessment, comparison, ranking
+
+
 def _apply_star_display_binning(
     predictions: dict[str, dict[str, Any]],
     snapshot: Mapping[str, Any],
@@ -1560,7 +2077,7 @@ def _reference_path(measurement: Mapping[str, Any], observable: str,
     if measurement["postprocessor"] == "star_jet_all":
         dataset = snapshot["datasets"].get(observable)
         return str(dataset["rivet_path"]) if dataset else None
-    if measurement["postprocessor"] == "mc_poldijets":
+    if measurement["postprocessor"] in {"mc_poldijets", "mc_poljetshapes"}:
         for prefix in (
             "ALL_", "DeltaSigmaLL_", "SigmaUU_",
             "SigmaPP_", "SigmaPM_", "SigmaMP_", "SigmaMM_",
@@ -1569,6 +2086,21 @@ def _reference_path(measurement: Mapping[str, Any], observable: str,
                 raw_observable = observable[len(prefix):]
                 if raw_observable in snapshot.get("observables", {}):
                     return f"/{measurement['analysis']['name']}/{observable}"
+        if measurement["postprocessor"] == "mc_poljetshapes":
+            for prefix in (
+                "ShapeUU_", "ShapePP_", "ShapePM_", "ShapeMP_", "ShapeMM_",
+                "A2UU_", "A2LL_", "B2UU_", "B2LL_",
+            ):
+                if observable.startswith(prefix):
+                    raw_observable = observable[len(prefix):]
+                    definition = snapshot.get("observables", {}).get(
+                        raw_observable, {}
+                    )
+                    if definition.get("angular"):
+                        return f"/{measurement['analysis']['name']}/{observable}"
+            if re.match(r"^(R32|R43|ThirdJetVeto)_(UU|PP|PM|MP|MM)$",
+                        observable):
+                return f"/{measurement['analysis']['name']}/{observable}"
         return None
     if measurement["postprocessor"] == "hermes_sidis":
         dataset = snapshot.get("datasets", {}).get(observable)
@@ -2961,6 +3493,9 @@ def postprocess_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> 
     analysis = str(measurement["analysis"]["name"])
     predictions: dict[tuple[Any, ...], dict[str, Any]] = {}
     raw_samples: dict[tuple[Any, ...], dict[str, Mapping[str, experimental.BinSeries]]] = {}
+    raw_statistics: dict[
+        tuple[Any, ...], dict[str, Mapping[str, experimental.BinSeries]]
+    ] = {}
     for key, helicity_jobs in groups.items():
         family, channel, polarized, unpolarized, scale, mpi = key
         required = set(measurement["families"][family]["helicities"])
@@ -2970,9 +3505,14 @@ def postprocess_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> 
         object_names = (channel_spec.get("raw_objects") or
                         {"yield": channel_spec["raw_object"]})
         objects: dict[str, Mapping[str, experimental.BinSeries]] = {}
-        for observable, object_name in object_names.items():
+        for observable, object_spec in object_names.items():
+            source_analysis, object_name = _raw_object_source(
+                measurement, object_spec
+            )
             objects[observable] = {
-                helicity: _load_series(jobs, campaign_dir, analysis, str(object_name))
+                helicity: _load_series(
+                    jobs, campaign_dir, source_analysis, object_name
+                )
                 for helicity, jobs in helicity_jobs.items()
             }
         if (measurement["process_kind"] == "polarized_pp_jets" and
@@ -2987,6 +3527,20 @@ def postprocess_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> 
                         f"{_variation_id(key)}/{helicity}"
                     )
         raw_samples[key] = objects
+        statistics: dict[str, Mapping[str, experimental.BinSeries]] = {}
+        for statistic, object_spec in channel_spec.get(
+            "statistics_objects", {}
+        ).items():
+            source_analysis, object_name = _raw_object_source(
+                measurement, object_spec
+            )
+            statistics[statistic] = {
+                helicity: _load_series(
+                    jobs, campaign_dir, source_analysis, object_name
+                )
+                for helicity, jobs in helicity_jobs.items()
+            }
+        raw_statistics[key] = statistics
         if required != set(DENOMINATOR):
             continue
         if measurement["postprocessor"] == "star_weak_bosons":
@@ -3000,6 +3554,11 @@ def postprocess_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> 
             predictions[key] = _mc_poldijets_prediction(
                 objects,
                 channel_spec.get("helicity_resolved_observables", []),
+            )
+        elif measurement["postprocessor"] == "mc_poljetshapes":
+            predictions[key] = _mc_poljetshapes_prediction(
+                objects,
+                channel_spec.get("angular_observables", []),
             )
         else:
             raise CampaignError(f"Unknown postprocessor {measurement['postprocessor']}")
@@ -3038,6 +3597,17 @@ def postprocess_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> 
             require_complete=not bool(
                 manifest["configuration"].get("smoke", False)
             ),
+        )
+    shape_assessment: dict[str, Any] = {}
+    comparison_predictions: dict[str, dict[str, Any]] = {}
+    sensitivity_ranking: list[dict[str, Any]] = []
+    if measurement["postprocessor"] == "mc_poljetshapes":
+        (
+            shape_assessment,
+            comparison_predictions,
+            sensitivity_ranking,
+        ) = _mc_poljetshapes_assessment(
+            measurement, predictions, raw_samples, manifest
         )
     yoda = experimental._import_yoda()
     include_diagnostics = bool(
@@ -3231,6 +3801,109 @@ def postprocess_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> 
         primary_prediction_path
     ):
         raise CampaignError("Central postprocessing produced no prediction objects")
+    comparison_path: Path | None = None
+    if comparison_predictions:
+        comparison_path = output_dir / "comparison-on-minus-off.yoda"
+        comparison_objects = [
+            experimental._estimate_from_values(
+                yoda,
+                prediction["edges"],
+                f"/{analysis}/COMPARISON/OnMinusOff_{observable}",
+                prediction["values"],
+                prediction["errors"],
+                {
+                    "Observable": "spin-on minus spin-off",
+                    "Uncertainty": "independent samples added in quadrature",
+                },
+            )
+            for observable, prediction in sorted(
+                comparison_predictions.items()
+            )
+        ]
+        experimental._write_yoda_objects(
+            yoda, comparison_objects, comparison_path
+        )
+        experimental.atomic_write_json(
+            output_dir / "comparison.json",
+            {
+                "measurement": measurement["id"],
+                "tag": args.tag,
+                "differences": comparison_predictions,
+                "sensitivity_ranking": sensitivity_ranking,
+                "uncertainty": "independent spin-on/off samples",
+            },
+        )
+        if sensitivity_ranking:
+            with (output_dir / "sensitivity-ranking.csv").open(
+                "w", encoding="utf-8", newline=""
+            ) as stream:
+                writer = csv.DictWriter(
+                    stream, fieldnames=list(sensitivity_ranking[0])
+                )
+                writer.writeheader()
+                writer.writerows(sensitivity_ranking)
+        moment_rows: list[dict[str, Any]] = []
+        for observable, prediction in sorted(comparison_predictions.items()):
+            if not observable.startswith(("A2UU_", "A2LL_", "B2UU_", "B2LL_")):
+                continue
+            value = prediction["values"][0]
+            error = prediction["errors"][0]
+            moment_rows.append(
+                {
+                    "observable": observable,
+                    "on_minus_off": value,
+                    "independent_sample_error": error,
+                    "significance": (
+                        None if value is None or error in (None, 0.0)
+                        else float(value) / float(error)
+                    ),
+                }
+            )
+        if moment_rows:
+            with (output_dir / "moment-differences.csv").open(
+                "w", encoding="utf-8", newline=""
+            ) as stream:
+                writer = csv.DictWriter(
+                    stream, fieldnames=list(moment_rows[0])
+                )
+                writer.writeheader()
+                writer.writerows(moment_rows)
+
+    statistics_summary: dict[str, Any] = {}
+    for key, statistic_set in raw_statistics.items():
+        if key[2:5] != (0, 0, 1.0):
+            continue
+        variation = _variation_id(key)
+        statistics_summary[variation] = {}
+        for statistic, helicity_series in statistic_set.items():
+            statistics_summary[variation][statistic] = {}
+            for helicity, series in helicity_series.items():
+                statistics_summary[variation][statistic][helicity] = {
+                    "edges": list(series.edges),
+                    "values_per_generated_event": list(series.values),
+                    "errors_per_generated_event": [
+                        math.sqrt(max(0.0, variance))
+                        for variance in series.variances
+                    ],
+                    "projected_entries": [
+                        value * int(manifest["configuration"]["lo_events"])
+                        for value in series.values
+                    ],
+                }
+    if statistics_summary:
+        experimental.atomic_write_json(
+            output_dir / "cutflow-accepted-counts.json",
+            {
+                "measurement": measurement["id"],
+                "tag": args.tag,
+                "statistics": statistics_summary,
+                "definitions": snapshot.get("statistics", {}),
+            },
+        )
+    if shape_assessment:
+        experimental.atomic_write_json(
+            output_dir / "statistics-projection.json", shape_assessment
+        )
     summary = {
         "measurement": measurement["id"], "tag": args.tag,
         "hard_process_accuracy": "LO",
@@ -3247,6 +3920,12 @@ def postprocess_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> 
         ),
         "primary_covariance_points": 0 if correlated_goodness_of_fit is None else correlated_goodness_of_fit.get("points"),
         "variations": summary_variations,
+        "cutflow_and_accepted_counts": statistics_summary,
+        "shower_spin_comparison": {
+            "sensitivity_ranking": sensitivity_ranking,
+            "differences": comparison_predictions,
+        },
+        "statistics_projection": shape_assessment,
     }
     experimental.atomic_write_json(output_dir/"summary.json", summary)
     if central_rows:
@@ -3260,6 +3939,27 @@ def postprocess_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> 
         "summary": "postprocess/summary.json",
         "include_diagnostics": include_diagnostics,
     }
+    if comparison_path is not None:
+        manifest["postprocess"]["comparison"] = str(
+            comparison_path.relative_to(campaign_dir)
+        )
+        manifest["postprocess"]["comparison_summary"] = (
+            "postprocess/comparison.json"
+        )
+        manifest["postprocess"]["sensitivity_ranking"] = (
+            "postprocess/sensitivity-ranking.csv"
+        )
+        manifest["postprocess"]["moment_differences"] = (
+            "postprocess/moment-differences.csv"
+        )
+    if statistics_summary:
+        manifest["postprocess"]["cutflow_accepted_counts"] = (
+            "postprocess/cutflow-accepted-counts.json"
+        )
+    if shape_assessment:
+        manifest["postprocess"]["statistics_projection"] = (
+            "postprocess/statistics-projection.json"
+        )
     manifest["updated_at"] = experimental.utc_now()
     manifest["history"].append({"at": experimental.utc_now(), "action": "postprocess"})
     experimental.atomic_write_json(manifest_path, manifest)
@@ -3419,6 +4119,19 @@ def plot_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> Path:
                 prediction, label, measurement["families"][family_id]
             )
         )
+    comparison_plot_path: Path | None = None
+    if measurement["postprocessor"] == "mc_poljetshapes":
+        comparison_entry = postprocess.get("comparison")
+        if comparison_entry:
+            comparison_plot_path = campaign_dir / str(comparison_entry)
+            if not experimental._nonempty(comparison_plot_path):
+                raise CampaignError(
+                    f"Missing shower-spin comparison YODA {comparison_plot_path}"
+                )
+            command.append(
+                f"{comparison_plot_path}:Title=Spin-on minus spin-off:"
+                "LineColor=#882255"
+            )
     if args.dry_run:
         print(" ".join(command))
         return output
@@ -3503,6 +4216,11 @@ def plot_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> Path:
         ),
         "text_rendering": text_rendering,
     }
+    if comparison_plot_path is not None:
+        manifest["plots"]["comparison_prediction"] = {
+            "path": str(comparison_plot_path.relative_to(campaign_dir)),
+            "sha256": experimental.sha256_file(comparison_plot_path),
+        }
     if external_nominal_prediction is not None:
         manifest["plots"]["external_nominal_prediction"] = {
             "path": str(external_nominal_prediction),

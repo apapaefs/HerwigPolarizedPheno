@@ -1,0 +1,26 @@
+Name: MC_POLJETSHAPES
+Summary: Particle-level jet-shape probes of polarized parton-shower spin correlations at 510 GeV
+Status: UNVALIDATED
+Reentrant: true
+Authors:
+  - Andreas Papaefstathiou <apapaefs@kennesaw.edu>
+References:
+  - Eur. Phys. J. C 81 (2021) 681
+  - Phys. Rev. Lett. 126 (2021) 112003
+RunInfo: Requires independent PP, PM, MP, and MM polarized pp samples.
+NumEvents: 500000
+NeedsCrossSection: yes
+Beams: [p+, p+]
+Energies: [510]
+Options:
+ - R=#
+ - PTJ1MIN=#
+ - PTJ2MIN=#
+ - ETAMAX=#
+Description: >
+  Stable-visible-particle anti-kT R=0.5 dijets with pT1>5 GeV,
+  pT2>4 GeV, and |eta|<1.5. Cambridge/Aachen reclustering defines
+  signed primary-secondary and inter-jet splitting-plane angles without
+  shower-history or flavour information. The analysis also measures a
+  squeezed three-point energy correlator, beam-jet energy-flow quadrupoles,
+  a four-jet Bengtsson-Zerwas angle, and inclusive radiation-rate scans.

@@ -1145,17 +1145,53 @@ def preflight_runtime(measurement: Mapping[str, Any]) -> dict[str, Any]:
     }
 
 
+def analysis_specs(measurement: Mapping[str, Any]) -> list[Mapping[str, Any]]:
+    """Return the primary Rivet analysis followed by optional companions.
+
+    Descriptors without ``analysis.companions`` retain the historical
+    single-analysis behaviour.  A companion is compiled into the same plugin
+    and consumes the same generated event, but can have its own Rivet options
+    and raw-object namespace.
+    """
+
+    primary = measurement["analysis"]
+    companions = primary.get("companions", [])
+    if not isinstance(companions, list) or any(
+        not isinstance(spec, Mapping) for spec in companions
+    ):
+        raise CampaignError(
+            f"{measurement['id']} analysis.companions must be a list of objects"
+        )
+    specs = [primary, *companions]
+    names = [str(spec.get("name", "")) for spec in specs]
+    if any(not name for name in names) or len(names) != len(set(names)):
+        raise CampaignError(
+            f"{measurement['id']} Rivet analysis names must be nonempty and unique"
+        )
+    for spec in specs:
+        for key in ("name", "source", "info", "plot"):
+            if not spec.get(key):
+                raise CampaignError(
+                    f"{measurement['id']} Rivet analysis {spec.get('name')!r} "
+                    f"is missing {key}"
+                )
+    return specs
+
+
 def analysis_environment(measurement: Mapping[str, Any], campaign_dir: Path, runtime: Mapping[str, Any]) -> dict[str, str]:
     environment = os.environ.copy()
-    analysis_dir = resolve_dispol_path(measurement["analysis"]["source"]).parent
+    analysis_dirs = list(dict.fromkeys(
+        str(resolve_dispol_path(spec["source"]).parent)
+        for spec in analysis_specs(measurement)
+    ))
     plugin_dir = campaign_dir / "build"
     old_analysis_path = environment.get("RIVET_ANALYSIS_PATH", "")
     old_data_path = environment.get("RIVET_DATA_PATH", "")
     environment["RIVET_ANALYSIS_PATH"] = os.pathsep.join(
-        value for value in (str(plugin_dir), str(analysis_dir), old_analysis_path) if value
+        value for value in (str(plugin_dir), *analysis_dirs, old_analysis_path) if value
     )
     environment["RIVET_DATA_PATH"] = os.pathsep.join(
-        value for value in (str(analysis_dir), old_data_path) if value
+        value for value in (*analysis_dirs, old_data_path) if value
     )
     if runtime.get("rivet_plugin_compiler"):
         environment["CXX"] = str(runtime["rivet_plugin_compiler"])
@@ -1176,14 +1212,16 @@ def measurement_signature(
         campaign_config.pop("comparison_profile", None)
     digest = hashlib.sha256(canonical_json_bytes(registry_copy))
     plot_path = resolve_dispol_path(measurement["analysis"]["plot"])
-    files = [
-        resolve_dispol_path(measurement["analysis"][key])
-        for key in ("source", "info", "plot")
-    ]
-    files.extend(
-        resolve_dispol_path(str(path))
-        for path in measurement["analysis"].get("support_files", [])
-    )
+    files: list[Path] = []
+    for spec in analysis_specs(measurement):
+        files.extend(
+            resolve_dispol_path(str(spec[key]))
+            for key in ("source", "info", "plot")
+        )
+        files.extend(
+            resolve_dispol_path(str(path))
+            for path in spec.get("support_files", [])
+        )
     files.append(resolve_dispol_path(measurement["reference"]["snapshot"]))
     if measurement["reference"].get("raw_snapshot"):
         files.append(resolve_dispol_path(str(measurement["reference"]["raw_snapshot"])))
@@ -1511,14 +1549,16 @@ def build_rivet_plugin(
     build_dir = campaign_dir / "build"
     build_dir.mkdir(parents=True, exist_ok=True)
     plugin = build_dir / str(measurement["analysis"]["plugin"])
-    source = resolve_dispol_path(measurement["analysis"]["source"])
+    specs = analysis_specs(measurement)
+    sources = [resolve_dispol_path(str(spec["source"])) for spec in specs]
+    include_dirs = list(dict.fromkeys(str(source.parent) for source in sources))
     environment = analysis_environment(measurement, campaign_dir, runtime)
     _run_logged(
         [
             runtime["tools"]["rivet-build"],
             str(plugin),
-            str(source),
-            f"-I{source.parent}",
+            *(str(source) for source in sources),
+            *(f"-I{directory}" for directory in include_dirs),
         ],
         build_dir,
         environment,
@@ -1526,12 +1566,18 @@ def build_rivet_plugin(
     )
     if not plugin.is_file() or plugin.stat().st_size == 0:
         raise CampaignError(f"rivet-build did not create {plugin}")
-    _run_logged(
-        [runtime["tools"]["rivet"], "--show-analysis", str(measurement["analysis"]["name"])],
-        build_dir,
-        environment,
-        campaign_dir / "logs" / "rivet-analysis-preflight.log",
-    )
+    for spec in specs:
+        log_name = (
+            "rivet-analysis-preflight.log"
+            if len(specs) == 1
+            else f"rivet-analysis-preflight-{spec['name']}.log"
+        )
+        _run_logged(
+            [runtime["tools"]["rivet"], "--show-analysis", str(spec["name"])],
+            build_dir,
+            environment,
+            campaign_dir / "logs" / log_name,
+        )
     return plugin
 
 
@@ -2204,19 +2250,94 @@ def _histogram_path(analysis: str, name: str) -> str:
     return f"/{analysis}/{name}"
 
 
+def _rivet_instance_equivalent(left: str, right: str) -> bool:
+    """Compare Rivet instances while tolerating numeric canonicalization.
+
+    Rivet writes typed numeric options back to YODA paths (for example ``5``
+    becomes ``5.0``), while the exact card instance remains the string stored
+    in the immutable campaign manifest.  Option names and non-numeric values
+    must still agree exactly.
+    """
+
+    def split(instance: str) -> tuple[str, dict[str, str]]:
+        fields = instance.split(":")
+        options: dict[str, str] = {}
+        for field in fields[1:]:
+            if "=" not in field:
+                return fields[0], {"": instance}
+            key, value = field.split("=", 1)
+            options[key] = value
+        return fields[0], options
+
+    left_name, left_options = split(left)
+    right_name, right_options = split(right)
+    if left_name != right_name or left_options.keys() != right_options.keys():
+        return False
+    for key in left_options:
+        left_value = left_options[key]
+        right_value = right_options[key]
+        if left_value == right_value:
+            continue
+        try:
+            if math.isclose(
+                float(left_value), float(right_value),
+                rel_tol=0.0, abs_tol=1.0e-12,
+            ):
+                continue
+        except ValueError:
+            pass
+        return False
+    return True
+
+
+def _resolve_histogram_path(
+    objects: Mapping[str, Any], object_path: str,
+) -> str:
+    """Resolve one YODA path against Rivet's canonicalized option spelling."""
+
+    if object_path in objects:
+        return object_path
+    stripped = object_path.removeprefix("/")
+    if "/" not in stripped:
+        return object_path
+    requested_instance, object_name = stripped.split("/", 1)
+    candidates: list[str] = []
+    for candidate in objects:
+        candidate_stripped = str(candidate).removeprefix("/")
+        if "/" not in candidate_stripped:
+            continue
+        candidate_instance, candidate_object = candidate_stripped.split("/", 1)
+        if (
+            candidate_object == object_name
+            and _rivet_instance_equivalent(
+                requested_instance, candidate_instance
+            )
+        ):
+            candidates.append(str(candidate))
+    if len(candidates) == 1:
+        return candidates[0]
+    if len(candidates) > 1:
+        raise CampaignError(
+            f"Ambiguous canonical Rivet path for {object_path}: "
+            + ", ".join(sorted(candidates))
+        )
+    return object_path
+
+
 def read_histogram_series(yoda_path: Path, object_path: str) -> BinSeries:
     yoda = _import_yoda()
     try:
         objects = yoda.read(str(yoda_path))
     except Exception as exc:
         raise CampaignError(f"Could not read {yoda_path}: {exc}") from exc
-    obj = objects.get(object_path)
+    resolved_path = _resolve_histogram_path(objects, object_path)
+    obj = objects.get(resolved_path)
     if obj is None:
         raise CampaignError(f"Missing {object_path} in {yoda_path}")
     bins = list(obj.bins()) if hasattr(obj, "bins") else []
     if not bins or not hasattr(bins[0], "val"):
         raise CampaignError(
-            f"{object_path} in {yoda_path} is not the normalized Rivet Estimate1D; raw accumulators are not accepted"
+            f"{resolved_path} in {yoda_path} is not the normalized Rivet Estimate1D; raw accumulators are not accepted"
         )
     edges = [float(bins[0].xMin())] + [float(bin_object.xMax()) for bin_object in bins]
     values = [float(bin_object.val()) for bin_object in bins]
