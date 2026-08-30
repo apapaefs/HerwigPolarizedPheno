@@ -5,11 +5,13 @@ from __future__ import annotations
 
 import argparse
 import copy
+import json
 import math
 import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -53,7 +55,7 @@ class MCPOLJETSHAPESCampaignTests(unittest.TestCase):
 
     def test_particle_level_descriptor_and_snapshot(self) -> None:
         snapshot = campaign._measurement_snapshot(self.measurement)
-        self.assertEqual(len(snapshot["observables"]), 51)
+        self.assertEqual(len(snapshot["observables"]), 75)
         self.assertEqual(snapshot["final_state"]["particles"],
                          "all stable visible particles")
         self.assertFalse(snapshot["final_state"]["truth_information"])
@@ -62,8 +64,39 @@ class MCPOLJETSHAPESCampaignTests(unittest.TestCase):
                          "Cambridge/Aachen")
         self.assertEqual(snapshot["rates"]["jet_pt_thresholds_gev"],
                          [2, 3, 4, 5, 6, 8, 10])
+        self.assertEqual(
+            snapshot["declustering"]["working_points"]["hardshare_kt1"],
+            {
+                "z1_min": 0.25, "z1_max": 0.4, "z2_min": 0.35,
+                "kt1_min_gev": 1.0, "kt2_min_gev": 1.0,
+            },
+        )
+        self.assertFalse(
+            snapshot["enrichment_proxies"]["truth_flavour_used"]
+        )
+        self.assertEqual(
+            snapshot["resolved_radiation"]["fraction_edges"],
+            [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.7, 1.0],
+        )
         configured = self.measurement["channels"]["combined"]["raw_objects"]
         self.assertEqual(set(configured), set(snapshot["observables"]))
+        channel = self.measurement["channels"]["combined"]
+        self.assertEqual(
+            set(channel["conditional_angular_observables"]),
+            {"resolved_dphi31_vs_pt31", "resolved_dpsi34_vs_pt41"},
+        )
+        self.assertEqual(
+            self.measurement["statistics_projection"][
+                "candidate_events_per_helicity_family"
+            ],
+            [250000000, 500000000, 1000000000],
+        )
+        self.assertIn(
+            "C2LL_resolved_dpsi34_vs_pt41",
+            self.measurement["shard_block_covariance"][
+                "prediction_observables"
+            ],
+        )
         self.assertTrue(all(
             definition["helicity_resolved"]
             for definition in snapshot["observables"].values()
@@ -146,6 +179,9 @@ class MCPOLJETSHAPESCampaignTests(unittest.TestCase):
             "for (size_t i = 0; i + 2 < particles.size(); ++i)",
             "eventWeights[angleBin(angle)] +=",
             "LorentzTransform::mkFrameTransform(total)",
+            "resolved_dphi31_vs_pt31", "resolved_dpsi34_vs_pt41",
+            "proxies.constituents >= 8", "proxies.ptD < 0.45",
+            "highestKtSplit(primary, 0.25",
         ):
             self.assertIn(token, source)
         for forbidden in ("hardPartonJets", "shower history", ".pid()"):
@@ -188,14 +224,218 @@ class MCPOLJETSHAPESCampaignTests(unittest.TestCase):
                              prediction["ThirdJetVeto_UU"]["values"]):
             self.assertAlmostEqual(r32 + veto, 1.0)
 
+    def test_conditional_resolved_radiation_moments(self) -> None:
+        angle_bins = 8
+        contents = [
+            2.0 if math.cos(2.0 * (-math.pi + (index + 0.5)
+                                    * 2.0 * math.pi / angle_bins)) > 0.0
+            else 1.0
+            for index in range(angle_bins)
+        ]
+        flat = series(
+            contents + [1.0] * angle_bins,
+            [0.01] * (2 * angle_bins),
+            [float(index) for index in range(2 * angle_bins + 1)],
+        )
+        prediction = campaign._mc_poljetshapes_prediction(
+            {"conditional": helicities(flat)},
+            [],
+            {
+                "resolved_dphi31_vs_pt31": {
+                    "raw_observable": "conditional",
+                    "fraction_edges": [0.0, 0.5, 1.0],
+                    "angle_bins": angle_bins,
+                }
+            },
+            ["conditional"],
+        )
+        self.assertNotIn("SigmaUU_conditional", prediction)
+        cosine = [
+            math.cos(2.0 * (-math.pi + (index + 0.5)
+                           * 2.0 * math.pi / angle_bins))
+            for index in range(angle_bins)
+        ]
+        expected = 2.0 * sum(
+            weight * value for weight, value in zip(cosine, contents)
+        ) / sum(contents)
+        self.assertAlmostEqual(
+            prediction["C2UU_resolved_dphi31_vs_pt31"]["values"][0],
+            expected,
+        )
+        self.assertAlmostEqual(
+            prediction["C2UU_resolved_dphi31_vs_pt31"]["values"][1],
+            0.0,
+            places=12,
+        )
+        self.assertAlmostEqual(
+            prediction["C2LL_resolved_dphi31_vs_pt31"]["values"][0],
+            0.0,
+        )
+
+    def test_delete_one_shard_covariance_matrix(self) -> None:
+        matrix = campaign._jackknife_matrix(
+            [[1.0, 2.0], [2.0, 4.0], [3.0, 6.0]]
+        )
+        self.assertAlmostEqual(matrix["covariance"][0][0], 4.0 / 3.0)
+        self.assertAlmostEqual(matrix["covariance"][0][1], 8.0 / 3.0)
+        self.assertAlmostEqual(matrix["covariance"][1][1], 16.0 / 3.0)
+        self.assertAlmostEqual(matrix["correlation"][0][1], 1.0)
+
+    def test_multi_object_loader_reads_each_yoda_once(self) -> None:
+        jobs = [
+            {
+                "id": "s1", "output_yoda": "one.yoda", "events": 100,
+                "analysis_instances": {"TEST": "TEST:OPT=1"},
+            },
+            {
+                "id": "s2", "output_yoda": "two.yoda", "events": 300,
+                "analysis_instances": {"TEST": "TEST:OPT=1"},
+            },
+        ]
+        loaded = (
+            {
+                "first": series([1.0], [0.1]),
+                "second": series([2.0], [0.2]),
+            },
+            {
+                "first": series([3.0], [0.3]),
+                "second": series([4.0], [0.4]),
+            },
+        )
+        with mock.patch.object(
+            experimental,
+            "read_histogram_series_many",
+            side_effect=loaded,
+        ) as reader:
+            combined = campaign._load_series_many(
+                jobs,
+                Path("/campaign"),
+                {
+                    "first": ("TEST", "A"),
+                    "second": ("TEST", "B"),
+                },
+            )
+        self.assertEqual(reader.call_count, 2)
+        self.assertAlmostEqual(combined["first"].values[0], 2.5)
+        self.assertAlmostEqual(combined["second"].values[0], 3.5)
+        requested_paths = reader.call_args_list[0].args[1]
+        self.assertEqual(
+            requested_paths,
+            {"first": "/TEST:OPT=1/A", "second": "/TEST:OPT=1/B"},
+        )
+
+    def test_shard_covariance_uses_one_multi_object_read_per_job(self) -> None:
+        raw_names = (
+            "jet3_pt", "dijet_threshold_denominator",
+            "ge3_threshold", "ge4_threshold",
+        )
+        output_names = ("SigmaUU_jet3_pt", "R32_UU", "R43_UU")
+        measurement = copy.deepcopy(self.measurement)
+        measurement["channels"] = {
+            "combined": {
+                "raw_objects": {
+                    name: {
+                        "analysis": "MC_POLJETSHAPES", "object": name,
+                    }
+                    for name in raw_names
+                },
+                "conditional_angular_observables": {},
+                "support_observables": [],
+            }
+        }
+        measurement["shard_block_covariance"] = {
+            "raw_observables": list(raw_names),
+            "prediction_observables": list(output_names),
+        }
+        groups = {}
+        raw_samples = {}
+        predictions = {}
+        for family_index, family in enumerate(
+            ("nominal", "shower_spin_off")
+        ):
+            key = (family, "combined", 0, 0, 1.0, "off")
+            groups[key] = {}
+            raw_samples[key] = {name: {} for name in raw_names}
+            for helicity_index, helicity in enumerate(campaign.DENOMINATOR):
+                jobs = []
+                shard_payloads = {name: [] for name in raw_names}
+                for shard in range(1, 4):
+                    shift = 0.1 * (
+                        family_index + helicity_index + shard
+                    )
+                    payload = {
+                        "jet3_pt": series(
+                            [2.0 + shift, 1.0 + shift], [0.01, 0.01]
+                        ),
+                        "dijet_threshold_denominator": series(
+                            [10.0 + shift, 9.0 + shift], [0.02, 0.02]
+                        ),
+                        "ge3_threshold": series(
+                            [6.0 + shift, 4.0 + shift], [0.02, 0.02]
+                        ),
+                        "ge4_threshold": series(
+                            [3.0 + shift, 1.0 + shift], [0.01, 0.01]
+                        ),
+                    }
+                    jobs.append(
+                        {
+                            "shard": shard,
+                            "events": 100,
+                            "_payload": payload,
+                        }
+                    )
+                    for name, item in payload.items():
+                        shard_payloads[name].append(item)
+                groups[key][helicity] = jobs
+                for name in raw_names:
+                    raw_samples[key][name][helicity] = (
+                        experimental.combine_shard_series(
+                            shard_payloads[name], [100, 100, 100]
+                        )
+                    )
+            predictions[key] = campaign._mc_poljetshapes_prediction(
+                raw_samples[key], []
+            )
+
+        def load_one(jobs, _campaign_dir, requested):
+            self.assertEqual(len(jobs), 1)
+            return {
+                name: jobs[0]["_payload"][name]
+                for name in requested
+            }
+
+        with mock.patch.object(
+            campaign, "_load_series_many", side_effect=load_one
+        ) as reader:
+            covariance, rows = campaign._mc_poljetshapes_shard_covariance(
+                measurement,
+                groups,
+                Path("/unused"),
+                raw_samples,
+                predictions,
+            )
+        self.assertEqual(reader.call_count, 24)
+        self.assertEqual(covariance["families"]["nominal"]["status"],
+                         "complete")
+        self.assertEqual(
+            set(covariance["spin_on_minus_off"]), set(output_names)
+        )
+        self.assertIsNotNone(
+            covariance["spin_on_minus_off"]["R43_UU"]["chi2"]
+        )
+        self.assertTrue(rows)
+
     def test_bounded_statistics_projection_and_command(self) -> None:
         base = series([4.0, 4.0, 4.0, 4.0], [0.001]*4,
                       [-math.pi, -math.pi/2, 0, math.pi/2, math.pi])
         objects = {
             name: helicities(copy.deepcopy(base))
             for name in (
-                "dpsi12_j1_loose", "dpsi12_j2_loose",
-                "interjet_dpsi11_kt05", "bz_angle",
+                "dpsi12_j1_hardshare_kt1",
+                "dpsi12_j2_hardshare_kt1",
+                "dpsi12_j1_hardshare_kt2",
+                "dpsi12_j2_hardshare_kt2",
+                "resolved_dpsi34",
             )
         }
         nominal = campaign._mc_poljetshapes_prediction(
@@ -223,11 +463,15 @@ class MCPOLJETSHAPESCampaignTests(unittest.TestCase):
         self.assertEqual(len(assessment["tiers"]), 3)
         self.assertLessEqual(
             assessment["bounded_recommendation_events_per_helicity_family"],
-            500000000,
+            1000000000,
         )
-        self.assertIn("--seed-base 8307000", assessment["production_command"])
+        self.assertIn("--seed-base 8407000", assessment["production_command"])
+        self.assertIn(
+            "mc_poljetshapes_conditional_spin_",
+            assessment["production_command"],
+        )
         self.assertIn("--jobs 100", assessment["production_command"])
-        self.assertIn("A2UU_dpsi12_j1_loose", differences)
+        self.assertIn("A2UU_dpsi12_j1_hardshare_kt1", differences)
         self.assertTrue(ranking)
 
     def test_plot_ratio_propagates_both_independent_sample_errors(self) -> None:
@@ -295,12 +539,46 @@ class MCPOLJETSHAPESCampaignTests(unittest.TestCase):
 
     def test_focused_gallery_links_overlays_differences_and_ratios(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
-            output = Path(temporary)
+            campaign_dir = Path(temporary) / "campaign"
+            output = campaign_dir / "plots" / "html"
+            output.mkdir(parents=True)
             (output / "index.html").write_text(
                 "<html><body><h1>Complete gallery</h1></body></html>",
                 encoding="utf-8",
             )
             assets = (
+                Path(
+                    "MC_POLJETSHAPES/"
+                    "C2UU_resolved_dphi31_vs_pt31.png"
+                ),
+                Path(
+                    "MC_POLJETSHAPES/COMPARISON/"
+                    "OnMinusOff_C2UU_resolved_dphi31_vs_pt31.png"
+                ),
+                Path(
+                    "MC_POLJETSHAPES/"
+                    "A2UU_dpsi12_j1_hardshare_kt1.png"
+                ),
+                Path(
+                    "MC_POLJETSHAPES/COMPARISON/"
+                    "OnMinusOff_A2UU_dpsi12_j1_hardshare_kt1.png"
+                ),
+                Path(
+                    "MC_POLJETSHAPES/"
+                    "ShapeUU_eeec_squeezed_j1_hardshare_kt1.png"
+                ),
+                Path(
+                    "ratios/MC_POLJETSHAPES/"
+                    "ShapeUU_eeec_squeezed_j1_hardshare_kt1.png"
+                ),
+                Path(
+                    "MC_POLJETSHAPES/"
+                    "A2UU_dpsi12_j1_hardshare_kt1_nconst_high.png"
+                ),
+                Path(
+                    "MC_POLJETSHAPES/COMPARISON/"
+                    "OnMinusOff_A2UU_dpsi12_j1_hardshare_kt1_nconst_high.png"
+                ),
                 Path("MC_POLJETSHAPES/A2UU_dpsi12_j1_loose.png"),
                 Path(
                     "MC_POLJETSHAPES/COMPARISON/"
@@ -320,18 +598,42 @@ class MCPOLJETSHAPESCampaignTests(unittest.TestCase):
                 path = output / relative
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_bytes(b"nonempty")
+            postprocess = campaign_dir / "postprocess"
+            postprocess.mkdir()
+            (postprocess / "shard-block-covariance.json").write_text(
+                json.dumps(
+                    {
+                        "families": {
+                            "nominal": {"status": "complete", "blocks": 50},
+                            "shower_spin_off": {
+                                "status": "complete", "blocks": 50,
+                            },
+                        },
+                        "spin_on_minus_off": {
+                            "R43_UU": {"chi2": 2.0, "rank": 4}
+                        },
+                    }
+                ),
+                encoding="utf-8",
+            )
             focus = campaign._write_mc_poljetshapes_focus_index(
                 output, self.measurement
             )
             rendered = focus.read_text(encoding="utf-8")
             root = (output / "index.html").read_text(encoding="utf-8")
-            self.assertIn("Headline splitting-plane moments", rendered)
-            self.assertIn("Headline splitting-plane shapes", rendered)
+            self.assertIn("Inclusive splitting-plane moments", rendered)
+            self.assertIn("Inclusive splitting-plane shapes", rendered)
+            self.assertIn("Resolved-radiation plane moments", rendered)
+            self.assertIn("Hard energy-sharing declusterings", rendered)
+            self.assertIn("Hard-sharing squeezed EEEC", rendered)
+            self.assertIn("Particle-level gluon-enriched proxies", rendered)
             self.assertIn("Resolved third- and fourth-jet spectra", rendered)
             self.assertIn("Third-jet pT: UU cross section", rendered)
             self.assertIn("Fourth-jet pT: A_LL", rendered)
             self.assertIn("Spin on / spin off", rendered)
             self.assertIn("propagate both independent Monte Carlo errors", rendered)
+            self.assertIn("Shard-block covariance audit", rendered)
+            self.assertIn("R43_UU", rendered)
             self.assertIn(
                 "../ratios/MC_POLJETSHAPES/ShapeUU_dpsi12_j1_loose.png",
                 rendered,
@@ -360,6 +662,16 @@ class MCPOLJETSHAPESCampaignTests(unittest.TestCase):
                 "SigmaUU_jet4_pt",
                 "DeltaSigmaLL_jet4_pt",
                 "ALL_jet4_pt",
+            }.issubset(focused)
+        )
+        self.assertTrue(
+            {
+                "C2UU_resolved_dphi31_vs_pt31",
+                "C2LL_resolved_dpsi34_vs_pt41",
+                "A2UU_dpsi12_j1_hardshare_kt1",
+                "ShapeUU_eeec_squeezed_j1_hardshare_kt1",
+                "A2UU_dpsi12_j1_hardshare_kt1_nconst_high",
+                "A2UU_dpsi12_j1_hardshare_kt1_ptd_low",
             }.issubset(focused)
         )
 
@@ -391,6 +703,7 @@ class MCPOLJETSHAPESCampaignTests(unittest.TestCase):
         plot = (ROOT / self.measurement["analysis"]["plot"]).read_text()
         self.assertIn("Shape(UU|PP|PM|MP|MM)", plot)
         self.assertIn("(A2UU|A2LL)", plot)
+        self.assertIn("C2(UU|LL|PP|PM|MP|MM)", plot)
         self.assertIn("COMPARISON/OnMinusOff", plot)
         self.assertEqual(
             self.measurement["families"]["nominal"]["plot_options"]["LineColor"],
@@ -406,6 +719,17 @@ class MCPOLJETSHAPESCampaignTests(unittest.TestCase):
         self.assertIn("plots/html/focus/index.html", workflow)
         self.assertIn("third- and fourth-jet", normalized_workflow)
         self.assertIn("run_mc_poljetshapes_campaign.py plot", workflow)
+
+    def test_conditional_moments_are_primary_plot_objects(self) -> None:
+        snapshot = campaign._measurement_snapshot(self.measurement)
+        self.assertEqual(
+            campaign._reference_path(
+                self.measurement,
+                "C2UU_resolved_dphi31_vs_pt31",
+                snapshot,
+            ),
+            "/MC_POLJETSHAPES/C2UU_resolved_dphi31_vs_pt31",
+        )
 
 
 if __name__ == "__main__":

@@ -101,10 +101,11 @@ namespace Rivet {
     }
 
     bool highestKtSplit(const std::vector<PlaneSplit>& sequence,
-                        double zMin, double ktMin, PlaneSplit& selected) {
+                        double zMin, double ktMin, PlaneSplit& selected,
+                        double zMax = 1.0) {
       bool found = false;
       for (const PlaneSplit& split : sequence) {
-        if (split.z <= zMin || split.kt <= ktMin) continue;
+        if (split.z <= zMin || split.z >= zMax || split.kt <= ktMin) continue;
         if (!found || split.kt > selected.kt) {
           selected = split;
           found = true;
@@ -119,11 +120,20 @@ namespace Rivet {
       bool loose = false;
       bool symmetric = false;
       bool perturbative = false;
+      bool hardshareKt1 = false;
+      bool hardshareKt2 = false;
       double primaryPsi05 = 0.0;
       double primaryPsi10 = 0.0;
       double loosePsi = 0.0;
       double symmetricPsi = 0.0;
       double perturbativePsi = 0.0;
+      double hardshareKt1Psi = 0.0;
+      double hardshareKt2Psi = 0.0;
+    };
+
+    struct JetShapeProxies {
+      size_t constituents = 0;
+      double ptD = 0.0;
     };
 
     JetAngles declusteringAngles(const Jet& jet, double radius) {
@@ -181,6 +191,24 @@ namespace Rivet {
               perturbative.psi - selected10.psi);
         }
       }
+      for (const std::pair<double, bool JetAngles::*> workingPoint : {
+               std::make_pair(1.0, &JetAngles::hardshareKt1),
+               std::make_pair(2.0, &JetAngles::hardshareKt2)}) {
+        PlaneSplit selectedPrimary;
+        if (!highestKtSplit(primary, 0.25, workingPoint.first,
+                            selectedPrimary, 0.40)) continue;
+        const std::vector<PlaneSplit> secondary = declusterHardBranch(
+            selectedPrimary.soft, selectedPrimary.normal,
+            selectedPrimary.psi);
+        PlaneSplit selectedSecondary;
+        if (!highestKtSplit(secondary, 0.35, workingPoint.first,
+                            selectedSecondary)) continue;
+        result.*(workingPoint.second) = true;
+        const double angle = wrapToPi(
+            selectedSecondary.psi - selectedPrimary.psi);
+        if (workingPoint.first < 1.5) result.hardshareKt1Psi = angle;
+        else result.hardshareKt2Psi = angle;
+      }
       return result;
     }
 
@@ -189,6 +217,23 @@ namespace Rivet {
       const double scaled = (wrapped + M_PI)/(2.0*M_PI);
       return std::min(NANGLE - 1,
                       static_cast<size_t>(std::floor(NANGLE*scaled)));
+    }
+
+    const std::array<double, 8> FRACTION_EDGES =
+      {{0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.7, 1.0}};
+
+    bool fractionBin(double value, size_t& bin) {
+      if (!std::isfinite(value) || value < FRACTION_EDGES.front() ||
+          value > FRACTION_EDGES.back()) return false;
+      for (size_t index = 0; index + 1 < FRACTION_EDGES.size(); ++index) {
+        if (value < FRACTION_EDGES[index + 1] ||
+            (index + 2 == FRACTION_EDGES.size() &&
+             value <= FRACTION_EDGES[index + 1])) {
+          bin = index;
+          return true;
+        }
+      }
+      return false;
     }
 
   }
@@ -217,7 +262,22 @@ namespace Rivet {
         "hardplane_primary_j1_kt05", "hardplane_primary_j2_kt05",
         "hardplane_primary_j1_kt10", "hardplane_primary_j2_kt10",
         "interjet_dpsi11_kt05", "interjet_dpsi11_kt10",
-        "eeec_squeezed_j1", "eeec_squeezed_j2", "bz_angle"
+        "eeec_squeezed_j1", "eeec_squeezed_j2", "bz_angle",
+        "resolved_dphi31", "resolved_dpsi34",
+        "dpsi12_j1_hardshare_kt1", "dpsi12_j2_hardshare_kt1",
+        "dpsi12_j1_hardshare_kt2", "dpsi12_j2_hardshare_kt2",
+        "eeec_squeezed_j1_hardshare_kt1",
+        "eeec_squeezed_j2_hardshare_kt1",
+        "eeec_squeezed_j1_hardshare_kt2",
+        "eeec_squeezed_j2_hardshare_kt2",
+        "dpsi12_j1_hardshare_kt1_nconst_high",
+        "dpsi12_j1_hardshare_kt1_nconst_low",
+        "dpsi12_j2_hardshare_kt1_nconst_high",
+        "dpsi12_j2_hardshare_kt1_nconst_low",
+        "dpsi12_j1_hardshare_kt1_ptd_low",
+        "dpsi12_j1_hardshare_kt1_ptd_high",
+        "dpsi12_j2_hardshare_kt1_ptd_low",
+        "dpsi12_j2_hardshare_kt1_ptd_high"
       };
       for (const std::string& name : _angularNames) {
         if (name == "bz_angle") {
@@ -227,6 +287,30 @@ namespace Rivet {
         }
         _acceptedIndex[name] = _acceptedIndex.size();
       }
+
+      const size_t conditionalBins =
+          (FRACTION_EDGES.size() - 1)*NANGLE;
+      for (const std::string name : {
+               "resolved_dphi31_vs_pt31",
+               "resolved_dpsi34_vs_pt41"}) {
+        book(_physics[name], name + "_Yield", conditionalBins,
+             0.0, double(conditionalBins));
+        _acceptedIndex[name] = _acceptedIndex.size();
+      }
+
+      std::vector<double> multiplicityEdges;
+      for (size_t value = 0; value <= 20; ++value) {
+        multiplicityEdges.push_back(0.5 + double(value));
+      }
+      for (double edge : {25.5, 30.5, 40.5, 60.5}) {
+        multiplicityEdges.push_back(edge);
+      }
+      book(_physics["jet1_nconst"], "jet1_nconst_Yield",
+           multiplicityEdges);
+      book(_physics["jet2_nconst"], "jet2_nconst_Yield",
+           multiplicityEdges);
+      book(_physics["jet1_ptd"], "jet1_ptd_Yield", 20, 0.0, 1.0);
+      book(_physics["jet2_ptd"], "jet2_ptd_Yield", 20, 0.0, 1.0);
 
       for (const std::string jet : {"j1", "j2"}) {
         for (const std::string beta : {"beta1", "beta2"}) {
@@ -252,7 +336,7 @@ namespace Rivet {
 
       book(_cutflow, "CutflowFraction", 8, 0.0, 8.0);
       book(_accepted, "AcceptedEntriesPerEvent",
-           _angularNames.size(), 0.0, double(_angularNames.size()));
+           _acceptedIndex.size(), 0.0, double(_acceptedIndex.size()));
     }
 
     void analyze(const Event& event) {
@@ -291,8 +375,14 @@ namespace Rivet {
 
       const JetAngles first = declusteringAngles(jets[0], _radius);
       const JetAngles second = declusteringAngles(jets[1], _radius);
-      fillJetAngles(first, "j1");
-      fillJetAngles(second, "j2");
+      const JetShapeProxies firstProxies = jetShapeProxies(jets[0]);
+      const JetShapeProxies secondProxies = jetShapeProxies(jets[1]);
+      _physics["jet1_nconst"]->fill(double(firstProxies.constituents));
+      _physics["jet2_nconst"]->fill(double(secondProxies.constituents));
+      _physics["jet1_ptd"]->fill(firstProxies.ptD);
+      _physics["jet2_ptd"]->fill(secondProxies.ptD);
+      fillJetAngles(first, firstProxies, "j1");
+      fillJetAngles(second, secondProxies, "j2");
       if (first.primary05) _cutflow->fill(3.5);
       if (first.loose) _cutflow->fill(4.5);
       if (first.primary05 && second.primary05) {
@@ -308,12 +398,50 @@ namespace Rivet {
 
       fillQuadrupoles(jets[0], "j1");
       fillQuadrupoles(jets[1], "j2");
-      fillEEEC(jets[0], "eeec_squeezed_j1");
-      fillEEEC(jets[1], "eeec_squeezed_j2");
+      std::vector<std::string> firstEeec = {"eeec_squeezed_j1"};
+      std::vector<std::string> secondEeec = {"eeec_squeezed_j2"};
+      if (first.hardshareKt1) {
+        firstEeec.push_back("eeec_squeezed_j1_hardshare_kt1");
+      }
+      if (second.hardshareKt1) {
+        secondEeec.push_back("eeec_squeezed_j2_hardshare_kt1");
+      }
+      if (first.hardshareKt2) {
+        firstEeec.push_back("eeec_squeezed_j1_hardshare_kt2");
+      }
+      if (second.hardshareKt2) {
+        secondEeec.push_back("eeec_squeezed_j2_hardshare_kt2");
+      }
+      fillEEEC(jets[0], firstEeec);
+      fillEEEC(jets[1], secondEeec);
+
+      if (jets.size() >= 3 && jets[2].pT() > 2.0*GeV) {
+        Vector3 hardNormal, thirdNormal;
+        double angle = 0.0;
+        if (planeNormal(Vector3::mkZ(), jets[0].p3(), hardNormal) &&
+            planeNormal(jets[0].p3(), jets[2].p3(), thirdNormal) &&
+            signedPlaneAngle(hardNormal, thirdNormal, jets[0].p3(), angle)) {
+          angle = wrapToPi(angle);
+          fillAngular("resolved_dphi31", angle);
+          fillConditionalAngle("resolved_dphi31_vs_pt31",
+                               jets[2].pT()/jets[0].pT(), angle);
+        }
+      }
 
       if (jets.size() >= 4 && jets[2].pT() > 2.0*GeV &&
           jets[3].pT() > 2.0*GeV) {
         _cutflow->fill(7.5);
+        Vector3 thirdNormal, fourthNormal;
+        double resolvedAngle = 0.0;
+        if (planeNormal(jets[0].p3(), jets[2].p3(), thirdNormal) &&
+            planeNormal(jets[0].p3(), jets[3].p3(), fourthNormal) &&
+            signedPlaneAngle(thirdNormal, fourthNormal, jets[0].p3(),
+                             resolvedAngle)) {
+          resolvedAngle = wrapToPi(resolvedAngle);
+          fillAngular("resolved_dpsi34", resolvedAngle);
+          fillConditionalAngle("resolved_dpsi34_vs_pt41",
+                               jets[3].pT()/jets[0].pT(), resolvedAngle);
+        }
         double angle = 0.0;
         if (bengtssonZerwas(jets, angle)) fillAngular("bz_angle", angle);
       }
@@ -338,7 +466,38 @@ namespace Rivet {
       }
     }
 
-    void fillJetAngles(const JetAngles& angles, const std::string& jet) {
+    void fillConditionalAngle(const std::string& name, double fraction,
+                              double angle) {
+      size_t fractionIndex = 0;
+      if (!std::isfinite(angle) || !fractionBin(fraction, fractionIndex)) {
+        return;
+      }
+      const double coordinate =
+          double(fractionIndex*NANGLE + angleBin(angle)) + 0.5;
+      _physics[name]->fill(coordinate);
+      const auto found = _acceptedIndex.find(name);
+      if (found != _acceptedIndex.end()) {
+        _accepted->fill(double(found->second) + 0.5);
+      }
+    }
+
+    JetShapeProxies jetShapeProxies(const Jet& jet) const {
+      JetShapeProxies result;
+      double sumPt = 0.0;
+      double sumPt2 = 0.0;
+      for (const Particle& particle : jet.particles()) {
+        if (particle.pT() <= 0.0) continue;
+        ++result.constituents;
+        sumPt += particle.pT();
+        sumPt2 += particle.pT()*particle.pT();
+      }
+      if (sumPt > 0.0) result.ptD = std::sqrt(sumPt2)/sumPt;
+      return result;
+    }
+
+    void fillJetAngles(const JetAngles& angles,
+                       const JetShapeProxies& proxies,
+                       const std::string& jet) {
       if (angles.loose) {
         fillAngular("dpsi12_" + jet + "_loose", angles.loosePsi);
       }
@@ -357,6 +516,20 @@ namespace Rivet {
       if (angles.primary10) {
         fillAngular("hardplane_primary_" + jet + "_kt10",
                     angles.primaryPsi10);
+      }
+      if (angles.hardshareKt1) {
+        const std::string base = "dpsi12_" + jet + "_hardshare_kt1";
+        fillAngular(base, angles.hardshareKt1Psi);
+        fillAngular(base + (proxies.constituents >= 8
+                            ? "_nconst_high" : "_nconst_low"),
+                    angles.hardshareKt1Psi);
+        fillAngular(base + (proxies.ptD < 0.45
+                            ? "_ptd_low" : "_ptd_high"),
+                    angles.hardshareKt1Psi);
+      }
+      if (angles.hardshareKt2) {
+        fillAngular("dpsi12_" + jet + "_hardshare_kt2",
+                    angles.hardshareKt2Psi);
       }
     }
 
@@ -392,7 +565,8 @@ namespace Rivet {
       _physics["s2_beta2_" + label]->fill(s2);
     }
 
-    void fillEEEC(const Jet& jet, const std::string& name) {
+    void fillEEEC(const Jet& jet, const std::vector<std::string>& names) {
+      if (names.empty()) return;
       const Particles& particles = jet.particles();
       if (particles.size() < 3) return;
       double sumPt = 0.0;
@@ -445,15 +619,18 @@ namespace Rivet {
         }
       }
       if (acceptedTriplets == 0) return;
-      for (size_t bin = 0; bin < NANGLE; ++bin) {
-        if (eventWeights[bin] == 0.0) continue;
-        const double centre = -M_PI + (double(bin) + 0.5)*2.0*M_PI/NANGLE;
-        _physics[name]->fill(centre, eventWeights[bin]);
-      }
-      const auto found = _acceptedIndex.find(name);
-      if (found != _acceptedIndex.end()) {
-        _accepted->fill(double(found->second) + 0.5,
-                        double(acceptedTriplets));
+      for (const std::string& name : names) {
+        for (size_t bin = 0; bin < NANGLE; ++bin) {
+          if (eventWeights[bin] == 0.0) continue;
+          const double centre =
+              -M_PI + (double(bin) + 0.5)*2.0*M_PI/NANGLE;
+          _physics[name]->fill(centre, eventWeights[bin]);
+        }
+        const auto found = _acceptedIndex.find(name);
+        if (found != _acceptedIndex.end()) {
+          _accepted->fill(double(found->second) + 0.5,
+                          double(acceptedTriplets));
+        }
       }
     }
 

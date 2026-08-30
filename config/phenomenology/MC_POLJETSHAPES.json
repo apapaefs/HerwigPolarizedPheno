@@ -217,6 +217,102 @@
           "analysis": "MC_POLJETSHAPES",
           "object": "bz_angle_Yield"
         },
+        "resolved_dphi31": {
+          "analysis": "MC_POLJETSHAPES",
+          "object": "resolved_dphi31_Yield"
+        },
+        "resolved_dpsi34": {
+          "analysis": "MC_POLJETSHAPES",
+          "object": "resolved_dpsi34_Yield"
+        },
+        "dpsi12_j1_hardshare_kt1": {
+          "analysis": "MC_POLJETSHAPES",
+          "object": "dpsi12_j1_hardshare_kt1_Yield"
+        },
+        "dpsi12_j2_hardshare_kt1": {
+          "analysis": "MC_POLJETSHAPES",
+          "object": "dpsi12_j2_hardshare_kt1_Yield"
+        },
+        "dpsi12_j1_hardshare_kt2": {
+          "analysis": "MC_POLJETSHAPES",
+          "object": "dpsi12_j1_hardshare_kt2_Yield"
+        },
+        "dpsi12_j2_hardshare_kt2": {
+          "analysis": "MC_POLJETSHAPES",
+          "object": "dpsi12_j2_hardshare_kt2_Yield"
+        },
+        "eeec_squeezed_j1_hardshare_kt1": {
+          "analysis": "MC_POLJETSHAPES",
+          "object": "eeec_squeezed_j1_hardshare_kt1_Yield"
+        },
+        "eeec_squeezed_j2_hardshare_kt1": {
+          "analysis": "MC_POLJETSHAPES",
+          "object": "eeec_squeezed_j2_hardshare_kt1_Yield"
+        },
+        "eeec_squeezed_j1_hardshare_kt2": {
+          "analysis": "MC_POLJETSHAPES",
+          "object": "eeec_squeezed_j1_hardshare_kt2_Yield"
+        },
+        "eeec_squeezed_j2_hardshare_kt2": {
+          "analysis": "MC_POLJETSHAPES",
+          "object": "eeec_squeezed_j2_hardshare_kt2_Yield"
+        },
+        "dpsi12_j1_hardshare_kt1_nconst_high": {
+          "analysis": "MC_POLJETSHAPES",
+          "object": "dpsi12_j1_hardshare_kt1_nconst_high_Yield"
+        },
+        "dpsi12_j1_hardshare_kt1_nconst_low": {
+          "analysis": "MC_POLJETSHAPES",
+          "object": "dpsi12_j1_hardshare_kt1_nconst_low_Yield"
+        },
+        "dpsi12_j2_hardshare_kt1_nconst_high": {
+          "analysis": "MC_POLJETSHAPES",
+          "object": "dpsi12_j2_hardshare_kt1_nconst_high_Yield"
+        },
+        "dpsi12_j2_hardshare_kt1_nconst_low": {
+          "analysis": "MC_POLJETSHAPES",
+          "object": "dpsi12_j2_hardshare_kt1_nconst_low_Yield"
+        },
+        "dpsi12_j1_hardshare_kt1_ptd_low": {
+          "analysis": "MC_POLJETSHAPES",
+          "object": "dpsi12_j1_hardshare_kt1_ptd_low_Yield"
+        },
+        "dpsi12_j1_hardshare_kt1_ptd_high": {
+          "analysis": "MC_POLJETSHAPES",
+          "object": "dpsi12_j1_hardshare_kt1_ptd_high_Yield"
+        },
+        "dpsi12_j2_hardshare_kt1_ptd_low": {
+          "analysis": "MC_POLJETSHAPES",
+          "object": "dpsi12_j2_hardshare_kt1_ptd_low_Yield"
+        },
+        "dpsi12_j2_hardshare_kt1_ptd_high": {
+          "analysis": "MC_POLJETSHAPES",
+          "object": "dpsi12_j2_hardshare_kt1_ptd_high_Yield"
+        },
+        "resolved_dphi31_vs_pt31": {
+          "analysis": "MC_POLJETSHAPES",
+          "object": "resolved_dphi31_vs_pt31_Yield"
+        },
+        "resolved_dpsi34_vs_pt41": {
+          "analysis": "MC_POLJETSHAPES",
+          "object": "resolved_dpsi34_vs_pt41_Yield"
+        },
+        "jet1_nconst": {
+          "analysis": "MC_POLJETSHAPES",
+          "object": "jet1_nconst_Yield"
+        },
+        "jet2_nconst": {
+          "analysis": "MC_POLJETSHAPES",
+          "object": "jet2_nconst_Yield"
+        },
+        "jet1_ptd": {
+          "analysis": "MC_POLJETSHAPES",
+          "object": "jet1_ptd_Yield"
+        },
+        "jet2_ptd": {
+          "analysis": "MC_POLJETSHAPES",
+          "object": "jet2_ptd_Yield"
+        },
         "q2_beta1_j1": {
           "analysis": "MC_POLJETSHAPES",
           "object": "q2_beta1_j1_Yield"
@@ -309,6 +405,30 @@
         "eeec_squeezed_j1",
         "eeec_squeezed_j2",
         "bz_angle",
+        "resolved_dphi31",
+        "resolved_dpsi34",
+        "dpsi12_j1_hardshare_kt1",
+        "dpsi12_j2_hardshare_kt1",
+        "dpsi12_j1_hardshare_kt2",
+        "dpsi12_j2_hardshare_kt2",
+        "eeec_squeezed_j1_hardshare_kt1",
+        "eeec_squeezed_j2_hardshare_kt1",
+        "eeec_squeezed_j1_hardshare_kt2",
+        "eeec_squeezed_j2_hardshare_kt2",
+        "dpsi12_j1_hardshare_kt1_nconst_high",
+        "dpsi12_j1_hardshare_kt1_nconst_low",
+        "dpsi12_j2_hardshare_kt1_nconst_high",
+        "dpsi12_j2_hardshare_kt1_nconst_low",
+        "dpsi12_j1_hardshare_kt1_ptd_low",
+        "dpsi12_j1_hardshare_kt1_ptd_high",
+        "dpsi12_j2_hardshare_kt1_ptd_low",
+        "dpsi12_j2_hardshare_kt1_ptd_high",
+        "resolved_dphi31_vs_pt31",
+        "resolved_dpsi34_vs_pt41",
+        "jet1_nconst",
+        "jet2_nconst",
+        "jet1_ptd",
+        "jet2_ptd",
         "q2_beta1_j1",
         "s2_beta1_j1",
         "q2_beta2_j1",
@@ -338,8 +458,60 @@
         "interjet_dpsi11_kt10",
         "eeec_squeezed_j1",
         "eeec_squeezed_j2",
-        "bz_angle"
+        "bz_angle",
+        "resolved_dphi31",
+        "resolved_dpsi34",
+        "dpsi12_j1_hardshare_kt1",
+        "dpsi12_j2_hardshare_kt1",
+        "dpsi12_j1_hardshare_kt2",
+        "dpsi12_j2_hardshare_kt2",
+        "eeec_squeezed_j1_hardshare_kt1",
+        "eeec_squeezed_j2_hardshare_kt1",
+        "eeec_squeezed_j1_hardshare_kt2",
+        "eeec_squeezed_j2_hardshare_kt2",
+        "dpsi12_j1_hardshare_kt1_nconst_high",
+        "dpsi12_j1_hardshare_kt1_nconst_low",
+        "dpsi12_j2_hardshare_kt1_nconst_high",
+        "dpsi12_j2_hardshare_kt1_nconst_low",
+        "dpsi12_j1_hardshare_kt1_ptd_low",
+        "dpsi12_j1_hardshare_kt1_ptd_high",
+        "dpsi12_j2_hardshare_kt1_ptd_low",
+        "dpsi12_j2_hardshare_kt1_ptd_high"
       ],
+      "support_observables": [
+        "resolved_dphi31_vs_pt31",
+        "resolved_dpsi34_vs_pt41"
+      ],
+      "conditional_angular_observables": {
+        "resolved_dphi31_vs_pt31": {
+          "raw_observable": "resolved_dphi31_vs_pt31",
+          "fraction_edges": [
+            0.0,
+            0.1,
+            0.2,
+            0.3,
+            0.4,
+            0.5,
+            0.7,
+            1.0
+          ],
+          "angle_bins": 24
+        },
+        "resolved_dpsi34_vs_pt41": {
+          "raw_observable": "resolved_dpsi34_vs_pt41",
+          "fraction_edges": [
+            0.0,
+            0.1,
+            0.2,
+            0.3,
+            0.4,
+            0.5,
+            0.7,
+            1.0
+          ],
+          "angle_bins": 24
+        }
+      },
       "statistics_objects": {
         "cutflow": {
           "analysis": "MC_POLJETSHAPES",
@@ -456,15 +628,54 @@
   "statistics_projection": {
     "pilot_events_per_helicity_family": 500000,
     "candidate_events_per_helicity_family": [
-      100000000,
       250000000,
-      500000000
+      500000000,
+      1000000000
+    ],
+    "baseline_observables": [
+      "dpsi12_j1_hardshare_kt1",
+      "dpsi12_j2_hardshare_kt1"
+    ],
+    "rare_observables": [
+      "dpsi12_j1_hardshare_kt2",
+      "dpsi12_j2_hardshare_kt2",
+      "resolved_dpsi34"
     ],
     "minimum_effective_baseline_entries": 250000,
     "maximum_independent_on_off_A2_error": 0.002,
     "events_per_shard": 500000,
     "jobs": 100,
-    "production_seed_base": 8307000
+    "production_seed_base": 8407000,
+    "production_tag_date": "20260830",
+    "production_tag_stem": "mc_poljetshapes_conditional_spin"
+  },
+  "shard_block_covariance": {
+    "method": "delete-one-common-shard jackknife",
+    "raw_observables": [
+      "jet3_pt",
+      "jet4_pt",
+      "dijet_threshold_denominator",
+      "ge3_threshold",
+      "ge4_threshold",
+      "pt31_cumulative_tail",
+      "pt41_cumulative_tail",
+      "resolved_dphi31_vs_pt31",
+      "resolved_dpsi34_vs_pt41"
+    ],
+    "prediction_observables": [
+      "SigmaUU_jet3_pt",
+      "SigmaUU_jet4_pt",
+      "R32_UU",
+      "R43_UU",
+      "ThirdJetVeto_UU",
+      "SigmaUU_pt31_cumulative_tail",
+      "SigmaUU_pt41_cumulative_tail",
+      "C2UU_resolved_dphi31_vs_pt31",
+      "C2LL_resolved_dphi31_vs_pt31",
+      "C2UU_resolved_dpsi34_vs_pt41",
+      "C2LL_resolved_dpsi34_vs_pt41"
+    ],
+    "family_relation": "nominal and shower_spin_off are independent"
   },
   "physics": {
     "beams": "longitudinally polarized pp",
@@ -475,7 +686,10 @@
     "event_simulation": "QCD shower, hadronization, hadron decays, and remnants on; MPI off",
     "truth_information": "none: no shower history, parton flavour, or hard-process labels enter MC_POLJETSHAPES",
     "polarization_convention": "unit-helicity PP, PM, MP, and MM theory cross sections matching the STAR 510 GeV campaign",
-    "comparison": "the two families differ only by ShowerHandler SpinCorrelations and use independent seeds",
+    "resolved_radiation": "signed particle-level jet-plane angles for jets 3 and 4, including cos(2 psi) and sine moments versus pT3/pT1 and pT4/pT1",
+    "hard_sharing_selection": "primary 0.25<z1<0.40, secondary z2>0.35, with matched kT>1 and 2 GeV working points",
+    "gluon_enriched_proxies": "constituent multiplicity Nconst>=8 and pTD<0.45, both constructed solely from stable visible jet constituents",
+    "comparison": "the two families differ only by ShowerHandler SpinCorrelations and use independent seeds; selected resolved-radiation observables receive shard-block covariance matrices",
     "pdf_accuracy": "NLO PDF inputs do not promote the hard prediction to NLO accuracy"
   }
 }

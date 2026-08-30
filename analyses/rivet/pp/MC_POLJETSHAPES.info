@@ -24,3 +24,8 @@ Description: >
   shower-history or flavour information. The analysis also measures a
   squeezed three-point energy correlator, beam-jet energy-flow quadrupoles,
   a four-jet Bengtsson-Zerwas angle, and inclusive radiation-rate scans.
+  Resolved third- and fourth-jet plane angles are measured inclusively and
+  through harmonic moments versus pT3/pT1 and pT4/pT1. Hard-sharing
+  declusterings require 0.25<z1<0.40 and z2>0.35 at matched kT thresholds
+  of 1 or 2 GeV. Constituent multiplicity and pTD provide particle-level
+  gluon-enriched categories without truth-flavour labels.

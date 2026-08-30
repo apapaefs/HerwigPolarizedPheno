@@ -2324,13 +2324,16 @@ def _resolve_histogram_path(
     return object_path
 
 
-def read_histogram_series(yoda_path: Path, object_path: str) -> BinSeries:
-    yoda = _import_yoda()
-    try:
-        objects = yoda.read(str(yoda_path))
-    except Exception as exc:
-        raise CampaignError(f"Could not read {yoda_path}: {exc}") from exc
-    resolved_path = _resolve_histogram_path(objects, object_path)
+def _histogram_series_from_objects(
+    objects: Mapping[str, Any], yoda_path: Path, object_path: str
+) -> BinSeries:
+    """Extract one normalized Estimate1D from an already-read YODA file."""
+
+    resolved_path = (
+        object_path
+        if object_path in objects
+        else _resolve_histogram_path(objects, object_path)
+    )
     obj = objects.get(resolved_path)
     if obj is None:
         raise CampaignError(f"Missing {object_path} in {yoda_path}")
@@ -2349,6 +2352,30 @@ def read_histogram_series(yoda_path: Path, object_path: str) -> BinSeries:
             error = 0.0
         variances.append(error * error if math.isfinite(error) else 0.0)
     return BinSeries(edges, values, variances)
+
+
+def read_histogram_series_many(
+    yoda_path: Path, object_paths: Mapping[str, str]
+) -> dict[str, BinSeries]:
+    """Read several normalized histograms while opening a YODA file once."""
+
+    if not object_paths:
+        return {}
+    yoda = _import_yoda()
+    try:
+        objects = yoda.read(str(yoda_path))
+    except Exception as exc:
+        raise CampaignError(f"Could not read {yoda_path}: {exc}") from exc
+    return {
+        label: _histogram_series_from_objects(objects, yoda_path, object_path)
+        for label, object_path in object_paths.items()
+    }
+
+
+def read_histogram_series(yoda_path: Path, object_path: str) -> BinSeries:
+    return read_histogram_series_many(
+        yoda_path, {"histogram": object_path}
+    )["histogram"]
 
 
 def combine_shard_series(series: Sequence[BinSeries], event_counts: Sequence[int]) -> BinSeries:

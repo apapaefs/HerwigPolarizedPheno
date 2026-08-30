@@ -35,6 +35,26 @@ XLabel=Integrated angular moment
 YLabel=$2\langle\sin(2\psi)\rangle$
 END PLOT
 
+BEGIN PLOT /MC_POLJETSHAPES/C2(UU|LL|PP|PM|MP|MM)_resolved_dphi31_vs_pt31$
+XLabel=$p_{T,3}/p_{T,1}$
+YLabel=$2\langle\cos(2\Delta\phi_{3|1})\rangle$
+END PLOT
+
+BEGIN PLOT /MC_POLJETSHAPES/S2(UU|LL|PP|PM|MP|MM)_resolved_dphi31_vs_pt31$
+XLabel=$p_{T,3}/p_{T,1}$
+YLabel=$2\langle\sin(2\Delta\phi_{3|1})\rangle$
+END PLOT
+
+BEGIN PLOT /MC_POLJETSHAPES/C2(UU|LL|PP|PM|MP|MM)_resolved_dpsi34_vs_pt41$
+XLabel=$p_{T,4}/p_{T,1}$
+YLabel=$2\langle\cos(2\Delta\psi_{34})\rangle$
+END PLOT
+
+BEGIN PLOT /MC_POLJETSHAPES/S2(UU|LL|PP|PM|MP|MM)_resolved_dpsi34_vs_pt41$
+XLabel=$p_{T,4}/p_{T,1}$
+YLabel=$2\langle\sin(2\Delta\psi_{34})\rangle$
+END PLOT
+
 BEGIN PLOT /MC_POLJETSHAPES/(ALL|DeltaSigmaLL|SigmaUU|SigmaPP|SigmaPM|SigmaMP|SigmaMM|ShapeUU|ShapePP|ShapePM|ShapeMP|ShapeMM)_dpsi12_.*
 XLabel=$\Delta\psi_{12}$ [rad]
 END PLOT
@@ -53,6 +73,22 @@ END PLOT
 
 BEGIN PLOT /MC_POLJETSHAPES/(ALL|DeltaSigmaLL|SigmaUU|SigmaPP|SigmaPM|SigmaMP|SigmaMM|ShapeUU|ShapePP|ShapePM|ShapeMP|ShapeMM)_bz_angle$
 XLabel=$\chi_{\mathrm{BZ}}$ [rad]
+END PLOT
+
+BEGIN PLOT /MC_POLJETSHAPES/(ALL|DeltaSigmaLL|SigmaUU|SigmaPP|SigmaPM|SigmaMP|SigmaMM|ShapeUU|ShapePP|ShapePM|ShapeMP|ShapeMM)_resolved_dphi31$
+XLabel=$\Delta\phi_{3|1}$ [rad]
+END PLOT
+
+BEGIN PLOT /MC_POLJETSHAPES/(ALL|DeltaSigmaLL|SigmaUU|SigmaPP|SigmaPM|SigmaMP|SigmaMM|ShapeUU|ShapePP|ShapePM|ShapeMP|ShapeMM)_resolved_dpsi34$
+XLabel=$\Delta\psi_{34}$ [rad]
+END PLOT
+
+BEGIN PLOT /MC_POLJETSHAPES/(ALL|DeltaSigmaLL|SigmaUU|SigmaPP|SigmaPM|SigmaMP|SigmaMM)_jet(1|2)_nconst$
+XLabel=Jet constituent multiplicity $N_{\mathrm{const}}$
+END PLOT
+
+BEGIN PLOT /MC_POLJETSHAPES/(ALL|DeltaSigmaLL|SigmaUU|SigmaPP|SigmaPM|SigmaMP|SigmaMM)_jet(1|2)_ptd$
+XLabel=$p_T^D$
 END PLOT
 
 BEGIN PLOT /MC_POLJETSHAPES/(ALL|DeltaSigmaLL|SigmaUU|SigmaPP|SigmaPM|SigmaMP|SigmaMM)_q2_beta(1|2)_.*

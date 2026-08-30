@@ -62,7 +62,158 @@ MC_POLJETSHAPES_RATIO_PREFIXES = (
 # silently deciding which production plots are promoted to the focused page.
 MC_POLJETSHAPES_FOCUS_SECTIONS = (
     {
-        "title": "1. Headline splitting-plane moments",
+        "title": "1. Resolved-radiation plane moments",
+        "why": (
+            "These directly ask whether a resolved third or fourth jet retains "
+            "a coherent cos(2 psi) modulation. The x dependence separates "
+            "soft extra radiation from genuinely hard additional jets."
+        ),
+        "plots": (
+            (
+                "C2UU_resolved_dphi31_vs_pt31",
+                "C2UU of the jet-3 plane versus pT3/pT1",
+                "difference",
+            ),
+            (
+                "C2LL_resolved_dphi31_vs_pt31",
+                "C2LL of the jet-3 plane versus pT3/pT1",
+                "difference",
+            ),
+            (
+                "C2UU_resolved_dpsi34_vs_pt41",
+                "C2UU of the jet-3/jet-4 planes versus pT4/pT1",
+                "difference",
+            ),
+            (
+                "C2LL_resolved_dpsi34_vs_pt41",
+                "C2LL of the jet-3/jet-4 planes versus pT4/pT1",
+                "difference",
+            ),
+            (
+                "S2UU_resolved_dphi31_vs_pt31",
+                "Sine null for the jet-3 plane",
+                "difference",
+            ),
+            (
+                "S2UU_resolved_dpsi34_vs_pt41",
+                "Sine null for the jet-3/jet-4 planes",
+                "difference",
+            ),
+        ),
+    },
+    {
+        "title": "2. Hard energy-sharing declusterings",
+        "why": (
+            "The 0.25<z1<0.40 and z2>0.35 requirement suppresses strongly "
+            "ordered soft branchings. The 1 and 2 GeV kT selections show "
+            "whether any modulation strengthens in the perturbative core."
+        ),
+        "plots": (
+            (
+                "A2UU_dpsi12_j1_hardshare_kt1",
+                "A2UU: jet 1, hard sharing, kT > 1 GeV",
+                "difference",
+            ),
+            (
+                "A2LL_dpsi12_j1_hardshare_kt1",
+                "A2LL: jet 1, hard sharing, kT > 1 GeV",
+                "difference",
+            ),
+            (
+                "A2UU_dpsi12_j2_hardshare_kt1",
+                "A2UU: jet 2, hard sharing, kT > 1 GeV",
+                "difference",
+            ),
+            (
+                "A2LL_dpsi12_j2_hardshare_kt1",
+                "A2LL: jet 2, hard sharing, kT > 1 GeV",
+                "difference",
+            ),
+            (
+                "A2UU_dpsi12_j1_hardshare_kt2",
+                "A2UU: jet 1, hard sharing, kT > 2 GeV",
+                "difference",
+            ),
+            (
+                "A2UU_dpsi12_j2_hardshare_kt2",
+                "A2UU: jet 2, hard sharing, kT > 2 GeV",
+                "difference",
+            ),
+        ),
+    },
+    {
+        "title": "3. Hard-sharing squeezed EEEC",
+        "why": (
+            "The same hard-splitting gate is applied before constructing the "
+            "all-particle squeezed three-point correlator. This checks the "
+            "effect with an energy-weighted analyser rather than one selected "
+            "declustering pair."
+        ),
+        "plots": (
+            (
+                "ShapeUU_eeec_squeezed_j1_hardshare_kt1",
+                "Squeezed EEEC: jet 1, hard sharing, kT > 1 GeV",
+                "ratio",
+            ),
+            (
+                "ShapeUU_eeec_squeezed_j2_hardshare_kt1",
+                "Squeezed EEEC: jet 2, hard sharing, kT > 1 GeV",
+                "ratio",
+            ),
+            (
+                "ShapeUU_eeec_squeezed_j1_hardshare_kt2",
+                "Squeezed EEEC: jet 1, hard sharing, kT > 2 GeV",
+                "ratio",
+            ),
+            (
+                "ShapeUU_eeec_squeezed_j2_hardshare_kt2",
+                "Squeezed EEEC: jet 2, hard sharing, kT > 2 GeV",
+                "ratio",
+            ),
+        ),
+    },
+    {
+        "title": "4. Particle-level gluon-enriched proxies",
+        "why": (
+            "High constituent multiplicity and low pTD are experimentally "
+            "constructible gluon-enriched categories. Their complementary "
+            "bins are shown beside them; no truth-flavour label is used."
+        ),
+        "plots": (
+            (
+                "A2UU_dpsi12_j1_hardshare_kt1_nconst_high",
+                "A2UU: jet 1, Nconst >= 8",
+                "difference",
+            ),
+            (
+                "A2UU_dpsi12_j1_hardshare_kt1_nconst_low",
+                "A2UU: jet 1, Nconst < 8",
+                "difference",
+            ),
+            (
+                "A2UU_dpsi12_j2_hardshare_kt1_nconst_high",
+                "A2UU: jet 2, Nconst >= 8",
+                "difference",
+            ),
+            (
+                "A2UU_dpsi12_j2_hardshare_kt1_nconst_low",
+                "A2UU: jet 2, Nconst < 8",
+                "difference",
+            ),
+            (
+                "A2UU_dpsi12_j1_hardshare_kt1_ptd_low",
+                "A2UU: jet 1, pTD < 0.45",
+                "difference",
+            ),
+            (
+                "A2UU_dpsi12_j1_hardshare_kt1_ptd_high",
+                "A2UU: jet 1, pTD >= 0.45",
+                "difference",
+            ),
+        ),
+    },
+    {
+        "title": "5. Inclusive splitting-plane moments",
         "why": (
             "Primary tests of a coherent cos(2 psi) shower-spin modulation. "
             "The companion panel is spin on minus spin off; moment ratios are "
@@ -96,7 +247,7 @@ MC_POLJETSHAPES_FOCUS_SECTIONS = (
         ),
     },
     {
-        "title": "2. Headline splitting-plane shapes",
+        "title": "6. Inclusive splitting-plane shapes",
         "why": (
             "The normalized UU shapes expose the expected smooth even angular "
             "pattern while removing the inclusive normalization.  Delta-sigma "
@@ -138,7 +289,7 @@ MC_POLJETSHAPES_FOCUS_SECTIONS = (
         ),
     },
     {
-        "title": "3. Independent angular confirmation",
+        "title": "7. Independent angular confirmation",
         "why": (
             "These use different particle-level angular analysers.  A credible "
             "effect should be coherent across more than one construction and "
@@ -166,7 +317,7 @@ MC_POLJETSHAPES_FOCUS_SECTIONS = (
         ),
     },
     {
-        "title": "4. Sine and symmetry null tests",
+        "title": "8. Sine and symmetry null tests",
         "why": (
             "The B2 sine moments should be compatible with zero.  The S2 "
             "quadrupole spectra are supporting symmetry controls; unexpected "
@@ -184,7 +335,7 @@ MC_POLJETSHAPES_FOCUS_SECTIONS = (
         ),
     },
     {
-        "title": "5. Resolved third- and fourth-jet spectra",
+        "title": "9. Resolved third- and fourth-jet spectra",
         "why": (
             "These are the direct particle-level analogues of the resolved-"
             "radiation hardness tests that were useful in polarized DIS.  "
@@ -210,7 +361,7 @@ MC_POLJETSHAPES_FOCUS_SECTIONS = (
         ),
     },
     {
-        "title": "6. Radiation-rate scans",
+        "title": "10. Radiation-rate scans",
         "why": (
             "These test indirect changes in resolved radiation.  They are "
             "secondary to the angular observables because shower spin "
@@ -234,7 +385,7 @@ MC_POLJETSHAPES_FOCUS_SECTIONS = (
         ),
     },
     {
-        "title": "7. Inclusive controls",
+        "title": "11. Inclusive controls",
         "why": (
             "Large changes in these broad spectra would be surprising and "
             "should first trigger a configuration, normalization, or "
@@ -1380,38 +1531,68 @@ def _logical_groups(manifest: Mapping[str, Any], campaign_dir: Path) -> dict[tup
 
 def _load_series(jobs: Sequence[Mapping[str, Any]], campaign_dir: Path,
                  analysis: str, object_name: str) -> experimental.BinSeries:
+    return _load_series_many(
+        jobs, campaign_dir, {"histogram": (analysis, object_name)}
+    )["histogram"]
+
+
+def _load_series_many(
+    jobs: Sequence[Mapping[str, Any]],
+    campaign_dir: Path,
+    requested: Mapping[str, tuple[str, str]],
+) -> dict[str, experimental.BinSeries]:
+    """Combine many shard objects after reading every shard YODA only once."""
+
+    if not jobs or not requested:
+        raise CampaignError("Multi-object shard loading requires jobs and objects")
     analysis_instances: set[str] = set()
+    instances_by_analysis: dict[str, str] = {}
+    source_analyses = {analysis for analysis, _ in requested.values()}
+    for analysis in source_analyses:
+        analysis_instances.clear()
+        for job in jobs:
+            configured = job.get("analysis_instances")
+            if isinstance(configured, Mapping):
+                instance = configured.get(analysis)
+                if instance is None:
+                    raise CampaignError(
+                        f"Job {job.get('id')} has no Rivet instance for {analysis}"
+                    )
+                analysis_instances.add(str(instance))
+            else:
+                primary = str(job.get("analysis_instance", analysis))
+                primary_name = primary.split(":", 1)[0]
+                if analysis != primary_name:
+                    raise CampaignError(
+                        f"Legacy job {job.get('id')} has no companion analysis "
+                        f"instance for {analysis}"
+                    )
+                analysis_instances.add(primary)
+        if len(analysis_instances) != 1:
+            raise CampaignError(
+                f"Shards disagree on the {analysis} Rivet instance: "
+                f"{sorted(analysis_instances)}"
+            )
+        instances_by_analysis[analysis] = next(iter(analysis_instances))
+
+    object_paths = {
+        label: f"/{instances_by_analysis[analysis]}/{object_name}"
+        for label, (analysis, object_name) in requested.items()
+    }
+    shards: dict[str, list[experimental.BinSeries]] = {
+        label: [] for label in requested
+    }
     for job in jobs:
-        configured = job.get("analysis_instances")
-        if isinstance(configured, Mapping):
-            instance = configured.get(analysis)
-            if instance is None:
-                raise CampaignError(
-                    f"Job {job.get('id')} has no Rivet instance for {analysis}"
-                )
-            analysis_instances.add(str(instance))
-        else:
-            primary = str(job.get("analysis_instance", analysis))
-            primary_name = primary.split(":", 1)[0]
-            if analysis != primary_name:
-                raise CampaignError(
-                    f"Legacy job {job.get('id')} has no companion analysis "
-                    f"instance for {analysis}"
-                )
-            analysis_instances.add(primary)
-    if len(analysis_instances) != 1:
-        raise CampaignError(
-            f"Shards disagree on their Rivet analysis instance: "
-            f"{sorted(analysis_instances)}"
+        loaded = experimental.read_histogram_series_many(
+            campaign_dir / str(job["output_yoda"]), object_paths
         )
-    analysis_instance = next(iter(analysis_instances))
-    shards = [experimental.read_histogram_series(
-        campaign_dir/str(job["output_yoda"]),
-        f"/{analysis_instance}/{object_name}",
-    )
-        for job in jobs]
-    return experimental.combine_shard_series(shards,
-        [int(job["events"]) for job in jobs])
+        for label, item in loaded.items():
+            shards[label].append(item)
+    event_counts = [int(job["events"]) for job in jobs]
+    return {
+        label: experimental.combine_shard_series(items, event_counts)
+        for label, items in shards.items()
+    }
 
 
 def _logical_sidis_groups(
@@ -1901,6 +2082,84 @@ def _angular_moment(
     )
 
 
+def _conditional_angular_moment(
+    samples: Mapping[str, experimental.BinSeries],
+    numerator_coefficients: Mapping[str, float],
+    denominator_coefficients: Mapping[str, float],
+    trigonometric: str,
+    fraction_edges: Sequence[float],
+    angle_bins: int,
+) -> dict[str, Any]:
+    """Project a flattened (fraction, angle) histogram with exact covariance."""
+
+    if angle_bins <= 0 or len(fraction_edges) < 2:
+        raise CampaignError("Conditional angular binning is empty")
+    first = next(iter(samples.values()))
+    fraction_bins = len(fraction_edges) - 1
+    expected_bins = fraction_bins * angle_bins
+    if len(first.values) != expected_bins:
+        raise CampaignError(
+            "Conditional angular histogram has "
+            f"{len(first.values)} bins, expected {expected_bins}"
+        )
+    for series in samples.values():
+        if not experimental._same_edges(first.edges, series.edges):
+            raise CampaignError(
+                "Conditional angular inputs have different flattened edges"
+            )
+
+    values: list[float | None] = []
+    errors: list[float | None] = []
+    for fraction_index in range(fraction_bins):
+        numerator = 0.0
+        denominator = 0.0
+        numerator_variance = 0.0
+        denominator_variance = 0.0
+        covariance = 0.0
+        for helicity, series in samples.items():
+            numerator_coefficient = float(
+                numerator_coefficients.get(helicity, 0.0)
+            )
+            denominator_coefficient = float(
+                denominator_coefficients.get(helicity, 0.0)
+            )
+            for angle_index in range(angle_bins):
+                flat_index = fraction_index * angle_bins + angle_index
+                centre = -math.pi + (
+                    float(angle_index) + 0.5
+                ) * 2.0 * math.pi / float(angle_bins)
+                harmonic = (
+                    math.cos(2.0 * centre)
+                    if trigonometric == "cos"
+                    else math.sin(2.0 * centre)
+                )
+                numerator_weight = 2.0 * numerator_coefficient * harmonic
+                denominator_weight = denominator_coefficient
+                content = series.values[flat_index]
+                variance = series.variances[flat_index]
+                numerator += numerator_weight * content
+                denominator += denominator_weight * content
+                numerator_variance += numerator_weight**2 * variance
+                denominator_variance += denominator_weight**2 * variance
+                covariance += (
+                    numerator_weight * denominator_weight * variance
+                )
+        value, error = experimental.ratio_with_covariance(
+            numerator,
+            numerator_variance,
+            denominator,
+            denominator_variance,
+            covariance,
+        )
+        values.append(value)
+        errors.append(error)
+    return {
+        "edges": [float(value) for value in fraction_edges],
+        "values": values,
+        "errors": errors,
+    }
+
+
 def _nested_ratio_prediction(
     numerator: experimental.BinSeries,
     denominator: experimental.BinSeries,
@@ -1933,6 +2192,8 @@ def _one_minus_prediction(prediction: Mapping[str, Any]) -> dict[str, Any]:
 def _mc_poljetshapes_prediction(
     samples_by_object: Mapping[str, Mapping[str, experimental.BinSeries]],
     angular_observables: Sequence[str],
+    conditional_angular_observables: Mapping[str, Mapping[str, Any]] | None = None,
+    support_observables: Sequence[str] = (),
 ) -> dict[str, dict[str, Any]]:
     """Build helicity spectra, normalized shapes, moments, and rate scans."""
 
@@ -2000,6 +2261,56 @@ def _mc_poljetshapes_prediction(
             output[f"R32_{label}"] = r32
             output[f"R43_{label}"] = r43
             output[f"ThirdJetVeto_{label}"] = _one_minus_prediction(r32)
+
+    support = set(support_observables)
+    for output_name in list(output):
+        if any(output_name.endswith("_" + name) for name in support):
+            del output[output_name]
+
+    uu_coefficients = {label: 0.25 for label in DENOMINATOR}
+    for output_name, definition in sorted(
+        (conditional_angular_observables or {}).items()
+    ):
+        raw_observable = str(definition["raw_observable"])
+        if raw_observable not in samples_by_object:
+            raise CampaignError(
+                f"Missing conditional angular input {raw_observable}"
+            )
+        fraction_edges = [
+            float(value) for value in definition["fraction_edges"]
+        ]
+        angle_bins = int(definition["angle_bins"])
+        samples = samples_by_object[raw_observable]
+        for label, numerator_coefficients, denominator_coefficients in (
+            ("UU", uu_coefficients, uu_coefficients),
+            ("LL", DELTA_SIGMA_LL_COEFFICIENTS, uu_coefficients),
+            *(
+                (
+                    helicity,
+                    {name: 1.0 if name == helicity else 0.0
+                     for name in DENOMINATOR},
+                    {name: 1.0 if name == helicity else 0.0
+                     for name in DENOMINATOR},
+                )
+                for helicity in DENOMINATOR
+            ),
+        ):
+            output[f"C2{label}_{output_name}"] = _conditional_angular_moment(
+                samples,
+                numerator_coefficients,
+                denominator_coefficients,
+                "cos",
+                fraction_edges,
+                angle_bins,
+            )
+            output[f"S2{label}_{output_name}"] = _conditional_angular_moment(
+                samples,
+                numerator_coefficients,
+                denominator_coefficients,
+                "sin",
+                fraction_edges,
+                angle_bins,
+            )
     return output
 
 
@@ -2142,8 +2453,19 @@ def _mc_poljetshapes_assessment(
     moment_differences: dict[str, Any] = {}
     baseline_effective: dict[str, dict[str, dict[str, float]]] = {}
     rare_effective: dict[str, dict[str, dict[str, float]]] = {}
-    baseline_names = ("dpsi12_j1_loose", "dpsi12_j2_loose")
-    rare_names = ("interjet_dpsi11_kt05", "bz_angle")
+    projection = measurement.get("statistics_projection", {})
+    baseline_names = tuple(
+        projection.get(
+            "baseline_observables",
+            ("dpsi12_j1_loose", "dpsi12_j2_loose"),
+        )
+    )
+    rare_names = tuple(
+        projection.get(
+            "rare_observables",
+            ("interjet_dpsi11_kt05", "bz_angle"),
+        )
+    )
 
     for channel_id, channel in measurement["channels"].items():
         nominal_key = ("nominal", channel_id, 0, 0, 1.0,
@@ -2213,7 +2535,19 @@ def _mc_poljetshapes_assessment(
         )
     )
     pilot_events = int(manifest["configuration"]["lo_events"])
-    candidates = (100_000_000, 250_000_000, 500_000_000)
+    candidates = tuple(
+        int(value)
+        for value in projection.get(
+            "candidate_events_per_helicity_family",
+            (100_000_000, 250_000_000, 500_000_000),
+        )
+    )
+    minimum_entries = float(
+        projection.get("minimum_effective_baseline_entries", 250_000)
+    )
+    maximum_moment_error_target = float(
+        projection.get("maximum_independent_on_off_A2_error", 0.002)
+    )
     tier_assessments: list[dict[str, Any]] = []
     selected_events: int | None = None
     baseline_values = [
@@ -2247,9 +2581,9 @@ def _mc_poljetshapes_assessment(
             else None
         )
         passes = (
-            minimum_effective >= 250_000.0
+            minimum_effective >= minimum_entries
             and maximum_moment_error is not None
-            and maximum_moment_error <= 0.002
+            and maximum_moment_error <= maximum_moment_error_target
         )
         tier_assessments.append(
             {
@@ -2264,13 +2598,30 @@ def _mc_poljetshapes_assessment(
 
     bounded_recommendation = selected_events or candidates[-1]
     tier_millions = bounded_recommendation // 1_000_000
-    shards = bounded_recommendation // 500_000
+    tier_label = (
+        f"{bounded_recommendation // 1_000_000_000}b"
+        if bounded_recommendation % 1_000_000_000 == 0
+        else f"{tier_millions}m"
+    )
+    events_per_shard = int(projection.get("events_per_shard", 500_000))
+    shards = bounded_recommendation // events_per_shard
+    production_seed_base = int(
+        projection.get("production_seed_base", 8307000)
+    )
+    production_tag_date = str(
+        projection.get("production_tag_date", "20260829")
+    )
+    production_tag_stem = str(
+        projection.get("production_tag_stem", "mc_poljetshapes_spin")
+    )
     command = (
         "python3 scripts/run_mc_poljetshapes_campaign.py full "
-        f"--tag mc_poljetshapes_spin_{tier_millions}m_20260829_v1 "
+        f"--tag {production_tag_stem}_{tier_label}_"
+        f"{production_tag_date}_v1 "
         "--families nominal,shower_spin_off "
         f"--lo-events {bounded_recommendation} --shards {shards} --jobs 100 "
-        "--seed-base 8307000 --plot-comparisons --include-diagnostics"
+        f"--seed-base {production_seed_base} "
+        "--plot-comparisons --include-diagnostics"
     )
     assessment = {
         "pilot_events_per_helicity_family": pilot_events,
@@ -2286,16 +2637,429 @@ def _mc_poljetshapes_assessment(
         ),
         "production_command": command,
         "criteria": {
-            "minimum_effective_baseline_entries_per_helicity_family": 250000,
-            "maximum_independent_on_off_A2UU_or_A2LL_error": 0.002,
+            "minimum_effective_baseline_entries_per_helicity_family": (
+                minimum_entries
+            ),
+            "maximum_independent_on_off_A2UU_or_A2LL_error": (
+                maximum_moment_error_target
+            ),
             "candidate_tiers_events": list(candidates),
         },
         "note": (
-            "Rare inter-jet and four-jet channels are reported separately and "
-            "do not force an event tier beyond 500M."
+            "Rare channels are reported separately and do not force an event "
+            "tier beyond the largest configured bounded candidate."
         ),
     }
     return assessment, comparison, ranking
+
+
+def _exclude_shard_series(
+    combined: experimental.BinSeries,
+    excluded: experimental.BinSeries,
+    total_events: int,
+    excluded_events: int,
+) -> experimental.BinSeries:
+    """Return the event-weighted combination with one shard removed."""
+
+    if not experimental._same_edges(combined.edges, excluded.edges):
+        raise CampaignError("Jackknife shard has different bin edges")
+    retained_events = total_events - excluded_events
+    if retained_events <= 0:
+        raise CampaignError("Cannot jackknife the only shard")
+    values = [
+        (
+            float(total_events) * combined.values[index]
+            - float(excluded_events) * excluded.values[index]
+        ) / float(retained_events)
+        for index in range(len(combined.values))
+    ]
+    variances = [
+        max(
+            0.0,
+            (
+                float(total_events)**2 * combined.variances[index]
+                - float(excluded_events)**2 * excluded.variances[index]
+            ) / float(retained_events)**2,
+        )
+        for index in range(len(combined.values))
+    ]
+    return experimental.BinSeries(
+        list(combined.edges), values, variances
+    )
+
+
+def _jackknife_matrix(
+    replicates: Sequence[Sequence[float | None]],
+) -> dict[str, Any]:
+    """Return a delete-one-block covariance and correlation matrix."""
+
+    try:
+        import numpy as np
+    except ImportError as exc:
+        raise CampaignError(
+            "NumPy is required for shard-block covariance"
+        ) from exc
+    if len(replicates) < 3:
+        raise CampaignError("At least three shard blocks are required")
+    array = np.asarray(
+        [
+            [np.nan if value is None else float(value) for value in row]
+            for row in replicates
+        ],
+        dtype=float,
+    )
+    active = np.all(np.isfinite(array), axis=0)
+    size = array.shape[1]
+    covariance_full: list[list[float | None]] = [
+        [None for _ in range(size)] for _ in range(size)
+    ]
+    correlation_full: list[list[float | None]] = [
+        [None for _ in range(size)] for _ in range(size)
+    ]
+    errors: list[float | None] = [None for _ in range(size)]
+    active_indices = np.flatnonzero(active)
+    if active_indices.size:
+        selected = array[:, active]
+        centred = selected - np.mean(selected, axis=0)
+        blocks = float(array.shape[0])
+        covariance = (blocks - 1.0) / blocks * centred.T.dot(centred)
+        diagonal = np.maximum(np.diag(covariance), 0.0)
+        denominator = np.sqrt(np.outer(diagonal, diagonal))
+        correlation = np.divide(
+            covariance,
+            denominator,
+            out=np.zeros_like(covariance),
+            where=denominator > 0.0,
+        )
+        for local_i, global_i in enumerate(active_indices):
+            errors[int(global_i)] = math.sqrt(
+                max(0.0, float(diagonal[local_i]))
+            )
+            for local_j, global_j in enumerate(active_indices):
+                covariance_full[int(global_i)][int(global_j)] = float(
+                    covariance[local_i, local_j]
+                )
+                correlation_full[int(global_i)][int(global_j)] = float(
+                    correlation[local_i, local_j]
+                )
+    return {
+        "active_bins": [bool(value) for value in active.tolist()],
+        "errors": errors,
+        "covariance": covariance_full,
+        "correlation": correlation_full,
+    }
+
+
+def _mc_poljetshapes_shard_covariance(
+    measurement: Mapping[str, Any],
+    groups: Mapping[
+        tuple[Any, ...], dict[str, list[Mapping[str, Any]]]
+    ],
+    campaign_dir: Path,
+    raw_samples: Mapping[
+        tuple[Any, ...], Mapping[str, Mapping[str, experimental.BinSeries]]
+    ],
+    predictions: Mapping[tuple[Any, ...], Mapping[str, Any]],
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    """Estimate selected full-result covariances from delete-one shard blocks."""
+
+    configuration = measurement.get("shard_block_covariance")
+    if not isinstance(configuration, Mapping):
+        return {}, []
+    raw_names = tuple(str(value) for value in configuration["raw_observables"])
+    output_names = tuple(
+        str(value) for value in configuration["prediction_observables"]
+    )
+    payload: dict[str, Any] = {
+        "method": "delete-one-common-shard jackknife",
+        "block_definition": (
+            "one equal-ordinal shard from each independent physical-helicity "
+            "sample in a family"
+        ),
+        "raw_observables": list(raw_names),
+        "prediction_observables": list(output_names),
+        "families": {},
+        "spin_on_minus_off": {},
+    }
+    csv_rows: list[dict[str, Any]] = []
+    channel_id = next(iter(measurement["channels"]))
+    channel = measurement["channels"][channel_id]
+    central_keys: dict[str, tuple[Any, ...]] = {}
+
+    for family_id in ("nominal", "shower_spin_off"):
+        if family_id not in measurement["families"]:
+            continue
+        key = (
+            family_id,
+            channel_id,
+            0,
+            0,
+            1.0,
+            measurement["families"][family_id]["mpi"],
+        )
+        if key not in groups or key not in raw_samples or key not in predictions:
+            continue
+        central_keys[family_id] = key
+        helicity_jobs = groups[key]
+        jobs_by_helicity = {
+            helicity: {int(job["shard"]): job for job in jobs}
+            for helicity, jobs in helicity_jobs.items()
+        }
+        shard_sets = [set(jobs) for jobs in jobs_by_helicity.values()]
+        if not shard_sets or any(shards != shard_sets[0] for shards in shard_sets[1:]):
+            raise CampaignError(
+                f"{family_id} physical helicities have different shard ordinals"
+            )
+        block_ids = sorted(shard_sets[0])
+        if len(block_ids) < 3:
+            payload["families"][family_id] = {
+                "status": "insufficient_common_blocks",
+                "blocks": len(block_ids),
+            }
+            continue
+
+        event_vectors = {
+            tuple(
+                int(jobs_by_helicity[helicity][block]["events"])
+                for helicity in DENOMINATOR
+            )
+            for block in block_ids
+        }
+        if (
+            len(event_vectors) != 1
+            or len(set(next(iter(event_vectors)))) != 1
+        ):
+            payload["families"][family_id] = {
+                "status": "unequal_block_sizes_not_supported",
+                "blocks": len(block_ids),
+                "event_vectors": [list(values) for values in sorted(event_vectors)],
+            }
+            continue
+
+        total_events = {
+            helicity: sum(int(job["events"]) for job in jobs.values())
+            for helicity, jobs in jobs_by_helicity.items()
+        }
+        shard_cache: dict[
+            str, dict[str, dict[int, experimental.BinSeries]]
+        ] = {
+            raw_name: {helicity: {} for helicity in DENOMINATOR}
+            for raw_name in raw_names
+        }
+        requested: dict[str, tuple[str, str]] = {}
+        for raw_name in raw_names:
+            if raw_name not in raw_samples[key]:
+                raise CampaignError(
+                    f"Shard covariance input {raw_name} is not configured"
+                )
+            object_spec = channel["raw_objects"][raw_name]
+            source_analysis, object_name = _raw_object_source(
+                measurement, object_spec
+            )
+            requested[raw_name] = (source_analysis, object_name)
+        for helicity in DENOMINATOR:
+            for block_id in block_ids:
+                loaded = _load_series_many(
+                    [jobs_by_helicity[helicity][block_id]],
+                    campaign_dir,
+                    requested,
+                )
+                for raw_name, item in loaded.items():
+                    shard_cache[raw_name][helicity][block_id] = item
+
+        replicates: dict[str, list[list[float | None]]] = {
+            name: [] for name in output_names
+        }
+        for block_id in block_ids:
+            leave_one_out: dict[
+                str, dict[str, experimental.BinSeries]
+            ] = {}
+            for raw_name in raw_names:
+                leave_one_out[raw_name] = {}
+                for helicity in DENOMINATOR:
+                    job = jobs_by_helicity[helicity][block_id]
+                    leave_one_out[raw_name][helicity] = _exclude_shard_series(
+                        raw_samples[key][raw_name][helicity],
+                        shard_cache[raw_name][helicity][block_id],
+                        total_events[helicity],
+                        int(job["events"]),
+                    )
+            replicate_prediction = _mc_poljetshapes_prediction(
+                leave_one_out,
+                (),
+                channel.get("conditional_angular_observables", {}),
+                channel.get("support_observables", []),
+            )
+            for output_name in output_names:
+                if output_name not in replicate_prediction:
+                    raise CampaignError(
+                        f"Shard covariance output {output_name} was not produced"
+                    )
+                replicates[output_name].append(
+                    list(replicate_prediction[output_name]["values"])
+                )
+
+        family_payload: dict[str, Any] = {
+            "status": "complete",
+            "blocks": len(block_ids),
+            "block_ids": block_ids,
+            "equal_events_per_block": True,
+            "observables": {},
+        }
+        for output_name in output_names:
+            matrix = _jackknife_matrix(replicates[output_name])
+            prediction = predictions[key][output_name]
+            result = {
+                "edges": list(prediction["edges"]),
+                "values": list(prediction["values"]),
+                **matrix,
+            }
+            family_payload["observables"][output_name] = result
+            for index, row in enumerate(matrix["covariance"]):
+                for column, covariance in enumerate(row):
+                    csv_rows.append(
+                        {
+                            "sample": family_id,
+                            "observable": output_name,
+                            "bin_i": index,
+                            "bin_j": column,
+                            "covariance": covariance,
+                            "correlation": matrix["correlation"][index][column],
+                        }
+                    )
+        payload["families"][family_id] = family_payload
+
+    if {"nominal", "shower_spin_off"} <= set(central_keys):
+        nominal_family = payload["families"].get("nominal", {})
+        control_family = payload["families"].get("shower_spin_off", {})
+        if (
+            nominal_family.get("status") == "complete"
+            and control_family.get("status") == "complete"
+        ):
+            try:
+                import numpy as np
+            except ImportError as exc:
+                raise CampaignError(
+                    "NumPy is required for shard-block covariance"
+                ) from exc
+            nominal_key = central_keys["nominal"]
+            control_key = central_keys["shower_spin_off"]
+            for output_name in output_names:
+                nominal_matrix = nominal_family["observables"][output_name]
+                control_matrix = control_family["observables"][output_name]
+                size = len(nominal_matrix["values"])
+                covariance: list[list[float | None]] = [
+                    [None for _ in range(size)] for _ in range(size)
+                ]
+                correlation: list[list[float | None]] = [
+                    [None for _ in range(size)] for _ in range(size)
+                ]
+                active = [
+                    bool(nominal_matrix["active_bins"][index])
+                    and bool(control_matrix["active_bins"][index])
+                    and predictions[nominal_key][output_name]["values"][index]
+                    is not None
+                    and predictions[control_key][output_name]["values"][index]
+                    is not None
+                    and math.isfinite(float(
+                        predictions[nominal_key][output_name]["values"][index]
+                    ))
+                    and math.isfinite(float(
+                        predictions[control_key][output_name]["values"][index]
+                    ))
+                    for index in range(size)
+                ]
+                active_indices = [
+                    index for index, keep in enumerate(active) if keep
+                ]
+                if active_indices:
+                    dense = np.asarray(
+                        [
+                            [
+                                float(nominal_matrix["covariance"][i][j])
+                                + float(control_matrix["covariance"][i][j])
+                                for j in active_indices
+                            ]
+                            for i in active_indices
+                        ],
+                        dtype=float,
+                    )
+                    diagonal = np.maximum(np.diag(dense), 0.0)
+                    denominator = np.sqrt(np.outer(diagonal, diagonal))
+                    dense_correlation = np.divide(
+                        dense,
+                        denominator,
+                        out=np.zeros_like(dense),
+                        where=denominator > 0.0,
+                    )
+                    for local_i, global_i in enumerate(active_indices):
+                        for local_j, global_j in enumerate(active_indices):
+                            covariance[global_i][global_j] = float(
+                                dense[local_i, local_j]
+                            )
+                            correlation[global_i][global_j] = float(
+                                dense_correlation[local_i, local_j]
+                            )
+                    difference = np.asarray(
+                        [
+                            float(predictions[nominal_key][output_name]["values"][i])
+                            - float(predictions[control_key][output_name]["values"][i])
+                            for i in active_indices
+                        ],
+                        dtype=float,
+                    )
+                    inverse = np.linalg.pinv(
+                        dense, hermitian=True, rcond=1.0e-12
+                    )
+                    chi2 = float(difference.dot(inverse).dot(difference))
+                    rank = int(np.linalg.matrix_rank(dense))
+                else:
+                    chi2 = None
+                    rank = 0
+                difference_values = [
+                    (
+                        None
+                        if predictions[nominal_key][output_name]["values"][index]
+                        is None
+                        or predictions[control_key][output_name]["values"][index]
+                        is None
+                        else float(
+                            predictions[nominal_key][output_name]["values"][index]
+                        )
+                        - float(
+                            predictions[control_key][output_name]["values"][index]
+                        )
+                    )
+                    for index in range(size)
+                ]
+                payload["spin_on_minus_off"][output_name] = {
+                    "edges": list(
+                        predictions[nominal_key][output_name]["edges"]
+                    ),
+                    "values": difference_values,
+                    "active_bins": active,
+                    "covariance": covariance,
+                    "correlation": correlation,
+                    "chi2": chi2,
+                    "rank": rank,
+                    "interpretation": (
+                        "independent-family covariance sum; chi2 uses the "
+                        "Moore-Penrose inverse"
+                    ),
+                }
+                for index, row in enumerate(covariance):
+                    for column, value in enumerate(row):
+                        csv_rows.append(
+                            {
+                                "sample": "spin_on_minus_off",
+                                "observable": output_name,
+                                "bin_i": index,
+                                "bin_j": column,
+                                "covariance": value,
+                                "correlation": correlation[index][column],
+                            }
+                        )
+    return payload, csv_rows
 
 
 def _apply_star_display_binning(
@@ -2393,6 +3157,18 @@ def _reference_path(measurement: Mapping[str, Any], observable: str,
                     )
                     if definition.get("angular"):
                         return f"/{measurement['analysis']['name']}/{observable}"
+            conditional_match = re.match(
+                r"^(C2|S2)(UU|LL|PP|PM|MP|MM)_(.+)$", observable
+            )
+            if conditional_match:
+                conditional_name = conditional_match.group(3)
+                if any(
+                    conditional_name in channel.get(
+                        "conditional_angular_observables", {}
+                    )
+                    for channel in measurement["channels"].values()
+                ):
+                    return f"/{measurement['analysis']['name']}/{observable}"
             if re.match(r"^(R32|R43|ThirdJetVeto)_(UU|PP|PM|MP|MM)$",
                         observable):
                 return f"/{measurement['analysis']['name']}/{observable}"
@@ -3797,19 +4573,38 @@ def postprocess_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> 
         if set(helicity_jobs) != required:
             raise CampaignError(f"Incomplete helicity matrix for {_variation_id(key)}")
         channel_spec = measurement["channels"][channel]
-        object_names = (channel_spec.get("raw_objects") or
-                        {"yield": channel_spec["raw_object"]})
-        objects: dict[str, Mapping[str, experimental.BinSeries]] = {}
-        for observable, object_spec in object_names.items():
-            source_analysis, object_name = _raw_object_source(
-                measurement, object_spec
-            )
-            objects[observable] = {
-                helicity: _load_series(
-                    jobs, campaign_dir, source_analysis, object_name
+        object_names = (
+            channel_spec.get("raw_objects")
+            or {"yield": channel_spec["raw_object"]}
+        )
+        statistic_names = channel_spec.get("statistics_objects", {})
+        requested = {
+            **{
+                f"raw::{observable}": _raw_object_source(
+                    measurement, object_spec
                 )
-                for helicity, jobs in helicity_jobs.items()
+                for observable, object_spec in object_names.items()
+            },
+            **{
+                f"stat::{statistic}": _raw_object_source(
+                    measurement, object_spec
+                )
+                for statistic, object_spec in statistic_names.items()
+            },
+        }
+        loaded_by_helicity = {
+            helicity: _load_series_many(
+                jobs, campaign_dir, requested
+            )
+            for helicity, jobs in helicity_jobs.items()
+        }
+        objects: dict[str, Mapping[str, experimental.BinSeries]] = {
+            observable: {
+                helicity: loaded[f"raw::{observable}"]
+                for helicity, loaded in loaded_by_helicity.items()
             }
+            for observable in object_names
+        }
         if (measurement["process_kind"] == "polarized_pp_jets" and
                 measurement["families"][family].get("observable_level") == "hard_parton"):
             for helicity, jobs in helicity_jobs.items():
@@ -3822,19 +4617,13 @@ def postprocess_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> 
                         f"{_variation_id(key)}/{helicity}"
                     )
         raw_samples[key] = objects
-        statistics: dict[str, Mapping[str, experimental.BinSeries]] = {}
-        for statistic, object_spec in channel_spec.get(
-            "statistics_objects", {}
-        ).items():
-            source_analysis, object_name = _raw_object_source(
-                measurement, object_spec
-            )
-            statistics[statistic] = {
-                helicity: _load_series(
-                    jobs, campaign_dir, source_analysis, object_name
-                )
-                for helicity, jobs in helicity_jobs.items()
+        statistics: dict[str, Mapping[str, experimental.BinSeries]] = {
+            statistic: {
+                helicity: loaded[f"stat::{statistic}"]
+                for helicity, loaded in loaded_by_helicity.items()
             }
+            for statistic in statistic_names
+        }
         raw_statistics[key] = statistics
         if required != set(DENOMINATOR):
             continue
@@ -3854,6 +4643,8 @@ def postprocess_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> 
             predictions[key] = _mc_poljetshapes_prediction(
                 objects,
                 channel_spec.get("angular_observables", []),
+                channel_spec.get("conditional_angular_observables", {}),
+                channel_spec.get("support_observables", []),
             )
         else:
             raise CampaignError(f"Unknown postprocessor {measurement['postprocessor']}")
@@ -3903,6 +4694,19 @@ def postprocess_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> 
             sensitivity_ranking,
         ) = _mc_poljetshapes_assessment(
             measurement, predictions, raw_samples, manifest
+        )
+    shard_covariance_summary: dict[str, Any] = {}
+    shard_covariance_rows: list[dict[str, Any]] = []
+    if measurement["postprocessor"] == "mc_poljetshapes":
+        (
+            shard_covariance_summary,
+            shard_covariance_rows,
+        ) = _mc_poljetshapes_shard_covariance(
+            measurement,
+            groups,
+            campaign_dir,
+            raw_samples,
+            predictions,
         )
     yoda = experimental._import_yoda()
     include_diagnostics = bool(
@@ -4071,6 +4875,28 @@ def postprocess_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> 
 
     output_dir = campaign_dir/"postprocess"
     output_dir.mkdir(parents=True, exist_ok=True)
+    if shard_covariance_summary:
+        experimental.atomic_write_json(
+            output_dir / "shard-block-covariance.json",
+            {
+                "measurement": measurement["id"],
+                "tag": args.tag,
+                **shard_covariance_summary,
+            },
+        )
+        if shard_covariance_rows:
+            with (output_dir / "shard-block-covariance.csv").open(
+                "w", encoding="utf-8", newline=""
+            ) as stream:
+                writer = csv.DictWriter(
+                    stream,
+                    fieldnames=(
+                        "sample", "observable", "bin_i", "bin_j",
+                        "covariance", "correlation",
+                    ),
+                )
+                writer.writeheader()
+                writer.writerows(shard_covariance_rows)
     prediction_path = output_dir/"prediction.yoda"
     prediction_entries: list[dict[str, str]] = []
     primary_prediction_path: Path | None = None
@@ -4139,21 +4965,30 @@ def postprocess_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> 
                 writer.writerows(sensitivity_ranking)
         moment_rows: list[dict[str, Any]] = []
         for observable, prediction in sorted(comparison_predictions.items()):
-            if not observable.startswith(("A2UU_", "A2LL_", "B2UU_", "B2LL_")):
+            if not observable.startswith(
+                (
+                    "A2UU_", "A2LL_", "B2UU_", "B2LL_",
+                    "C2UU_", "C2LL_", "S2UU_", "S2LL_",
+                )
+            ):
                 continue
-            value = prediction["values"][0]
-            error = prediction["errors"][0]
-            moment_rows.append(
-                {
-                    "observable": observable,
-                    "on_minus_off": value,
-                    "independent_sample_error": error,
-                    "significance": (
-                        None if value is None or error in (None, 0.0)
-                        else float(value) / float(error)
-                    ),
-                }
-            )
+            for index, (value, error) in enumerate(
+                zip(prediction["values"], prediction["errors"])
+            ):
+                moment_rows.append(
+                    {
+                        "observable": observable,
+                        "bin": index + 1,
+                        "low": prediction["edges"][index],
+                        "high": prediction["edges"][index + 1],
+                        "on_minus_off": value,
+                        "independent_sample_error": error,
+                        "significance": (
+                            None if value is None or error in (None, 0.0)
+                            else float(value) / float(error)
+                        ),
+                    }
+                )
         if moment_rows:
             with (output_dir / "moment-differences.csv").open(
                 "w", encoding="utf-8", newline=""
@@ -4221,6 +5056,7 @@ def postprocess_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> 
             "differences": comparison_predictions,
         },
         "statistics_projection": shape_assessment,
+        "shard_block_covariance": shard_covariance_summary,
     }
     experimental.atomic_write_json(output_dir/"summary.json", summary)
     if central_rows:
@@ -4255,6 +5091,14 @@ def postprocess_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> 
         manifest["postprocess"]["statistics_projection"] = (
             "postprocess/statistics-projection.json"
         )
+    if shard_covariance_summary:
+        manifest["postprocess"]["shard_block_covariance"] = (
+            "postprocess/shard-block-covariance.json"
+        )
+        if shard_covariance_rows:
+            manifest["postprocess"]["shard_block_covariance_csv"] = (
+                "postprocess/shard-block-covariance.csv"
+            )
     manifest["updated_at"] = experimental.utc_now()
     manifest["history"].append({"at": experimental.utc_now(), "action": "postprocess"})
     experimental.atomic_write_json(manifest_path, manifest)
@@ -4353,6 +5197,7 @@ def _write_mc_poljetshapes_ratio_yoda(
             ),
             "excluded_signed_or_zero_crossing_prefixes": [
                 "ALL_", "DeltaSigmaLL_", "A2UU_", "A2LL_", "B2UU_", "B2LL_",
+                "C2UU_", "C2LL_", "S2UU_", "S2LL_",
             ],
             "ratios": ratios,
         },
@@ -4483,6 +5328,61 @@ def _write_mc_poljetshapes_focus_index(
             "No recommended MC_POLJETSHAPES plots were rendered for the focus page"
         )
 
+    covariance_panel = ""
+    covariance_path = (
+        output.parent.parent / "postprocess" / "shard-block-covariance.json"
+    )
+    if covariance_path.is_file():
+        covariance = _load_json(covariance_path)
+        rows: list[str] = []
+        for observable, result in sorted(
+            covariance.get("spin_on_minus_off", {}).items()
+        ):
+            chi2 = result.get("chi2")
+            rank = int(result.get("rank", 0))
+            rows.append(
+                "<tr><td>"
+                + html.escape(str(observable))
+                + "</td><td>"
+                + ("&mdash;" if chi2 is None else f"{float(chi2):.3g}")
+                + "</td><td>"
+                + str(rank)
+                + "</td><td>"
+                + (
+                    "&mdash;"
+                    if chi2 is None or rank == 0
+                    else f"{float(chi2)/rank:.3g}"
+                )
+                + "</td></tr>"
+            )
+        family_status = ", ".join(
+            f"{name}: {details.get('status', 'unknown')} "
+            f"({details.get('blocks', 0)} blocks)"
+            for name, details in sorted(covariance.get("families", {}).items())
+        )
+        covariance_panel = (
+            "<section><h2>Shard-block covariance audit</h2><p>"
+            "Delete-one common-shard jackknife covariance is used for the "
+            "resolved-radiation spectra, rate scans, tails, and conditional "
+            "moments. Spin-on and spin-off matrices are added as independent "
+            "samples. "
+            + html.escape(family_status)
+            + ".</p>"
+            + (
+                '<table><thead><tr><th>Observable</th><th>chi2</th>'
+                '<th>rank</th><th>chi2/rank</th></tr></thead><tbody>'
+                + "".join(rows)
+                + "</tbody></table>"
+                if rows
+                else "<p>The covariance product is present, but a complete "
+                     "two-family difference matrix was not available.</p>"
+            )
+            + '<p><a href="../../../postprocess/shard-block-covariance.json">'
+              "Full covariance JSON</a> &middot; "
+              '<a href="../../../postprocess/shard-block-covariance.csv">'
+              "flat covariance CSV</a></p></section>"
+        )
+
     title = f"{measurement['title']} — recommended comparisons"
     document = f"""<!doctype html>
 <html lang="en">
@@ -4500,6 +5400,9 @@ def _write_mc_poljetshapes_focus_index(
     .panel h4 {{ margin-bottom: 0.4rem; }}
     .panel img {{ height: auto; max-width: 100%; }}
     .missing {{ background: #fafafa; border: 1px dashed #bbb; padding: 1rem; }}
+    table {{ border-collapse: collapse; width: 100%; }}
+    th, td {{ border: 1px solid #ccc; padding: 0.45rem; text-align: left; }}
+    th {{ background: #f3f6f8; }}
     @media (max-width: 850px) {{ .panels {{ grid-template-columns: 1fr; }} }}
   </style>
 </head>
@@ -4517,6 +5420,7 @@ def _write_mc_poljetshapes_focus_index(
     without a coherent angular pattern and the null tests.</p>
   </div>
   <p>{rendered_cards} recommended plot pairs are shown below.</p>
+  {covariance_panel}
   {''.join(sections)}
 </body>
 </html>
