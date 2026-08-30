@@ -308,6 +308,13 @@ class MCPOLJETSHAPESCampaignTests(unittest.TestCase):
                 ),
                 Path("MC_POLJETSHAPES/ShapeUU_dpsi12_j1_loose.png"),
                 Path("ratios/MC_POLJETSHAPES/ShapeUU_dpsi12_j1_loose.png"),
+                Path("MC_POLJETSHAPES/SigmaUU_jet3_pt.png"),
+                Path("ratios/MC_POLJETSHAPES/SigmaUU_jet3_pt.png"),
+                Path("MC_POLJETSHAPES/ALL_jet4_pt.png"),
+                Path(
+                    "MC_POLJETSHAPES/COMPARISON/"
+                    "OnMinusOff_ALL_jet4_pt.png"
+                ),
             )
             for relative in assets:
                 path = output / relative
@@ -320,13 +327,41 @@ class MCPOLJETSHAPESCampaignTests(unittest.TestCase):
             root = (output / "index.html").read_text(encoding="utf-8")
             self.assertIn("Headline splitting-plane moments", rendered)
             self.assertIn("Headline splitting-plane shapes", rendered)
+            self.assertIn("Resolved third- and fourth-jet spectra", rendered)
+            self.assertIn("Third-jet pT: UU cross section", rendered)
+            self.assertIn("Fourth-jet pT: A_LL", rendered)
             self.assertIn("Spin on / spin off", rendered)
             self.assertIn("propagate both independent Monte Carlo errors", rendered)
             self.assertIn(
                 "../ratios/MC_POLJETSHAPES/ShapeUU_dpsi12_j1_loose.png",
                 rendered,
             )
+            self.assertIn(
+                "../ratios/MC_POLJETSHAPES/SigmaUU_jet3_pt.png",
+                rendered,
+            )
+            self.assertIn(
+                "../MC_POLJETSHAPES/COMPARISON/OnMinusOff_ALL_jet4_pt.png",
+                rendered,
+            )
             self.assertIn("focus/index.html", root)
+
+    def test_focused_gallery_promotes_resolved_jet_spectra(self) -> None:
+        focused = {
+            stem
+            for section in campaign.MC_POLJETSHAPES_FOCUS_SECTIONS
+            for stem, _, _ in section["plots"]
+        }
+        self.assertTrue(
+            {
+                "SigmaUU_jet3_pt",
+                "DeltaSigmaLL_jet3_pt",
+                "ALL_jet3_pt",
+                "SigmaUU_jet4_pt",
+                "DeltaSigmaLL_jet4_pt",
+                "ALL_jet4_pt",
+            }.issubset(focused)
+        )
 
     def test_ratio_plot_script_gets_linear_scale_and_unity_line(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -367,7 +402,9 @@ class MCPOLJETSHAPESCampaignTests(unittest.TestCase):
         )
         self.assertIn("ShapeUU_", campaign.MC_POLJETSHAPES_RATIO_PREFIXES)
         workflow = (ROOT / "docs" / "mc-poljetshapes-workflow.md").read_text()
+        normalized_workflow = " ".join(workflow.split())
         self.assertIn("plots/html/focus/index.html", workflow)
+        self.assertIn("third- and fourth-jet", normalized_workflow)
         self.assertIn("run_mc_poljetshapes_campaign.py plot", workflow)
 
 

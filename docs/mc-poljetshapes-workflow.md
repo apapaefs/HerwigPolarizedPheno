@@ -64,9 +64,12 @@ In addition to the complete gallery, plotting writes
 main `index.html` and places each recommended red/blue overlay beside either
 its spin-on/spin-off ratio or its on-minus-off difference. Its fixed hierarchy
 covers the headline Delta-psi moments and shapes, independent angular
-confirmations, sine/null tests, radiation rates, and inclusive controls. The
-selection is fixed in code and is not chosen from the noisy pilot sensitivity
-ranking.
+confirmations, sine/null tests, the UU, Delta-sigma LL, and A_LL third- and
+fourth-jet transverse-momentum spectra, radiation-rate scans, and inclusive
+controls. The resolved-jet spectra are kept together so a change in the amount
+of additional radiation can be distinguished from a longitudinal-spin
+asymmetry. The selection is fixed in code and is not chosen from the noisy
+pilot sensitivity ranking.
 
 ## Pilot
 

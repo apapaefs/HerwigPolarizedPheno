@@ -184,7 +184,33 @@ MC_POLJETSHAPES_FOCUS_SECTIONS = (
         ),
     },
     {
-        "title": "5. Radiation-rate cross-checks",
+        "title": "5. Resolved third- and fourth-jet spectra",
+        "why": (
+            "These are the direct particle-level analogues of the resolved-"
+            "radiation hardness tests that were useful in polarized DIS.  "
+            "The UU spectrum tests the amount of additional radiation, while "
+            "Delta-sigma LL and A_LL distinguish that from a longitudinal-"
+            "spin asymmetry."
+        ),
+        "plots": (
+            ("SigmaUU_jet3_pt", "Third-jet pT: UU cross section", "ratio"),
+            (
+                "DeltaSigmaLL_jet3_pt",
+                "Third-jet pT: Delta-sigma LL",
+                "difference",
+            ),
+            ("ALL_jet3_pt", "Third-jet pT: A_LL", "difference"),
+            ("SigmaUU_jet4_pt", "Fourth-jet pT: UU cross section", "ratio"),
+            (
+                "DeltaSigmaLL_jet4_pt",
+                "Fourth-jet pT: Delta-sigma LL",
+                "difference",
+            ),
+            ("ALL_jet4_pt", "Fourth-jet pT: A_LL", "difference"),
+        ),
+    },
+    {
+        "title": "6. Radiation-rate scans",
         "why": (
             "These test indirect changes in resolved radiation.  They are "
             "secondary to the angular observables because shower spin "
@@ -208,7 +234,7 @@ MC_POLJETSHAPES_FOCUS_SECTIONS = (
         ),
     },
     {
-        "title": "6. Inclusive controls",
+        "title": "7. Inclusive controls",
         "why": (
             "Large changes in these broad spectra would be surprising and "
             "should first trigger a configuration, normalization, or "
