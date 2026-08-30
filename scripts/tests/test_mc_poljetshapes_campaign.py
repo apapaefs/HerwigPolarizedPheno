@@ -7,6 +7,7 @@ import argparse
 import copy
 import math
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -229,6 +230,118 @@ class MCPOLJETSHAPESCampaignTests(unittest.TestCase):
         self.assertIn("A2UU_dpsi12_j1_loose", differences)
         self.assertTrue(ranking)
 
+    def test_plot_ratio_propagates_both_independent_sample_errors(self) -> None:
+        ratio = campaign._independent_ratio(
+            {
+                "edges": [0.0, 1.0, 2.0, 3.0],
+                "values": [2.0, 1.0, 3.0],
+                "errors": [0.2, 0.1, 0.3],
+            },
+            {
+                "edges": [0.0, 1.0, 2.0, 3.0],
+                "values": [1.0, 0.0, 2.0],
+                "errors": [0.1, 0.2, 0.4],
+            },
+        )
+        self.assertAlmostEqual(ratio["values"][0], 2.0)
+        self.assertAlmostEqual(ratio["errors"][0], math.sqrt(0.08))
+        self.assertIsNone(ratio["values"][1])
+        self.assertIsNone(ratio["errors"][1])
+        self.assertAlmostEqual(ratio["values"][2], 1.5)
+        self.assertAlmostEqual(ratio["errors"][2], math.sqrt(0.1125))
+
+    def test_plot_ratio_selection_excludes_signed_and_moment_objects(self) -> None:
+        nominal_key = campaign._variation_id(
+            ("nominal", "combined", 0, 0, 1.0, "off")
+        )
+        control_key = campaign._variation_id(
+            ("shower_spin_off", "combined", 0, 0, 1.0, "off")
+        )
+        prediction = {
+            "edges": [0.0, 1.0], "values": [2.0], "errors": [0.2]
+        }
+        control = {
+            "edges": [0.0, 1.0], "values": [1.0], "errors": [0.1]
+        }
+        ratios = campaign._mc_poljetshapes_plot_ratios(
+            self.measurement,
+            {
+                "variations": {
+                    nominal_key: {
+                        "SigmaUU_dpsi12_j1_loose": prediction,
+                        "ShapeUU_dpsi12_j1_loose": prediction,
+                        "DeltaSigmaLL_dpsi12_j1_loose": prediction,
+                        "ALL_dpsi12_j1_loose": prediction,
+                        "A2UU_dpsi12_j1_loose": prediction,
+                    },
+                    control_key: {
+                        "SigmaUU_dpsi12_j1_loose": control,
+                        "ShapeUU_dpsi12_j1_loose": control,
+                        "DeltaSigmaLL_dpsi12_j1_loose": control,
+                        "ALL_dpsi12_j1_loose": control,
+                        "A2UU_dpsi12_j1_loose": control,
+                    },
+                }
+            },
+        )
+        self.assertEqual(
+            set(ratios),
+            {
+                "SigmaUU_dpsi12_j1_loose",
+                "ShapeUU_dpsi12_j1_loose",
+            },
+        )
+        self.assertEqual(ratios["SigmaUU_dpsi12_j1_loose"]["values"], [2.0])
+
+    def test_focused_gallery_links_overlays_differences_and_ratios(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            output = Path(temporary)
+            (output / "index.html").write_text(
+                "<html><body><h1>Complete gallery</h1></body></html>",
+                encoding="utf-8",
+            )
+            assets = (
+                Path("MC_POLJETSHAPES/A2UU_dpsi12_j1_loose.png"),
+                Path(
+                    "MC_POLJETSHAPES/COMPARISON/"
+                    "OnMinusOff_A2UU_dpsi12_j1_loose.png"
+                ),
+                Path("MC_POLJETSHAPES/ShapeUU_dpsi12_j1_loose.png"),
+                Path("ratios/MC_POLJETSHAPES/ShapeUU_dpsi12_j1_loose.png"),
+            )
+            for relative in assets:
+                path = output / relative
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(b"nonempty")
+            focus = campaign._write_mc_poljetshapes_focus_index(
+                output, self.measurement
+            )
+            rendered = focus.read_text(encoding="utf-8")
+            root = (output / "index.html").read_text(encoding="utf-8")
+            self.assertIn("Headline splitting-plane moments", rendered)
+            self.assertIn("Headline splitting-plane shapes", rendered)
+            self.assertIn("Spin on / spin off", rendered)
+            self.assertIn("propagate both independent Monte Carlo errors", rendered)
+            self.assertIn(
+                "../ratios/MC_POLJETSHAPES/ShapeUU_dpsi12_j1_loose.png",
+                rendered,
+            )
+            self.assertIn("focus/index.html", root)
+
+    def test_ratio_plot_script_gets_linear_scale_and_unity_line(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            script = Path(temporary) / "ratio.py"
+            script.write_text(
+                "ax_yScale = 'log'\n"
+                "\nlegend_handles = dict() # keep track of handles for the legend\n",
+                encoding="utf-8",
+            )
+            campaign._configure_mc_poljetshapes_ratio_script(script)
+            configured = script.read_text(encoding="utf-8")
+            self.assertIn("ax_yScale = 'linear'", configured)
+            self.assertIn("ax.axhline(1.0", configured)
+            self.assertIn("spin-on/spin-off ratio presentation", configured)
+
     def test_dedicated_runner_pins_measurement(self) -> None:
         self.assertEqual(
             wrapper.pinned_arguments(["full", "--tag", "example"]),
@@ -252,6 +365,10 @@ class MCPOLJETSHAPESCampaignTests(unittest.TestCase):
             self.measurement["families"]["shower_spin_off"]["plot_options"]["LineColor"],
             "#0077BB",
         )
+        self.assertIn("ShapeUU_", campaign.MC_POLJETSHAPES_RATIO_PREFIXES)
+        workflow = (ROOT / "docs" / "mc-poljetshapes-workflow.md").read_text()
+        self.assertIn("plots/html/focus/index.html", workflow)
+        self.assertIn("run_mc_poljetshapes_campaign.py plot", workflow)
 
 
 if __name__ == "__main__":

@@ -51,6 +51,23 @@ cutflow and accepted-entry summaries, a bounded statistics projection, and a
 complete HTML gallery. The comparison is a generator-description test, not a
 comparison with experimental points.
 
+The plot stage also constructs presentation-only spin-on/spin-off ratios for
+positive cross sections, normalized shapes, and rate observables. Both the
+numerator and denominator Monte Carlo errors are propagated because the two
+shower families use independent event samples. Ratios are deliberately not
+formed for signed `DeltaSigmaLL`, `ALL`, or cosine/sine moments, where a zero
+crossing would make the ratio misleading; those use the existing on-minus-off
+plots instead.
+
+In addition to the complete gallery, plotting writes
+`plots/html/focus/index.html`. This focused page is linked prominently from the
+main `index.html` and places each recommended red/blue overlay beside either
+its spin-on/spin-off ratio or its on-minus-off difference. Its fixed hierarchy
+covers the headline Delta-psi moments and shapes, independent angular
+confirmations, sine/null tests, radiation rates, and inclusive controls. The
+selection is fixed in code and is not chosen from the noisy pilot sensitivity
+ranking.
+
 ## Pilot
 
 After synchronizing the repository on Odysseus, run:
@@ -83,3 +100,26 @@ shard, 100 jobs, seed base `8307000`, and a fresh tag of the form
 `mc_poljetshapes_spin_<tier>m_20260829_v1`. These projections assess
 statistical precision; they do not guarantee a physical separation if the
 true spin-on/off difference is zero.
+
+## Replot a completed production campaign
+
+The focused page and propagated ratios require only the already-postprocessed
+family predictions and `postprocess/summary.json`. They do not require new
+events or a repeated postprocessing pass. After the running production has
+finished and the Odysseus checkout has been updated to the plotting commit,
+regenerate the gallery with:
+
+```bash
+module purge
+module load herwig/pol
+cd /home/apapaefs/Projects/HerwigPolarizedPheno
+
+python3 scripts/run_mc_poljetshapes_campaign.py plot \
+  --tag mc_poljetshapes_spin_500m_20260829_v1 \
+  --plot-comparisons --include-diagnostics
+```
+
+This replaces only the generated `plots/html/` subtree and updates the plot
+section of the campaign manifest. Shards, raw YODAs, normalized predictions,
+and statistical summaries remain untouched. The blue family is a
+spin-averaged shower on polarized hard events, not an unpolarized-beam sample.

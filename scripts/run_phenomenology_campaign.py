@@ -15,6 +15,7 @@ import concurrent.futures
 import copy
 import csv
 import hashlib
+import html
 import json
 import math
 import os
@@ -47,6 +48,181 @@ DISPOL_ROOT = SCRIPT_PATH.parents[1]
 REGISTRY_DIR = DISPOL_ROOT / "config" / "phenomenology"
 CAMPAIGN_ROOT = DISPOL_ROOT / "campaigns" / "phenomenology"
 TAG_PATTERN = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*$")
+
+
+MC_POLJETSHAPES_RATIO_PREFIXES = (
+    "SigmaPP_", "SigmaPM_", "SigmaMP_", "SigmaMM_", "SigmaUU_",
+    "ShapePP_", "ShapePM_", "ShapeMP_", "ShapeMM_", "ShapeUU_",
+    "R32_", "R43_", "ThirdJetVeto_",
+)
+
+
+# This curated hierarchy is independent of the pilot sensitivity
+# ranking.  It prevents a noisy pilot or a look-elsewhere fluctuation from
+# silently deciding which production plots are promoted to the focused page.
+MC_POLJETSHAPES_FOCUS_SECTIONS = (
+    {
+        "title": "1. Headline splitting-plane moments",
+        "why": (
+            "Primary tests of a coherent cos(2 psi) shower-spin modulation. "
+            "The companion panel is spin on minus spin off; moment ratios are "
+            "intentionally avoided because moments may cross zero."
+        ),
+        "plots": (
+            ("A2UU_dpsi12_j1_loose", "A2UU: jet 1, loose", "difference"),
+            ("A2LL_dpsi12_j1_loose", "A2LL: jet 1, loose", "difference"),
+            ("A2UU_dpsi12_j2_loose", "A2UU: jet 2, loose", "difference"),
+            ("A2LL_dpsi12_j2_loose", "A2LL: jet 2, loose", "difference"),
+            (
+                "A2UU_dpsi12_j1_symmetric_secondary",
+                "A2UU: jet 1, symmetric secondary",
+                "difference",
+            ),
+            (
+                "A2LL_dpsi12_j1_symmetric_secondary",
+                "A2LL: jet 1, symmetric secondary",
+                "difference",
+            ),
+            (
+                "A2UU_dpsi12_j2_symmetric_secondary",
+                "A2UU: jet 2, symmetric secondary",
+                "difference",
+            ),
+            (
+                "A2LL_dpsi12_j2_symmetric_secondary",
+                "A2LL: jet 2, symmetric secondary",
+                "difference",
+            ),
+        ),
+    },
+    {
+        "title": "2. Headline splitting-plane shapes",
+        "why": (
+            "The normalized UU shapes expose the expected smooth even angular "
+            "pattern while removing the inclusive normalization.  Delta-sigma "
+            "LL is shown as a difference rather than a ratio because it is signed."
+        ),
+        "plots": (
+            ("ShapeUU_dpsi12_j1_loose", "UU shape: jet 1, loose", "ratio"),
+            ("ShapeUU_dpsi12_j2_loose", "UU shape: jet 2, loose", "ratio"),
+            (
+                "ShapeUU_dpsi12_j1_symmetric_secondary",
+                "UU shape: jet 1, symmetric secondary",
+                "ratio",
+            ),
+            (
+                "ShapeUU_dpsi12_j2_symmetric_secondary",
+                "UU shape: jet 2, symmetric secondary",
+                "ratio",
+            ),
+            (
+                "DeltaSigmaLL_dpsi12_j1_loose",
+                "Delta-sigma LL: jet 1, loose",
+                "difference",
+            ),
+            (
+                "DeltaSigmaLL_dpsi12_j2_loose",
+                "Delta-sigma LL: jet 2, loose",
+                "difference",
+            ),
+            (
+                "DeltaSigmaLL_dpsi12_j1_symmetric_secondary",
+                "Delta-sigma LL: jet 1, symmetric secondary",
+                "difference",
+            ),
+            (
+                "DeltaSigmaLL_dpsi12_j2_symmetric_secondary",
+                "Delta-sigma LL: jet 2, symmetric secondary",
+                "difference",
+            ),
+        ),
+    },
+    {
+        "title": "3. Independent angular confirmation",
+        "why": (
+            "These use different particle-level angular analysers.  A credible "
+            "effect should be coherent across more than one construction and "
+            "should not be driven by one sparse bin."
+        ),
+        "plots": (
+            (
+                "ShapeUU_interjet_dpsi11_kt05",
+                "Inter-jet primary-plane angle, kT > 0.5 GeV",
+                "ratio",
+            ),
+            (
+                "ShapeUU_hardplane_primary_j1_kt05",
+                "Hard-plane angle: jet 1, kT > 0.5 GeV",
+                "ratio",
+            ),
+            (
+                "ShapeUU_hardplane_primary_j2_kt05",
+                "Hard-plane angle: jet 2, kT > 0.5 GeV",
+                "ratio",
+            ),
+            ("ShapeUU_eeec_squeezed_j1", "Squeezed EEEC: jet 1", "ratio"),
+            ("ShapeUU_eeec_squeezed_j2", "Squeezed EEEC: jet 2", "ratio"),
+            ("ShapeUU_bz_angle", "Four-jet Bengtsson-Zerwas angle", "ratio"),
+        ),
+    },
+    {
+        "title": "4. Sine and symmetry null tests",
+        "why": (
+            "The B2 sine moments should be compatible with zero.  The S2 "
+            "quadrupole spectra are supporting symmetry controls; unexpected "
+            "structure here should be understood before a cosine signal is claimed."
+        ),
+        "plots": (
+            ("B2UU_dpsi12_j1_loose", "B2UU: jet 1, loose", "difference"),
+            ("B2LL_dpsi12_j1_loose", "B2LL: jet 1, loose", "difference"),
+            ("B2UU_dpsi12_j2_loose", "B2UU: jet 2, loose", "difference"),
+            ("B2LL_dpsi12_j2_loose", "B2LL: jet 2, loose", "difference"),
+            ("SigmaUU_s2_beta1_j1", "UU S2,beta=1: jet 1", "ratio"),
+            ("SigmaUU_s2_beta2_j1", "UU S2,beta=2: jet 1", "ratio"),
+            ("SigmaUU_s2_beta1_j2", "UU S2,beta=1: jet 2", "ratio"),
+            ("SigmaUU_s2_beta2_j2", "UU S2,beta=2: jet 2", "ratio"),
+        ),
+    },
+    {
+        "title": "5. Radiation-rate cross-checks",
+        "why": (
+            "These test indirect changes in resolved radiation.  They are "
+            "secondary to the angular observables because shower spin "
+            "correlations are expected to affect azimuthal structure more "
+            "directly than inclusive emission probabilities."
+        ),
+        "plots": (
+            ("R32_UU", "Inclusive R32", "ratio"),
+            ("ThirdJetVeto_UU", "Third-jet veto efficiency", "ratio"),
+            (
+                "SigmaUU_pt31_cumulative_tail",
+                "Cumulative pT3 / pT1 tail",
+                "ratio",
+            ),
+            ("R43_UU", "Inclusive R43", "ratio"),
+            (
+                "SigmaUU_pt41_cumulative_tail",
+                "Cumulative pT4 / pT1 tail",
+                "ratio",
+            ),
+        ),
+    },
+    {
+        "title": "6. Inclusive controls",
+        "why": (
+            "Large changes in these broad spectra would be surprising and "
+            "should first trigger a configuration, normalization, or "
+            "statistics check rather than a shower-spin interpretation."
+        ),
+        "plots": (
+            ("SigmaUU_jet1_pt", "Leading-jet pT", "ratio"),
+            ("SigmaUU_jet2_pt", "Subleading-jet pT", "ratio"),
+            ("SigmaUU_jet1_eta", "Leading-jet eta", "ratio"),
+            ("SigmaUU_jet2_eta", "Subleading-jet eta", "ratio"),
+            ("SigmaUU_delta_r", "Leading-dijet Delta R", "ratio"),
+        ),
+    },
+)
 
 
 class CampaignError(RuntimeError):
@@ -1819,6 +1995,99 @@ def _independent_difference(
         values.append(float(on_value) - float(off_value))
         errors.append(math.hypot(float(on_error), float(off_error)))
     return {"edges": list(spin_on["edges"]), "values": values, "errors": errors}
+
+
+def _independent_ratio(
+    spin_on: Mapping[str, Any], spin_off: Mapping[str, Any]
+) -> dict[str, Any]:
+    """Return spin-on/spin-off with both independent MC errors propagated."""
+
+    if not experimental._same_edges(spin_on["edges"], spin_off["edges"]):
+        raise CampaignError("Spin-on/off predictions have different bin edges")
+    values: list[float | None] = []
+    errors: list[float | None] = []
+    for on_value, on_error, off_value, off_error in zip(
+        spin_on["values"], spin_on["errors"],
+        spin_off["values"], spin_off["errors"],
+    ):
+        if None in (on_value, on_error, off_value, off_error):
+            values.append(None)
+            errors.append(None)
+            continue
+        numerator = float(on_value)
+        numerator_error = float(on_error)
+        denominator = float(off_value)
+        denominator_error = float(off_error)
+        if (
+            denominator == 0.0
+            or not all(
+                math.isfinite(value)
+                for value in (
+                    numerator, numerator_error,
+                    denominator, denominator_error,
+                )
+            )
+        ):
+            values.append(None)
+            errors.append(None)
+            continue
+        ratio = numerator / denominator
+        variance = (
+            (numerator_error / denominator) ** 2
+            + (numerator * denominator_error / denominator**2) ** 2
+        )
+        if not math.isfinite(ratio) or not math.isfinite(variance):
+            values.append(None)
+            errors.append(None)
+            continue
+        values.append(ratio)
+        errors.append(math.sqrt(max(0.0, variance)))
+    return {"edges": list(spin_on["edges"]), "values": values, "errors": errors}
+
+
+def _mc_poljetshapes_plot_ratios(
+    measurement: Mapping[str, Any], summary: Mapping[str, Any]
+) -> dict[str, dict[str, Any]]:
+    """Build presentation-only positive-observable ratios from summary JSON.
+
+    The campaign summary already contains the postprocessed values and MC
+    errors for both independent families.  Reusing it lets a completed
+    immutable campaign acquire ratio plots with a plot-only rerun: no shard or
+    postprocessing product is reinterpreted or overwritten.
+    """
+
+    variations = summary.get("variations", {})
+    if not isinstance(variations, Mapping):
+        return {}
+    ratios: dict[str, dict[str, Any]] = {}
+    for channel_id in measurement["channels"]:
+        nominal_key = _variation_id(
+            (
+                "nominal", channel_id, 0, 0, 1.0,
+                measurement["families"]["nominal"]["mpi"],
+            )
+        )
+        control_key = _variation_id(
+            (
+                "shower_spin_off", channel_id, 0, 0, 1.0,
+                measurement["families"]["shower_spin_off"]["mpi"],
+            )
+        )
+        nominal = variations.get(nominal_key)
+        control = variations.get(control_key)
+        if not isinstance(nominal, Mapping) or not isinstance(control, Mapping):
+            continue
+        for observable in sorted(set(nominal).intersection(control)):
+            if not observable.startswith(MC_POLJETSHAPES_RATIO_PREFIXES):
+                continue
+            if observable in ratios:
+                raise CampaignError(
+                    f"Duplicate MC_POLJETSHAPES ratio observable {observable}"
+                )
+            ratios[observable] = _independent_ratio(
+                nominal[observable], control[observable]
+            )
+    return ratios
 
 
 def _effective_entries(series: experimental.BinSeries) -> float:
@@ -4016,6 +4285,236 @@ def _configure_plot_text_rendering(
     return {"mode": "mathtext", "missing_tools": missing_tools}
 
 
+def _write_mc_poljetshapes_ratio_yoda(
+    measurement: Mapping[str, Any],
+    ratios: Mapping[str, Mapping[str, Any]],
+    destination: Path,
+) -> Path:
+    """Write plot-only spin-on/spin-off ratios under the original paths."""
+
+    yoda = experimental._import_yoda()
+    analysis = str(measurement["analysis"]["name"])
+    objects = [
+        experimental._estimate_from_values(
+            yoda,
+            prediction["edges"],
+            f"/{analysis}/{observable}",
+            prediction["values"],
+            prediction["errors"],
+            {
+                "Observable": "shower spin on / shower spin off",
+                "Uncertainty": (
+                    "independent numerator and denominator MC errors "
+                    "propagated in quadrature"
+                ),
+                "Numerator": "polarized LO+PS, shower spin on",
+                "Denominator": "polarized LO+PS, shower spin off",
+            },
+        )
+        for observable, prediction in sorted(ratios.items())
+    ]
+    if not objects:
+        raise CampaignError("No MC_POLJETSHAPES ratios were available to write")
+    experimental._write_yoda_objects(yoda, objects, destination)
+    experimental.atomic_write_json(
+        destination.with_suffix(".json"),
+        {
+            "measurement": measurement["id"],
+            "definition": "shower spin on / shower spin off",
+            "uncertainty": (
+                "independent numerator and denominator MC errors propagated "
+                "in quadrature"
+            ),
+            "excluded_signed_or_zero_crossing_prefixes": [
+                "ALL_", "DeltaSigmaLL_", "A2UU_", "A2LL_", "B2UU_", "B2LL_",
+            ],
+            "ratios": ratios,
+        },
+    )
+    return destination
+
+
+def _configure_mc_poljetshapes_ratio_script(script: Path) -> None:
+    """Give a ratio-only Rivet script a linear scale and unity reference."""
+
+    source = script.read_text(encoding="utf-8")
+    if "# MC_POLJETSHAPES spin-on/spin-off ratio presentation" in source:
+        return
+    source, replacements = re.subn(
+        r"(?m)^ax_yScale\s*=\s*['\"](?:linear|log)['\"]$",
+        "ax_yScale = 'linear'",
+        source,
+        count=1,
+    )
+    if replacements != 1:
+        raise CampaignError(f"Could not set linear ratio scale in {script}")
+    marker = "\n\nlegend_handles = dict() # keep track of handles for the legend"
+    if marker not in source:
+        raise CampaignError(
+            f"Could not locate generated-data marker in ratio plot {script}"
+        )
+    presentation = r'''
+
+# MC_POLJETSHAPES spin-on/spin-off ratio presentation
+ax_yLabel = 'Shower spin on / off'
+_ratio_extent = [1.0]
+for _ratio_label, _ratio_values in dataf.get('yvals', {}).items():
+    _ratio_errors = dataf.get('yerrs', {}).get(_ratio_label, ([], []))
+    _ratio_down = _ratio_errors[0] if len(_ratio_errors) > 0 else []
+    _ratio_up = _ratio_errors[1] if len(_ratio_errors) > 1 else []
+    for _ratio_index, _ratio_value in enumerate(_ratio_values):
+        if not np.isfinite(_ratio_value):
+            continue
+        _ratio_extent.append(float(_ratio_value))
+        if _ratio_index < len(_ratio_down) and np.isfinite(_ratio_down[_ratio_index]):
+            _ratio_extent.append(float(_ratio_value - _ratio_down[_ratio_index]))
+        if _ratio_index < len(_ratio_up) and np.isfinite(_ratio_up[_ratio_index]):
+            _ratio_extent.append(float(_ratio_value + _ratio_up[_ratio_index]))
+_ratio_low = min(_ratio_extent)
+_ratio_high = max(_ratio_extent)
+_ratio_span = max(_ratio_high - _ratio_low, 0.08)
+yLims = (_ratio_low - 0.12*_ratio_span, _ratio_high + 0.12*_ratio_span)
+ax.axhline(1.0, color='#666666', linestyle='--', linewidth=1.0, zorder=1)
+'''
+    source = source.replace(marker, presentation + marker, 1)
+    experimental.atomic_write_text(script, source)
+
+
+def _write_mc_poljetshapes_focus_index(
+    output: Path, measurement: Mapping[str, Any]
+) -> Path:
+    """Write and link a curated physics-first view of the complete gallery."""
+
+    analysis = str(measurement["analysis"]["name"])
+    focus_dir = output / "focus"
+    focus_dir.mkdir(parents=True, exist_ok=True)
+
+    def asset_panel(base: Path, panel_title: str) -> str:
+        png = output / base.with_suffix(".png")
+        pdf = output / base.with_suffix(".pdf")
+        if not experimental._nonempty(png):
+            return (
+                '<div class="panel missing"><h4>'
+                + html.escape(panel_title)
+                + "</h4><p>Not rendered: the result was empty or fully masked.</p></div>"
+            )
+        png_link = "../" + base.with_suffix(".png").as_posix()
+        links = [f'<a href="{html.escape(png_link)}">PNG</a>']
+        if experimental._nonempty(pdf):
+            pdf_link = "../" + base.with_suffix(".pdf").as_posix()
+            links.append(f'<a href="{html.escape(pdf_link)}">PDF</a>')
+        return (
+            '<div class="panel"><h4>'
+            + html.escape(panel_title)
+            + "</h4>"
+            + f'<a href="{html.escape(png_link)}"><img '
+            + f'src="{html.escape(png_link)}" alt="{html.escape(panel_title)}"></a>'
+            + f"<p>{' &middot; '.join(links)}</p></div>"
+        )
+
+    sections: list[str] = []
+    rendered_cards = 0
+    for section in MC_POLJETSHAPES_FOCUS_SECTIONS:
+        cards: list[str] = []
+        for stem, label, companion in section["plots"]:
+            main_base = Path(analysis) / str(stem)
+            if not experimental._nonempty(output / main_base.with_suffix(".png")):
+                continue
+            if companion == "ratio":
+                auxiliary_base = Path("ratios") / analysis / str(stem)
+                auxiliary_title = "Spin on / spin off"
+            elif companion == "difference":
+                auxiliary_base = (
+                    Path(analysis) / "COMPARISON" / f"OnMinusOff_{stem}"
+                )
+                auxiliary_title = "Spin on minus spin off"
+            else:
+                raise CampaignError(
+                    f"Unknown focused-gallery companion {companion!r}"
+                )
+            cards.append(
+                '<article class="card"><h3>'
+                + html.escape(str(label))
+                + '</h3><div class="panels">'
+                + asset_panel(main_base, "Red/blue family overlay")
+                + asset_panel(auxiliary_base, auxiliary_title)
+                + "</div></article>"
+            )
+        if not cards:
+            continue
+        rendered_cards += len(cards)
+        sections.append(
+            "<section><h2>"
+            + html.escape(str(section["title"]))
+            + "</h2><p>"
+            + html.escape(str(section["why"]))
+            + "</p>"
+            + "\n".join(cards)
+            + "</section>"
+        )
+    if not sections:
+        raise CampaignError(
+            "No recommended MC_POLJETSHAPES plots were rendered for the focus page"
+        )
+
+    title = f"{measurement['title']} — recommended comparisons"
+    document = f"""<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{html.escape(title)}</title>
+  <style>
+    body {{ font-family: sans-serif; margin: 2rem auto; max-width: 1450px; padding: 0 1rem; }}
+    .notice {{ background: #f3f6f8; border-left: 5px solid #0077BB; padding: 0.8rem 1rem; }}
+    section {{ border-top: 2px solid #bbb; margin-top: 2.5rem; padding-top: 1rem; }}
+    .card {{ border-top: 1px solid #ddd; margin-top: 1.5rem; padding-top: 0.5rem; }}
+    .panels {{ display: grid; gap: 1rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }}
+    .panel {{ min-width: 0; }}
+    .panel h4 {{ margin-bottom: 0.4rem; }}
+    .panel img {{ height: auto; max-width: 100%; }}
+    .missing {{ background: #fafafa; border: 1px dashed #bbb; padding: 1rem; }}
+    @media (max-width: 850px) {{ .panels {{ grid-template-columns: 1fr; }} }}
+  </style>
+</head>
+<body>
+  <p><a href="../index.html">Back to the complete gallery</a></p>
+  <h1>{html.escape(title)}</h1>
+  <div class="notice">
+    <p><strong>Reading convention:</strong> red is shower spin on and blue is
+    shower spin off. Both samples retain polarized beams and the polarized hard
+    process. Ratio panels are shower spin on divided by shower spin off and
+    propagate both independent Monte Carlo errors.</p>
+    <p>Ratios are used only for positive cross sections, normalized shapes, and
+    rate observables. Signed Delta-sigma LL, A_LL, and angular moments use
+    on-minus-off differences instead. Isolated bins should not be interpreted
+    without a coherent angular pattern and the null tests.</p>
+  </div>
+  <p>{rendered_cards} recommended plot pairs are shown below.</p>
+  {''.join(sections)}
+</body>
+</html>
+"""
+    index = focus_dir / "index.html"
+    experimental.atomic_write_text(index, document)
+
+    root_index = output / "index.html"
+    root = root_index.read_text(encoding="utf-8")
+    if 'href="focus/index.html"' not in root:
+        marker = "</h1>"
+        link = (
+            '</h1><p class="focus-link"><strong><a href="focus/index.html">'
+            "Open the recommended shower-spin comparison panel"
+            "</a></strong> — curated moments, shapes, null tests, rates, and "
+            "spin-on/spin-off ratios.</p>"
+        )
+        if marker not in root:
+            raise CampaignError(f"Could not link focused gallery from {root_index}")
+        root = root.replace(marker, link, 1)
+        experimental.atomic_write_text(root_index, root)
+    return index
+
+
 def plot_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> Path:
     campaign_dir = _campaign_dir(measurement["id"], args.tag)
     manifest_path = campaign_dir/experimental.MANIFEST_NAME
@@ -4091,8 +4590,29 @@ def plot_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> Path:
             nominal_prediction = prediction
     if nominal_prediction is None:
         nominal_prediction = predictions[0][0]
+    campaign_summary_path = campaign_dir/"postprocess"/"summary.json"
+    campaign_summary = (
+        _load_json(campaign_summary_path)
+        if campaign_summary_path.is_file() else {}
+    )
+    ratio_predictions: dict[str, dict[str, Any]] = {}
+    if (
+        measurement["postprocessor"] == "mc_poljetshapes"
+        and {family_id for _, _, family_id in predictions}
+        >= {"nominal", "shower_spin_off"}
+    ):
+        ratio_predictions = _mc_poljetshapes_plot_ratios(
+            measurement, campaign_summary
+        )
+        if not ratio_predictions:
+            raise CampaignError(
+                "MC_POLJETSHAPES comparison plotting requires both central "
+                "families in postprocess/summary.json"
+            )
     runtime = manifest.get("runtime") or _runtime(measurement)
     output = campaign_dir/"plots"/"html"
+    ratio_output = output/"ratios"
+    ratio_yoda_path = campaign_dir/"plots"/"spin-on-over-off.yoda"
     # Generate Rivet's plotting scripts without starting its multiprocessing
     # manager.  The latter requires a local IPC socket and is unavailable in
     # some batch/sandbox environments; executing the generated scripts
@@ -4132,8 +4652,18 @@ def plot_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> Path:
                 f"{comparison_plot_path}:Title=Spin-on minus spin-off:"
                 "LineColor=#882255"
             )
+    ratio_command: list[str] | None = None
+    if ratio_predictions:
+        ratio_command = [
+            sys.executable, str(safe_wrapper),
+            runtime["tools"]["rivet-mkhtml"], "--dry-run", "--offline",
+            "--no-ratio", "--pwd", "-o", str(ratio_output),
+            f"{ratio_yoda_path}:Title=Shower spin on / off:LineColor=#CC3311",
+        ]
     if args.dry_run:
         print(" ".join(command))
+        if ratio_command is not None:
+            print(" ".join(ratio_command))
         return output
     # rivet-mkhtml does not remove scripts for objects that disappeared after
     # a new postprocessing pass (for example an all-empty smoke-test pull).
@@ -4147,8 +4677,17 @@ def plot_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> Path:
     mpl_cache.mkdir(parents=True, exist_ok=True)
     environment["MPLCONFIGDIR"] = str(mpl_cache)
     environment["DISPOL_FORCE_NO_ERROR_BANDS"] = "1"
+    if ratio_predictions:
+        _write_mc_poljetshapes_ratio_yoda(
+            measurement, ratio_predictions, ratio_yoda_path
+        )
     experimental._run_logged(command, campaign_dir, environment,
                              campaign_dir/"logs"/"rivet-mkhtml-generate.log")
+    if ratio_command is not None:
+        experimental._run_logged(
+            ratio_command, campaign_dir, environment,
+            campaign_dir/"logs"/"rivet-mkhtml-ratios-generate.log",
+        )
     plot_scripts = sorted(
         path for path in output.rglob("*.py")
         if not path.name.endswith("__data.py")
@@ -4156,11 +4695,15 @@ def plot_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> Path:
     if not plot_scripts:
         raise CampaignError(f"rivet-mkhtml generated no plot scripts below {output}")
     text_rendering = _configure_plot_text_rendering(output, environment)
+    ratio_text_rendering: dict[str, Any] | None = None
+    if ratio_command is not None:
+        ratio_text_rendering = _configure_plot_text_rendering(
+            ratio_output, environment
+        )
     script_log = campaign_dir/"logs"/"rivet-plot-scripts.log"
     rendered_scripts: list[Path] = []
     snapshot = _measurement_snapshot(measurement)
-    summary_path = campaign_dir/"postprocess"/"summary.json"
-    summary = _load_json(summary_path) if summary_path.is_file() else {}
+    summary = campaign_summary
     external_nominal_summary: Path | None = None
     if external_nominal_prediction is not None:
         candidate = external_nominal_prediction.parent / "summary.json"
@@ -4176,20 +4719,26 @@ def plot_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> Path:
         for script in plot_scripts:
             log.write(f"script: {script}\n")
             log.flush()
-            experimental.add_theory_uncertainty_overlay(
-                script,
-                _pp_theory_uncertainty_bands(
-                    measurement, snapshot, summary, script.stem
-                ),
-                nominal_prediction.name,
-            )
-            experimental.add_experimental_error_overlay(
-                script,
-                _pp_reference_overlay_points(measurement, snapshot, script.stem),
-                show_statistical=bool(
-                    getattr(args, "plot_data_components", False)
-                ),
-            )
+            is_spin_ratio = ratio_output in script.parents
+            if is_spin_ratio:
+                _configure_mc_poljetshapes_ratio_script(script)
+            else:
+                experimental.add_theory_uncertainty_overlay(
+                    script,
+                    _pp_theory_uncertainty_bands(
+                        measurement, snapshot, summary, script.stem
+                    ),
+                    nominal_prediction.name,
+                )
+                experimental.add_experimental_error_overlay(
+                    script,
+                    _pp_reference_overlay_points(
+                        measurement, snapshot, script.stem
+                    ),
+                    show_statistical=bool(
+                        getattr(args, "plot_data_components", False)
+                    ),
+                )
             if not experimental.plot_script_has_finite_y(script):
                 log.write(
                     "skipped: non-renderable finite-data/axis-limit state\n"
@@ -4208,6 +4757,9 @@ def plot_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> Path:
     index = experimental.write_plot_indexes(output, measurement, rendered_scripts)
     if not index.is_file() or not any(output.rglob("*.png")):
         raise CampaignError(f"Rivet plotting produced no complete HTML below {output}")
+    focus_index: Path | None = None
+    if ratio_predictions:
+        focus_index = _write_mc_poljetshapes_focus_index(output, measurement)
     manifest["plots"] = {
         "created_at": experimental.utc_now(),
         "index": str(index.relative_to(campaign_dir)),
@@ -4216,6 +4768,22 @@ def plot_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> Path:
         ),
         "text_rendering": text_rendering,
     }
+    if ratio_text_rendering is not None:
+        manifest["plots"]["ratio_text_rendering"] = ratio_text_rendering
+    if ratio_predictions:
+        manifest["plots"]["spin_on_over_off"] = {
+            "path": str(ratio_yoda_path.relative_to(campaign_dir)),
+            "json": str(
+                ratio_yoda_path.with_suffix(".json").relative_to(campaign_dir)
+            ),
+            "sha256": experimental.sha256_file(ratio_yoda_path),
+            "observable_count": len(ratio_predictions),
+            "uncertainty": "independent numerator and denominator MC errors",
+        }
+    if focus_index is not None:
+        manifest["plots"]["focus_index"] = str(
+            focus_index.relative_to(campaign_dir)
+        )
     if comparison_plot_path is not None:
         manifest["plots"]["comparison_prediction"] = {
             "path": str(comparison_plot_path.relative_to(campaign_dir)),
