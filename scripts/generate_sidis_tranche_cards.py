@@ -15,6 +15,14 @@ POLARIZATIONS = {
 }
 CONTRIBUTIONS = {"POSNLO": "PositiveNLO", "NEGNLO": "NegativeNLO"}
 SPECIFICATIONS = {
+    "COMPASS_2013_I1236358": {"base": BASE_MULTIPLICITY, "targets": ("P","N"),
+                               "helicities": ("00",), "miny": ".10", "maxy": ".90",
+                               "minw2": "25.0", "header":
+                               "COMPASS 2013 charged-hadron pT slopes at 160 GeV"},
+    "COMPASS_2014_I1278730": {"base": BASE_MULTIPLICITY, "targets": ("P","N"),
+                               "helicities": ("00",), "miny": ".20", "maxy": ".90",
+                               "minw2": "25.0", "header":
+                               "COMPASS 2014 charged-hadron azimuthal amplitudes at 160 GeV"},
     "COMPASS_2026_I3096394": {"base": BASE_MULTIPLICITY, "targets": ("P","N"),
                                "helicities": ("00",), "maxy": ".70", "minw2": "25.0"},
     "COMPASS_2025_I2840545": {"base": BASE_MULTIPLICITY, "targets": ("P",),
@@ -25,6 +33,10 @@ SPECIFICATIONS = {
     "HERMES_2013_I1208547": {"base": BASE_MULTIPLICITY, "targets": ("P","N"),
                               "helicities": ("00",), "maxy": ".85", "minw2": "10.0",
                               "hermes": True},
+    "HERMES_2013_I1111237": {"base": BASE_MULTIPLICITY, "targets": ("P","N"),
+                              "helicities": ("00",), "miny": ".20", "maxy": ".85",
+                              "minw2": "10.0", "hermes": True, "header":
+                              "HERMES 2013 identified-hadron azimuthal moments at 27.6 GeV"},
     "COMPASS_2018_I1624692": {"base": BASE_MULTIPLICITY, "targets": ("P","N"),
                                "helicities": ("00",), "maxy": ".90", "minw2": "25.0"},
     "COMPASS_2020_I1788430": {"base": BASE_MULTIPLICITY, "targets": ("P","N"),
@@ -36,6 +48,15 @@ def common(measurement: str, specification: dict[str, object]) -> str:
     base_path = Path(specification["base"])
     base_id = "COMPASS_2009_I820721" if base_path == BASE_ASYMMETRY else "COMPASS_2017_I1444985"
     text = base_path.read_text(encoding="utf-8").replace(base_id, measurement)
+    if specification.get("header"):
+        text = text.replace(
+            "COMPASS 2017 pion/unidentified-hadron multiplicities at 160 GeV",
+            str(specification["header"]),
+        )
+    text = text.replace(
+        "set /Herwig/Cuts/NeutralCurrentCut:Miny 0.10",
+        f"set /Herwig/Cuts/NeutralCurrentCut:Miny {specification.get('miny', '0.10')}",
+    )
     text = text.replace("set /Herwig/Cuts/NeutralCurrentCut:Maxy 0.70",
                         f"set /Herwig/Cuts/NeutralCurrentCut:Maxy {specification['maxy']}")
     text = text.replace("set /Herwig/Cuts/NeutralCurrentCut:Maxy 0.90",

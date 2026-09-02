@@ -1,0 +1,22 @@
+{
+  "measurement": "HERMES_2013_I1111237",
+  "numerical_release": {
+    "four_dimensional_cells_per_sample": 900,
+    "moment_values": 21600,
+    "sample_groups": 12,
+    "status": "not_vendored",
+    "url": "https://www-hermes.desy.de/cosnphi/",
+    "reason": "The collaboration endpoint was unavailable during implementation; no values or covariance entries were fabricated."
+  },
+  "source": {
+    "bytes": 591628,
+    "members": [
+      "analysis.tex",
+      "draft78.tex"
+    ],
+    "path": "data/phenomenology/HERMES_2013_I1111237/raw/arXiv-1204.4161-source.tar",
+    "sha256": "a09eca719c7fbde602270425c25c86107697d1c1f5ed472f575f8ed03ae5f56a",
+    "url": "https://arxiv.org/e-print/1204.4161"
+  },
+  "source_authority": "paper selection and exact 5x5x6x6 binning only; 10800 refers to 12 phi-yield bins in each 900-cell fit, not the number of released moment values"
+}

@@ -1,0 +1,98 @@
+{
+  "schema_version": 6,
+  "id": "COMPASS_2014_I1278730",
+  "title": "COMPASS unpolarized charged-hadron azimuthal amplitudes",
+  "process_kind": "unpolarized_sidis",
+  "analysis": {
+    "name": "COMPASS_2014_I1278730",
+    "source": "analyses/rivet/dis/COMPASS_2014_I1278730.cc",
+    "info": "analyses/rivet/dis/COMPASS_2014_I1278730.info",
+    "plot": "analyses/rivet/dis/COMPASS_2014_I1278730.plot",
+    "support_files": [
+      "analyses/rivet/dis/COMPASSInclusiveDIS.hh",
+      "analyses/rivet/dis/COMPASSSIDIS.hh",
+      "analyses/rivet/dis/SIDISAzimuthal.hh"
+    ],
+    "plugin": "RivetCOMPASS_2014_I1278730.so",
+    "reference_yoda": "analyses/rivet/dis/COMPASS_2014_I1278730.yoda.gz"
+  },
+  "reference": {
+    "snapshot": "data/phenomenology/COMPASS_2014_I1278730/reference.json",
+    "source_manifest": "data/phenomenology/COMPASS_2014_I1278730/source-manifest.json",
+    "source_url": "https://arxiv.org/e-print/1401.6284",
+    "raw_snapshot": "data/phenomenology/COMPASS_2014_I1278730/raw/arXiv-1401.6284-source.tar",
+    "hepdata_record": 64754
+  },
+  "cards": {
+    "directory": "cards/phenomenology/COMPASS_2014_I1278730",
+    "common": "COMPASS_2014_I1278730-Common.in",
+    "stem_pattern": "COMPASS_2014_I1278730_{target}_{helicity}-{contribution}",
+    "polarized_pdf_object": "/Herwig/Partons/COMPASSSIDISDiffPDF",
+    "unpolarized_pdf_object": "/Herwig/Partons/COMPASSSIDISPDF",
+    "helicities": {"00": [0, 0]},
+    "contributions": {"POSNLO": "PositiveNLO", "NEGNLO": "NegativeNLO"},
+    "target_components": {"P": "proton", "N": "neutron"},
+    "scale_objects": [
+      "/Herwig/MatrixElements/MEDISNC",
+      "/Herwig/MatrixElements/MEDISNCPol",
+      "/Herwig/MatrixElements/PowhegMEDISNC",
+      "/Herwig/MatrixElements/PowhegMEDISNCPol"
+    ]
+  },
+  "channels": {
+    "sidis": {
+      "label": "h+/- cos(phi) and cos(2phi) amplitudes in 1D and 3D bins",
+      "targets": ["D"],
+      "projections": ["x", "z", "pt", "x_z_pt"],
+      "observable_level": "stable charged hadron"
+    }
+  },
+  "families": {
+    "nominal": {
+      "label": "POWHEG NLO+PS (explicit 00 mode)",
+      "helicities": ["00"],
+      "mpi": "off",
+      "observable_level": "stable_particle"
+    }
+  },
+  "campaign": {
+    "default_jobs": 4,
+    "default_shards": 1,
+    "default_seed_base": 1278730,
+    "default_events": {"POSNLO": 3000000, "NEGNLO": 300000},
+    "smoke_events": 100
+  },
+  "postprocessor": "sidis_azimuthal_moment",
+  "postprocess_config": {
+    "target_outputs": {"D": {"P": 0.5, "N": 0.5}}
+  },
+  "scales": {
+    "central": 1.0,
+    "points": [0.5, 1.0, 2.0],
+    "mapping": "DIS ScaleFactor = mu/mu0"
+  },
+  "pdf_ensembles": {
+    "polarized": {
+      "set": "NNPDFpol20_nlo_as_01180", "central_member": 0,
+      "replica_members": [1, 100], "active": false
+    },
+    "unpolarized": {
+      "set": "NNPDF40_nlo_pch_as_01180", "central_member": 0,
+      "replica_members": [1, 100], "active": true
+    },
+    "combination": "active unpolarized replicas plus scale envelope"
+  },
+  "goodness_of_fit": {
+    "primary_observable": "A_UU cosine amplitudes",
+    "source_contract": "checksum-pinned paper Tables 2-12"
+  },
+  "physics": {
+    "beam": "160 GeV fixed-target mu+ DIS",
+    "exchange": "photon",
+    "target": {"D": {"P": 0.5, "N": 0.5}},
+    "hard_process_accuracy": "POWHEG NLO+PS",
+    "interpretation": "diagnostic Fourier moments; no controlled Cahn, Boer-Mulders or twist-3 claim",
+    "excluded": "A_LU^sin(phi) requires the polarized beam and is not formed from 00 samples",
+    "event_simulation": "QCD shower, hadronization and remnants; QED shower and MPI off"
+  }
+}

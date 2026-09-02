@@ -1,0 +1,122 @@
+{
+  "schema_version": 6,
+  "id": "HERMES_2013_I1111237",
+  "title": "HERMES exact-bin unpolarized identified-hadron azimuthal diagnostics",
+  "process_kind": "unpolarized_sidis",
+  "analysis": {
+    "name": "HERMES_2013_I1111237",
+    "source": "analyses/rivet/dis/HERMES_2013_I1111237.cc",
+    "info": "analyses/rivet/dis/HERMES_2013_I1111237.info",
+    "plot": "analyses/rivet/dis/HERMES_2013_I1111237.plot",
+    "support_files": [
+      "analyses/rivet/dis/COMPASSInclusiveDIS.hh",
+      "analyses/rivet/dis/COMPASSSIDIS.hh",
+      "analyses/rivet/dis/SIDISAzimuthal.hh"
+    ],
+    "plugin": "RivetHERMES_2013_I1111237.so"
+  },
+  "reference": {
+    "kind": "internal_observable_definition",
+    "snapshot": "data/phenomenology/HERMES_2013_I1111237/analysis-definition.json",
+    "source_manifest": "data/phenomenology/HERMES_2013_I1111237/source-manifest.json"
+  },
+  "cards": {
+    "directory": "cards/phenomenology/HERMES_2013_I1111237",
+    "common": "HERMES_2013_I1111237-Common.in",
+    "stem_pattern": "HERMES_2013_I1111237_{target}_{helicity}-{contribution}",
+    "polarized_pdf_object": "/Herwig/Partons/COMPASSSIDISDiffPDF",
+    "unpolarized_pdf_object": "/Herwig/Partons/COMPASSSIDISPDF",
+    "helicities": {"00": [0, 0]},
+    "contributions": {"POSNLO": "PositiveNLO", "NEGNLO": "NegativeNLO"},
+    "target_components": {"P": "proton", "N": "neutron"},
+    "scale_objects": [
+      "/Herwig/MatrixElements/MEDISNC",
+      "/Herwig/MatrixElements/MEDISNCPol",
+      "/Herwig/MatrixElements/PowhegMEDISNC",
+      "/Herwig/MatrixElements/PowhegMEDISNCPol"
+    ]
+  },
+  "channels": {
+    "sidis": {
+      "label": "H/D h, pion and kaon cosine moments in 900 exact cells",
+      "raw_objects": {
+        "H_hplus_cos1_xyzt": "MomentNumerator_hplus_cos1",
+        "H_hplus_cos2_xyzt": "MomentNumerator_hplus_cos2",
+        "H_hminus_cos1_xyzt": "MomentNumerator_hminus_cos1",
+        "H_hminus_cos2_xyzt": "MomentNumerator_hminus_cos2",
+        "H_piplus_cos1_xyzt": "MomentNumerator_piplus_cos1",
+        "H_piplus_cos2_xyzt": "MomentNumerator_piplus_cos2",
+        "H_piminus_cos1_xyzt": "MomentNumerator_piminus_cos1",
+        "H_piminus_cos2_xyzt": "MomentNumerator_piminus_cos2",
+        "H_kplus_cos1_xyzt": "MomentNumerator_kplus_cos1",
+        "H_kplus_cos2_xyzt": "MomentNumerator_kplus_cos2",
+        "H_kminus_cos1_xyzt": "MomentNumerator_kminus_cos1",
+        "H_kminus_cos2_xyzt": "MomentNumerator_kminus_cos2",
+        "D_hplus_cos1_xyzt": "MomentNumerator_hplus_cos1",
+        "D_hplus_cos2_xyzt": "MomentNumerator_hplus_cos2",
+        "D_hminus_cos1_xyzt": "MomentNumerator_hminus_cos1",
+        "D_hminus_cos2_xyzt": "MomentNumerator_hminus_cos2",
+        "D_piplus_cos1_xyzt": "MomentNumerator_piplus_cos1",
+        "D_piplus_cos2_xyzt": "MomentNumerator_piplus_cos2",
+        "D_piminus_cos1_xyzt": "MomentNumerator_piminus_cos1",
+        "D_piminus_cos2_xyzt": "MomentNumerator_piminus_cos2",
+        "D_kplus_cos1_xyzt": "MomentNumerator_kplus_cos1",
+        "D_kplus_cos2_xyzt": "MomentNumerator_kplus_cos2",
+        "D_kminus_cos1_xyzt": "MomentNumerator_kminus_cos1",
+        "D_kminus_cos2_xyzt": "MomentNumerator_kminus_cos2"
+      },
+      "helicity_resolved_observables": [],
+      "targets": ["H", "D"],
+      "observable_level": "stable identified and unidentified charged hadron"
+    }
+  },
+  "families": {
+    "nominal": {
+      "label": "POWHEG NLO+PS (explicit 00 mode)",
+      "helicities": ["00"],
+      "mpi": "off",
+      "observable_level": "stable_particle"
+    }
+  },
+  "campaign": {
+    "default_jobs": 4,
+    "default_shards": 1,
+    "default_seed_base": 1111237,
+    "default_events": {"POSNLO": 3000000, "NEGNLO": 300000},
+    "smoke_events": 100
+  },
+  "postprocessor": "sidis_azimuthal_moment",
+  "postprocess_config": {
+    "target_outputs": {
+      "H": {"P": 1.0},
+      "D": {"P": 0.5, "N": 0.5}
+    }
+  },
+  "scales": {
+    "central": 1.0,
+    "points": [0.5, 1.0, 2.0],
+    "mapping": "DIS ScaleFactor = mu/mu0"
+  },
+  "pdf_ensembles": {
+    "polarized": {
+      "set": "NNPDFpol20_nlo_as_01180", "central_member": 0,
+      "replica_members": [1, 100], "active": false
+    },
+    "unpolarized": {
+      "set": "NNPDF40_nlo_pch_as_01180", "central_member": 0,
+      "replica_members": [1, 100], "active": true
+    },
+    "combination": "active unpolarized replicas plus scale envelope"
+  },
+  "goodness_of_fit": {
+    "status": "disabled until the official numerical release and covariance are vendored"
+  },
+  "physics": {
+    "beam": "27.6 GeV fixed-target e+ DIS",
+    "exchange": "photon",
+    "targets": {"H": {"P": 1.0}, "D": {"P": 0.5, "N": 0.5}},
+    "hard_process_accuracy": "POWHEG NLO+PS",
+    "interpretation": "data-free exact-bin diagnostic; no controlled TMD/twist-3 claim",
+    "event_simulation": "QCD shower, hadronization and remnants; QED shower and MPI off"
+  }
+}

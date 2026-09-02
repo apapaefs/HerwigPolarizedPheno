@@ -1,16 +1,16 @@
 # SIDIS implementation assessment and roadmap
 
-**Updated:** 2026-08-28
+**Updated:** 2026-09-03
 **Repository:** `HerwigPolarizedPheno`
 **Authority:** versioned experimental releases and frozen paper-source audits
 
 ## Current status
 
-The repository now contains nineteen data-linked Rivet analyses. Nine are
-dedicated COMPASS/HERMES SIDIS implementations: the previously available
-COMPASS 2009 and two 2017 analyses, plus the five first/second-tranche analyses
-and the high-z charge-ratio addition listed below. HERMES 2019 longitudinal
-SIDIS remains available separately.
+The repository now contains twenty-one data-linked Rivet analyses. Twelve are
+COMPASS/HERMES SIDIS implementations, including the longitudinal,
+multiplicity, charge-ratio, transverse-momentum-slope and azimuthal programmes.
+One further HERMES exact-bin azimuthal analysis is intentionally data-free
+until its official numerical values and covariance matrices can be pinned.
 
 | Tranche | Analysis | Observable | Source authority | Central jobs | Status |
 |---|---|---|---|---:|---|
@@ -20,6 +20,9 @@ SIDIS remains available separately.
 | 2 | `HERMES_2013_I1208547` | H/D pion and kaon multiplicities in five 3D binnings | full HERMES archive; HEPData projections as checks | 4 | implemented, 6,592 retained target/species cells |
 | 2 | `COMPASS_2018_I1624692` | isoscalar `d2M/(dz dPhT2)` | HEPData v1 | 4 | implemented, 4,664 released cells |
 | next | `COMPASS_2020_I1788430` | isoscalar high-z antiproton/proton and K-/K+ multiplicity ratios | paper TeX/PDF | 4 | implemented, 67 published cells |
+| diagnostic | `COMPASS_2013_I1236358` | isoscalar low-$p_T$ fitted $\langle p_T^2\rangle$ for $h^\pm$ | paper Tables 1--3 | 4 | implemented, 368 published slopes |
+| diagnostic | `COMPASS_2014_I1278730` | isoscalar $A_{UU}^{\cos\phi_h}$ and $A_{UU}^{\cos2\phi_h}$ | paper Tables 2--12 | 4 | implemented, 480 published amplitudes |
+| diagnostic | `HERMES_2013_I1111237` | H/D $\langle\cos n\phi_h\rangle$ for $h^\pm$, $\pi^\pm$, $K^\pm$ in 900 four-dimensional cells | paper binning; collaboration numerical endpoint unavailable | 4 | exact-bin Rivet diagnostic implemented; no pseudo-data |
 
 The complete COMPASS 2018 HEPData v1 submission contains 4,664 numerical
 rows, 2,332 per charge, rather than the 4,918 quoted in the earlier planning
@@ -81,6 +84,24 @@ only the unpolarized PDF axis; non-central polarized-PDF selectors are rejected.
   0.75 within each published table: a `sqrt(0.75)` correlated amplitude and a
   `0.5` diagonal amplitude. The overlapping proton x-z and z-momentum tables
   are never combined into one fit.
+- COMPASS 2013 uses the checksum-pinned arXiv source as authority for the 23
+  $(x,Q^2)$ cells and the 368 fitted inverse slopes in Tables 1--3. The Rivet
+  analysis fills 36 low-$p_T^2$ bins over the published $0.1<p_T<0.85$ GeV
+  fit range. The runner combines normalized signed-NLO target yields before a
+  weighted log-linear exponential fit. The tables provide fit errors but no
+  separate inverse-slope systematic; a fully correlated multiplicity
+  normalization component would cancel from the fitted slope.
+- COMPASS 2014 uses the checksum-pinned 480 cosine amplitudes in paper Tables
+  2--12. The runner forms $\sum2\cos(n\phi_h)/\sum\epsilon_n(y)$ after the P/N
+  target sum and retains signed same-event numerator--denominator covariance.
+  The stated point-to-point systematic uncertainty of twice the statistical
+  error is frozen separately. The beam-spin $\sin\phi_h$ amplitude is excluded
+  from the zero-polarization campaign.
+- HERMES 2013 fixes the exact $5\times5\times6\times6=900$ cell layout for 12
+  target/species/charge samples and both cosine moments. The unavailable
+  collaboration endpoint would supply 21,600 moment values and their
+  covariances. The analysis and runner contract are present, but no numerical
+  reference, covariance, pull or goodness of fit is fabricated.
 
 These are truth/particle-level generator comparisons, not detector-level
 reproductions. The isoscalar/deuteron predictions use explicit free-proton and
@@ -122,23 +143,22 @@ The unpolarized paper profiles contain 103 variations; COMPASS 2010 contains
 65.0 billion events, so it must be staged one analysis at a time after the
 central gate.
 
-## Next analysis candidates
+The three diagnostic descriptors each define the same four-job central matrix
+(P/N by POSNLO/NEGNLO) and start at 3M/0.3M events per target/contribution,
+6.6M events per analysis. These are pilot defaults only. Sparse COMPASS slope
+cells and HERMES kaons require a masked-bin and Monte Carlo precision audit
+before interpretation. Ready-to-run commands are in
+`docs/sidis-diagnostics-workflow.md`.
 
-The strongest recommended unpolarized addition, `COMPASS_2020_I1788430`, is
-now implemented. Ratios remove the inclusive-DIS normalization and directly
-probe charge and species dependence in fragmentation at the edge of the
-current acceptance. `COMPASS_2018_I1652831` remains the logical next
-source-consistency cross-check: it supplies the earlier kaon-only result that
-the 2020 release extends, but should not supersede the later measurement.
+## Remaining analysis candidates
 
-After those ratios, the practical hierarchy is:
-
-1. lower-dimensional COMPASS transverse-momentum multiplicities as shower,
-   recoil, intrinsic-transverse-momentum and hadronization diagnostics;
-2. COMPASS/HERMES unpolarized azimuthal harmonics as diagnostic-only Fourier
-   moments, with no claim of a controlled Cahn/Boer--Mulders/twist-3 model;
-3. older longitudinal asymmetries only where complete numerical releases and
-   correction conventions can be frozen reproducibly.
+The previously recommended lower-dimensional COMPASS transverse-momentum
+result and COMPASS/HERMES unpolarized azimuthal harmonics are now implemented.
+`COMPASS_2018_I1652831` remains a source-consistency cross-check for the older
+kaon-only result extended by the 2020 analysis, but should not supersede that
+later measurement. Older longitudinal asymmetries remain candidates only when
+complete numerical releases and correction conventions can be frozen
+reproducibly.
 
 Transverse-target observables, Collins/Sivers/pretzelosity measurements,
 dihadron transversity, polarized fragmentation or hyperon spin transfer, and
@@ -186,3 +206,12 @@ the primary checkout must be fast-forwarded only after its active Herwig and
 campaign-runner processes finish. Its untracked STAR archive remains unchanged
 with SHA-256
 `9917945085736df4f086e2901fde7dac15d9e65f348741450f0f2d4e04fa67fc`.
+
+The 2026-09-03 diagnostic extension reconstructed all 368 COMPASS 2013 and 480
+COMPASS 2014 paper values, generated 48 and 112 reference-YODA objects,
+respectively, and validated the 24-output HERMES no-pseudo-data definition.
+All 182 Python tests passed with two existing environment-dependent skips. The
+aggregate 24-analysis Rivet plugin compiled with GCC 16, and all 24 metadata
+lookups, including the three new analyses, succeeded. Central and smoke
+campaign plans each resolve to the intended four logical jobs. No Herwig event
+campaign was prepared or launched.

@@ -1,0 +1,34 @@
+Name: HERMES_2013_I1111237
+Year: 2013
+Summary: Exact-bin unpolarized identified-hadron cos(phi) and cos(2phi) diagnostics
+Experiment: HERMES
+Collider: DESY HERA fixed target
+InspireID: 1111237
+Status: UNVALIDATED
+Reentrant: true
+Authors:
+ - Andreas Papaefstathiou <apapaefs@kennesaw.edu>
+References:
+ - Phys.Rev.D 87 (2013) 012010
+ - arXiv:1204.4161
+RunInfo: >
+  Requires zero-polarization 27.6 GeV e+ p and e+ n samples, with POSNLO and
+  NEGNLO generated separately. Numerical HERMES values and covariance matrices
+  are not vendored because the collaboration endpoint is currently unavailable.
+NumEvents: 100000
+NeedsCrossSection: yes
+Beams: [[POSITRON, PROTON], [POSITRON, NEUTRON]]
+Energies: [[27.6, 0.938272], [27.6, 0.939565]]
+Description: >
+  Fills direct <cos(phi)> and <cos(2phi)> moments for unidentified charged
+  hadrons, pions and kaons in every one of the published 900 (x,y,z,pT) cells.
+  Hydrogen and deuterium predictions are formed by the runner. This is a
+  data-free generator diagnostic until the official 21,600 moment values
+  (900 cells for 12 target/species/charge groups and two moments) and their
+  covariance matrices can be checksum-pinned.
+Keywords: [DIS, SIDIS, fixed-target, azimuthal moment, pion, kaon]
+BibKey: HERMES:2012ygp
+BibTeX: '@article{HERMES:2012ygp,
+  collaboration = "HERMES", title = "{Azimuthal distributions of charged hadrons, pions, and kaons produced in deep-inelastic scattering off unpolarized protons and deuterons}",
+  eprint = "1204.4161", archivePrefix = "arXiv", doi = "10.1103/PhysRevD.87.012010",
+  journal = "Phys. Rev. D", volume = "87", pages = "012010", year = "2013"}'

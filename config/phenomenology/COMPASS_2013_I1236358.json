@@ -1,0 +1,97 @@
+{
+  "schema_version": 6,
+  "id": "COMPASS_2013_I1236358",
+  "title": "COMPASS low-pT charged-hadron SIDIS inverse slopes",
+  "process_kind": "unpolarized_sidis",
+  "analysis": {
+    "name": "COMPASS_2013_I1236358",
+    "source": "analyses/rivet/dis/COMPASS_2013_I1236358.cc",
+    "info": "analyses/rivet/dis/COMPASS_2013_I1236358.info",
+    "plot": "analyses/rivet/dis/COMPASS_2013_I1236358.plot",
+    "support_files": [
+      "analyses/rivet/dis/COMPASSInclusiveDIS.hh",
+      "analyses/rivet/dis/COMPASSSIDIS.hh",
+      "analyses/rivet/dis/SIDISAzimuthal.hh"
+    ],
+    "plugin": "RivetCOMPASS_2013_I1236358.so",
+    "reference_yoda": "analyses/rivet/dis/COMPASS_2013_I1236358.yoda.gz"
+  },
+  "reference": {
+    "snapshot": "data/phenomenology/COMPASS_2013_I1236358/reference.json",
+    "source_manifest": "data/phenomenology/COMPASS_2013_I1236358/source-manifest.json",
+    "source_url": "https://arxiv.org/e-print/1305.7317",
+    "raw_snapshot": "data/phenomenology/COMPASS_2013_I1236358/raw/arXiv-1305.7317-source.tar",
+    "hepdata_record": 61432
+  },
+  "cards": {
+    "directory": "cards/phenomenology/COMPASS_2013_I1236358",
+    "common": "COMPASS_2013_I1236358-Common.in",
+    "stem_pattern": "COMPASS_2013_I1236358_{target}_{helicity}-{contribution}",
+    "polarized_pdf_object": "/Herwig/Partons/COMPASSSIDISDiffPDF",
+    "unpolarized_pdf_object": "/Herwig/Partons/COMPASSSIDISPDF",
+    "helicities": {"00": [0, 0]},
+    "contributions": {"POSNLO": "PositiveNLO", "NEGNLO": "NegativeNLO"},
+    "target_components": {"P": "proton", "N": "neutron"},
+    "scale_objects": [
+      "/Herwig/MatrixElements/MEDISNC",
+      "/Herwig/MatrixElements/MEDISNCPol",
+      "/Herwig/MatrixElements/PowhegMEDISNC",
+      "/Herwig/MatrixElements/PowhegMEDISNCPol"
+    ]
+  },
+  "channels": {
+    "sidis": {
+      "label": "h+/- low-pT inverse slopes in 23 x-Q2 and 8 z bins",
+      "targets": ["D"],
+      "projections": ["published_flattened_cells", "z_slices"],
+      "observable_level": "stable charged hadron"
+    }
+  },
+  "families": {
+    "nominal": {
+      "label": "POWHEG NLO+PS (explicit 00 mode)",
+      "helicities": ["00"],
+      "mpi": "off",
+      "observable_level": "stable_particle"
+    }
+  },
+  "campaign": {
+    "default_jobs": 4,
+    "default_shards": 1,
+    "default_seed_base": 1236358,
+    "default_events": {"POSNLO": 3000000, "NEGNLO": 300000},
+    "smoke_events": 100
+  },
+  "postprocessor": "compass_sidis_pt_slope",
+  "postprocess_config": {
+    "target_outputs": {"D": {"P": 0.5, "N": 0.5}}
+  },
+  "scales": {
+    "central": 1.0,
+    "points": [0.5, 1.0, 2.0],
+    "mapping": "DIS ScaleFactor = mu/mu0"
+  },
+  "pdf_ensembles": {
+    "polarized": {
+      "set": "NNPDFpol20_nlo_as_01180", "central_member": 0,
+      "replica_members": [1, 100], "active": false
+    },
+    "unpolarized": {
+      "set": "NNPDF40_nlo_pch_as_01180", "central_member": 0,
+      "replica_members": [1, 100], "active": true
+    },
+    "combination": "active unpolarized replicas plus scale envelope"
+  },
+  "goodness_of_fit": {
+    "primary_observable": "fitted inverse slope",
+    "source_contract": "checksum-pinned paper Tables 1-3"
+  },
+  "physics": {
+    "beam": "160 GeV fixed-target mu+ DIS",
+    "exchange": "photon",
+    "target": {"D": {"P": 0.5, "N": 0.5}},
+    "hard_process_accuracy": "POWHEG NLO+PS",
+    "interpretation": "diagnostic of shower recoil, intrinsic transverse momentum and hadronization",
+    "event_simulation": "QCD shower, hadronization and remnants; QED shower and MPI off"
+  }
+}

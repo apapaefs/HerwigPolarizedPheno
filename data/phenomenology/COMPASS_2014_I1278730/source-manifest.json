@@ -1,0 +1,11 @@
+{
+  "measurement": "COMPASS_2014_I1278730",
+  "source": {
+    "bytes": 219324,
+    "member": "phep-2014-009-arxiv.tex",
+    "path": "data/phenomenology/COMPASS_2014_I1278730/raw/arXiv-1401.6284-source.tar",
+    "sha256": "667cce6ed4aeb04f84018423c19ab5484e5d61814bee9a624dd0312c28ccdde4",
+    "url": "https://arxiv.org/e-print/1401.6284"
+  },
+  "source_authority": "paper Tables 2-12; HEPData record 64754 was unavailable during implementation"
+}

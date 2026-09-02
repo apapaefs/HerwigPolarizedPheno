@@ -3180,6 +3180,7 @@ def _reference_path(measurement: Mapping[str, Any], observable: str,
     if measurement["postprocessor"] in {
         "compass_sidis_a1", "compass_sidis_multiplicity",
         "hermes_sidis_multiplicity", "compass_sidis_charge_ratio",
+        "compass_sidis_pt_slope", "sidis_azimuthal_moment",
     }:
         entry = _compass_reference_entry(snapshot, observable)
         if entry is None:
@@ -3332,13 +3333,16 @@ def _reference_points(measurement: Mapping[str, Any], snapshot: Mapping[str, Any
     if measurement["postprocessor"] in {
         "compass_sidis_a1", "compass_sidis_multiplicity",
         "hermes_sidis_multiplicity", "compass_sidis_charge_ratio",
+        "compass_sidis_pt_slope", "sidis_azimuthal_moment",
     }:
         entry = _compass_reference_entry(snapshot, observable)
         if entry is None:
             return None
         dataset, slice_spec = entry
         if slice_spec is None:
-            return dataset["points"]
+            return dataset.get("points")
+        if not isinstance(dataset.get("points"), list):
+            return None
         return [
             dataset["points"][int(index)]
             for index in slice_spec["flat_bins"]
@@ -3396,6 +3400,7 @@ def _pp_reference_overlay_points(
     elif measurement["postprocessor"] in {
         "compass_sidis_a1", "compass_sidis_multiplicity",
         "hermes_sidis_multiplicity", "compass_sidis_charge_ratio",
+        "compass_sidis_pt_slope", "sidis_azimuthal_moment",
     }:
         observables = tuple(snapshot.get("datasets", {})) + tuple(
             Path(str(slice_spec["rivet_path"])).name
@@ -3438,6 +3443,7 @@ def _pp_reference_overlay_points(
         elif measurement["postprocessor"] in {
             "compass_sidis_a1", "compass_sidis_multiplicity",
             "hermes_sidis_multiplicity", "compass_sidis_charge_ratio",
+            "compass_sidis_pt_slope", "sidis_azimuthal_moment",
         }:
             entry = _compass_reference_entry(snapshot, observable)
             if entry is None:
@@ -3447,6 +3453,8 @@ def _pp_reference_overlay_points(
             plotted_coordinate = "z_mean"
             if dataset.get("integrated_projection"):
                 plotted_coordinate = f"{dataset['axis']}_mean"
+            elif slice_spec is None and dataset.get("projection") in {"x", "z", "pt"}:
+                plotted_coordinate = f"{dataset['projection']}_mean"
             elif slice_spec is not None and slice_spec.get("plotted_dimension"):
                 plotted_coordinate = f"{slice_spec['plotted_dimension']}_mean"
             elif slice_spec is not None and dataset.get("density_widths") == ["z", "pt2"]:
@@ -3461,7 +3469,11 @@ def _pp_reference_overlay_points(
                         if is_a1
                         else (
                             mean_coordinate(point, plotted_coordinate)
-                            if slice_spec is not None or dataset.get("integrated_projection")
+                            if (
+                                slice_spec is not None
+                                or dataset.get("integrated_projection")
+                                or dataset.get("projection") in {"x", "z", "pt"}
+                            )
                             else float(point["flat_bin"]) + 0.5
                         )
                     ),
@@ -4073,6 +4085,96 @@ def _compass_sidis_prediction_sets(
     return output
 
 
+def _sidis_diagnostic_prediction_sets(
+    groups: Mapping[
+        tuple[Any, ...],
+        Mapping[str, Mapping[str, Sequence[Mapping[str, Any]]]],
+    ],
+    campaign_dir: Path,
+    measurement: Mapping[str, Any],
+    snapshot: Mapping[str, Any],
+) -> dict[tuple[Any, ...], dict[str, Any]]:
+    """Construct target-combined pT-slope or azimuthal predictions."""
+
+    analysis = str(measurement["analysis"]["name"])
+    variations = sorted(
+        {_sidis_variation_key(key) for key in groups},
+        key=lambda item: tuple(str(value) for value in item),
+    )
+    cache: dict[tuple[str, str, str], experimental.BinSeries] = {}
+    target_outputs = measurement["postprocess_config"]["target_outputs"]
+    output: dict[tuple[Any, ...], dict[str, Any]] = {}
+    for variation in variations:
+        prediction_set: dict[str, Any] = {}
+        for dataset_id, dataset in snapshot["datasets"].items():
+            published_target = str(dataset["published_target"])
+            if published_target not in target_outputs:
+                raise CampaignError(
+                    f"{measurement['id']}/{dataset_id} has unknown target "
+                    f"output {published_target}"
+                )
+            target_weights = {
+                str(component): float(weight)
+                for component, weight in target_outputs[published_target].items()
+            }
+            components = tuple(target_weights)
+            raw = dataset["raw_objects"]
+            if measurement["postprocessor"] == "compass_sidis_pt_slope":
+                spectra = _compass_component_samples(
+                    groups, variation, campaign_dir, analysis,
+                    str(raw["spectrum"]), ("00",), cache, components,
+                )
+                spectrum_binning = dataset["spectrum_binning"]
+                result = compass_sidis.pt2_slope_target_combination(
+                    spectra,
+                    target_weights,
+                    [float(value) for value in spectrum_binning["pt2_edges"]],
+                    len(dataset["points"]),
+                    int(snapshot["fit_policy"]["minimum_positive_bins"]),
+                )
+            else:
+                numerator = _compass_component_samples(
+                    groups, variation, campaign_dir, analysis,
+                    str(raw["numerator"]), ("00",), cache, components,
+                )
+                denominator = _compass_component_samples(
+                    groups, variation, campaign_dir, analysis,
+                    str(raw["denominator"]), ("00",), cache, components,
+                )
+                covariance_positive = _compass_component_samples(
+                    groups, variation, campaign_dir, analysis,
+                    str(raw["covariance_positive"]), ("00",), cache, components,
+                )
+                covariance_negative = _compass_component_samples(
+                    groups, variation, campaign_dir, analysis,
+                    str(raw["covariance_negative"]), ("00",), cache, components,
+                )
+                result = compass_sidis.azimuthal_target_combination(
+                    numerator,
+                    denominator,
+                    covariance_positive,
+                    covariance_negative,
+                    target_weights,
+                )
+            prediction_set[str(dataset_id)] = {
+                **result,
+                "published_target": published_target,
+            }
+            for slice_spec in dataset.get("slices", []):
+                observable = Path(str(slice_spec["rivet_path"])).name
+                indices = [int(index) for index in slice_spec["flat_bins"]]
+                prediction_set[observable] = {
+                    "edges": [float(value) for value in slice_spec["edges"]],
+                    "values": [result["values"][index] for index in indices],
+                    "errors": [result["errors"][index] for index in indices],
+                    "published_target": published_target,
+                    "parent_dataset": str(dataset_id),
+                    "flat_bins": indices,
+                }
+        output[variation] = prediction_set
+    return output
+
+
 def _sidis_pull_bins(
     prediction: Mapping[str, Any], dataset: Mapping[str, Any]
 ) -> list[float | None]:
@@ -4114,9 +4216,201 @@ def _primary_reference_observable(
     if measurement["postprocessor"] in {
         "compass_sidis_a1", "compass_sidis_multiplicity",
         "hermes_sidis_multiplicity", "compass_sidis_charge_ratio",
+        "compass_sidis_pt_slope", "sidis_azimuthal_moment",
     }:
-        return _compass_reference_entry(snapshot, observable) is not None
+        entry = _compass_reference_entry(snapshot, observable)
+        return entry is not None and bool(entry[0].get("data_available", True))
     return True
+
+
+def postprocess_sidis_diagnostic(
+    args: argparse.Namespace, measurement: Mapping[str, Any]
+) -> Path:
+    """Postprocess the lower-dimensional pT and azimuthal SIDIS diagnostics."""
+
+    campaign_dir = _campaign_dir(measurement["id"], args.tag)
+    manifest_path = campaign_dir / experimental.MANIFEST_NAME
+    if not manifest_path.exists():
+        raise CampaignError(f"No prepared campaign at {campaign_dir}")
+    manifest = _load_json(manifest_path)
+    _assert_manifest_signature_current(manifest, measurement)
+    groups = _logical_sidis_groups(manifest, campaign_dir, measurement)
+    prediction_path = campaign_dir / "postprocess" / "prediction.yoda"
+    if args.dry_run:
+        print(json.dumps({
+            "measurement": measurement["id"],
+            "target_variation_groups": len(groups),
+            "postprocessor": measurement["postprocessor"],
+            "output": str(prediction_path),
+        }, indent=2))
+        return prediction_path
+
+    snapshot = _measurement_snapshot(measurement)
+    predictions = _sidis_diagnostic_prediction_sets(
+        groups, campaign_dir, measurement, snapshot
+    )
+    nominal_mpi = measurement["families"]["nominal"]["mpi"]
+    central_key = ("nominal", "sidis", 0, 0, 1.0, nominal_mpi)
+    if central_key not in predictions:
+        raise CampaignError(
+            f"Missing central SIDIS diagnostic prediction {central_key}"
+        )
+    central = predictions[central_key]
+    bands = aggregate_uncertainties(predictions, measurement)
+    yoda = experimental._import_yoda()
+    objects: list[Any] = []
+    for observable, prediction in central.items():
+        reference_path = _reference_path(measurement, observable, snapshot)
+        if reference_path is None:
+            continue
+        target_output = str(prediction.get("published_target", "D"))
+        target_weights = measurement["postprocess_config"]["target_outputs"].get(
+            target_output
+        )
+        observable_definition = (
+            "target-combined low-pT2 yield fitted to A exp(-pT2/<pT2>)"
+            if measurement["postprocessor"] == "compass_sidis_pt_slope"
+            else (
+                "target-combined sum[2 cos(n phi)] / sum[epsilon_n(y)]"
+                if measurement["id"].startswith("COMPASS_")
+                else "target-combined sum[cos(n phi)] / identified-hadron yield"
+            )
+        )
+        objects.append(_estimate_with_bands(
+            yoda,
+            prediction,
+            reference_path,
+            {
+                "Generator": "HerwigPol POWHEG NLO+PS",
+                "HardProcessAccuracy": "NLO",
+                "NLOCombination": "normalized POSNLO+NEGNLO bins",
+                "TargetCombination": json.dumps(target_weights, sort_keys=True),
+                "ObservableDefinition": observable_definition,
+                "DiagnosticOnly": 1,
+                "ExperimentalCorrectionsAppliedToHerwig": "none",
+            },
+            bands.get(observable),
+        ))
+
+    flat_predictions = {
+        dataset_id: central[dataset_id]
+        for dataset_id in snapshot["datasets"]
+    }
+    if any(
+        dataset.get("data_available", True)
+        for dataset in snapshot["datasets"].values()
+    ):
+        goodness: Mapping[str, Any] = (
+            compass_sidis.diagonal_multiplicity_goodness_of_fit(
+                flat_predictions, snapshot
+            )
+        )
+    else:
+        goodness = {
+            "status": "not evaluated: official numerical release is not vendored",
+            "policy": "no pseudo-data or covariance entries are fabricated",
+        }
+
+    rows: list[dict[str, Any]] = []
+    for dataset_id, dataset in snapshot["datasets"].items():
+        prediction = central[dataset_id]
+        points = dataset.get("points")
+        if not isinstance(points, list):
+            points = [{} for _ in prediction["values"]]
+        for index, point in enumerate(points):
+            rows.append({
+                "measurement": measurement["id"],
+                "dataset": dataset_id,
+                "published_target": dataset.get("published_target"),
+                "harmonic": dataset.get("harmonic"),
+                "projection": dataset.get("projection"),
+                "bin": index + 1,
+                "flat_bin": int(point.get("flat_bin", index)),
+                "x_low": point.get("x_low"),
+                "x_high": point.get("x_high"),
+                "q2_low": point.get("q2_low"),
+                "q2_high": point.get("q2_high"),
+                "y_low": point.get("y_low"),
+                "y_high": point.get("y_high"),
+                "z_low": point.get("z_low"),
+                "z_high": point.get("z_high"),
+                "pt_low": point.get("pt_low"),
+                "pt_high": point.get("pt_high"),
+                "theory": prediction["values"][index],
+                "mc_stat": prediction["errors"][index],
+                "data": point.get("value"),
+                "data_stat": point.get("stat"),
+                "data_systematic": point.get("systematic"),
+            })
+
+    output_dir = campaign_dir / "postprocess"
+    output_dir.mkdir(parents=True, exist_ok=True)
+    experimental._write_yoda_objects(yoda, objects, prediction_path)
+    if not experimental._nonempty(prediction_path):
+        raise CampaignError(f"Postprocessing produced empty output {prediction_path}")
+    summary = {
+        "measurement": measurement["id"],
+        "tag": args.tag,
+        "diagnostic_only": True,
+        "hard_process_accuracy": "POWHEG NLO+PS",
+        "central_sample_label": measurement["families"]["nominal"]["label"],
+        "nlo_combination": (
+            "shards combined within each contribution, then normalized "
+            "POSNLO and NEGNLO bins added"
+        ),
+        "raw_object_inventory": {
+            dataset_id: dict(dataset["raw_objects"])
+            for dataset_id, dataset in snapshot["datasets"].items()
+        },
+        "prediction_object_count": len(objects),
+        "uncertainties": bands,
+        "goodness_of_fit": goodness,
+        "masked_bins": {
+            dataset_id: [
+                index + 1
+                for index, value in enumerate(central[dataset_id]["values"])
+                if value is None
+            ]
+            for dataset_id in snapshot["datasets"]
+        },
+        "systematic_model": snapshot.get(
+            "systematics", "not available because numerical data are not vendored"
+        ),
+        "reference_provenance": snapshot["provenance"],
+        "variations": {
+            _variation_id(key): {
+                dataset_id: prediction_set[dataset_id]
+                for dataset_id in snapshot["datasets"]
+            }
+            for key, prediction_set in predictions.items()
+        },
+    }
+    experimental.atomic_write_json(output_dir / "summary.json", summary)
+    with (output_dir / "central.csv").open(
+        "w", encoding="utf-8", newline=""
+    ) as stream:
+        writer = csv.DictWriter(stream, fieldnames=list(rows[0]))
+        writer.writeheader()
+        writer.writerows(rows)
+
+    manifest["postprocess"] = {
+        "created_at": experimental.utc_now(),
+        "prediction": str(prediction_path.relative_to(campaign_dir)),
+        "predictions": [{
+            "family": "nominal",
+            "label": measurement["families"]["nominal"]["label"],
+            "path": str(prediction_path.relative_to(campaign_dir)),
+        }],
+        "summary": "postprocess/summary.json",
+        "central_csv": "postprocess/central.csv",
+    }
+    manifest["updated_at"] = experimental.utc_now()
+    manifest["history"].append(
+        {"at": experimental.utc_now(), "action": "postprocess"}
+    )
+    experimental.atomic_write_json(manifest_path, manifest)
+    print(f"Wrote normalized SIDIS diagnostic predictions to {prediction_path}")
+    return prediction_path
 
 
 def postprocess_compass_sidis(
@@ -5966,6 +6260,10 @@ def main(argv: Sequence[str] | None = None) -> int:
             run_pp(args, measurement)
         elif args.command == "postprocess":
             if measurement["postprocessor"] in {
+                "compass_sidis_pt_slope", "sidis_azimuthal_moment",
+            }:
+                postprocess_sidis_diagnostic(args, measurement)
+            elif measurement["postprocessor"] in {
                 "compass_sidis_a1", "compass_sidis_multiplicity",
                 "hermes_sidis_multiplicity", "compass_sidis_charge_ratio",
             }:
@@ -5981,6 +6279,10 @@ def main(argv: Sequence[str] | None = None) -> int:
             if not args.dry_run:
                 run_pp(args, measurement)
                 if measurement["postprocessor"] in {
+                    "compass_sidis_pt_slope", "sidis_azimuthal_moment",
+                }:
+                    postprocess_sidis_diagnostic(args, measurement)
+                elif measurement["postprocessor"] in {
                     "compass_sidis_a1", "compass_sidis_multiplicity",
                     "hermes_sidis_multiplicity", "compass_sidis_charge_ratio",
                 }:

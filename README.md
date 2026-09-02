@@ -1,8 +1,9 @@
 # Herwig Polarized Phenomenology
 
 This repository contains the experimental-data phenomenology layer built on
-Herwig Polarized: twenty-one Rivet analyses (nineteen data-linked measurements
-and the internal `MC_POLDIJETS` and `MC_POLJETSHAPES` controls), the
+Herwig Polarized: twenty-four Rivet analyses (twenty-one data-linked
+measurements and the internal `MC_POLDIJETS`, `MC_POLJETSHAPES`, and
+exact-bin HERMES azimuthal diagnostic), the
 registry-driven campaign runner,
 checksum-pinned reference inputs, postprocessing and plotting code, focused
 tests, and the JHEP manuscript *Phenomenological Investigations of Polarized
@@ -14,7 +15,7 @@ ordinary YODA/plot products.
 
 ## Repository layout
 
-- `analyses/rivet/{dis,pp}/`: the nineteen data-linked Rivet analyses and their
+- `analyses/rivet/{dis,pp}/`: the twenty-one data-linked Rivet analyses and their
   vendored or deterministically generated reference YODA inputs, plus the
   internal `MC_POLDIJETS` and particle-level `MC_POLJETSHAPES` shower-spin
   measurements;
@@ -88,6 +89,10 @@ documented in
 The six-analysis SIDIS tranche/charge-ratio suite, schema-6 target contract,
 source hierarchy and production gates are documented in
 [`docs/sidis-tranches-workflow.md`](docs/sidis-tranches-workflow.md).
+The lower-dimensional COMPASS transverse-momentum result and the COMPASS/HERMES
+unpolarized azimuthal diagnostics, including ready-to-run commands, are
+documented in
+[`docs/sidis-diagnostics-workflow.md`](docs/sidis-diagnostics-workflow.md).
 
 The synchronized 2026-08-19 corrected-production workflow, including the
 STAR 510 GeV generator-cut gate and the explicit no-production preparation

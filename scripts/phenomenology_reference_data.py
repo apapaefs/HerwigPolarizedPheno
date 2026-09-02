@@ -536,6 +536,7 @@ def write_reference_yoda(measurement: str, snapshot: Mapping[str, Any] | None = 
 import polarized_jet_sidis_reference_data as _jet_sidis_reference
 import compass_sidis_reference_data as _compass_sidis_reference
 import sidis_tranche_reference_data as _sidis_tranche_reference
+import sidis_diagnostic_reference_data as _sidis_diagnostic_reference
 
 for _measurement in _jet_sidis_reference.MEASUREMENTS:
     SOURCES.setdefault(_measurement, [])
@@ -543,12 +544,16 @@ for _measurement in _compass_sidis_reference.MEASUREMENTS:
     SOURCES.setdefault(_measurement, [])
 for _measurement in _sidis_tranche_reference.MEASUREMENTS:
     SOURCES.setdefault(_measurement, [])
+for _measurement in _sidis_diagnostic_reference.MEASUREMENTS:
+    SOURCES.setdefault(_measurement, [])
 REFERENCE_PATHS.update(_jet_sidis_reference.REFERENCE_PATHS)
 REFERENCE_YODA_PATHS.update(_jet_sidis_reference.REFERENCE_YODA_PATHS)
 REFERENCE_PATHS.update(_compass_sidis_reference.REFERENCE_PATHS)
 REFERENCE_YODA_PATHS.update(_compass_sidis_reference.REFERENCE_YODA_PATHS)
 REFERENCE_PATHS.update(_sidis_tranche_reference.REFERENCE_PATHS)
 REFERENCE_YODA_PATHS.update(_sidis_tranche_reference.REFERENCE_YODA_PATHS)
+REFERENCE_PATHS.update(_sidis_diagnostic_reference.REFERENCE_PATHS)
+REFERENCE_YODA_PATHS.update(_sidis_diagnostic_reference.REFERENCE_YODA_PATHS)
 
 _legacy_normalized_from_raw = normalized_from_raw
 _legacy_validate_vendored = validate_vendored
@@ -581,7 +586,20 @@ def _translate_sidis_tranche_error(
         raise ReferenceDataError(str(exc)) from exc
 
 
+def _translate_sidis_diagnostic_error(
+    function: Any, *args: Any, **kwargs: Any
+) -> Any:
+    try:
+        return function(*args, **kwargs)
+    except _sidis_diagnostic_reference.SIDISDiagnosticDataError as exc:
+        raise ReferenceDataError(str(exc)) from exc
+
+
 def normalized_from_raw(measurement: str) -> dict[str, Any]:
+    if measurement in _sidis_diagnostic_reference.MEASUREMENTS:
+        return _translate_sidis_diagnostic_error(
+            _sidis_diagnostic_reference.normalized_from_raw, measurement
+        )
     if measurement in _sidis_tranche_reference.MEASUREMENTS:
         return _translate_sidis_tranche_error(
             _sidis_tranche_reference.normalized_from_raw, measurement
@@ -600,6 +618,12 @@ def normalized_from_raw(measurement: str) -> dict[str, Any]:
 def validate_vendored(
     measurement: str, *, full_covariance: bool = False
 ) -> dict[str, Any]:
+    if measurement in _sidis_diagnostic_reference.MEASUREMENTS:
+        return _translate_sidis_diagnostic_error(
+            _sidis_diagnostic_reference.validate_vendored,
+            measurement,
+            full_covariance=full_covariance,
+        )
     if measurement in _sidis_tranche_reference.MEASUREMENTS:
         return _translate_sidis_tranche_error(
             _sidis_tranche_reference.validate_vendored,
@@ -626,6 +650,13 @@ def fetch_and_validate(
     cache_directory: Path | None = None,
     source_file: Path | None = None,
 ) -> list[Path]:
+    if measurement in _sidis_diagnostic_reference.MEASUREMENTS:
+        return _translate_sidis_diagnostic_error(
+            _sidis_diagnostic_reference.fetch_and_validate,
+            measurement,
+            cache_directory,
+            source_file,
+        )
     if measurement in _sidis_tranche_reference.MEASUREMENTS:
         if source_file is not None:
             raise ReferenceDataError(
@@ -663,6 +694,12 @@ def fetch_and_validate(
 def write_reference_yoda(
     measurement: str, snapshot: Mapping[str, Any] | None = None
 ) -> Path:
+    if measurement in _sidis_diagnostic_reference.MEASUREMENTS:
+        return _translate_sidis_diagnostic_error(
+            _sidis_diagnostic_reference.write_reference_yoda,
+            measurement,
+            snapshot,
+        )
     if measurement in _sidis_tranche_reference.MEASUREMENTS:
         return _translate_sidis_tranche_error(
             _sidis_tranche_reference.write_reference_yoda,

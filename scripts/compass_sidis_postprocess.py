@@ -234,6 +234,180 @@ def multiplicity_isoscalar(
     )
 
 
+def azimuthal_target_combination(
+    numerators: Mapping[str, experimental.BinSeries],
+    denominators: Mapping[str, experimental.BinSeries],
+    covariance_positive: Mapping[str, experimental.BinSeries],
+    covariance_negative: Mapping[str, experimental.BinSeries],
+    target_weights: Mapping[str, float],
+) -> dict[str, Any]:
+    """Form a cosine amplitude after target combination.
+
+    Rivet stores a signed same-event numerator--denominator covariance as the
+    difference of the ``sumW2`` arrays of two non-negative proxy histograms.
+    Target components are combined before the ratio, exactly as for the
+    multiplicity estimators.
+    """
+
+    labels = set(target_weights)
+    first = _check_series(
+        (numerators, denominators, covariance_positive, covariance_negative),
+        labels,
+    )
+    values: list[float | None] = []
+    errors: list[float | None] = []
+    covariances: list[float] = []
+    for index in range(len(first.values)):
+        numerator = sum(
+            float(weight) * numerators[target].values[index]
+            for target, weight in target_weights.items()
+        )
+        numerator_variance = sum(
+            float(weight) ** 2 * numerators[target].variances[index]
+            for target, weight in target_weights.items()
+        )
+        denominator = sum(
+            float(weight) * denominators[target].values[index]
+            for target, weight in target_weights.items()
+        )
+        denominator_variance = sum(
+            float(weight) ** 2 * denominators[target].variances[index]
+            for target, weight in target_weights.items()
+        )
+        covariance = sum(
+            float(weight) ** 2
+            * (
+                covariance_positive[target].variances[index]
+                - covariance_negative[target].variances[index]
+            )
+            for target, weight in target_weights.items()
+        )
+        if denominator <= 0.0:
+            value, error = None, None
+        else:
+            value, error = experimental.ratio_with_covariance(
+                numerator,
+                numerator_variance,
+                denominator,
+                denominator_variance,
+                covariance,
+            )
+        values.append(value)
+        errors.append(error)
+        covariances.append(covariance)
+    return {
+        "edges": list(first.edges),
+        "values": values,
+        "errors": errors,
+        "numerator_denominator_covariance": covariances,
+    }
+
+
+def pt2_slope_target_combination(
+    spectra: Mapping[str, experimental.BinSeries],
+    target_weights: Mapping[str, float],
+    pt2_edges: Sequence[float],
+    slope_cells: int,
+    minimum_positive_bins: int = 3,
+) -> dict[str, Any]:
+    """Fit ``A exp(-pT2/slope)`` in every target-combined spectrum cell.
+
+    The inclusive-DIS denominator and z-bin width are constant throughout one
+    fitted spectrum, so neither changes its exponential inverse slope.  The
+    fit therefore uses the normalized, signed-NLO hadron yield directly after
+    the target sum.  A weighted straight-line fit to ``log(dY/dpT2)`` gives the
+    slope and its Monte Carlo error.
+    """
+
+    labels = set(target_weights)
+    first = _check_series((spectra,), labels)
+    bins_per_cell = len(pt2_edges) - 1
+    if (
+        bins_per_cell < minimum_positive_bins
+        or slope_cells <= 0
+        or len(first.values) != slope_cells * bins_per_cell
+        or any(
+            not math.isfinite(float(high))
+            or float(high) <= float(low)
+            for low, high in zip(pt2_edges, pt2_edges[1:])
+        )
+    ):
+        raise experimental.CampaignError(
+            "SIDIS pT2 spectrum layout does not match the slope fit"
+        )
+
+    combined_values = [
+        sum(
+            float(weight) * spectra[target].values[index]
+            for target, weight in target_weights.items()
+        )
+        for index in range(len(first.values))
+    ]
+    combined_variances = [
+        sum(
+            float(weight) ** 2 * spectra[target].variances[index]
+            for target, weight in target_weights.items()
+        )
+        for index in range(len(first.values))
+    ]
+    values: list[float | None] = []
+    errors: list[float | None] = []
+    retained_bins: list[list[int]] = []
+    for cell in range(slope_cells):
+        x_values: list[float] = []
+        log_values: list[float] = []
+        weights: list[float] = []
+        retained: list[int] = []
+        for pt2_bin, (low, high) in enumerate(zip(pt2_edges, pt2_edges[1:])):
+            index = cell * bins_per_cell + pt2_bin
+            width = float(high) - float(low)
+            value = combined_values[index] / width
+            variance = combined_variances[index] / (width * width)
+            if value <= 0.0 or variance <= 0.0 or not all(
+                math.isfinite(item) for item in (value, variance)
+            ):
+                continue
+            x_values.append(.5 * (float(low) + float(high)))
+            log_values.append(math.log(value))
+            weights.append(value * value / variance)
+            retained.append(pt2_bin)
+        retained_bins.append(retained)
+        if len(retained) < minimum_positive_bins:
+            values.append(None)
+            errors.append(None)
+            continue
+        total_weight = sum(weights)
+        weighted_x = sum(w * x for w, x in zip(weights, x_values))
+        weighted_y = sum(w * y for w, y in zip(weights, log_values))
+        weighted_xx = sum(w * x * x for w, x in zip(weights, x_values))
+        weighted_xy = sum(
+            w * x * y for w, x, y in zip(weights, x_values, log_values)
+        )
+        determinant = total_weight * weighted_xx - weighted_x * weighted_x
+        if determinant <= 0.0:
+            values.append(None)
+            errors.append(None)
+            continue
+        exponent = (
+            total_weight * weighted_xy - weighted_x * weighted_y
+        ) / determinant
+        if exponent >= 0.0 or not math.isfinite(exponent):
+            values.append(None)
+            errors.append(None)
+            continue
+        exponent_variance = total_weight / determinant
+        slope = -1.0 / exponent
+        slope_error = math.sqrt(exponent_variance) / (exponent * exponent)
+        values.append(slope)
+        errors.append(slope_error)
+    return {
+        "edges": [float(index) for index in range(slope_cells + 1)],
+        "values": values,
+        "errors": errors,
+        "retained_pt2_bins": retained_bins,
+    }
+
+
 def charge_ratio_target_combination(
     negative_yields: Mapping[str, experimental.BinSeries],
     positive_yields: Mapping[str, experimental.BinSeries],

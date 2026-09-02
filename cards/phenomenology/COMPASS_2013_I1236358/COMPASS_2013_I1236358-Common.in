@@ -1,0 +1,76 @@
+# -*- ThePEG-repository -*-
+
+############################################################
+# COMPASS 2013 charged-hadron pT slopes at 160 GeV
+############################################################
+
+read snippets/EPCollider.in
+read snippets/PolarizedEP.in
+read snippets/FixedTarget.in
+
+set /Herwig/Particles/mu-:PDF /Herwig/Partons/NoPDF
+set /Herwig/Particles/mu+:PDF /Herwig/Partons/NoPDF
+set /Herwig/EventHandlers/EventHandler:BeamA /Herwig/Particles/mu+
+set /Herwig/EventHandlers/EventHandler:BeamB /Herwig/Particles/p+
+set /Herwig/EventHandlers/FixedTargetLuminosity:BeamParticle /Herwig/Particles/mu+
+set /Herwig/EventHandlers/FixedTargetLuminosity:BeamEMaxA 160.0*GeV
+set /Herwig/EventHandlers/FixedTargetLuminosity:TargetParticle /Herwig/Particles/p+
+set /Herwig/EventHandlers/EventHandler:LuminosityFunction /Herwig/EventHandlers/FixedTargetLuminosity
+
+create ThePEG::LHAPDF /Herwig/Partons/COMPASSSIDISPDF ThePEGLHAPDF.so
+set /Herwig/Partons/COMPASSSIDISPDF:PDFName NNPDF40_nlo_pch_as_01180
+set /Herwig/Partons/COMPASSSIDISPDF:RemnantHandler /Herwig/Partons/HadronRemnants
+set /Herwig/Particles/p+:PDF /Herwig/Partons/COMPASSSIDISPDF
+set /Herwig/Particles/n0:PDF /Herwig/Partons/COMPASSSIDISPDF
+
+create ThePEG::LHAPDF /Herwig/Partons/COMPASSSIDISDiffPDF
+set /Herwig/Partons/COMPASSSIDISDiffPDF:PDFName NNPDFpol20_nlo_as_01180
+set /Herwig/Partons/COMPASSSIDISDiffPDF:RemnantHandler /Herwig/Partons/HadronRemnants
+
+set /Herwig/Partons/HardLOPDF:PDFName NNPDF40_nlo_pch_as_01180
+set /Herwig/Partons/HardNLOPDF:PDFName NNPDF40_nlo_pch_as_01180
+set /Herwig/Partons/ShowerLOPDF:PDFName NNPDF40_nlo_pch_as_01180
+set /Herwig/Partons/ShowerNLOPDF:PDFName NNPDF40_nlo_pch_as_01180
+set /Herwig/Partons/EPPolarizedExtractor:SecondPDF /Herwig/Partons/COMPASSSIDISPDF
+set /Herwig/Partons/EPPolarizedExtractor:SecondLongitudinalDifferencePDF /Herwig/Partons/COMPASSSIDISDiffPDF
+set /Herwig/Shower/ShowerHandler:PDFB /Herwig/Partons/ShowerLOPDF
+set /Herwig/Partons/RemnantDecayer:DISOneRemnantFallback RelaxMass
+
+set /Herwig/EventHandlers/EventHandler:Cuts:ScaleMin 0.0*GeV2
+set /Herwig/EventHandlers/EventHandler:Cuts:X1Min 1.0e-6
+set /Herwig/EventHandlers/EventHandler:Cuts:X2Min 1.0e-6
+set /Herwig/EventHandlers/EventHandler:Cuts:MHatMin 0.0*GeV
+set /Herwig/Cuts/NeutralCurrentCut:MinQ2 1.0*GeV2
+set /Herwig/Cuts/NeutralCurrentCut:MaxQ2 1.0e10*GeV2
+set /Herwig/Cuts/NeutralCurrentCut:Miny .10
+set /Herwig/Cuts/NeutralCurrentCut:Maxy .90
+set /Herwig/Cuts/NeutralCurrentCut:MinW2 25.0*GeV2
+set /Herwig/Cuts/NeutralCurrentCut:MaxW2 1.0e10*GeV2
+
+set /Herwig/Shower/ShowerHandler:Interactions QCD
+set /Herwig/Shower/ShowerHandler:MPIHandler NULL
+set /Herwig/Shower/PowhegShowerHandler:MPIHandler NULL
+set /Herwig/DipoleShower/DipoleShowerHandler:MPIHandler NULL
+set /Herwig/Shower/ShowerHandler:HardEmission POWHEG
+set /Herwig/Shower/ShowerHandler:SpinCorrelations Yes
+
+set /Herwig/Samplers/Sampler:BinSampler:InitialPoints 10000
+set /Herwig/MatrixElements/MEDISNC:UseNativeDISWindowGeneration Yes
+set /Herwig/MatrixElements/MEDISNCPol:UseNativeDISWindowGeneration Yes
+set /Herwig/MatrixElements/PowhegMEDISNC:UseNativeDISWindowGeneration Yes
+set /Herwig/MatrixElements/PowhegMEDISNCPol:UseNativeDISWindowGeneration Yes
+insert /Herwig/MatrixElements/SubProcess:MatrixElements[0] /Herwig/MatrixElements/PowhegMEDISNCPol
+set /Herwig/MatrixElements/PowhegMEDISNCPol:GammaZ Gamma
+set /Herwig/MatrixElements/PowhegMEDISNCPol:UsePOWHEGRealSpinVertex Yes
+
+set /Herwig/Model:QCD/RunningAlphaS /Herwig/Couplings/NLOAlphaS
+set /Herwig/Model:QCD/AlphaS 0.118
+
+cd /Herwig/Generators
+set EventGenerator:DebugLevel 0
+set EventGenerator:PrintEvent 0
+set EventGenerator:DumpPeriod -1
+set EventGenerator:MaxWarnings 20
+set EventGenerator:MaxErrors 1000000
+read snippets/Rivet.in
+insert /Herwig/Analysis/Rivet:Analyses 0 COMPASS_2013_I1236358
