@@ -98,12 +98,15 @@ boundaries and invariance under a common boost. Numerical tests cover exact
 harmonics, excluded bins, finite-difference error propagation, target sums,
 integrated exponentials, negative bins, sparse tails and singular covariance.
 
-The clean test suite generates the intentionally untracked COMPASS 2020
-reference YODA in a temporary directory, so it needs no prior fetch-data run.
+The clean test suite generates the intentionally untracked COMPASS 2013,
+2014 and 2020 reference YODA in temporary directories, so it needs no prior
+fetch-data run.
 
 Validation completed with `herwig/pol`, Rivet 4.1.2 and YODA 2.1.2:
 
-- All 24 plugin registrations compile and load; 208 Python tests pass.
+- All 24 plugin registrations compile and load; 195 tracked Python tests pass
+  in a clean checkout. The full local suite passes 208 tests, including 13
+  tests of the separate, uncommitted SIDIS browser work.
 - All nine event fixtures pass, including covariance serialization to YODA.
 - Fresh 100-event-per-job campaigns pass generation and postprocessing for
   COMPASS 2013 (four jobs, 48 prediction objects), 2014 (four jobs, 112 objects)

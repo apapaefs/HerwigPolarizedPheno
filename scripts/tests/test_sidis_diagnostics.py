@@ -7,7 +7,9 @@ import hashlib
 import json
 import math
 import sys
+import tempfile
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 
 
@@ -18,6 +20,7 @@ import compass_sidis_postprocess as postprocess  # noqa: E402
 import phenomenology_reference_data as reference  # noqa: E402
 import run_experimental_campaign as experimental  # noqa: E402
 import run_phenomenology_campaign as campaign  # noqa: E402
+import sidis_diagnostic_reference_data as diagnostic_reference  # noqa: E402
 
 
 EXTERNAL_IDS = ("COMPASS_2013_I1236358", "COMPASS_2014_I1278730")
@@ -70,6 +73,10 @@ class DiagnosticReferenceTests(unittest.TestCase):
                 self.assertAlmostEqual(point["systematic"], 2.0 * point["stat"])
 
     def test_source_manifests_and_reference_yoda(self) -> None:
+        try:
+            import yoda
+        except (ImportError, OSError):
+            self.skipTest("YODA Python bindings are not active")
         expected_objects = {
             "COMPASS_2013_I1236358": 48,
             "COMPASS_2014_I1278730": 112,
@@ -83,13 +90,16 @@ class DiagnosticReferenceTests(unittest.TestCase):
                 hashlib.sha256(source.read_bytes()).hexdigest(),
                 manifest["source"]["sha256"],
             )
-            with gzip.open(
-                ROOT / f"analyses/rivet/dis/{identifier}.yoda.gz",
-                "rt", encoding="utf-8",
-            ) as stream:
-                objects = sum(
-                    line.startswith("BEGIN YODA_ESTIMATE1D") for line in stream
-                )
+            with tempfile.TemporaryDirectory() as directory:
+                output = str(Path(directory) / "reference.yoda.gz")
+                with patch.dict(diagnostic_reference.REFERENCE_YODA_PATHS,
+                                {identifier: output}):
+                    reference.write_reference_yoda(
+                        identifier, reference.validate_vendored(identifier))
+                with gzip.open(output, "rt", encoding="utf-8") as stream:
+                    objects = sum(
+                        line.startswith("BEGIN YODA_ESTIMATE1D") for line in stream
+                    )
             self.assertEqual(objects, count)
 
     def test_hermes_exact_bin_definition_has_no_pseudodata(self) -> None:

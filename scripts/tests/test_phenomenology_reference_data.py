@@ -14,6 +14,7 @@ DISPOL_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(DISPOL_ROOT / "scripts"))
 import phenomenology_reference_data as reference  # noqa: E402
 import sidis_tranche_reference_data as tranche_reference  # noqa: E402
+import sidis_diagnostic_reference_data as diagnostic_reference  # noqa: E402
 
 
 SNAPSHOTS = {
@@ -185,14 +186,17 @@ class PinnedReferenceTests(unittest.TestCase):
         except (ImportError, OSError):
             self.skipTest("YODA Python bindings are not active")
         for identifier, relative in reference.REFERENCE_YODA_PATHS.items():
-            if identifier == "COMPASS_2020_I1788430":
-                # This generated product is intentionally not tracked. Exercise
-                # its writer in temporary storage, even in a fresh checkout.
+            if (identifier == "COMPASS_2020_I1788430"
+                    or identifier in diagnostic_reference.REFERENCE_YODA_PATHS):
+                # These generated products are intentionally not tracked.
+                # Exercise their writers in temporary storage in every checkout.
                 snapshot = reference.validate_vendored(identifier)
+                paths = (tranche_reference.REFERENCE_YODA_PATHS
+                         if identifier == "COMPASS_2020_I1788430"
+                         else diagnostic_reference.REFERENCE_YODA_PATHS)
                 with tempfile.TemporaryDirectory() as directory:
                     output = str(Path(directory) / "reference.yoda.gz")
-                    with patch.dict(tranche_reference.REFERENCE_YODA_PATHS,
-                                    {identifier: output}):
+                    with patch.dict(paths, {identifier: output}):
                         reference.write_reference_yoda(identifier, snapshot)
                     objects = yoda.read(output)
             else:
