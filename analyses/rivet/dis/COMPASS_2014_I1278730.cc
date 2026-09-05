@@ -1,6 +1,6 @@
 // -*- C++ -*-
 #include "COMPASSSIDIS.hh"
-#include "SIDISAzimuthal.hh"
+#include "SIDISBinnedFits.hh"
 #include "Rivet/Analysis.hh"
 #include "Rivet/Projections/FinalState.hh"
 #include "Rivet/Projections/PromptFinalState.hh"
@@ -16,11 +16,11 @@ namespace Rivet {
     RIVET_DEFAULT_ANALYSIS_CTOR(COMPASS_2014_I1278730);
 
     struct Histograms {
-      Histo1DPtr numerator, denominator, covariancePositive, covarianceNegative;
+      Histo1DPtr inputs, covariance;
     };
 
     struct EventValues {
-      std::vector<double> numerator, denominator;
+      std::vector<double> inputs;
     };
 
     void init() {
@@ -69,11 +69,8 @@ namespace Rivet {
       _acceptedY->fill(dis.y);
       std::map<std::string, EventValues> values;
       for (const auto& entry : _histograms) {
-        const size_t size = entry.second.numerator->numBins();
         values[entry.first] = {
-          std::vector<double>(size, 0.0),
-          std::vector<double>(size, 0.0),
-        };
+          std::vector<double>(entry.second.inputs->numBins(), 0.)};
       }
 
       for (const Particle& particle :
@@ -96,21 +93,23 @@ namespace Rivet {
         const int ipt3 = SIDISAzimuthal::binIndex(
           hadron.transverseMomentum, _pt3Edges);
         for (int harmonic : {1, 2}) {
-          const double numerator =
-            2.0*SIDISAzimuthal::cosineHarmonic(phi, harmonic);
-          const double denominator = SIDISAzimuthal::epsilon(dis.y, harmonic);
+          double phiValue = std::atan2(phi.sine, phi.cosine);
+          if (phiValue < 0.) phiValue += 2.*M_PI;
+          const size_t phiBin = std::min(size_t(15),
+            size_t(phiValue/(2.*M_PI)*16.));
+          const double epsilon = SIDISAzimuthal::epsilon(dis.y, harmonic);
           accumulate(values[key(charge, harmonic, "x")], ix,
-                     numerator, denominator);
+                     phiBin, epsilon);
           accumulate(values[key(charge, harmonic, "z")], iz,
-                     numerator, denominator);
+                     phiBin, epsilon);
           accumulate(values[key(charge, harmonic, "pt")], ipt,
-                     numerator, denominator);
+                     phiBin, epsilon);
           const int flat =
             (ix3 < 0 || iz3 < 0 || ipt3 < 0) ? -1
             : (ix3*int(_z3Edges.size()-1) + iz3)
               *int(_pt3Edges.size()-1) + ipt3;
           accumulate(values[key(charge, harmonic, "x_z_pt")], flat,
-                     numerator, denominator);
+                     phiBin, epsilon);
         }
         _acceptedZ->fill(hadron.z);
         _acceptedPt->fill(hadron.transverseMomentum);
@@ -119,13 +118,9 @@ namespace Rivet {
 
       for (const auto& entry : values) {
         Histograms& histograms = _histograms.at(entry.first);
-        SIDISAzimuthal::fillEventBins(
-          histograms.numerator, entry.second.numerator);
-        SIDISAzimuthal::fillEventBins(
-          histograms.denominator, entry.second.denominator);
-        SIDISAzimuthal::fillSignedCovariance(
-          histograms.covariancePositive, histograms.covarianceNegative,
-          entry.second.numerator, entry.second.denominator);
+        SIDISAzimuthal::fillEventBins(histograms.inputs, entry.second.inputs);
+        SIDISAzimuthal::fillCellCovariance(
+          histograms.covariance, entry.second.inputs, 17);
       }
     }
 
@@ -146,25 +141,19 @@ namespace Rivet {
         const std::string& projection, size_t bins) {
       const std::string identifier = key(charge, harmonic, projection);
       Histograms& histograms = _histograms[identifier];
-      book(histograms.numerator, "MomentNumerator_" + identifier,
-           bins, 0.0, double(bins));
-      book(histograms.denominator, "DepolarizationDenominator_" + identifier,
-           bins, 0.0, double(bins));
-      book(histograms.covariancePositive, "CovariancePositive_" + identifier,
-           bins, 0.0, double(bins));
-      book(histograms.covarianceNegative, "CovarianceNegative_" + identifier,
-           bins, 0.0, double(bins));
-      _scaled.insert(_scaled.end(), {
-        histograms.numerator, histograms.denominator,
-        histograms.covariancePositive, histograms.covarianceNegative});
+      // 16 phi bins followed by the full-phi epsilon sum for each cell.
+      book(histograms.inputs, "AzimuthalInputs_" + identifier,
+           bins*17, 0., double(bins*17));
+      book(histograms.covariance, "AzimuthalCovariance_" + identifier,
+           bins*136, 0., double(bins*136));
+      _scaled.insert(_scaled.end(), {histograms.inputs, histograms.covariance});
     }
 
-    static void accumulate(
-        EventValues& values, int index,
-        double numerator, double denominator) {
+    static void accumulate(EventValues& values, int index,
+                           size_t phiBin, double epsilon) {
       if (index < 0) return;
-      values.numerator[size_t(index)] += numerator;
-      values.denominator[size_t(index)] += denominator;
+      values.inputs[size_t(index)*17 + phiBin] += 1.;
+      values.inputs[size_t(index)*17 + 16] += epsilon;
     }
 
     std::vector<double> _xEdges, _zEdges, _ptEdges;

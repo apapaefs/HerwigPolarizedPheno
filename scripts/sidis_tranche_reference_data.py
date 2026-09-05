@@ -368,7 +368,10 @@ def normalize_modern_compass(measurement: str) -> dict[str, Any]:
         "selection": {
             "q2_min_gev2": 1.0, "w_min_gev": 5.0, "x": [.004,.4],
             "y": [.1,.7], "z": [.2,.85], "hadron_momentum_gev": [12.,40.],
-            "hadron_lab_angle_mrad": [10.,120.],
+            "nu_window": "sqrt(12^2+m_i^2)/z_low < nu < sqrt(40^2+m_i^2)/z_high",
+            "nu_definition": "target-rest energy transfer; applied to numerator and DIS denominator",
+            "rich_geometry": "acceptance-corrected; no generated vertex-angle cut",
+            "nominal_beam_support": "unsupported fixed-energy cells are masked explicitly",
         },
         "datasets": datasets,
         "target_outputs": {target: {"P": 1.0} if target == "H" else {"P": .5, "N": .5}},

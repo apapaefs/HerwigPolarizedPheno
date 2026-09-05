@@ -11,7 +11,8 @@
     "support_files": [
       "analyses/rivet/dis/COMPASSInclusiveDIS.hh",
       "analyses/rivet/dis/COMPASSSIDIS.hh",
-      "analyses/rivet/dis/SIDISAzimuthal.hh"
+      "analyses/rivet/dis/SIDISAzimuthal.hh",
+      "analyses/rivet/dis/SIDISBinnedFits.hh"
     ],
     "plugin": "RivetCOMPASS_2014_I1278730.so",
     "reference_yoda": "analyses/rivet/dis/COMPASS_2014_I1278730.yoda.gz"
@@ -64,7 +65,8 @@
   },
   "postprocessor": "sidis_azimuthal_moment",
   "postprocess_config": {
-    "target_outputs": {"D": {"P": 0.5, "N": 0.5}}
+    "target_outputs": {"D": {"P": 0.5, "N": 0.5}},
+    "estimator": "compass_phi_fit_v2"
   },
   "scales": {
     "central": 1.0,
@@ -91,7 +93,7 @@
     "exchange": "photon",
     "target": {"D": {"P": 0.5, "N": 0.5}},
     "hard_process_accuracy": "POWHEG NLO+PS",
-    "interpretation": "diagnostic Fourier moments; no controlled Cahn, Boer-Mulders or twist-3 claim",
+    "interpretation": "generator-level binned harmonic fit with published phi exclusions; no controlled Cahn, Boer-Mulders or twist-3 claim",
     "excluded": "A_LU^sin(phi) requires the polarized beam and is not formed from 00 samples",
     "event_simulation": "QCD shower, hadronization and remnants; QED shower and MPI off"
   }

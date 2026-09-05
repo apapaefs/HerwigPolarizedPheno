@@ -39,8 +39,11 @@ namespace Rivet {
       _provenance->fill(provenance ? 0.5 : 1.5);
       if (!provenance) vetoEvent;
 
+      size_t selectedInclusive = 0;
       for (const ClusteredJet& jet : jets) {
-        if (std::abs(jet.eta()) < 0.9) _inclusive->fill(jet.pT()/GeV);
+        if (std::abs(jet.eta()) >= 0.9 || jet.pT()/GeV < 7.0) continue;
+        if (selectedInclusive++ == 2) break;
+        _inclusive->fill(jet.pT()/GeV);
       }
       if (jets.size() < 2) return;
       const ClusteredJet& first = jets[0];

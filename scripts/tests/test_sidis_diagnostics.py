@@ -126,8 +126,7 @@ class DiagnosticEstimatorTests(unittest.TestCase):
         values: list[float] = []
         variances: list[float] = []
         for low, high in zip(edges, edges[1:]):
-            centre = .5 * (low + high)
-            value = 1000.0 * math.exp(-centre / expected) * (high - low)
+            value = 1000.0 * expected * (math.exp(-low/expected)-math.exp(-high/expected))
             values.append(value)
             variances.append((.01 * value) ** 2)
         spectra = {
@@ -138,7 +137,7 @@ class DiagnosticEstimatorTests(unittest.TestCase):
         result = postprocess.pt2_slope_target_combination(
             spectra, {"P": .5, "N": .5}, edges, 1
         )
-        self.assertAlmostEqual(result["values"][0], expected, places=12)
+        self.assertAlmostEqual(result["values"][0], expected, places=9)
         self.assertGreater(result["errors"][0], 0.0)
         self.assertEqual(len(result["retained_pt2_bins"][0]), 36)
 
@@ -165,7 +164,7 @@ class DiagnosticRegistryTests(unittest.TestCase):
         hermes = (
             ROOT / "analyses/rivet/dis/HERMES_2013_I1111237.cc"
         ).read_text()
-        self.assertIn("DepolarizationDenominator_", compass)
+        self.assertIn("AzimuthalInputs_", compass)
         self.assertNotIn("SinPhi", compass)
         self.assertIn("900, 0.0, 900.0", hermes)
         self.assertIn("feynmanX", hermes)

@@ -4,6 +4,8 @@ from __future__ import annotations
 import hashlib
 import json
 import sys
+import tempfile
+from unittest.mock import patch
 import unittest
 from pathlib import Path
 
@@ -11,6 +13,7 @@ from pathlib import Path
 DISPOL_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(DISPOL_ROOT / "scripts"))
 import phenomenology_reference_data as reference  # noqa: E402
+import sidis_tranche_reference_data as tranche_reference  # noqa: E402
 
 
 SNAPSHOTS = {
@@ -182,7 +185,18 @@ class PinnedReferenceTests(unittest.TestCase):
         except (ImportError, OSError):
             self.skipTest("YODA Python bindings are not active")
         for identifier, relative in reference.REFERENCE_YODA_PATHS.items():
-            objects = yoda.read(str(DISPOL_ROOT / relative))
+            if identifier == "COMPASS_2020_I1788430":
+                # This generated product is intentionally not tracked. Exercise
+                # its writer in temporary storage, even in a fresh checkout.
+                snapshot = reference.validate_vendored(identifier)
+                with tempfile.TemporaryDirectory() as directory:
+                    output = str(Path(directory) / "reference.yoda.gz")
+                    with patch.dict(tranche_reference.REFERENCE_YODA_PATHS,
+                                    {identifier: output}):
+                        reference.write_reference_yoda(identifier, snapshot)
+                    objects = yoda.read(output)
+            else:
+                objects = yoda.read(str(DISPOL_ROOT / relative))
             self.assertTrue(objects)
             self.assertTrue(all(path.startswith("/REF/") for path in objects))
         phenix = yoda.read(str(DISPOL_ROOT / reference.REFERENCE_YODA_PATHS["PHENIX_2023_I2033856"]))

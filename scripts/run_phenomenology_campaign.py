@@ -4009,7 +4009,17 @@ def _compass_sidis_prediction_sets(
                     result = compass_sidis.multiplicity_isoscalar(
                         numerator, denominator, covariance, widths,
                     )
+            from compass_multiplicity_fiducial import unsupported_cells
+            unsupported = unsupported_cells(snapshot, dataset, str(species), target_weights)
+            bin_status = ["ok" if value is not None else "insufficient_mc_support"
+                          for value in result["values"]]
+            for index in unsupported:
+                result["values"][index] = None
+                result["errors"][index] = None
+                bin_status[index] = "outside_nominal_beam_support"
             prediction_set[str(species)] = {
+                "bin_status": bin_status,
+                "unsupported_nominal_beam_bins": unsupported,
                 "edges": result["edges"],
                 "values": result["values"],
                 "errors": result["errors"],
@@ -4028,6 +4038,9 @@ def _compass_sidis_prediction_sets(
                         "errors": [result["errors"][index] for index in indices],
                         "parent_dataset": str(species),
                         "flat_bins": indices,
+                        "bin_status": [bin_status[index] for index in indices],
+                        "unsupported_nominal_beam_bins": [
+                            i for i, index in enumerate(indices) if index in unsupported],
                     }
         # HERMES publishes one-dimensional projections of the five independent
         # 3D binnings.  Load the dedicated event-aggregated raw objects so these
@@ -4130,8 +4143,21 @@ def _sidis_diagnostic_prediction_sets(
                     target_weights,
                     [float(value) for value in spectrum_binning["pt2_edges"]],
                     len(dataset["points"]),
-                    int(snapshot["fit_policy"]["minimum_positive_bins"]),
+                    _compass_component_samples(
+                        groups, variation, campaign_dir, analysis,
+                        str(raw["covariance"]), ("00",), cache, components),
+                    float(snapshot["fit_policy"]["minimum_region_significance"]),
                 )
+            elif "inputs" in raw:
+                inputs = _compass_component_samples(
+                    groups, variation, campaign_dir, analysis,
+                    str(raw["inputs"]), ("00",), cache, components)
+                covariance = _compass_component_samples(
+                    groups, variation, campaign_dir, analysis,
+                    str(raw["covariance"]), ("00",), cache, components)
+                result = compass_sidis.azimuthal_target_fit(
+                    inputs, covariance, target_weights, int(dataset["harmonic"]),
+                    len(dataset["points"]), snapshot["estimator"])
             else:
                 numerator = _compass_component_samples(
                     groups, variation, campaign_dir, analysis,
@@ -4271,7 +4297,7 @@ def postprocess_sidis_diagnostic(
             "target-combined low-pT2 yield fitted to A exp(-pT2/<pT2>)"
             if measurement["postprocessor"] == "compass_sidis_pt_slope"
             else (
-                "target-combined sum[2 cos(n phi)] / sum[epsilon_n(y)]"
+                "16-bin harmonic GLS fit excluding phi bins 0/15, divided by full-phi mean epsilon_n"
                 if measurement["id"].startswith("COMPASS_")
                 else "target-combined sum[cos(n phi)] / identified-hadron yield"
             )
@@ -4341,6 +4367,7 @@ def postprocess_sidis_diagnostic(
                 "data": point.get("value"),
                 "data_stat": point.get("stat"),
                 "data_systematic": point.get("systematic"),
+                "fit_status": prediction.get("fit_diagnostics", [{}]*len(points))[index].get("status"),
             })
 
     output_dir = campaign_dir / "postprocess"
@@ -4484,6 +4511,8 @@ def postprocess_compass_sidis(
                     "hadron yield per inclusive-DIS event and published density widths"
                 )
             ),
+            "UnsupportedNominalBeamBins": json.dumps(
+                [i+1 for i in prediction.get("unsupported_nominal_beam_bins", [])]),
             "ExperimentalCorrectionsAppliedToHerwig": "none",
         }
         objects.append(
@@ -4562,6 +4591,7 @@ def postprocess_compass_sidis(
                     "momentum_mean": point.get("momentum_mean"),
                     "theory": prediction["values"][index],
                     "mc_stat": prediction["errors"][index],
+                    "theory_status": prediction["bin_status"][index],
                     "data": point.get("a1", point.get("value")),
                     "data_stat": point.get("stat"),
                     "data_systematic": point.get("systematic"),
@@ -4601,6 +4631,9 @@ def postprocess_compass_sidis(
             ]
             for species in snapshot["datasets"]
         },
+        "unsupported_nominal_beam_bins": {
+            species: [i + 1 for i in central[species]["unsupported_nominal_beam_bins"]]
+            for species in snapshot["datasets"]},
         "systematic_model": snapshot["systematics"],
         "correction_policy": snapshot.get("corrections"),
         "reference_provenance": snapshot["provenance"],

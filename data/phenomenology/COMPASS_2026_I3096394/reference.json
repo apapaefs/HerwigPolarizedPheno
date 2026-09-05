@@ -64095,15 +64095,15 @@
   },
   "schema_version": 2,
   "selection": {
-    "hadron_lab_angle_mrad": [
-      10.0,
-      120.0
-    ],
     "hadron_momentum_gev": [
       12.0,
       40.0
     ],
+    "nominal_beam_support": "unsupported fixed-energy cells are masked explicitly",
+    "nu_definition": "target-rest energy transfer; applied to numerator and DIS denominator",
+    "nu_window": "sqrt(12^2+m_i^2)/z_low < nu < sqrt(40^2+m_i^2)/z_high",
     "q2_min_gev2": 1.0,
+    "rich_geometry": "acceptance-corrected; no generated vertex-angle cut",
     "w_min_gev": 5.0,
     "x": [
       0.004,

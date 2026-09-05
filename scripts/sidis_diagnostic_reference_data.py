@@ -213,10 +213,8 @@ def _parse_2013_slopes(text: str, label: str) -> list[list[tuple[float, float]]]
 
 def _raw_azimuthal_objects(identifier: str) -> dict[str, str]:
     return {
-        "numerator": f"MomentNumerator_{identifier}",
-        "denominator": f"DepolarizationDenominator_{identifier}",
-        "covariance_positive": f"CovariancePositive_{identifier}",
-        "covariance_negative": f"CovarianceNegative_{identifier}",
+        "inputs": f"AzimuthalInputs_{identifier}",
+        "covariance": f"AzimuthalCovariance_{identifier}",
     }
 
 
@@ -264,6 +262,7 @@ def normalize_compass_2013() -> dict[str, Any]:
             "rivet_path": f"/{measurement}/MeanPt2_{charge}_cells",
             "raw_objects": {
                 "spectrum": f"HadronYield_{charge}_pt2_cells",
+                "covariance": f"SpectrumCovariance_{charge}_cells",
             },
             "spectrum_binning": {
                 "dis_cells": 23,
@@ -287,8 +286,14 @@ def normalize_compass_2013() -> dict[str, Any]:
         },
         "fit_policy": {
             "model": "A exp(-pT2/slope)",
-            "method": "weighted linear least squares in log spectrum",
-            "minimum_positive_bins": 3,
+            "method": "generalized least squares on bin-integrated signed yields",
+            "full_fit_range_required": True,
+            "minimum_region_significance": 2.0,
+            "coverage_regions": 4,
+            "negative_bins": "retained; never removed according to realized sign",
+            "covariance": "event second moments across all pT2 bins",
+            "poor_shape_flag_chi2_per_ndof": 5.0,
+            "error": "local two-parameter GLS curvature; not rescaled by chi2",
             "normalization": (
                 "fit target-combined differential hadron yield; the inclusive-DIS "
                 "normalization and z width are constant within each fitted cell and "
@@ -299,14 +304,22 @@ def normalize_compass_2013() -> dict[str, Any]:
         "target_outputs": {"D": {"P": .5, "N": .5}},
         "systematics": (
             "paper tables quote fit errors only and provide no separate inverse-"
-            "slope systematic; a fully correlated multiplicity normalization "
-            "component would cancel from an exponential inverse slope"
+            "slope systematic. The 2015 erratum assigns 5% point-to-point "
+            "multiplicity uncertainty and up to 40% integrated normalization "
+            "uncertainty. Only a fully correlated normalization cancels from "
+            "the slope; no unprovided slope systematic is synthesized. "
+            "The erratum leaves the tabulated slopes and conclusions unchanged."
         ),
         "provenance": {
             "source_manifest": SOURCE_MANIFEST_PATHS[measurement],
             "source_sha256": manifest["source"]["sha256"],
             "paper_tables": [1, 2, 3],
             "hepdata_record": 61432,
+            "erratum_doi": "10.1140/epjc/s10052-014-3255-y",
+            "erratum_radiative_corrections": (
+                "not applied to the published multiplicities; checked by the "
+                "collaboration to have negligible effect on fitted pT2 shapes"
+            ),
         },
     }
 
@@ -513,8 +526,13 @@ def normalize_compass_2014() -> dict[str, Any]:
             "hadron": "stable unidentified charged hadron; pion-mass z convention",
         },
         "estimator": {
-            "numerator": "sum 2 cos(n phi_h)",
-            "denominator": "sum epsilon_n(y)",
+            "method": "four-parameter GLS fit to bin-integrated phi harmonics",
+            "model": "p0 * (1 + p1*cos(phi) + p2*cos(2phi) + ps*sin(phi))",
+            "phi_edges": [index * math.pi / 8. for index in range(17)],
+            "excluded_phi_bins": [0, 15],
+            "normalization": "fitted p_n divided by full-phi hadron-weighted mean epsilon_n",
+            "raw_cell_layout": "16 phi counts followed by sum epsilon_n; covariance upper triangle",
+            "sin_phi": "fit nuisance only; no polarized A_LU result from 00 samples",
             "epsilon_1": "2(2-y)sqrt(1-y)/(1+(1-y)^2)",
             "epsilon_2": "2(1-y)/(1+(1-y)^2)",
             "same_event_covariance": True,

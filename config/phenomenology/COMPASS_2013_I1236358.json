@@ -11,7 +11,8 @@
     "support_files": [
       "analyses/rivet/dis/COMPASSInclusiveDIS.hh",
       "analyses/rivet/dis/COMPASSSIDIS.hh",
-      "analyses/rivet/dis/SIDISAzimuthal.hh"
+      "analyses/rivet/dis/SIDISAzimuthal.hh",
+      "analyses/rivet/dis/SIDISBinnedFits.hh"
     ],
     "plugin": "RivetCOMPASS_2013_I1236358.so",
     "reference_yoda": "analyses/rivet/dis/COMPASS_2013_I1236358.yoda.gz"
@@ -64,7 +65,8 @@
   },
   "postprocessor": "compass_sidis_pt_slope",
   "postprocess_config": {
-    "target_outputs": {"D": {"P": 0.5, "N": 0.5}}
+    "target_outputs": {"D": {"P": 0.5, "N": 0.5}},
+    "estimator": "signed_spectrum_gls_v2"
   },
   "scales": {
     "central": 1.0,

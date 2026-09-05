@@ -20,9 +20,11 @@ NeedsCrossSection: yes
 Beams: [[ANTIMUON, PROTON], [ANTIMUON, NEUTRON]]
 Energies: [[160.0, 0.938272], [160.0, 0.939565]]
 Description: >
-  Fills event-aggregated 2cos(n phi) numerators, depolarization denominators,
-  and signed same-event covariance proxies for n=1,2 in the published 1D and
-  3D charged-hadron bins. The result is a stable-hadron generator diagnostic,
+  Stores 16 phi-bin yields, full-phi depolarization sums and event second
+  moments in the published 1D and 3D charged-hadron bins. Postprocessing fits
+  constant, cos(phi), cos(2phi) and a nuisance sin(phi), excluding the two
+  bins adjacent to phi=0, then divides by the mean depolarization factor.
+  The result is a stable-hadron generator diagnostic,
   not a detector-unfolded or controlled TMD/twist-3 prediction.
 Keywords: [DIS, SIDIS, fixed-target, azimuthal asymmetry, charged hadron]
 BibKey: COMPASS:2014vkj

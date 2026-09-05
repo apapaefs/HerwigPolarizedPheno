@@ -2,6 +2,12 @@
 
 Audit date: 2026-07-26; corrected-production protocol added 2026-08-19
 
+The wider 2026-09-05 review covered 21 data-linked registry entries.
+[Its implemented corrections and validation](rivet-fidelity-corrections-20260905.md)
+supersede earlier descriptions of COMPASS multiplicity selection, COMPASS
+azimuthal/slope extraction and the STAR inclusive-jet multiplicity. The
+remaining generator/experimental qualifications below still apply.
+
 ## Scope and meaning of compatibility
 
 This is the authoritative paper-to-code audit for the experimental

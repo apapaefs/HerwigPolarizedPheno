@@ -14,6 +14,7 @@ import math
 from typing import Any, Mapping, Sequence
 
 import run_experimental_campaign as experimental
+from sidis_binned_fits import azimuthal_target_fit, pt2_slope_target_fit
 
 
 HELICITIES = ("PP", "PM", "MP", "MM")
@@ -304,108 +305,14 @@ def azimuthal_target_combination(
 
 
 def pt2_slope_target_combination(
-    spectra: Mapping[str, experimental.BinSeries],
-    target_weights: Mapping[str, float],
-    pt2_edges: Sequence[float],
-    slope_cells: int,
-    minimum_positive_bins: int = 3,
-) -> dict[str, Any]:
-    """Fit ``A exp(-pT2/slope)`` in every target-combined spectrum cell.
-
-    The inclusive-DIS denominator and z-bin width are constant throughout one
-    fitted spectrum, so neither changes its exponential inverse slope.  The
-    fit therefore uses the normalized, signed-NLO hadron yield directly after
-    the target sum.  A weighted straight-line fit to ``log(dY/dpT2)`` gives the
-    slope and its Monte Carlo error.
-    """
-
-    labels = set(target_weights)
-    first = _check_series((spectra,), labels)
-    bins_per_cell = len(pt2_edges) - 1
-    if (
-        bins_per_cell < minimum_positive_bins
-        or slope_cells <= 0
-        or len(first.values) != slope_cells * bins_per_cell
-        or any(
-            not math.isfinite(float(high))
-            or float(high) <= float(low)
-            for low, high in zip(pt2_edges, pt2_edges[1:])
-        )
-    ):
-        raise experimental.CampaignError(
-            "SIDIS pT2 spectrum layout does not match the slope fit"
-        )
-
-    combined_values = [
-        sum(
-            float(weight) * spectra[target].values[index]
-            for target, weight in target_weights.items()
-        )
-        for index in range(len(first.values))
-    ]
-    combined_variances = [
-        sum(
-            float(weight) ** 2 * spectra[target].variances[index]
-            for target, weight in target_weights.items()
-        )
-        for index in range(len(first.values))
-    ]
-    values: list[float | None] = []
-    errors: list[float | None] = []
-    retained_bins: list[list[int]] = []
-    for cell in range(slope_cells):
-        x_values: list[float] = []
-        log_values: list[float] = []
-        weights: list[float] = []
-        retained: list[int] = []
-        for pt2_bin, (low, high) in enumerate(zip(pt2_edges, pt2_edges[1:])):
-            index = cell * bins_per_cell + pt2_bin
-            width = float(high) - float(low)
-            value = combined_values[index] / width
-            variance = combined_variances[index] / (width * width)
-            if value <= 0.0 or variance <= 0.0 or not all(
-                math.isfinite(item) for item in (value, variance)
-            ):
-                continue
-            x_values.append(.5 * (float(low) + float(high)))
-            log_values.append(math.log(value))
-            weights.append(value * value / variance)
-            retained.append(pt2_bin)
-        retained_bins.append(retained)
-        if len(retained) < minimum_positive_bins:
-            values.append(None)
-            errors.append(None)
-            continue
-        total_weight = sum(weights)
-        weighted_x = sum(w * x for w, x in zip(weights, x_values))
-        weighted_y = sum(w * y for w, y in zip(weights, log_values))
-        weighted_xx = sum(w * x * x for w, x in zip(weights, x_values))
-        weighted_xy = sum(
-            w * x * y for w, x, y in zip(weights, x_values, log_values)
-        )
-        determinant = total_weight * weighted_xx - weighted_x * weighted_x
-        if determinant <= 0.0:
-            values.append(None)
-            errors.append(None)
-            continue
-        exponent = (
-            total_weight * weighted_xy - weighted_x * weighted_y
-        ) / determinant
-        if exponent >= 0.0 or not math.isfinite(exponent):
-            values.append(None)
-            errors.append(None)
-            continue
-        exponent_variance = total_weight / determinant
-        slope = -1.0 / exponent
-        slope_error = math.sqrt(exponent_variance) / (exponent * exponent)
-        values.append(slope)
-        errors.append(slope_error)
-    return {
-        "edges": [float(index) for index in range(slope_cells + 1)],
-        "values": values,
-        "errors": errors,
-        "retained_pt2_bins": retained_bins,
-    }
+    spectra, target_weights, pt2_edges, slope_cells,
+    covariance_proxies=None, minimum_region_significance=2.0,
+):
+    """Fit integrated signed yields over the full range, with event covariance."""
+    return pt2_slope_target_fit(
+        spectra, target_weights, pt2_edges, slope_cells,
+        covariance_proxies, minimum_region_significance,
+    )
 
 
 def charge_ratio_target_combination(

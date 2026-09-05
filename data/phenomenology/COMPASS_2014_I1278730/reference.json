@@ -106,10 +106,8 @@
       "projection": "pt",
       "published_target": "D",
       "raw_objects": {
-        "covariance_negative": "CovarianceNegative_hminus_cos1_pt",
-        "covariance_positive": "CovariancePositive_hminus_cos1_pt",
-        "denominator": "DepolarizationDenominator_hminus_cos1_pt",
-        "numerator": "MomentNumerator_hminus_cos1_pt"
+        "covariance": "AzimuthalCovariance_hminus_cos1_pt",
+        "inputs": "AzimuthalInputs_hminus_cos1_pt"
       },
       "rivet_path": "/COMPASS_2014_I1278730/AUU_hminus_cos1_pt",
       "slices": []
@@ -196,10 +194,8 @@
       "projection": "x",
       "published_target": "D",
       "raw_objects": {
-        "covariance_negative": "CovarianceNegative_hminus_cos1_x",
-        "covariance_positive": "CovariancePositive_hminus_cos1_x",
-        "denominator": "DepolarizationDenominator_hminus_cos1_x",
-        "numerator": "MomentNumerator_hminus_cos1_x"
+        "covariance": "AzimuthalCovariance_hminus_cos1_x",
+        "inputs": "AzimuthalInputs_hminus_cos1_x"
       },
       "rivet_path": "/COMPASS_2014_I1278730/AUU_hminus_cos1_x",
       "slices": []
@@ -1752,10 +1748,8 @@
       "projection": "x_z_pt",
       "published_target": "D",
       "raw_objects": {
-        "covariance_negative": "CovarianceNegative_hminus_cos1_x_z_pt",
-        "covariance_positive": "CovariancePositive_hminus_cos1_x_z_pt",
-        "denominator": "DepolarizationDenominator_hminus_cos1_x_z_pt",
-        "numerator": "MomentNumerator_hminus_cos1_x_z_pt"
+        "covariance": "AzimuthalCovariance_hminus_cos1_x_z_pt",
+        "inputs": "AzimuthalInputs_hminus_cos1_x_z_pt"
       },
       "rivet_path": "/COMPASS_2014_I1278730/AUU_hminus_cos1_x_z_pt_cells",
       "slices": [
@@ -2285,10 +2279,8 @@
       "projection": "z",
       "published_target": "D",
       "raw_objects": {
-        "covariance_negative": "CovarianceNegative_hminus_cos1_z",
-        "covariance_positive": "CovariancePositive_hminus_cos1_z",
-        "denominator": "DepolarizationDenominator_hminus_cos1_z",
-        "numerator": "MomentNumerator_hminus_cos1_z"
+        "covariance": "AzimuthalCovariance_hminus_cos1_z",
+        "inputs": "AzimuthalInputs_hminus_cos1_z"
       },
       "rivet_path": "/COMPASS_2014_I1278730/AUU_hminus_cos1_z",
       "slices": []
@@ -2395,10 +2387,8 @@
       "projection": "pt",
       "published_target": "D",
       "raw_objects": {
-        "covariance_negative": "CovarianceNegative_hminus_cos2_pt",
-        "covariance_positive": "CovariancePositive_hminus_cos2_pt",
-        "denominator": "DepolarizationDenominator_hminus_cos2_pt",
-        "numerator": "MomentNumerator_hminus_cos2_pt"
+        "covariance": "AzimuthalCovariance_hminus_cos2_pt",
+        "inputs": "AzimuthalInputs_hminus_cos2_pt"
       },
       "rivet_path": "/COMPASS_2014_I1278730/AUU_hminus_cos2_pt",
       "slices": []
@@ -2485,10 +2475,8 @@
       "projection": "x",
       "published_target": "D",
       "raw_objects": {
-        "covariance_negative": "CovarianceNegative_hminus_cos2_x",
-        "covariance_positive": "CovariancePositive_hminus_cos2_x",
-        "denominator": "DepolarizationDenominator_hminus_cos2_x",
-        "numerator": "MomentNumerator_hminus_cos2_x"
+        "covariance": "AzimuthalCovariance_hminus_cos2_x",
+        "inputs": "AzimuthalInputs_hminus_cos2_x"
       },
       "rivet_path": "/COMPASS_2014_I1278730/AUU_hminus_cos2_x",
       "slices": []
@@ -4041,10 +4029,8 @@
       "projection": "x_z_pt",
       "published_target": "D",
       "raw_objects": {
-        "covariance_negative": "CovarianceNegative_hminus_cos2_x_z_pt",
-        "covariance_positive": "CovariancePositive_hminus_cos2_x_z_pt",
-        "denominator": "DepolarizationDenominator_hminus_cos2_x_z_pt",
-        "numerator": "MomentNumerator_hminus_cos2_x_z_pt"
+        "covariance": "AzimuthalCovariance_hminus_cos2_x_z_pt",
+        "inputs": "AzimuthalInputs_hminus_cos2_x_z_pt"
       },
       "rivet_path": "/COMPASS_2014_I1278730/AUU_hminus_cos2_x_z_pt_cells",
       "slices": [
@@ -4574,10 +4560,8 @@
       "projection": "z",
       "published_target": "D",
       "raw_objects": {
-        "covariance_negative": "CovarianceNegative_hminus_cos2_z",
-        "covariance_positive": "CovariancePositive_hminus_cos2_z",
-        "denominator": "DepolarizationDenominator_hminus_cos2_z",
-        "numerator": "MomentNumerator_hminus_cos2_z"
+        "covariance": "AzimuthalCovariance_hminus_cos2_z",
+        "inputs": "AzimuthalInputs_hminus_cos2_z"
       },
       "rivet_path": "/COMPASS_2014_I1278730/AUU_hminus_cos2_z",
       "slices": []
@@ -4684,10 +4668,8 @@
       "projection": "pt",
       "published_target": "D",
       "raw_objects": {
-        "covariance_negative": "CovarianceNegative_hplus_cos1_pt",
-        "covariance_positive": "CovariancePositive_hplus_cos1_pt",
-        "denominator": "DepolarizationDenominator_hplus_cos1_pt",
-        "numerator": "MomentNumerator_hplus_cos1_pt"
+        "covariance": "AzimuthalCovariance_hplus_cos1_pt",
+        "inputs": "AzimuthalInputs_hplus_cos1_pt"
       },
       "rivet_path": "/COMPASS_2014_I1278730/AUU_hplus_cos1_pt",
       "slices": []
@@ -4774,10 +4756,8 @@
       "projection": "x",
       "published_target": "D",
       "raw_objects": {
-        "covariance_negative": "CovarianceNegative_hplus_cos1_x",
-        "covariance_positive": "CovariancePositive_hplus_cos1_x",
-        "denominator": "DepolarizationDenominator_hplus_cos1_x",
-        "numerator": "MomentNumerator_hplus_cos1_x"
+        "covariance": "AzimuthalCovariance_hplus_cos1_x",
+        "inputs": "AzimuthalInputs_hplus_cos1_x"
       },
       "rivet_path": "/COMPASS_2014_I1278730/AUU_hplus_cos1_x",
       "slices": []
@@ -6330,10 +6310,8 @@
       "projection": "x_z_pt",
       "published_target": "D",
       "raw_objects": {
-        "covariance_negative": "CovarianceNegative_hplus_cos1_x_z_pt",
-        "covariance_positive": "CovariancePositive_hplus_cos1_x_z_pt",
-        "denominator": "DepolarizationDenominator_hplus_cos1_x_z_pt",
-        "numerator": "MomentNumerator_hplus_cos1_x_z_pt"
+        "covariance": "AzimuthalCovariance_hplus_cos1_x_z_pt",
+        "inputs": "AzimuthalInputs_hplus_cos1_x_z_pt"
       },
       "rivet_path": "/COMPASS_2014_I1278730/AUU_hplus_cos1_x_z_pt_cells",
       "slices": [
@@ -6863,10 +6841,8 @@
       "projection": "z",
       "published_target": "D",
       "raw_objects": {
-        "covariance_negative": "CovarianceNegative_hplus_cos1_z",
-        "covariance_positive": "CovariancePositive_hplus_cos1_z",
-        "denominator": "DepolarizationDenominator_hplus_cos1_z",
-        "numerator": "MomentNumerator_hplus_cos1_z"
+        "covariance": "AzimuthalCovariance_hplus_cos1_z",
+        "inputs": "AzimuthalInputs_hplus_cos1_z"
       },
       "rivet_path": "/COMPASS_2014_I1278730/AUU_hplus_cos1_z",
       "slices": []
@@ -6973,10 +6949,8 @@
       "projection": "pt",
       "published_target": "D",
       "raw_objects": {
-        "covariance_negative": "CovarianceNegative_hplus_cos2_pt",
-        "covariance_positive": "CovariancePositive_hplus_cos2_pt",
-        "denominator": "DepolarizationDenominator_hplus_cos2_pt",
-        "numerator": "MomentNumerator_hplus_cos2_pt"
+        "covariance": "AzimuthalCovariance_hplus_cos2_pt",
+        "inputs": "AzimuthalInputs_hplus_cos2_pt"
       },
       "rivet_path": "/COMPASS_2014_I1278730/AUU_hplus_cos2_pt",
       "slices": []
@@ -7063,10 +7037,8 @@
       "projection": "x",
       "published_target": "D",
       "raw_objects": {
-        "covariance_negative": "CovarianceNegative_hplus_cos2_x",
-        "covariance_positive": "CovariancePositive_hplus_cos2_x",
-        "denominator": "DepolarizationDenominator_hplus_cos2_x",
-        "numerator": "MomentNumerator_hplus_cos2_x"
+        "covariance": "AzimuthalCovariance_hplus_cos2_x",
+        "inputs": "AzimuthalInputs_hplus_cos2_x"
       },
       "rivet_path": "/COMPASS_2014_I1278730/AUU_hplus_cos2_x",
       "slices": []
@@ -8619,10 +8591,8 @@
       "projection": "x_z_pt",
       "published_target": "D",
       "raw_objects": {
-        "covariance_negative": "CovarianceNegative_hplus_cos2_x_z_pt",
-        "covariance_positive": "CovariancePositive_hplus_cos2_x_z_pt",
-        "denominator": "DepolarizationDenominator_hplus_cos2_x_z_pt",
-        "numerator": "MomentNumerator_hplus_cos2_x_z_pt"
+        "covariance": "AzimuthalCovariance_hplus_cos2_x_z_pt",
+        "inputs": "AzimuthalInputs_hplus_cos2_x_z_pt"
       },
       "rivet_path": "/COMPASS_2014_I1278730/AUU_hplus_cos2_x_z_pt_cells",
       "slices": [
@@ -9152,21 +9122,45 @@
       "projection": "z",
       "published_target": "D",
       "raw_objects": {
-        "covariance_negative": "CovarianceNegative_hplus_cos2_z",
-        "covariance_positive": "CovariancePositive_hplus_cos2_z",
-        "denominator": "DepolarizationDenominator_hplus_cos2_z",
-        "numerator": "MomentNumerator_hplus_cos2_z"
+        "covariance": "AzimuthalCovariance_hplus_cos2_z",
+        "inputs": "AzimuthalInputs_hplus_cos2_z"
       },
       "rivet_path": "/COMPASS_2014_I1278730/AUU_hplus_cos2_z",
       "slices": []
     }
   },
   "estimator": {
-    "denominator": "sum epsilon_n(y)",
     "epsilon_1": "2(2-y)sqrt(1-y)/(1+(1-y)^2)",
     "epsilon_2": "2(1-y)/(1+(1-y)^2)",
-    "numerator": "sum 2 cos(n phi_h)",
-    "same_event_covariance": true
+    "excluded_phi_bins": [
+      0,
+      15
+    ],
+    "method": "four-parameter GLS fit to bin-integrated phi harmonics",
+    "model": "p0 * (1 + p1*cos(phi) + p2*cos(2phi) + ps*sin(phi))",
+    "normalization": "fitted p_n divided by full-phi hadron-weighted mean epsilon_n",
+    "phi_edges": [
+      0.0,
+      0.39269908169872414,
+      0.7853981633974483,
+      1.1780972450961724,
+      1.5707963267948966,
+      1.9634954084936207,
+      2.356194490192345,
+      2.748893571891069,
+      3.141592653589793,
+      3.5342917352885173,
+      3.9269908169872414,
+      4.319689898685965,
+      4.71238898038469,
+      5.105088062083414,
+      5.497787143782138,
+      5.890486225480862,
+      6.283185307179586
+    ],
+    "raw_cell_layout": "16 phi counts followed by sum epsilon_n; covariance upper triangle",
+    "same_event_covariance": true,
+    "sin_phi": "fit nuisance only; no polarized A_LU result from 00 samples"
   },
   "excluded_observable": "A_LU^sin(phi_h) is not evaluated in the 00 samples because it requires the polarized muon beam",
   "measurement": "COMPASS_2014_I1278730",

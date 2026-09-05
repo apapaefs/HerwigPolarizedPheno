@@ -1,5 +1,5 @@
 // -*- C++ -*-
-#include "COMPASSSIDIS.hh"
+#include "COMPASSMultiplicityFiducial.hh"
 #include "Rivet/Analysis.hh"
 #include "Rivet/Projections/FinalState.hh"
 #include "Rivet/Projections/PromptFinalState.hh"
@@ -42,7 +42,7 @@ namespace Rivet {
       book(_acceptedW, "Accepted_W", 40, 5.0, 20.0);
       book(_acceptedZ, "Accepted_Z", 40, 0.2, 0.85);
       book(_acceptedMomentum, "Accepted_HadronMomentum", 40, 12.0, 40.0);
-      book(_acceptedTheta, "Accepted_HadronTheta", 44, 0.010, 0.120);
+      book(_acceptedTheta, "Accepted_HadronTheta", 60, 0.0, 0.3);
       _scaled.insert(_scaled.end(), {
         _acceptedX, _acceptedQ2, _acceptedY, _acceptedW, _acceptedZ,
         _acceptedMomentum, _acceptedTheta});
@@ -60,7 +60,8 @@ namespace Rivet {
 
       std::vector<size_t> denominatorCells;
       for (size_t index = 0; index < _cells->size(); ++index) {
-        if (COMPASSSIDIS::matchesDIS((*_cells)[index], dis.x, dis.y))
+        if (COMPASSSIDIS::multiplicityDISCell(
+              (*_cells)[index], dis, COMPASSSIDIS::pionMassGeV))
           denominatorCells.push_back(index);
       }
       if (denominatorCells.empty()) vetoEvent;
@@ -86,11 +87,11 @@ namespace Rivet {
           COMPASSSIDIS::hadronKinematics(dis, particle, true);
         if (unidentified.valid &&
             unidentified.z >= 0.2 && unidentified.z <= 0.85 &&
-            unidentified.momentum > 12.0 && unidentified.momentum < 40.0 &&
-            unidentified.theta > 0.010 && unidentified.theta < 0.120) {
+            unidentified.momentum > 12.0 && unidentified.momentum < 40.0) {
           const int cell = COMPASSSIDIS::findCell(
             *_cells, dis.x, dis.y, unidentified.z);
-          if (cell >= 0) {
+          if (cell >= 0 && COMPASSSIDIS::multiplicityDISCell(
+                (*_cells)[cell], dis, COMPASSSIDIS::pionMassGeV)) {
             counts[positive ? "hplus" : "hminus"][cell] += 1.0;
             _acceptedZ->fill(unidentified.z);
             _acceptedMomentum->fill(unidentified.momentum);
@@ -102,10 +103,10 @@ namespace Rivet {
         const COMPASSSIDIS::HadronKinematics pion =
           COMPASSSIDIS::hadronKinematics(dis, particle);
         if (!pion.valid || !(pion.z >= 0.2 && pion.z <= 0.85) ||
-            !(pion.momentum > 12.0 && pion.momentum < 40.0) ||
-            !(pion.theta > 0.010 && pion.theta < 0.120)) continue;
+            !(pion.momentum > 12.0 && pion.momentum < 40.0)) continue;
         const int cell = COMPASSSIDIS::findCell(*_cells, dis.x, dis.y, pion.z);
-        if (cell >= 0)
+        if (cell >= 0 && COMPASSSIDIS::multiplicityDISCell(
+              (*_cells)[cell], dis, COMPASSSIDIS::pionMassGeV))
           counts[particle.pid() > 0 ? "piplus" : "piminus"][cell] += 1.0;
       }
 

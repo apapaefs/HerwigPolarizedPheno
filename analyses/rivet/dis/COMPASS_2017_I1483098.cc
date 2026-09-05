@@ -1,5 +1,5 @@
 // -*- C++ -*-
-#include "COMPASSSIDIS.hh"
+#include "COMPASSMultiplicityFiducial.hh"
 #include "Rivet/Analysis.hh"
 #include "Rivet/Projections/FinalState.hh"
 #include "Rivet/Projections/PromptFinalState.hh"
@@ -41,7 +41,7 @@ namespace Rivet {
       book(_acceptedW, "Accepted_W", 40, 5.0, 20.0);
       book(_acceptedZ, "Accepted_Z", 40, 0.2, 0.85);
       book(_acceptedMomentum, "Accepted_HadronMomentum", 40, 12.0, 40.0);
-      book(_acceptedTheta, "Accepted_HadronTheta", 44, 0.010, 0.120);
+      book(_acceptedTheta, "Accepted_HadronTheta", 60, 0.0, 0.3);
       _scaled.insert(_scaled.end(), {
         _acceptedX, _acceptedQ2, _acceptedY, _acceptedW, _acceptedZ,
         _acceptedMomentum, _acceptedTheta});
@@ -59,7 +59,8 @@ namespace Rivet {
 
       std::vector<size_t> denominatorCells;
       for (size_t index = 0; index < _cells->size(); ++index) {
-        if (COMPASSSIDIS::matchesDIS((*_cells)[index], dis.x, dis.y))
+        if (COMPASSSIDIS::multiplicityDISCell(
+              (*_cells)[index], dis, COMPASSSIDIS::kaonMassGeV))
           denominatorCells.push_back(index);
       }
       if (denominatorCells.empty()) vetoEvent;
@@ -78,10 +79,10 @@ namespace Rivet {
         const COMPASSSIDIS::HadronKinematics hadron =
           COMPASSSIDIS::hadronKinematics(dis, particle);
         if (!hadron.valid || !(hadron.z >= 0.2 && hadron.z <= 0.85) ||
-            !(hadron.momentum > 12.0 && hadron.momentum < 40.0) ||
-            !(hadron.theta > 0.010 && hadron.theta < 0.120)) continue;
+            !(hadron.momentum > 12.0 && hadron.momentum < 40.0)) continue;
         const int cell = COMPASSSIDIS::findCell(*_cells, dis.x, dis.y, hadron.z);
-        if (cell < 0) continue;
+        if (cell < 0 || !COMPASSSIDIS::multiplicityDISCell(
+              (*_cells)[cell], dis, COMPASSSIDIS::kaonMassGeV)) continue;
         counts[particle.pid() > 0 ? "kplus" : "kminus"][cell] += 1.0;
         _acceptedZ->fill(hadron.z);
         _acceptedMomentum->fill(hadron.momentum);

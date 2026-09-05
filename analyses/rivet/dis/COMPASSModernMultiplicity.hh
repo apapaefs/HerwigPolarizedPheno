@@ -1,7 +1,7 @@
 // -*- C++ -*-
 #pragma once
 
-#include "COMPASSSIDIS.hh"
+#include "COMPASSMultiplicityFiducial.hh"
 #include "SIDISTrancheBinning.hh"
 #include "Rivet/Analysis.hh"
 #include "Rivet/Projections/FinalState.hh"
@@ -49,7 +49,7 @@ namespace Rivet {
       book(_acceptedW, "Accepted_W", 40, 5., 20.);
       book(_acceptedZ, "Accepted_Z", 40, .2, .85);
       book(_acceptedMomentum, "Accepted_HadronMomentum", 40, 12., 40.);
-      book(_acceptedTheta, "Accepted_HadronTheta", 44, .010, .120);
+      book(_acceptedTheta, "Accepted_HadronTheta", 60, 0., .3);
       _scaled.insert(_scaled.end(), {_acceptedX, _acceptedQ2, _acceptedY,
         _acceptedW, _acceptedZ, _acceptedMomentum, _acceptedTheta});
     }
@@ -67,8 +67,8 @@ namespace Rivet {
       bool accepted = false;
       for (const auto& entry : _cells) {
         for (size_t index = 0; index < entry.second->size(); ++index) {
-          if (SIDISTrancheBinning::matchesDIS(
-                (*entry.second)[index], dis.x, dis.y)) {
+          if (COMPASSSIDIS::multiplicityDISCell(
+                (*entry.second)[index], dis, speciesMass(entry.first))) {
             denominatorCells[entry.first].push_back(index);
             accepted = true;
           }
@@ -124,6 +124,11 @@ namespace Rivet {
   private:
     using Cells = std::vector<SIDISTrancheBinning::XYZCell>;
 
+    static double speciesMass(const std::string& species) {
+      return species[0] == 'k' ? COMPASSSIDIS::kaonMassGeV
+                               : COMPASSSIDIS::pionMassGeV;
+    }
+
     void configureCells() {
       if (ReleaseYear == 2025) {
         _cells = {
@@ -151,11 +156,11 @@ namespace Rivet {
                     const COMPASSSIDIS::HadronKinematics& hadron,
                     std::map<std::string, std::vector<double>>& counts) {
       if (!hadron.valid || hadron.z < .2 || hadron.z > .85 ||
-          hadron.momentum <= 12. || hadron.momentum >= 40. ||
-          hadron.theta <= .010 || hadron.theta >= .120) return;
+          hadron.momentum <= 12. || hadron.momentum >= 40.) return;
       const int cell = SIDISTrancheBinning::findCell(
         *_cells.at(species), dis.x, dis.y, hadron.z);
-      if (cell < 0) return;
+      if (cell < 0 || !COMPASSSIDIS::multiplicityDISCell(
+            (*_cells.at(species))[size_t(cell)], dis, speciesMass(species))) return;
       counts[species][size_t(cell)] += 1.;
       _acceptedZ->fill(hadron.z);
       _acceptedMomentum->fill(hadron.momentum);

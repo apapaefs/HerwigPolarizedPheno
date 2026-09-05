@@ -3142,6 +3142,7 @@
       ],
       "published_target": "D",
       "raw_objects": {
+        "covariance": "SpectrumCovariance_hminus_cells",
         "spectrum": "HadronYield_hminus_pt2_cells"
       },
       "rivet_path": "/COMPASS_2013_I1236358/MeanPt2_hminus_cells",
@@ -6942,6 +6943,7 @@
       ],
       "published_target": "D",
       "raw_objects": {
+        "covariance": "SpectrumCovariance_hplus_cells",
         "spectrum": "HadronYield_hplus_pt2_cells"
       },
       "rivet_path": "/COMPASS_2013_I1236358/MeanPt2_hplus_cells",
@@ -7606,14 +7608,22 @@
     }
   },
   "fit_policy": {
-    "method": "weighted linear least squares in log spectrum",
-    "minimum_positive_bins": 3,
+    "covariance": "event second moments across all pT2 bins",
+    "coverage_regions": 4,
+    "error": "local two-parameter GLS curvature; not rescaled by chi2",
+    "full_fit_range_required": true,
+    "method": "generalized least squares on bin-integrated signed yields",
+    "minimum_region_significance": 2.0,
     "model": "A exp(-pT2/slope)",
-    "normalization": "fit target-combined differential hadron yield; the inclusive-DIS normalization and z width are constant within each fitted cell and therefore cancel exactly from the slope"
+    "negative_bins": "retained; never removed according to realized sign",
+    "normalization": "fit target-combined differential hadron yield; the inclusive-DIS normalization and z width are constant within each fitted cell and therefore cancel exactly from the slope",
+    "poor_shape_flag_chi2_per_ndof": 5.0
   },
   "measurement": "COMPASS_2013_I1236358",
   "observable": "<pT^2> from A exp(-pT^2/<pT^2>)",
   "provenance": {
+    "erratum_doi": "10.1140/epjc/s10052-014-3255-y",
+    "erratum_radiative_corrections": "not applied to the published multiplicities; checked by the collaboration to have negligible effect on fitted pT2 shapes",
     "hepdata_record": 61432,
     "paper_tables": [
       1,
@@ -7641,7 +7651,7 @@
       0.8
     ]
   },
-  "systematics": "paper tables quote fit errors only and provide no separate inverse-slope systematic; a fully correlated multiplicity normalization component would cancel from an exponential inverse slope",
+  "systematics": "paper tables quote fit errors only and provide no separate inverse-slope systematic. The 2015 erratum assigns 5% point-to-point multiplicity uncertainty and up to 40% integrated normalization uncertainty. Only a fully correlated normalization cancels from the slope; no unprovided slope systematic is synthesized. The erratum leaves the tabulated slopes and conclusions unchanged.",
   "target_outputs": {
     "D": {
       "N": 0.5,

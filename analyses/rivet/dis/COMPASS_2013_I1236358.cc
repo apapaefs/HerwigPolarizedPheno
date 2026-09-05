@@ -1,6 +1,6 @@
 // -*- C++ -*-
 #include "COMPASSSIDIS.hh"
-#include "SIDISAzimuthal.hh"
+#include "SIDISBinnedFits.hh"
 #include "Rivet/Analysis.hh"
 #include "Rivet/Projections/FinalState.hh"
 #include "Rivet/Projections/PromptFinalState.hh"
@@ -32,7 +32,11 @@ namespace Rivet {
       for (const std::string charge : {"hplus", "hminus"}) {
         book(_yield[charge], "HadronYield_" + charge + "_pt2_cells",
              cells, 0.0, double(cells));
+        const size_t covarianceBins = disCells().size()*8*36*35/2;
+        book(_covariance[charge], "SpectrumCovariance_" + charge + "_cells",
+             covarianceBins, 0., double(covarianceBins));
         _scaled.push_back(_yield[charge]);
+        _scaled.push_back(_covariance[charge]);
       }
       book(_acceptedX, "Accepted_X", logspace(40, .0045, .12));
       book(_acceptedQ2, "Accepted_Q2", logspace(40, 1.0, 10.0));
@@ -77,8 +81,11 @@ namespace Rivet {
         _acceptedZ->fill(hadron.z);
         _acceptedPt2->fill(hadron.transverseMomentum2);
       }
-      for (const auto& entry : eventYield)
+      for (const auto& entry : eventYield) {
         SIDISAzimuthal::fillEventBins(_yield.at(entry.first), entry.second);
+        SIDISAzimuthal::fillCellCovariance(
+          _covariance.at(entry.first), entry.second, 36);
+      }
     }
 
     void finalize() {
@@ -117,7 +124,7 @@ namespace Rivet {
     }
 
     std::vector<double> _zEdges, _pt2Edges;
-    std::map<std::string, Histo1DPtr> _yield;
+    std::map<std::string, Histo1DPtr> _yield, _covariance;
     std::vector<Histo1DPtr> _scaled;
     Histo1DPtr _acceptedX, _acceptedQ2, _acceptedY;
     Histo1DPtr _acceptedZ, _acceptedPt2;

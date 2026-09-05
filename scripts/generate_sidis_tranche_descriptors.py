@@ -85,6 +85,7 @@ def descriptor(measurement: str, specification: dict[str, Any]) -> dict[str, Any
         support.append("analyses/rivet/dis/SIDISTrancheBinning.hh")
     if measurement in {"COMPASS_2025_I2840545", "COMPASS_2026_I3096394"}:
         support.append("analyses/rivet/dis/COMPASSModernMultiplicity.hh")
+        support.append("analyses/rivet/dis/COMPASSMultiplicityFiducial.hh")
     reference: dict[str, Any] = {
         "snapshot": f"data/phenomenology/{measurement}/reference.json",
         "source_manifest": f"data/phenomenology/{measurement}/source-manifest.json",

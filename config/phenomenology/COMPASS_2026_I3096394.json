@@ -12,7 +12,8 @@
       "analyses/rivet/dis/COMPASSInclusiveDIS.hh",
       "analyses/rivet/dis/COMPASSSIDIS.hh",
       "analyses/rivet/dis/SIDISTrancheBinning.hh",
-      "analyses/rivet/dis/COMPASSModernMultiplicity.hh"
+      "analyses/rivet/dis/COMPASSModernMultiplicity.hh",
+      "analyses/rivet/dis/COMPASSMultiplicityFiducial.hh"
     ],
     "plugin": "RivetCOMPASS_2026_I3096394.so",
     "reference_yoda": "analyses/rivet/dis/COMPASS_2026_I3096394.yoda.gz"

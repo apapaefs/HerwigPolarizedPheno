@@ -31,13 +31,23 @@ python3 scripts/generate_sidis_tranche_descriptors.py
 component weights. Hydrogen is `P:1`; isoscalar/deuteron outputs use
 `P:0.5,N:0.5`. A dataset declares the widths applied after its numerator/DIS
 ratio: `z`, `z,pt2`, or `z,phperp`. Polarized `A1` datasets also declare the
-longitudinal target scale. Existing schema-5 descriptors are unchanged.
+longitudinal target scale. The target convention also applies to the
+schema-5 multiplicities.
 
 All multiplicity estimators use event-aggregated numerator, denominator and
 same-event covariance objects. Shards are summed inside each signed NLO
 contribution. POSNLO and NEGNLO normalized bins are then added, target yields
 are combined, and the final ratio and density widths are applied. Generic raw
 `yodamerge` arithmetic is not a valid final estimator.
+
+Since 2026-09-05, the 2025/2026 multiplicities impose the published
+z-bin-dependent nu window on both numerator and denominator, using the
+species mass (pion mass for unidentified hadrons). The RICH vertex-angle
+surrogate has been removed from generated-level selection. The current
+releases have support in every cell at the nominal beam energy; unsupported
+cells in the older 2017 releases are explicitly masked. Use new campaign
+tags for these corrected selections. See
+[the correction record](rivet-fidelity-corrections-20260905.md).
 
 The HERMES full archive defines 6,592 retained cells across five overlapping
 3D binnings. Each target/species/binning has its own released statistical

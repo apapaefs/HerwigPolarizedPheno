@@ -21,25 +21,56 @@ zero-polarization samples.
 
 ## Observable and covariance contracts
 
-`COMPASS_2013_I1236358` fills event-aggregated charged-hadron yields in 36
+`COMPASS_2013_I1236358` fills event-aggregated charged-hadron yields and their
+within-cell covariance in 36
 $p_T^2$ bins over the published fit range $0.1<p_T<0.85$ GeV. The runner adds
 normalized signed-NLO contributions, forms the P/N isoscalar yield, and fits
-$A\exp[-p_T^2/\langle p_T^2\rangle]$ independently in every $(x,Q^2,z)$ cell.
+$A\exp[-p_T^2/\langle p_T^2\rangle]$ integrated over each bin, independently
+in every $(x,Q^2,z)$ cell. Generalized least squares uses all signed bins;
+there is no logarithm or removal based on a bin's realized sign. A fit requires
+nonzero variance throughout the interval, a nonsingular covariance, and a
+positive yield with significance at least two in each of four contiguous
+regions. This is a Monte Carlo support policy, not an experimental event cut.
+The output records failure reasons, chi-squared, degrees of freedom and a
+poor-shape flag. Poor exponential shape is reported rather than hidden by
+removing disagreeing points. Errors use local linear propagation through the
+two-parameter fit and are not rescaled by chi-squared.
 The inclusive-DIS denominator and $z$ width are constant within one fit and
 therefore cancel exactly from its inverse slope.
 
-`COMPASS_2014_I1278730` stores event-aggregated
-$\sum2\cos(n\phi_h)$, $\sum\epsilon_n(y)$ and signed same-event covariance
-proxies, with
+`COMPASS_2014_I1278730` stores 16 event-aggregated phi-bin yields over
+$[0,2\pi)$ and a full-phi $\sum\epsilon_n(y)$ for each published cell.
+It also stores all off-diagonal event second moments, including the
+correlation of each phi yield with the depolarization sum, with
 
 \[
 \epsilon_1=\frac{2(2-y)\sqrt{1-y}}{1+(1-y)^2},\qquad
 \epsilon_2=\frac{2(1-y)}{1+(1-y)^2}.
 \]
 
-The P/N target sum is formed before the ratio. The paper's point-to-point
+After normalized signed-NLO and P/N addition, a bin-integrated harmonic fit
+uses the constant, cos(phi), cos(2phi) and sin(phi) terms, excluding the two
+bins adjacent to phi=0. Each fitted cosine coefficient divided by the fitted
+normalization is then divided by the cell's mean epsilon. The sine is a
+nuisance parameter, not an ALU result. Generalized least squares propagates
+the full phi/epsilon covariance. Empty or singular fits are masked.
+The paper's point-to-point
 systematic uncertainty, twice the tabulated statistical uncertainty, is kept
 separate in the reference snapshot.
+
+The COMPASS 2013 [erratum](https://doi.org/10.1140/epjc/s10052-014-3255-y)
+leaves the tabulated slopes unchanged. Its 5% uncertainty applies point by
+point to the multiplicity spectrum; only a common normalization uncertainty
+cancels from the slope. No unpublished slope systematic is invented.
+Radiative corrections were not applied to those data, and the collaboration
+found their effect on the fitted shapes negligible.
+
+These fits reproduce the published functions, bins and exclusions, with
+explicit generator covariance. Closure against experimental spectra and
+unpublished minimizer settings remains unestablished. See
+[the correction and validation record](rivet-fidelity-corrections-20260905.md).
+Campaigns generated before these changes lack required covariance or phi
+inputs and must be regenerated with a new immutable tag.
 
 `HERMES_2013_I1111237` uses the exact $5\times5\times6\times6=900$ cell
 layout. Its moments use a hadron-count denominator rather than a COMPASS
@@ -71,6 +102,7 @@ python3 scripts/run_phenomenology_campaign.py fetch-data \
 
 make rivet
 make check-rivet
+make check-rivet-fidelity
 ```
 
 Inspect the complete four-job matrices without creating or running a

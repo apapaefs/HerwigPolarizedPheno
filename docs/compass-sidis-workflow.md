@@ -3,7 +3,9 @@
 Three COMPASS SIDIS measurements are implemented by the primary campaign
 runner:
 
-These schema-5 analyses remain frozen for reproducibility. The corrected 2026
+The schema-5 numerical releases remain pinned for reproducibility. Their
+multiplicity selections were corrected on 2026-09-05; old campaign signatures
+must not be reused. The corrected 2026
 isoscalar multiplicities are the primary modern comparison; see
 `docs/sidis-tranches-workflow.md` for the schema-6 tranche implementations.
 
@@ -26,8 +28,8 @@ differences; no paper number replaces a HEPData value.
 
 All three analyses reconstruct Lorentz-invariant DIS variables from the
 incoming and prompt scattered positive muon and the incoming proton or
-neutron. The fixed-target beam energy is 160 GeV. Hadron momentum and polar
-angle are evaluated in the laboratory frame.
+neutron. The fixed-target beam energy is 160 GeV. Hadron momentum is evaluated
+in the laboratory frame; the generated vertex angle is diagnostic only.
 
 `COMPASS_2009_I820721` applies
 $Q^2>1\,\mathrm{GeV}^2$, $0.1<y<0.9$, $0.004<x<0.3$,
@@ -44,12 +46,21 @@ depolarization factor, R1998, and $\eta A_2=0$. Its target model is
 
 The two 2017 analyses apply $Q^2>1\,\mathrm{GeV}^2$,
 $W>5\,\mathrm{GeV}$, $0.004<x<0.4$, $0.1<y<0.7$,
-$0.2\le z\le0.85$, $12<p_h<40\,\mathrm{GeV}$, and
-$10<\theta_h<120$ mrad. They fill only the 311 pion/hadron or 309 kaon cells
+$0.2\le z\le0.85$ and $12<p_h<40\,\mathrm{GeV}$. Both numerator and DIS
+denominator additionally require
+$\sqrt{12^2+m_h^2}/z_{\min}<\nu<\sqrt{40^2+m_h^2}/z_{\max}$ for each cell,
+with $\nu=P\cdot q/M$ and the pion mass for unidentified charged hadrons.
+The RICH entrance geometry belongs to the experimental acceptance correction;
+no vertex-angle surrogate is imposed on generated hadrons. They fill only the 311 pion/hadron or 309 kaon cells
 released in HEPData, including the restricted $y$ coverage. Every cell has a
 hadron numerator, matching inclusive-DIS denominator, and same-event
 numerator--denominator covariance proxy. Unidentified $h^\pm$ means stable
 charged hadrons, with the experimental pion-mass assumption used in $z$.
+
+At exactly 160 GeV, five pion/hadron cells and four kaon cells per species
+have no support under the published cuts. Postprocessing marks these
+`outside_nominal_beam_support` and excludes them from numerical comparisons.
+See [the correction and validation record](rivet-fidelity-corrections-20260905.md).
 
 The proton and neutron components are summed before the numerator/DIS ratio,
 and the result is divided by the cell width in $z$. Flattened-cell objects are

@@ -1,4 +1,4 @@
-.PHONY: all paper test list rivet check-rivet clean
+.PHONY: all paper test list rivet check-rivet check-rivet-fidelity clean
 
 RIVET_PLUGIN := build/RivetHerwigPolarizedPheno.so
 RIVET_SOURCES := \
@@ -59,7 +59,7 @@ list:
 
 rivet: $(RIVET_PLUGIN)
 
-$(RIVET_PLUGIN): $(RIVET_SOURCES) analyses/rivet/dis/COMPASSInclusiveDIS.hh analyses/rivet/dis/COMPASSSIDIS.hh analyses/rivet/dis/COMPASSSIDISBinning.hh analyses/rivet/dis/SIDISTrancheBinning.hh analyses/rivet/dis/SIDISAzimuthal.hh analyses/rivet/dis/COMPASSModernMultiplicity.hh analyses/rivet/pp/STARPolarizedJets.hh
+$(RIVET_PLUGIN): $(RIVET_SOURCES) analyses/rivet/dis/COMPASSInclusiveDIS.hh analyses/rivet/dis/COMPASSSIDIS.hh analyses/rivet/dis/COMPASSSIDISBinning.hh analyses/rivet/dis/SIDISTrancheBinning.hh analyses/rivet/dis/SIDISAzimuthal.hh analyses/rivet/dis/COMPASSModernMultiplicity.hh analyses/rivet/dis/COMPASSMultiplicityFiducial.hh analyses/rivet/dis/SIDISBinnedFits.hh analyses/rivet/pp/STARPolarizedJets.hh
 	mkdir -p build
 	CXX="$(RIVET_CXX)" rivet-build $@ $(RIVET_SOURCES) \
 		-I$(CURDIR)/analyses/rivet/dis -I$(CURDIR)/analyses/rivet/pp
@@ -69,6 +69,9 @@ check-rivet: rivet
 	RIVET_DATA_PATH="$(CURDIR)/analyses/rivet/dis:$(CURDIR)/analyses/rivet/pp:$${RIVET_DATA_PATH}"; \
 	export RIVET_ANALYSIS_PATH RIVET_DATA_PATH; \
 	for analysis in $(RIVET_ANALYSES); do rivet --show-analysis "$$analysis" >/dev/null || exit 1; done
+
+check-rivet-fidelity: rivet
+	python3 scripts/check_rivet_fidelity.py
 
 clean:
 	latexmk -C main.tex

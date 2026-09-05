@@ -11,7 +11,8 @@
     "support_files": [
       "analyses/rivet/dis/COMPASSInclusiveDIS.hh",
       "analyses/rivet/dis/COMPASSSIDIS.hh",
-      "analyses/rivet/dis/COMPASSSIDISBinning.hh"
+      "analyses/rivet/dis/COMPASSSIDISBinning.hh",
+      "analyses/rivet/dis/COMPASSMultiplicityFiducial.hh"
     ],
     "plugin": "RivetCOMPASS_2017_I1444985.so",
     "reference_yoda": "analyses/rivet/dis/COMPASS_2017_I1444985.yoda.gz"

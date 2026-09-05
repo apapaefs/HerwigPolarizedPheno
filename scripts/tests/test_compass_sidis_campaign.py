@@ -449,7 +449,7 @@ class RegistryRunnerAndSourceTests(unittest.TestCase):
                 ROOT / f"analyses/rivet/dis/{identifier}.cc"
             ).read_text(encoding="utf-8")
             self.assertIn("dis.W2 > 25.0", source)
-            self.assertIn("theta > 0.010", source)
+            self.assertIn("multiplicityDISCell", source)
             self.assertIn("findCell", source)
             self.assertIn("CovarianceProxy_", source)
         charged = (

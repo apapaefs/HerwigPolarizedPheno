@@ -34,10 +34,12 @@ namespace Rivet {
       _provenance->fill(provenance ? 0.5 : 1.5);
       if (!provenance) vetoEvent;
 
+      size_t selectedInclusive = 0;
       for (const ClusteredJet& jet : jets) {
         const double absEta = std::abs(jet.eta());
         const double pt = jet.pT()/GeV;
-        if (absEta >= 1.0) continue;
+        if (absEta >= 1.0 || pt < 6.0) continue;
+        if (selectedInclusive++ == 2) break;
         _inclusiveCombined->fill(pt);
         if (absEta < 0.5) _inclusiveCentral->fill(pt);
         else _inclusiveForward->fill(pt);
