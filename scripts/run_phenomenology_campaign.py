@@ -23,6 +23,7 @@ import re
 import shutil
 import subprocess
 import sys
+import tempfile
 import threading
 import time
 from dataclasses import dataclass
@@ -532,6 +533,26 @@ def _measurement_snapshot(measurement: Mapping[str, Any]) -> dict[str, Any]:
     return snapshot
 
 
+def _comparison_pair(measurement: Mapping[str, Any]) -> tuple[str, str]:
+    """Legacy descriptors retain the original azimuthal-spin comparison."""
+    pair = measurement.get("comparison_pair", ["nominal", "shower_spin_off"])
+    if (not isinstance(pair, (list, tuple)) or len(pair) != 2
+            or pair[0] != "nominal" or not isinstance(pair[1], str)
+            or pair[1] == "nominal"):
+        raise CampaignError("comparison_pair must be [nominal, distinct control]")
+    if "comparison_pair" in measurement and any(
+        family not in measurement["families"] for family in pair
+    ):
+        raise CampaignError("comparison_pair names an unconfigured family")
+    return tuple(pair)
+
+
+def _comparison_label(measurement: Mapping[str, Any], kind: str) -> str:
+    defaults = {"ratio": "Shower spin on / off",
+                "difference": "Spin-on minus spin-off"}
+    return str(measurement.get("comparison_labels", {}).get(kind, defaults[kind]))
+
+
 def _validate_descriptor(measurement: Mapping[str, Any], path: Path) -> None:
     required = {"id", "schema_version", "process_kind", "analysis", "reference",
                 "cards", "channels", "families", "campaign", "postprocessor",
@@ -606,7 +627,10 @@ def _validate_descriptor(measurement: Mapping[str, Any], path: Path) -> None:
                     )
     if "nominal" not in measurement["families"]:
         raise CampaignError(f"{measurement['id']} has no nominal family")
+    _comparison_pair(measurement)
     for family_id, family in measurement["families"].items():
+        if family.get("hard_process_spin") not in {None, "on", "off"}:
+            raise CampaignError("hard_process_spin must be on or off")
         shower_spin = family.get("shower_spin_correlations")
         if shower_spin not in {None, "on", "off"}:
             raise CampaignError(
@@ -1016,6 +1040,8 @@ def build_job_matrix(measurement: Mapping[str, Any], options: Mapping[str, Any])
                                 }
                                 if has_companions:
                                     job["analysis_instances"] = analysis_instances
+                                if "hard_process_spin" in family:
+                                    job["hard_process_spin"] = family["hard_process_spin"]
                                 jobs.append(job)
                                 seed_slot += 1
     ids = [job["id"] for job in jobs]
@@ -1220,6 +1246,10 @@ def _card_text(measurement: Mapping[str, Any], job: Mapping[str, Any]) -> str:
             f"{job['unpolarized_pdf_member']}"
         )
     family = measurement["families"][job["family"]]
+    hard_spin = family.get("hard_process_spin")
+    if hard_spin is not None:
+        overrides.append("set /Herwig/Shower/ShowerHandler:HardProcessSpin "
+                         + ("Yes" if hard_spin == "on" else "No"))
     shower_spin = family.get("shower_spin_correlations")
     if shower_spin is not None:
         overrides.append(
@@ -1309,7 +1339,54 @@ def _manifest_configuration(measurement: Mapping[str, Any], args: argparse.Names
             family_id: _analysis_instances(measurement, family_id)
             for family_id in plan["options"]["families"]
         }
+    if "comparison_pair" in measurement:
+        configuration["comparison_pair"] = list(_comparison_pair(measurement))
+        configuration["shower_spin_policy"] = {
+            family: {key: measurement["families"][family][key]
+                     for key in ("hard_process_spin", "shower_spin_correlations")}
+            for family in plan["options"]["families"]
+        }
     return configuration
+
+
+def _preflight_hard_process_spin(
+    measurement: Mapping[str, Any], runtime: dict[str, Any]
+) -> None:
+    if not any("hard_process_spin" in family
+               for family in measurement["families"].values()):
+        return
+    with tempfile.TemporaryDirectory(prefix="herwig-hard-spin-preflight-") as directory:
+        card = Path(directory) / "interface.in"
+        card.write_text(
+            "library HwMEHadron.so\n"
+            "set /Herwig/Shower/ShowerHandler:HardProcessSpin Yes\n"
+            "set /Herwig/Shower/ShowerHandler:HardProcessSpin No\n"
+            "get /Herwig/Shower/ShowerHandler:HardProcessSpin\n",
+            encoding="utf-8",
+        )
+        environment = dict(os.environ, LD_DEBUG="libs", DYLD_PRINT_LIBRARIES="1")
+        result = subprocess.run(
+            [runtime["tools"]["Herwig"], "read", str(card)], cwd=directory,
+            capture_output=True, text=True, check=False, env=environment,
+        )
+        output = result.stdout + result.stderr
+        if result.returncode != 0 or not re.search(r"\bNo\b", output):
+            raise CampaignError(
+                "The active Herwig does not provide the required HardProcessSpin "
+                "interface. Load the validated hard-spin runtime.\n" + output
+            )
+        loaded = set(re.findall(r"calling init: (/[^\n]+)", output))
+        loaded.update(re.findall(r"dyld\[\d+\]: <[^>]+> (/[^\n]+)", output))
+        resolved = {Path(path.strip()).resolve() for path in loaded}
+        for label, key in (("HwShower", "hwshower_library"),
+                           ("HwMEHadron", "hwmehadron_library")):
+            if key not in runtime or Path(runtime[key]).resolve() not in resolved:
+                raise CampaignError(f"Could not verify the actually loaded {label} library")
+        runtime["loaded_library_fingerprints"] = {
+            str(path): provenance.file_record(path)
+            for path in sorted(resolved)
+            if path.is_file() and ("Herwig" in str(path) or "ThePEG" in str(path))
+        }
 
 
 def prepare_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> Path:
@@ -1319,6 +1396,7 @@ def prepare_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> Path
         print(json.dumps(plan, indent=2, sort_keys=True))
         return campaign_dir
     runtime = _runtime(measurement)
+    _preflight_hard_process_spin(measurement, runtime)
     configuration = _manifest_configuration(measurement, args, plan)
     manifest_path = campaign_dir/experimental.MANIFEST_NAME
     existing = _load_json(manifest_path) if manifest_path.exists() else None
@@ -2335,7 +2413,8 @@ def _independent_difference(
 
 
 def _independent_ratio(
-    spin_on: Mapping[str, Any], spin_off: Mapping[str, Any]
+    spin_on: Mapping[str, Any], spin_off: Mapping[str, Any],
+    minimum_denominator_sigma: float = 0.0,
 ) -> dict[str, Any]:
     """Return spin-on/spin-off with both independent MC errors propagated."""
 
@@ -2357,6 +2436,11 @@ def _independent_ratio(
         denominator_error = float(off_error)
         if (
             denominator == 0.0
+            or (minimum_denominator_sigma > 0.0 and (
+                numerator < 0.0 or denominator <= 0.0
+                or denominator_error <= 0.0
+                or denominator < minimum_denominator_sigma * denominator_error
+            ))
             or not all(
                 math.isfinite(value)
                 for value in (
@@ -2406,8 +2490,8 @@ def _mc_poljetshapes_plot_ratios(
         )
         control_key = _variation_id(
             (
-                "shower_spin_off", channel_id, 0, 0, 1.0,
-                measurement["families"]["shower_spin_off"]["mpi"],
+                _comparison_pair(measurement)[1], channel_id, 0, 0, 1.0,
+                measurement["families"][_comparison_pair(measurement)[1]]["mpi"],
             )
         )
         nominal = variations.get(nominal_key)
@@ -2422,7 +2506,10 @@ def _mc_poljetshapes_plot_ratios(
                     f"Duplicate MC_POLJETSHAPES ratio observable {observable}"
                 )
             ratios[observable] = _independent_ratio(
-                nominal[observable], control[observable]
+                nominal[observable], control[observable],
+                float(measurement.get("comparison_support", {}).get(
+                    "minimum_ratio_denominator_sigma", 0.0
+                )),
             )
     return ratios
 
@@ -2432,6 +2519,57 @@ def _effective_entries(series: experimental.BinSeries) -> float:
     if variance <= 0.0 or not math.isfinite(value) or not math.isfinite(variance):
         return 0.0
     return value * value / variance
+
+
+def _mask_spin_asymmetry_support(
+    measurement: Mapping[str, Any],
+    predictions: Mapping[tuple[Any, ...], dict[str, Any]],
+    raw_samples: Mapping[tuple[Any, ...], Any],
+) -> None:
+    """Conservative MC-support masks; never censor an observed discrepancy."""
+    minimum = float(measurement.get("comparison_support", {}).get(
+        "minimum_effective_entries_per_helicity", 0.0
+    ))
+    if minimum <= 0.0:
+        return
+    for key, outputs in predictions.items():
+        for name, prediction in outputs.items():
+            match = re.match(r"^(ALL|[ABCS]2(?:UU|LL))_(.+)$", name)
+            if not match:
+                continue
+            kind, observable = match.groups()
+            conditional = measurement["channels"][key[1]].get(
+                "conditional_angular_observables", {}
+            ).get(observable) if kind.startswith(("C2", "S2")) else None
+            raw_observable = conditional["raw_observable"] if conditional else observable
+            samples = raw_samples.get(key, {}).get(raw_observable, {})
+            mask = []
+            for index in range(len(prediction["values"])):
+                valid = set(DENOMINATOR) <= set(samples)
+                for sample in samples.values():
+                    selection = slice(None)
+                    if kind == "ALL":
+                        selection = slice(index, index + 1)
+                    elif conditional:
+                        angle_bins = int(conditional["angle_bins"])
+                        selection = slice(index * angle_bins, (index + 1) * angle_bins)
+                    value = sum(sample.values[selection])
+                    variance = sum(sample.variances[selection])
+                    neff = value * value / variance if variance > 0 else 0.0
+                    valid = valid and value > 0 and math.isfinite(neff) and neff >= minimum
+                valid = valid and None not in (
+                    prediction["values"][index], prediction["errors"][index]
+                )
+                if valid:
+                    valid = (math.isfinite(prediction["values"][index]) and
+                             math.isfinite(prediction["errors"][index]) and
+                             prediction["errors"][index] > 0)
+                mask.append(bool(valid))
+                if not valid:
+                    prediction["values"][index] = None
+                    prediction["errors"][index] = None
+            prediction["support_mask"] = mask
+            prediction["support_policy"] = f"at least {minimum:g} effective entries in each helicity"
 
 
 def _mc_poljetshapes_assessment(
@@ -2444,7 +2582,7 @@ def _mc_poljetshapes_assessment(
 ) -> tuple[dict[str, Any], dict[str, dict[str, Any]], list[dict[str, Any]]]:
     """Compare independent shower samples and project bounded production tiers."""
 
-    if not {"nominal", "shower_spin_off"} <= set(
+    if not {"nominal", _comparison_pair(measurement)[1]} <= set(
         manifest["configuration"]["families"]
     ):
         return {}, {}, []
@@ -2466,12 +2604,15 @@ def _mc_poljetshapes_assessment(
             ("interjet_dpsi11_kt05", "bz_angle"),
         )
     )
+    if "comparison_pair" in measurement:
+        rare_names = tuple(dict.fromkeys((*rare_names, "interjet_dpsi11_kt05",
+                                          "interjet_dpsi11_kt10", "bz_angle")))
 
     for channel_id, channel in measurement["channels"].items():
         nominal_key = ("nominal", channel_id, 0, 0, 1.0,
                        measurement["families"]["nominal"]["mpi"])
-        control_key = ("shower_spin_off", channel_id, 0, 0, 1.0,
-                       measurement["families"]["shower_spin_off"]["mpi"])
+        control_key = (_comparison_pair(measurement)[1], channel_id, 0, 0, 1.0,
+                       measurement["families"][_comparison_pair(measurement)[1]]["mpi"])
         if nominal_key not in predictions or control_key not in predictions:
             continue
         nominal = predictions[nominal_key]
@@ -2508,7 +2649,7 @@ def _mc_poljetshapes_assessment(
                 moment_differences[observable] = difference
 
         for family_id, key in (("nominal", nominal_key),
-                               ("shower_spin_off", control_key)):
+                               (_comparison_pair(measurement)[1], control_key)):
             baseline_effective.setdefault(family_id, {})
             rare_effective.setdefault(family_id, {})
             for helicity, series_map in (
@@ -2615,10 +2756,10 @@ def _mc_poljetshapes_assessment(
         projection.get("production_tag_stem", "mc_poljetshapes_spin")
     )
     command = (
-        "python3 scripts/run_mc_poljetshapes_campaign.py full "
+        f"python3 {measurement.get('runner', 'scripts/run_mc_poljetshapes_campaign.py')} full "
         f"--tag {production_tag_stem}_{tier_label}_"
         f"{production_tag_date}_v1 "
-        "--families nominal,shower_spin_off "
+        f"--families nominal,{_comparison_pair(measurement)[1]} "
         f"--lo-events {bounded_recommendation} --shards {shards} --jobs 100 "
         f"--seed-base {production_seed_base} "
         "--plot-comparisons --include-diagnostics"
@@ -2786,7 +2927,7 @@ def _mc_poljetshapes_shard_covariance(
     channel = measurement["channels"][channel_id]
     central_keys: dict[str, tuple[Any, ...]] = {}
 
-    for family_id in ("nominal", "shower_spin_off"):
+    for family_id in ("nominal", _comparison_pair(measurement)[1]):
         if family_id not in measurement["families"]:
             continue
         key = (
@@ -2929,9 +3070,9 @@ def _mc_poljetshapes_shard_covariance(
                     )
         payload["families"][family_id] = family_payload
 
-    if {"nominal", "shower_spin_off"} <= set(central_keys):
+    if {"nominal", _comparison_pair(measurement)[1]} <= set(central_keys):
         nominal_family = payload["families"].get("nominal", {})
-        control_family = payload["families"].get("shower_spin_off", {})
+        control_family = payload["families"].get(_comparison_pair(measurement)[1], {})
         if (
             nominal_family.get("status") == "complete"
             and control_family.get("status") == "complete"
@@ -2943,7 +3084,7 @@ def _mc_poljetshapes_shard_covariance(
                     "NumPy is required for shard-block covariance"
                 ) from exc
             nominal_key = central_keys["nominal"]
-            control_key = central_keys["shower_spin_off"]
+            control_key = central_keys[_comparison_pair(measurement)[1]]
             for output_name in output_names:
                 nominal_matrix = nominal_family["observables"][output_name]
                 control_matrix = control_family["observables"][output_name]
@@ -4996,6 +5137,7 @@ def postprocess_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> 
     missing_central = [key for key in central_keys if key not in predictions]
     if missing_central:
         raise CampaignError(f"Missing central predictions: {missing_central}")
+    _mask_spin_asymmetry_support(measurement, predictions, raw_samples)
     bands = (
         aggregate_uncertainties(predictions, measurement)
         if nominal_available
@@ -5088,6 +5230,9 @@ def postprocess_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> 
                 "MPI": key[5], "HelicityCombination": "independent PP,PM,MP,MM samples",
                 "ShowerSpinCorrelations": measurement["families"][key[0]].get(
                     "shower_spin_correlations", "on"
+                ),
+                "HardProcessSpin": measurement["families"][key[0]].get(
+                    "hard_process_spin", "on"
                 ),
                 "JetKtMinGeV": manifest["configuration"].get(
                     "jet_kt_min_gev"
@@ -5260,7 +5405,7 @@ def postprocess_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> 
                 prediction["values"],
                 prediction["errors"],
                 {
-                    "Observable": "spin-on minus spin-off",
+                    "Observable": _comparison_label(measurement, "difference"),
                     "Uncertainty": "independent samples added in quadrature",
                 },
             )
@@ -5278,7 +5423,9 @@ def postprocess_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> 
                 "tag": args.tag,
                 "differences": comparison_predictions,
                 "sensitivity_ranking": sensitivity_ranking,
-                "uncertainty": "independent spin-on/off samples",
+                "uncertainty": ("independent full-spin/LHE-like samples"
+                                if "comparison_pair" in measurement else
+                                "independent spin-on/off samples"),
             },
         )
         if sensitivity_ranking:
@@ -5385,6 +5532,12 @@ def postprocess_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> 
         "statistics_projection": shape_assessment,
         "shard_block_covariance": shard_covariance_summary,
     }
+    if "comparison_pair" in measurement:
+        summary["comparison_pair"] = list(_comparison_pair(measurement))
+        summary["shower_spin_policy"] = manifest["configuration"]["shower_spin_policy"]
+        summary["analysis_instances"] = manifest["configuration"].get("analysis_instances", {})
+        summary["runtime_provenance"] = manifest.get("runtime", {}).get("provenance", {})
+        summary["loaded_library_fingerprints"] = manifest.get("runtime", {}).get("loaded_library_fingerprints", {})
     experimental.atomic_write_json(output_dir/"summary.json", summary)
     if central_rows:
         with (output_dir/"central.csv").open("w", encoding="utf-8", newline="") as stream:
@@ -5482,6 +5635,19 @@ def _configure_plot_text_rendering(
     return {"mode": "mathtext", "missing_tools": missing_tools}
 
 
+def _label_companion_jet_spectrum(script: Path) -> None:
+    """Companion spectra live in the primary output namespace; label their axes."""
+    match = re.search(r"_jet([1-4])_(pt|eta)\.py$", script.name)
+    if not match:
+        return
+    variable = r"$p_T$ [GeV]" if match.group(2) == "pt" else r"$\eta$"
+    label = f"Jet {match.group(1)} {variable}"
+    source = script.read_text(encoding="utf-8")
+    replacement = f"ax.set_xlabel({label!r})"
+    source = source.replace("ax.set_xlabel(ax_xLabel)", replacement)
+    experimental.atomic_write_text(script, source)
+
+
 def _write_mc_poljetshapes_ratio_yoda(
     measurement: Mapping[str, Any],
     ratios: Mapping[str, Mapping[str, Any]],
@@ -5499,13 +5665,13 @@ def _write_mc_poljetshapes_ratio_yoda(
             prediction["values"],
             prediction["errors"],
             {
-                "Observable": "shower spin on / shower spin off",
+                "Observable": _comparison_label(measurement, "ratio"),
                 "Uncertainty": (
                     "independent numerator and denominator MC errors "
                     "propagated in quadrature"
                 ),
-                "Numerator": "polarized LO+PS, shower spin on",
-                "Denominator": "polarized LO+PS, shower spin off",
+                "Numerator": measurement["families"]["nominal"]["label"],
+                "Denominator": measurement["families"][_comparison_pair(measurement)[1]]["label"],
             },
         )
         for observable, prediction in sorted(ratios.items())
@@ -5517,7 +5683,7 @@ def _write_mc_poljetshapes_ratio_yoda(
         destination.with_suffix(".json"),
         {
             "measurement": measurement["id"],
-            "definition": "shower spin on / shower spin off",
+            "definition": _comparison_label(measurement, "ratio"),
             "uncertainty": (
                 "independent numerator and denominator MC errors propagated "
                 "in quadrature"
@@ -5532,7 +5698,9 @@ def _write_mc_poljetshapes_ratio_yoda(
     return destination
 
 
-def _configure_mc_poljetshapes_ratio_script(script: Path) -> None:
+def _configure_mc_poljetshapes_ratio_script(
+    script: Path, label: str = "Shower spin on / off"
+) -> None:
     """Give a ratio-only Rivet script a linear scale and unity reference."""
 
     source = script.read_text(encoding="utf-8")
@@ -5574,6 +5742,7 @@ _ratio_span = max(_ratio_high - _ratio_low, 0.08)
 yLims = (_ratio_low - 0.12*_ratio_span, _ratio_high + 0.12*_ratio_span)
 ax.axhline(1.0, color='#666666', linestyle='--', linewidth=1.0, zorder=1)
 '''
+    presentation = presentation.replace("'Shower spin on / off'", repr(label))
     source = source.replace(marker, presentation + marker, 1)
     experimental.atomic_write_text(script, source)
 
@@ -5620,12 +5789,14 @@ def _write_mc_poljetshapes_focus_index(
                 continue
             if companion == "ratio":
                 auxiliary_base = Path("ratios") / analysis / str(stem)
-                auxiliary_title = "Spin on / spin off"
+                auxiliary_title = (_comparison_label(measurement, "ratio")
+                                   if "comparison_pair" in measurement else "Spin on / spin off")
             elif companion == "difference":
                 auxiliary_base = (
                     Path(analysis) / "COMPARISON" / f"OnMinusOff_{stem}"
                 )
-                auxiliary_title = "Spin on minus spin off"
+                auxiliary_title = (_comparison_label(measurement, "difference")
+                                   if "comparison_pair" in measurement else "Spin on minus spin off")
             else:
                 raise CampaignError(
                     f"Unknown focused-gallery companion {companion!r}"
@@ -5752,6 +5923,16 @@ def _write_mc_poljetshapes_focus_index(
 </body>
 </html>
 """
+    if "comparison_pair" in measurement:
+        document = document.replace("red is shower spin on and blue is\n    shower spin off", "red is full-spin showering and blue is LHE-like showering")
+        document = document.replace("shower spin on divided by shower spin off",
+                                    html.escape(_comparison_label(measurement, "ratio")))
+        document = document.replace("spin on minus spin off",
+                                    html.escape(_comparison_label(measurement, "difference")))
+        document = document.replace("Both samples retain polarized beams and the polarized hard\n    process.",
+            "Both samples retain the same polarized hard process and ordinary shower-generated spin correlations. "
+            "The blue sample discards hard spin input and polarized backward-ISR conditioning; "
+            "LHE equivalence requires separately documented closure validation.")
     index = focus_dir / "index.html"
     experimental.atomic_write_text(index, document)
 
@@ -5856,7 +6037,7 @@ def plot_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> Path:
     if (
         measurement["postprocessor"] == "mc_poljetshapes"
         and {family_id for _, _, family_id in predictions}
-        >= {"nominal", "shower_spin_off"}
+        >= {"nominal", _comparison_pair(measurement)[1]}
     ):
         ratio_predictions = _mc_poljetshapes_plot_ratios(
             measurement, campaign_summary
@@ -5906,7 +6087,7 @@ def plot_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> Path:
                     f"Missing shower-spin comparison YODA {comparison_plot_path}"
                 )
             command.append(
-                f"{comparison_plot_path}:Title=Spin-on minus spin-off:"
+                f"{comparison_plot_path}:Title={_comparison_label(measurement, 'difference')}:"
                 "LineColor=#882255"
             )
     ratio_command: list[str] | None = None
@@ -5915,7 +6096,7 @@ def plot_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> Path:
             sys.executable, str(safe_wrapper),
             runtime["tools"]["rivet-mkhtml"], "--dry-run", "--offline",
             "--no-ratio", "--pwd", "-o", str(ratio_output),
-            f"{ratio_yoda_path}:Title=Shower spin on / off:LineColor=#CC3311",
+            f"{ratio_yoda_path}:Title={_comparison_label(measurement, 'ratio')}:LineColor=#CC3311",
         ]
     if args.dry_run:
         print(" ".join(command))
@@ -5976,9 +6157,13 @@ def plot_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> Path:
         for script in plot_scripts:
             log.write(f"script: {script}\n")
             log.flush()
+            if "comparison_pair" in measurement:
+                _label_companion_jet_spectrum(script)
             is_spin_ratio = ratio_output in script.parents
             if is_spin_ratio:
-                _configure_mc_poljetshapes_ratio_script(script)
+                _configure_mc_poljetshapes_ratio_script(
+                    script, _comparison_label(measurement, "ratio")
+                )
             else:
                 experimental.add_theory_uncertainty_overlay(
                     script,
