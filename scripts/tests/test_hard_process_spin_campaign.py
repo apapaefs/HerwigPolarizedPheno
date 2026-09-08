@@ -127,7 +127,7 @@ class HardProcessSpinCampaignTests(unittest.TestCase):
             (root / "MC_POLJETSHAPES").mkdir()
             (root / "MC_POLJETSHAPES" / "SigmaUU_jet3_pt.png").write_bytes(b"fixture")
             page = campaign._write_mc_poljetshapes_focus_index(root, self.measurement)
-            text = page.read_text()
+            text = page.read_text(encoding="utf-8")
             self.assertIn("full-spin showering and blue is LHE-like showering", text)
             self.assertIn("ordinary shower-generated spin correlations", text)
             self.assertIn("closure validation", text)
