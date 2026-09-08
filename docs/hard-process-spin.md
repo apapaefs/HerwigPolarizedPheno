@@ -30,7 +30,7 @@ python3 scripts/run_mc_poljetshapes_lhe_campaign.py full \
   --tag mc_poljetshapes_lhe_pilot_500k_20260908_v1 \
   --families nominal,lhe_like_shower \
   --lo-events 500000 --shards 50 --jobs 100 \
-  --seed-base 9107000 --plot-comparisons --include-diagnostics
+  --seed-base 9107000 --plot-comparisons --include-diagnostics --plot-jobs 16
 ```
 
 This generates 500,000 events per helicity/family: 4 million in 400 shards.
@@ -54,7 +54,7 @@ launched automatically.
 python3 scripts/run_mc_poljetshapes_lhe_campaign.py postprocess \
   --tag YOUR_COMPLETED_TAG --include-diagnostics
 python3 scripts/run_mc_poljetshapes_lhe_campaign.py plot \
-  --tag YOUR_COMPLETED_TAG --plot-comparisons --include-diagnostics
+  --tag YOUR_COMPLETED_TAG --plot-comparisons --include-diagnostics --plot-jobs 16
 ```
 
 The complete HTML gallery includes the focus panel, jet-3 / jet-4 spectra and
@@ -64,6 +64,12 @@ retained for compatibility; their numerator/denominator metadata is explicit.
 Independent-sample error propagation is retained. Ratios with poorly determined
 denominators and asymmetries/moments with insufficient effective support are
 masked, not displayed as apparently precise pulls.
+
+`--plot-jobs` runs independent generated plotting scripts concurrently without
+Rivet's multiprocessing manager. It changes presentation throughput only, not
+events, immutable physics configuration, arithmetic, or uncertainty propagation.
+The shared engine remains serial by default; 16 plotting workers are suggested
+for this large gallery on Odysseus.
 
 Existing descriptors, manifests, completed campaigns and STAR archives must not
 be modified to use this new comparison.

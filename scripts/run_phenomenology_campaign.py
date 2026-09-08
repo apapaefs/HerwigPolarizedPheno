@@ -2764,6 +2764,8 @@ def _mc_poljetshapes_assessment(
         f"--seed-base {production_seed_base} "
         "--plot-comparisons --include-diagnostics"
     )
+    if "comparison_pair" in measurement:
+        command += " --plot-jobs 16"
     assessment = {
         "pilot_events_per_helicity_family": pilot_events,
         "baseline_effective_entries": baseline_effective,
@@ -5747,6 +5749,32 @@ ax.axhline(1.0, color='#666666', linestyle='--', linewidth=1.0, zorder=1)
     experimental.atomic_write_text(script, source)
 
 
+def _render_parallel_plot_scripts(
+    scripts: Sequence[Path], environment: Mapping[str, str], log: Any, workers: int
+) -> None:
+    """Render independent scripts without Rivet's multiprocessing manager/IPC."""
+    if not 1 <= workers <= 100:
+        raise CampaignError("--plot-jobs must be between 1 and 100")
+
+    def render(script: Path) -> tuple[Path, subprocess.CompletedProcess[str]]:
+        return script, subprocess.run(
+            [sys.executable, str(script)], cwd=script.parent,
+            env=dict(environment), stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT, text=True,
+        )
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as executor:
+        # map returns in input order, so logs remain deterministic.
+        for script, completed in executor.map(render, scripts):
+            log.write(f"rendered: {script}\n{completed.stdout or ''}")
+            log.flush()
+            if completed.returncode:
+                raise CampaignError(
+                    f"Generated Rivet plot script failed with status "
+                    f"{completed.returncode}: {script}"
+                )
+
+
 def _write_mc_poljetshapes_focus_index(
     output: Path, measurement: Mapping[str, Any]
 ) -> Path:
@@ -6048,6 +6076,9 @@ def plot_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> Path:
                 "families in postprocess/summary.json"
             )
     runtime = manifest.get("runtime") or _runtime(measurement)
+    plot_workers = int(getattr(args, "plot_jobs", 1))
+    if not 1 <= plot_workers <= 100:
+        raise CampaignError("--plot-jobs must be between 1 and 100")
     output = campaign_dir/"plots"/"html"
     ratio_output = output/"ratios"
     ratio_yoda_path = campaign_dir/"plots"/"spin-on-over-off.yoda"
@@ -6186,6 +6217,9 @@ def plot_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> Path:
                     "skipped: non-renderable finite-data/axis-limit state\n"
                 )
                 continue
+            if plot_workers > 1:
+                rendered_scripts.append(script)
+                continue
             completed = subprocess.run(
                 [sys.executable, str(script)], cwd=script.parent,
                 env=environment, stdout=log, stderr=subprocess.STDOUT,
@@ -6196,6 +6230,8 @@ def plot_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> Path:
                     f"{completed.returncode}: {script}; see {script_log}"
                 )
             rendered_scripts.append(script)
+        if plot_workers > 1:
+            _render_parallel_plot_scripts(rendered_scripts, environment, log, plot_workers)
     index = experimental.write_plot_indexes(output, measurement, rendered_scripts)
     if not index.is_file() or not any(output.rglob("*.png")):
         raise CampaignError(f"Rivet plotting produced no complete HTML below {output}")
@@ -6209,6 +6245,7 @@ def plot_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> Path:
             DISPOL_ROOT / str(measurement["analysis"]["plot"])
         ),
         "text_rendering": text_rendering,
+        "workers": plot_workers,
     }
     if ratio_text_rendering is not None:
         manifest["plots"]["ratio_text_rendering"] = ratio_text_rendering
@@ -6358,6 +6395,8 @@ def _add_campaign_options(parser: argparse.ArgumentParser) -> None:
 
 
 def _add_plot_options(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument("--plot-jobs", type=int, default=1,
+                        help="Concurrent independent plot scripts (1-100); default is serial")
     parser.add_argument(
         "--plot-comparisons",
         action="store_true",

@@ -1,6 +1,8 @@
 """Hard-spin comparison contracts, separate from the legacy azimuthal control."""
 import copy
 import json
+import io
+import os
 import subprocess
 import tempfile
 import unittest
@@ -137,6 +139,25 @@ class HardProcessSpinCampaignTests(unittest.TestCase):
             campaign._label_companion_jet_spectrum(script)
             self.assertIn("Jet 3 $p_T$ [GeV]",script.read_text())
             self.assertNotIn("parton",script.read_text())
+
+    def test_parallel_renderer_preserves_order_and_reports_failures(self):
+        with tempfile.TemporaryDirectory() as directory:
+            paths=[Path(directory)/f"plot-{i}.py" for i in range(3)]
+            for i,path in enumerate(paths):
+                path.write_text(f"print('plot {i}')\n")
+            log=io.StringIO()
+            campaign._render_parallel_plot_scripts(paths,os.environ,log,2)
+            self.assertLess(log.getvalue().index("plot 0"),log.getvalue().index("plot 2"))
+            paths[1].write_text("raise SystemExit(3)\n")
+            with self.assertRaisesRegex(campaign.CampaignError,"status 3"):
+                campaign._render_parallel_plot_scripts(paths,os.environ,io.StringIO(),2)
+            with self.assertRaisesRegex(campaign.CampaignError,"between 1 and 100"):
+                campaign._render_parallel_plot_scripts(paths,os.environ,io.StringIO(),0)
+
+    def test_plot_worker_option_is_presentation_only(self):
+        parsed=campaign.make_parser().parse_args([
+            "plot","--measurement","MC_POLJETSHAPES_LHE","--tag","x","--plot-jobs","16"])
+        self.assertEqual(parsed.plot_jobs,16)
 
 
 if __name__ == "__main__":
