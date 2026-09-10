@@ -21,6 +21,7 @@ RIVET_SOURCES := \
 	analyses/rivet/dis/HERMES_2007_I726689_LEGACY.cc \
 	analyses/rivet/dis/HERMES_2019_I1698889.cc \
 	analyses/rivet/pp/MC_POLJETSHAPES.cc \
+	analyses/rivet/pp/MC_POLJETSHAPES_HARD.cc \
 	analyses/rivet/pp/MC_POLDIJETS.cc \
 	analyses/rivet/pp/STAR_2019_I1708793.cc \
 	analyses/rivet/pp/STAR_2021_I1850855.cc \
@@ -33,7 +34,7 @@ RIVET_ANALYSES := \
 	COMPASS_2018_I1624692 COMPASS_2020_I1788430 COMPASS_2025_I2840545 COMPASS_2026_I3096394 \
 	HERMES_2013_I1208547 HERMES_2013_I1111237 \
 	HERMES_2007_I726689 HERMES_2007_I726689_LEGACY HERMES_2019_I1698889 \
-	MC_POLJETSHAPES MC_POLDIJETS \
+	MC_POLJETSHAPES MC_POLJETSHAPES_HARD MC_POLDIJETS \
 	STAR_2019_I1708793 STAR_2021_I1850855 STAR_2022_I1949588 \
 	PHENIX_2023_I2033856
 RIVET_CXX ?= $(shell \
@@ -59,7 +60,7 @@ list:
 
 rivet: $(RIVET_PLUGIN)
 
-$(RIVET_PLUGIN): $(RIVET_SOURCES) analyses/rivet/dis/COMPASSInclusiveDIS.hh analyses/rivet/dis/COMPASSSIDIS.hh analyses/rivet/dis/COMPASSSIDISBinning.hh analyses/rivet/dis/SIDISTrancheBinning.hh analyses/rivet/dis/SIDISAzimuthal.hh analyses/rivet/dis/COMPASSModernMultiplicity.hh analyses/rivet/dis/COMPASSMultiplicityFiducial.hh analyses/rivet/dis/SIDISBinnedFits.hh analyses/rivet/pp/STARPolarizedJets.hh
+$(RIVET_PLUGIN): $(RIVET_SOURCES) analyses/rivet/dis/COMPASSInclusiveDIS.hh analyses/rivet/dis/COMPASSSIDIS.hh analyses/rivet/dis/COMPASSSIDISBinning.hh analyses/rivet/dis/SIDISTrancheBinning.hh analyses/rivet/dis/SIDISAzimuthal.hh analyses/rivet/dis/COMPASSModernMultiplicity.hh analyses/rivet/dis/COMPASSMultiplicityFiducial.hh analyses/rivet/dis/SIDISBinnedFits.hh analyses/rivet/pp/STARPolarizedJets.hh analyses/rivet/pp/PolJetShapesHard.hh
 	mkdir -p build
 	CXX="$(RIVET_CXX)" rivet-build $@ $(RIVET_SOURCES) \
 		-I$(CURDIR)/analyses/rivet/dis -I$(CURDIR)/analyses/rivet/pp

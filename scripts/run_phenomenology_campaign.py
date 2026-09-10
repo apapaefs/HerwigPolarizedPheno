@@ -1118,6 +1118,10 @@ def _runtime(measurement: Mapping[str, Any]) -> dict[str, Any]:
                 "HwShower": hwshower,
                 "FixedTargetLuminosity": fixed_target,
                 "Rivet": Path(tools["rivet"]),
+                **({"ReweightMinPT": experimental._find_runtime_library(
+                    prefix, "lib/ThePEG", "ReweightMinPT*.so*")}
+                   if measurement.get("sampling", {}).get("kind") == "compensated_preweight"
+                   else {}),
             },
             pdf_sets=pdf_sets,
             lhapdf_data_directory=Path(
@@ -1357,8 +1361,11 @@ def _preflight_hard_process_spin(
         return
     with tempfile.TemporaryDirectory(prefix="herwig-hard-spin-preflight-") as directory:
         card = Path(directory) / "interface.in"
+        sampling_library = ("library ReweightMinPT.so\n"
+                            if measurement.get("sampling", {}).get("kind") == "compensated_preweight"
+                            else "")
         card.write_text(
-            "library HwMEHadron.so\n"
+            sampling_library + "library HwMEHadron.so\n"
             "set /Herwig/Shower/ShowerHandler:HardProcessSpin Yes\n"
             "set /Herwig/Shower/ShowerHandler:HardProcessSpin No\n"
             "get /Herwig/Shower/ShowerHandler:HardProcessSpin\n",
@@ -1382,6 +1389,11 @@ def _preflight_hard_process_spin(
                            ("HwMEHadron", "hwmehadron_library")):
             if key not in runtime or Path(runtime[key]).resolve() not in resolved:
                 raise CampaignError(f"Could not verify the actually loaded {label} library")
+        if sampling_library:
+            sampling_path = experimental._find_runtime_library(
+                Path(runtime["herwig_prefix"]), "lib/ThePEG", "ReweightMinPT*.so*")
+            if sampling_path.resolve() not in resolved:
+                raise CampaignError("Could not verify the actually loaded ReweightMinPT library")
         runtime["loaded_library_fingerprints"] = {
             str(path): provenance.file_record(path)
             for path in sorted(resolved)
@@ -2272,6 +2284,7 @@ def _mc_poljetshapes_prediction(
     angular_observables: Sequence[str],
     conditional_angular_observables: Mapping[str, Mapping[str, Any]] | None = None,
     support_observables: Sequence[str] = (),
+    rate_groups: Mapping[str, Mapping[str, str]] | None = None,
 ) -> dict[str, dict[str, Any]]:
     """Build helicity spectra, normalized shapes, moments, and rate scans."""
 
@@ -2311,13 +2324,20 @@ def _mc_poljetshapes_prediction(
                 "edges": [0.0, 1.0], "values": [value], "errors": [error],
             }
 
-    required_rates = {
-        "dijet_threshold_denominator", "ge3_threshold", "ge4_threshold"
+    groups = rate_groups if rate_groups is not None else {
+        "": {"denominator": "dijet_threshold_denominator",
+             "ge3": "ge3_threshold", "ge4": "ge4_threshold"}
     }
-    if required_rates <= set(samples_by_object):
-        denominator_samples = samples_by_object["dijet_threshold_denominator"]
-        ge3_samples = samples_by_object["ge3_threshold"]
-        ge4_samples = samples_by_object["ge4_threshold"]
+    for group_name, group in groups.items():
+        required_rates = set(group.values())
+        if not required_rates <= set(samples_by_object):
+            if rate_groups is not None:
+                raise CampaignError(f"Missing rate inputs for {group_name}")
+            continue
+        suffix = f"_{group_name}" if group_name else ""
+        denominator_samples = samples_by_object[group["denominator"]]
+        ge3_samples = samples_by_object[group["ge3"]]
+        ge4_samples = samples_by_object[group["ge4"]]
         labels: dict[str, tuple[experimental.BinSeries,
                                experimental.BinSeries,
                                experimental.BinSeries]] = {}
@@ -2336,9 +2356,9 @@ def _mc_poljetshapes_prediction(
         for label, (denominator, ge3, ge4) in labels.items():
             r32 = _nested_ratio_prediction(ge3, denominator)
             r43 = _nested_ratio_prediction(ge4, ge3)
-            output[f"R32_{label}"] = r32
-            output[f"R43_{label}"] = r43
-            output[f"ThirdJetVeto_{label}"] = _one_minus_prediction(r32)
+            output[f"R32_{label}{suffix}"] = r32
+            output[f"R43_{label}{suffix}"] = r43
+            output[f"ThirdJetVeto_{label}{suffix}"] = _one_minus_prediction(r32)
 
     support = set(support_observables)
     for output_name in list(output):
@@ -2718,11 +2738,13 @@ def _mc_poljetshapes_assessment(
         maximum_moment_error = (
             max(projected_moment_errors)
             if len(projected_moment_errors) == len(relevant_moments)
+            and len(relevant_moments) == 2 * len(baseline_names)
             and projected_moment_errors
             else None
         )
         passes = (
             minimum_effective >= minimum_entries
+            and len(baseline_values) == 2 * len(DENOMINATOR) * len(baseline_names)
             and maximum_moment_error is not None
             and maximum_moment_error <= maximum_moment_error_target
         )
@@ -3029,9 +3051,11 @@ def _mc_poljetshapes_shard_covariance(
                     )
             replicate_prediction = _mc_poljetshapes_prediction(
                 leave_one_out,
-                (),
+                [name for name in channel.get("angular_observables", [])
+                 if name in leave_one_out],
                 channel.get("conditional_angular_observables", {}),
                 channel.get("support_observables", []),
+                channel.get("rate_groups"),
             )
             for output_name in output_names:
                 if output_name not in replicate_prediction:
@@ -5115,6 +5139,7 @@ def postprocess_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> 
                 channel_spec.get("angular_observables", []),
                 channel_spec.get("conditional_angular_observables", {}),
                 channel_spec.get("support_observables", []),
+                channel_spec.get("rate_groups"),
             )
         else:
             raise CampaignError(f"Unknown postprocessor {measurement['postprocessor']}")
@@ -5491,7 +5516,9 @@ def postprocess_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> 
                         math.sqrt(max(0.0, variance))
                         for variance in series.variances
                     ],
-                    "projected_entries": [
+                    ("weighted_fraction_times_requested_events"
+                     if measurement.get("sampling", {}).get("kind") == "compensated_preweight"
+                     else "projected_entries"): [
                         value * int(manifest["configuration"]["lo_events"])
                         for value in series.values
                     ],
@@ -5540,6 +5567,8 @@ def postprocess_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> 
         summary["analysis_instances"] = manifest["configuration"].get("analysis_instances", {})
         summary["runtime_provenance"] = manifest.get("runtime", {}).get("provenance", {})
         summary["loaded_library_fingerprints"] = manifest.get("runtime", {}).get("loaded_library_fingerprints", {})
+    if "sampling" in measurement:
+        summary["sampling"] = measurement["sampling"]
     experimental.atomic_write_json(output_dir/"summary.json", summary)
     if central_rows:
         with (output_dir/"central.csv").open("w", encoding="utf-8", newline="") as stream:
@@ -5809,7 +5838,7 @@ def _write_mc_poljetshapes_focus_index(
 
     sections: list[str] = []
     rendered_cards = 0
-    for section in MC_POLJETSHAPES_FOCUS_SECTIONS:
+    for section in measurement.get("focus_sections", MC_POLJETSHAPES_FOCUS_SECTIONS):
         cards: list[str] = []
         for stem, label, companion in section["plots"]:
             main_base = Path(analysis) / str(stem)
@@ -5961,6 +5990,11 @@ def _write_mc_poljetshapes_focus_index(
             "Both samples retain the same polarized hard process and ordinary shower-generated spin correlations. "
             "The blue sample discards hard spin input and polarized backward-ISR conditioning; "
             "LHE equivalence requires separately documented closure validation.")
+    if "sampling" in measurement:
+        document = document.replace("  </div>\n  <p>",
+            "    <p>" + html.escape(str(measurement["sampling"]["statistics"]))
+            + " Known polarized-ISR PDF overestimate warnings still require a separate precision audit."
+            + "</p>\n  </div>\n  <p>", 1)
     index = focus_dir / "index.html"
     experimental.atomic_write_text(index, document)
 

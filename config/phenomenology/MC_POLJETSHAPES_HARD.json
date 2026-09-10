@@ -1,0 +1,1304 @@
+{
+  "schema_version": 4,
+  "id": "MC_POLJETSHAPES_HARD",
+  "title": "Harder particle jets: full-spin versus LHE-like shower at 510 GeV",
+  "process_kind": "polarized_pp_jets",
+  "analysis": {
+    "name": "MC_POLJETSHAPES_HARD",
+    "source": "analyses/rivet/pp/MC_POLJETSHAPES_HARD.cc",
+    "info": "analyses/rivet/pp/MC_POLJETSHAPES_HARD.info",
+    "plot": "analyses/rivet/pp/MC_POLJETSHAPES_HARD.plot",
+    "plugin": "RivetMC_POLJETSHAPES_HARD.so",
+    "companions": [
+      {
+        "name": "MC_POLDIJETS",
+        "source": "analyses/rivet/pp/MC_POLDIJETS.cc",
+        "info": "analyses/rivet/pp/MC_POLDIJETS.info",
+        "plot": "analyses/rivet/pp/MC_POLDIJETS.plot",
+        "support_files": [
+          "analyses/rivet/pp/STARPolarizedJets.hh"
+        ],
+        "analysis_options": {
+          "LEVEL": "HADRON",
+          "R": 0.5,
+          "PTJ1MIN": 5,
+          "PTJ2MIN": 4,
+          "PTJ3MIN": 2,
+          "PTJ4MIN": 2,
+          "ETAMAX": 1.5
+        }
+      }
+    ],
+    "support_files": [
+      "analyses/rivet/pp/PolJetShapesHard.hh"
+    ]
+  },
+  "reference": {
+    "kind": "internal_observable_definition",
+    "snapshot": "data/phenomenology/MC_POLJETSHAPES_HARD/analysis-definition.json"
+  },
+  "cards": {
+    "directory": "cards/phenomenology/MC_POLJETSHAPES_HARD",
+    "common": "MC_POLJETSHAPES_HARD-Common.in",
+    "stem_pattern": "MC_POLJETSHAPES_HARD_{channel}_{helicity}-LO",
+    "polarized_pdf_object": "/Herwig/Partons/MCPOLJETSHAPESPolarizedPDF",
+    "helicities": {
+      "PP": [
+        1,
+        1
+      ],
+      "PM": [
+        1,
+        -1
+      ],
+      "MP": [
+        -1,
+        1
+      ],
+      "MM": [
+        -1,
+        -1
+      ]
+    },
+    "contributions": {
+      "LO": "Born"
+    }
+  },
+  "channels": {
+    "combined": {
+      "label": "Hardness-windowed particle-level angles and radiation",
+      "raw_objects": {
+        "dijet_rate": {
+          "analysis": "MC_POLDIJETS",
+          "object": "dijet_rate_Yield"
+        },
+        "jet1_pt": {
+          "analysis": "MC_POLDIJETS",
+          "object": "jet1_pt_Yield"
+        },
+        "jet2_pt": {
+          "analysis": "MC_POLDIJETS",
+          "object": "jet2_pt_Yield"
+        },
+        "jet3_pt": {
+          "analysis": "MC_POLDIJETS",
+          "object": "jet3_pt_Yield"
+        },
+        "jet4_pt": {
+          "analysis": "MC_POLDIJETS",
+          "object": "jet4_pt_Yield"
+        },
+        "jet1_eta": {
+          "analysis": "MC_POLDIJETS",
+          "object": "jet1_eta_Yield"
+        },
+        "jet2_eta": {
+          "analysis": "MC_POLDIJETS",
+          "object": "jet2_eta_Yield"
+        },
+        "jet3_eta": {
+          "analysis": "MC_POLDIJETS",
+          "object": "jet3_eta_Yield"
+        },
+        "jet4_eta": {
+          "analysis": "MC_POLDIJETS",
+          "object": "jet4_eta_Yield"
+        },
+        "pt_average": {
+          "analysis": "MC_POLDIJETS",
+          "object": "pt_average_Yield"
+        },
+        "pt_ratio_21": {
+          "analysis": "MC_POLDIJETS",
+          "object": "pt_ratio_21_Yield"
+        },
+        "pt_ratio_31": {
+          "analysis": "MC_POLDIJETS",
+          "object": "pt_ratio_31_Yield"
+        },
+        "dijet_mass": {
+          "analysis": "MC_POLDIJETS",
+          "object": "dijet_mass_Yield"
+        },
+        "dijet_pt": {
+          "analysis": "MC_POLDIJETS",
+          "object": "dijet_pt_Yield"
+        },
+        "dijet_ht": {
+          "analysis": "MC_POLDIJETS",
+          "object": "dijet_ht_Yield"
+        },
+        "delta_phi": {
+          "analysis": "MC_POLDIJETS",
+          "object": "delta_phi_Yield"
+        },
+        "abs_delta_eta": {
+          "analysis": "MC_POLDIJETS",
+          "object": "abs_delta_eta_Yield"
+        },
+        "delta_r": {
+          "analysis": "MC_POLDIJETS",
+          "object": "delta_r_Yield"
+        },
+        "delta_r_13": {
+          "analysis": "MC_POLDIJETS",
+          "object": "delta_r_13_Yield"
+        },
+        "delta_r_24": {
+          "analysis": "MC_POLDIJETS",
+          "object": "delta_r_24_Yield"
+        },
+        "delta_r_14": {
+          "analysis": "MC_POLDIJETS",
+          "object": "delta_r_14_Yield"
+        },
+        "eta_boost": {
+          "analysis": "MC_POLDIJETS",
+          "object": "eta_boost_Yield"
+        },
+        "cos2_delta_phi": {
+          "analysis": "MC_POLDIJETS",
+          "object": "cos2_delta_phi_Yield"
+        },
+        "pt20_30_dpsi12_j1_kt1": {
+          "analysis": "MC_POLJETSHAPES_HARD",
+          "object": "pt20_30_dpsi12_j1_kt1_Yield"
+        },
+        "pt20_30_hardplane_primary_j1_kt1": {
+          "analysis": "MC_POLJETSHAPES_HARD",
+          "object": "pt20_30_hardplane_primary_j1_kt1_Yield"
+        },
+        "pt20_30_dpsi12_j1_hardshare_kt1": {
+          "analysis": "MC_POLJETSHAPES_HARD",
+          "object": "pt20_30_dpsi12_j1_hardshare_kt1_Yield"
+        },
+        "pt20_30_dpsi12_j1_kt2": {
+          "analysis": "MC_POLJETSHAPES_HARD",
+          "object": "pt20_30_dpsi12_j1_kt2_Yield"
+        },
+        "pt20_30_hardplane_primary_j1_kt2": {
+          "analysis": "MC_POLJETSHAPES_HARD",
+          "object": "pt20_30_hardplane_primary_j1_kt2_Yield"
+        },
+        "pt20_30_dpsi12_j1_hardshare_kt2": {
+          "analysis": "MC_POLJETSHAPES_HARD",
+          "object": "pt20_30_dpsi12_j1_hardshare_kt2_Yield"
+        },
+        "pt20_30_dpsi12_j2_kt1": {
+          "analysis": "MC_POLJETSHAPES_HARD",
+          "object": "pt20_30_dpsi12_j2_kt1_Yield"
+        },
+        "pt20_30_hardplane_primary_j2_kt1": {
+          "analysis": "MC_POLJETSHAPES_HARD",
+          "object": "pt20_30_hardplane_primary_j2_kt1_Yield"
+        },
+        "pt20_30_dpsi12_j2_hardshare_kt1": {
+          "analysis": "MC_POLJETSHAPES_HARD",
+          "object": "pt20_30_dpsi12_j2_hardshare_kt1_Yield"
+        },
+        "pt20_30_dpsi12_j2_kt2": {
+          "analysis": "MC_POLJETSHAPES_HARD",
+          "object": "pt20_30_dpsi12_j2_kt2_Yield"
+        },
+        "pt20_30_hardplane_primary_j2_kt2": {
+          "analysis": "MC_POLJETSHAPES_HARD",
+          "object": "pt20_30_hardplane_primary_j2_kt2_Yield"
+        },
+        "pt20_30_dpsi12_j2_hardshare_kt2": {
+          "analysis": "MC_POLJETSHAPES_HARD",
+          "object": "pt20_30_dpsi12_j2_hardshare_kt2_Yield"
+        },
+        "pt20_30_interjet_dpsi11_kt1": {
+          "analysis": "MC_POLJETSHAPES_HARD",
+          "object": "pt20_30_interjet_dpsi11_kt1_Yield"
+        },
+        "pt20_30_interjet_dpsi11_kt2": {
+          "analysis": "MC_POLJETSHAPES_HARD",
+          "object": "pt20_30_interjet_dpsi11_kt2_Yield"
+        },
+        "pt20_30_resolved_dphi31": {
+          "analysis": "MC_POLJETSHAPES_HARD",
+          "object": "pt20_30_resolved_dphi31_Yield"
+        },
+        "pt20_30_resolved_dpsi34": {
+          "analysis": "MC_POLJETSHAPES_HARD",
+          "object": "pt20_30_resolved_dpsi34_Yield"
+        },
+        "pt30_45_dpsi12_j1_kt1": {
+          "analysis": "MC_POLJETSHAPES_HARD",
+          "object": "pt30_45_dpsi12_j1_kt1_Yield"
+        },
+        "pt30_45_hardplane_primary_j1_kt1": {
+          "analysis": "MC_POLJETSHAPES_HARD",
+          "object": "pt30_45_hardplane_primary_j1_kt1_Yield"
+        },
+        "pt30_45_dpsi12_j1_hardshare_kt1": {
+          "analysis": "MC_POLJETSHAPES_HARD",
+          "object": "pt30_45_dpsi12_j1_hardshare_kt1_Yield"
+        },
+        "pt30_45_dpsi12_j1_kt2": {
+          "analysis": "MC_POLJETSHAPES_HARD",
+          "object": "pt30_45_dpsi12_j1_kt2_Yield"
+        },
+        "pt30_45_hardplane_primary_j1_kt2": {
+          "analysis": "MC_POLJETSHAPES_HARD",
+          "object": "pt30_45_hardplane_primary_j1_kt2_Yield"
+        },
+        "pt30_45_dpsi12_j1_hardshare_kt2": {
+          "analysis": "MC_POLJETSHAPES_HARD",
+          "object": "pt30_45_dpsi12_j1_hardshare_kt2_Yield"
+        },
+        "pt30_45_dpsi12_j2_kt1": {
+          "analysis": "MC_POLJETSHAPES_HARD",
+          "object": "pt30_45_dpsi12_j2_kt1_Yield"
+        },
+        "pt30_45_hardplane_primary_j2_kt1": {
+          "analysis": "MC_POLJETSHAPES_HARD",
+          "object": "pt30_45_hardplane_primary_j2_kt1_Yield"
+        },
+        "pt30_45_dpsi12_j2_hardshare_kt1": {
+          "analysis": "MC_POLJETSHAPES_HARD",
+          "object": "pt30_45_dpsi12_j2_hardshare_kt1_Yield"
+        },
+        "pt30_45_dpsi12_j2_kt2": {
+          "analysis": "MC_POLJETSHAPES_HARD",
+          "object": "pt30_45_dpsi12_j2_kt2_Yield"
+        },
+        "pt30_45_hardplane_primary_j2_kt2": {
+          "analysis": "MC_POLJETSHAPES_HARD",
+          "object": "pt30_45_hardplane_primary_j2_kt2_Yield"
+        },
+        "pt30_45_dpsi12_j2_hardshare_kt2": {
+          "analysis": "MC_POLJETSHAPES_HARD",
+          "object": "pt30_45_dpsi12_j2_hardshare_kt2_Yield"
+        },
+        "pt30_45_interjet_dpsi11_kt1": {
+          "analysis": "MC_POLJETSHAPES_HARD",
+          "object": "pt30_45_interjet_dpsi11_kt1_Yield"
+        },
+        "pt30_45_interjet_dpsi11_kt2": {
+          "analysis": "MC_POLJETSHAPES_HARD",
+          "object": "pt30_45_interjet_dpsi11_kt2_Yield"
+        },
+        "pt30_45_resolved_dphi31": {
+          "analysis": "MC_POLJETSHAPES_HARD",
+          "object": "pt30_45_resolved_dphi31_Yield"
+        },
+        "pt30_45_resolved_dpsi34": {
+          "analysis": "MC_POLJETSHAPES_HARD",
+          "object": "pt30_45_resolved_dpsi34_Yield"
+        },
+        "pt20_30_dijet_rate": {
+          "analysis": "MC_POLJETSHAPES_HARD",
+          "object": "pt20_30_dijet_rate_Yield"
+        },
+        "pt20_30_jet3_pt": {
+          "analysis": "MC_POLJETSHAPES_HARD",
+          "object": "pt20_30_jet3_pt_Yield"
+        },
+        "pt20_30_jet4_pt": {
+          "analysis": "MC_POLJETSHAPES_HARD",
+          "object": "pt20_30_jet4_pt_Yield"
+        },
+        "pt20_30_dijet_threshold_denominator": {
+          "analysis": "MC_POLJETSHAPES_HARD",
+          "object": "pt20_30_dijet_threshold_denominator_Yield"
+        },
+        "pt20_30_ge3_threshold": {
+          "analysis": "MC_POLJETSHAPES_HARD",
+          "object": "pt20_30_ge3_threshold_Yield"
+        },
+        "pt20_30_ge4_threshold": {
+          "analysis": "MC_POLJETSHAPES_HARD",
+          "object": "pt20_30_ge4_threshold_Yield"
+        },
+        "pt20_30_pt31_cumulative_tail": {
+          "analysis": "MC_POLJETSHAPES_HARD",
+          "object": "pt20_30_pt31_cumulative_tail_Yield"
+        },
+        "pt20_30_pt41_cumulative_tail": {
+          "analysis": "MC_POLJETSHAPES_HARD",
+          "object": "pt20_30_pt41_cumulative_tail_Yield"
+        },
+        "pt30_45_dijet_rate": {
+          "analysis": "MC_POLJETSHAPES_HARD",
+          "object": "pt30_45_dijet_rate_Yield"
+        },
+        "pt30_45_jet3_pt": {
+          "analysis": "MC_POLJETSHAPES_HARD",
+          "object": "pt30_45_jet3_pt_Yield"
+        },
+        "pt30_45_jet4_pt": {
+          "analysis": "MC_POLJETSHAPES_HARD",
+          "object": "pt30_45_jet4_pt_Yield"
+        },
+        "pt30_45_dijet_threshold_denominator": {
+          "analysis": "MC_POLJETSHAPES_HARD",
+          "object": "pt30_45_dijet_threshold_denominator_Yield"
+        },
+        "pt30_45_ge3_threshold": {
+          "analysis": "MC_POLJETSHAPES_HARD",
+          "object": "pt30_45_ge3_threshold_Yield"
+        },
+        "pt30_45_ge4_threshold": {
+          "analysis": "MC_POLJETSHAPES_HARD",
+          "object": "pt30_45_ge4_threshold_Yield"
+        },
+        "pt30_45_pt31_cumulative_tail": {
+          "analysis": "MC_POLJETSHAPES_HARD",
+          "object": "pt30_45_pt31_cumulative_tail_Yield"
+        },
+        "pt30_45_pt41_cumulative_tail": {
+          "analysis": "MC_POLJETSHAPES_HARD",
+          "object": "pt30_45_pt41_cumulative_tail_Yield"
+        }
+      },
+      "helicity_resolved_observables": [
+        "dijet_rate",
+        "jet1_pt",
+        "jet2_pt",
+        "jet3_pt",
+        "jet4_pt",
+        "jet1_eta",
+        "jet2_eta",
+        "jet3_eta",
+        "jet4_eta",
+        "pt_average",
+        "pt_ratio_21",
+        "pt_ratio_31",
+        "dijet_mass",
+        "dijet_pt",
+        "dijet_ht",
+        "delta_phi",
+        "abs_delta_eta",
+        "delta_r",
+        "delta_r_13",
+        "delta_r_24",
+        "delta_r_14",
+        "eta_boost",
+        "cos2_delta_phi",
+        "pt20_30_dpsi12_j1_kt1",
+        "pt20_30_hardplane_primary_j1_kt1",
+        "pt20_30_dpsi12_j1_hardshare_kt1",
+        "pt20_30_dpsi12_j1_kt2",
+        "pt20_30_hardplane_primary_j1_kt2",
+        "pt20_30_dpsi12_j1_hardshare_kt2",
+        "pt20_30_dpsi12_j2_kt1",
+        "pt20_30_hardplane_primary_j2_kt1",
+        "pt20_30_dpsi12_j2_hardshare_kt1",
+        "pt20_30_dpsi12_j2_kt2",
+        "pt20_30_hardplane_primary_j2_kt2",
+        "pt20_30_dpsi12_j2_hardshare_kt2",
+        "pt20_30_interjet_dpsi11_kt1",
+        "pt20_30_interjet_dpsi11_kt2",
+        "pt20_30_resolved_dphi31",
+        "pt20_30_resolved_dpsi34",
+        "pt30_45_dpsi12_j1_kt1",
+        "pt30_45_hardplane_primary_j1_kt1",
+        "pt30_45_dpsi12_j1_hardshare_kt1",
+        "pt30_45_dpsi12_j1_kt2",
+        "pt30_45_hardplane_primary_j1_kt2",
+        "pt30_45_dpsi12_j1_hardshare_kt2",
+        "pt30_45_dpsi12_j2_kt1",
+        "pt30_45_hardplane_primary_j2_kt1",
+        "pt30_45_dpsi12_j2_hardshare_kt1",
+        "pt30_45_dpsi12_j2_kt2",
+        "pt30_45_hardplane_primary_j2_kt2",
+        "pt30_45_dpsi12_j2_hardshare_kt2",
+        "pt30_45_interjet_dpsi11_kt1",
+        "pt30_45_interjet_dpsi11_kt2",
+        "pt30_45_resolved_dphi31",
+        "pt30_45_resolved_dpsi34",
+        "pt20_30_dijet_rate",
+        "pt20_30_jet3_pt",
+        "pt20_30_jet4_pt",
+        "pt20_30_dijet_threshold_denominator",
+        "pt20_30_ge3_threshold",
+        "pt20_30_ge4_threshold",
+        "pt20_30_pt31_cumulative_tail",
+        "pt20_30_pt41_cumulative_tail",
+        "pt30_45_dijet_rate",
+        "pt30_45_jet3_pt",
+        "pt30_45_jet4_pt",
+        "pt30_45_dijet_threshold_denominator",
+        "pt30_45_ge3_threshold",
+        "pt30_45_ge4_threshold",
+        "pt30_45_pt31_cumulative_tail",
+        "pt30_45_pt41_cumulative_tail"
+      ],
+      "angular_observables": [
+        "pt20_30_dpsi12_j1_kt1",
+        "pt20_30_hardplane_primary_j1_kt1",
+        "pt20_30_dpsi12_j1_hardshare_kt1",
+        "pt20_30_dpsi12_j1_kt2",
+        "pt20_30_hardplane_primary_j1_kt2",
+        "pt20_30_dpsi12_j1_hardshare_kt2",
+        "pt20_30_dpsi12_j2_kt1",
+        "pt20_30_hardplane_primary_j2_kt1",
+        "pt20_30_dpsi12_j2_hardshare_kt1",
+        "pt20_30_dpsi12_j2_kt2",
+        "pt20_30_hardplane_primary_j2_kt2",
+        "pt20_30_dpsi12_j2_hardshare_kt2",
+        "pt20_30_interjet_dpsi11_kt1",
+        "pt20_30_interjet_dpsi11_kt2",
+        "pt20_30_resolved_dphi31",
+        "pt20_30_resolved_dpsi34",
+        "pt30_45_dpsi12_j1_kt1",
+        "pt30_45_hardplane_primary_j1_kt1",
+        "pt30_45_dpsi12_j1_hardshare_kt1",
+        "pt30_45_dpsi12_j1_kt2",
+        "pt30_45_hardplane_primary_j1_kt2",
+        "pt30_45_dpsi12_j1_hardshare_kt2",
+        "pt30_45_dpsi12_j2_kt1",
+        "pt30_45_hardplane_primary_j2_kt1",
+        "pt30_45_dpsi12_j2_hardshare_kt1",
+        "pt30_45_dpsi12_j2_kt2",
+        "pt30_45_hardplane_primary_j2_kt2",
+        "pt30_45_dpsi12_j2_hardshare_kt2",
+        "pt30_45_interjet_dpsi11_kt1",
+        "pt30_45_interjet_dpsi11_kt2",
+        "pt30_45_resolved_dphi31",
+        "pt30_45_resolved_dpsi34"
+      ],
+      "rate_groups": {
+        "pt20_30": {
+          "denominator": "pt20_30_dijet_threshold_denominator",
+          "ge3": "pt20_30_ge3_threshold",
+          "ge4": "pt20_30_ge4_threshold"
+        },
+        "pt30_45": {
+          "denominator": "pt30_45_dijet_threshold_denominator",
+          "ge3": "pt30_45_ge3_threshold",
+          "ge4": "pt30_45_ge4_threshold"
+        }
+      }
+    }
+  },
+  "families": {
+    "nominal": {
+      "label": "Polarized hard process + full-spin shower",
+      "helicities": [
+        "PP",
+        "PM",
+        "MP",
+        "MM"
+      ],
+      "mpi": "off",
+      "observable_level": "particle",
+      "analysis_options": {
+        "R": 0.5,
+        "PTJ1MIN": 5,
+        "PTJ2MIN": 4,
+        "ETAMAX": 1.5
+      },
+      "shower_spin_correlations": "on",
+      "plot_options": {
+        "LineColor": "#CC3311"
+      },
+      "hard_process_spin": "on"
+    },
+    "lhe_like_shower": {
+      "label": "Polarized hard process + LHE-like shower",
+      "helicities": [
+        "PP",
+        "PM",
+        "MP",
+        "MM"
+      ],
+      "mpi": "off",
+      "observable_level": "particle",
+      "analysis_options": {
+        "R": 0.5,
+        "PTJ1MIN": 5,
+        "PTJ2MIN": 4,
+        "ETAMAX": 1.5
+      },
+      "shower_spin_correlations": "on",
+      "plot_options": {
+        "LineColor": "#0077BB"
+      },
+      "diagnostic_only": true,
+      "hard_process_spin": "off"
+    }
+  },
+  "campaign": {
+    "default_jobs": 100,
+    "default_shards": 50,
+    "default_seed_base": 9407000,
+    "default_events": {
+      "LO": 500000
+    },
+    "smoke_events": 100
+  },
+  "generator_cuts": {
+    "jet_kt_min_gev": 3,
+    "jet_kt_min_scan_gev": [
+      3,
+      4,
+      5
+    ],
+    "production_gate": "Keep the original 3 GeV generation floor. Importance sampling is compensated; do not raise the floor to the particle-level window."
+  },
+  "postprocessor": "mc_poljetshapes",
+  "scales": {
+    "central": 1,
+    "points": [
+      0.5,
+      1,
+      2
+    ],
+    "mapping": "MEQCD2to2 ScalePreFactor = (mu/mu0)^2"
+  },
+  "pdf_ensembles": {
+    "polarized": {
+      "set": "NNPDFpol20_nlo_as_01180",
+      "central_member": 0,
+      "replica_members": [
+        1,
+        100
+      ]
+    },
+    "unpolarized": {
+      "set": "NNPDF40_nlo_pch_as_01180",
+      "central_member": 0,
+      "replica_members": [
+        1,
+        100
+      ]
+    },
+    "combination": "independent replica variances added in quadrature"
+  },
+  "spin_density_policy": {
+    "name": "radial_bloch_ball_projection",
+    "status": "interim_star_production",
+    "herwigpol_source_commit": "ad0c5486ad137e0e34c6274959c1fbf8323c5937",
+    "strict_negative_isr_guard": true,
+    "event_or_branching_veto": false
+  },
+  "statistics_projection": {
+    "pilot_events_per_helicity_family": 500000,
+    "candidate_events_per_helicity_family": [
+      100000000,
+      250000000,
+      500000000
+    ],
+    "baseline_observables": [
+      "pt20_30_dpsi12_j1_kt1",
+      "pt20_30_dpsi12_j2_kt1",
+      "pt30_45_dpsi12_j1_kt1",
+      "pt30_45_dpsi12_j2_kt1"
+    ],
+    "rare_observables": [
+      "pt20_30_dpsi12_j1_kt2",
+      "pt20_30_dpsi12_j2_kt2",
+      "pt20_30_dpsi12_j1_hardshare_kt2",
+      "pt20_30_interjet_dpsi11_kt2",
+      "pt30_45_dpsi12_j1_kt2",
+      "pt30_45_dpsi12_j2_kt2",
+      "pt30_45_dpsi12_j1_hardshare_kt2",
+      "pt30_45_interjet_dpsi11_kt2"
+    ],
+    "minimum_effective_baseline_entries": 250000,
+    "maximum_independent_on_off_A2_error": 0.002,
+    "events_per_shard": 500000,
+    "jobs": 100,
+    "production_seed_base": 9507000,
+    "production_tag_date": "20260910",
+    "production_tag_stem": "mc_poljetshapes_hard"
+  },
+  "shard_block_covariance": {
+    "method": "delete-one-common-shard jackknife",
+    "raw_observables": [
+      "pt20_30_dpsi12_j1_kt1",
+      "pt20_30_hardplane_primary_j1_kt1",
+      "pt20_30_dpsi12_j1_hardshare_kt1",
+      "pt20_30_dpsi12_j1_kt2",
+      "pt20_30_hardplane_primary_j1_kt2",
+      "pt20_30_dpsi12_j1_hardshare_kt2",
+      "pt20_30_dpsi12_j2_kt1",
+      "pt20_30_hardplane_primary_j2_kt1",
+      "pt20_30_dpsi12_j2_hardshare_kt1",
+      "pt20_30_dpsi12_j2_kt2",
+      "pt20_30_hardplane_primary_j2_kt2",
+      "pt20_30_dpsi12_j2_hardshare_kt2",
+      "pt20_30_interjet_dpsi11_kt1",
+      "pt20_30_interjet_dpsi11_kt2",
+      "pt20_30_resolved_dphi31",
+      "pt20_30_resolved_dpsi34",
+      "pt30_45_dpsi12_j1_kt1",
+      "pt30_45_hardplane_primary_j1_kt1",
+      "pt30_45_dpsi12_j1_hardshare_kt1",
+      "pt30_45_dpsi12_j1_kt2",
+      "pt30_45_hardplane_primary_j1_kt2",
+      "pt30_45_dpsi12_j1_hardshare_kt2",
+      "pt30_45_dpsi12_j2_kt1",
+      "pt30_45_hardplane_primary_j2_kt1",
+      "pt30_45_dpsi12_j2_hardshare_kt1",
+      "pt30_45_dpsi12_j2_kt2",
+      "pt30_45_hardplane_primary_j2_kt2",
+      "pt30_45_dpsi12_j2_hardshare_kt2",
+      "pt30_45_interjet_dpsi11_kt1",
+      "pt30_45_interjet_dpsi11_kt2",
+      "pt30_45_resolved_dphi31",
+      "pt30_45_resolved_dpsi34",
+      "pt20_30_dijet_rate",
+      "pt20_30_jet3_pt",
+      "pt20_30_jet4_pt",
+      "pt20_30_dijet_threshold_denominator",
+      "pt20_30_ge3_threshold",
+      "pt20_30_ge4_threshold",
+      "pt20_30_pt31_cumulative_tail",
+      "pt20_30_pt41_cumulative_tail",
+      "pt30_45_dijet_rate",
+      "pt30_45_jet3_pt",
+      "pt30_45_jet4_pt",
+      "pt30_45_dijet_threshold_denominator",
+      "pt30_45_ge3_threshold",
+      "pt30_45_ge4_threshold",
+      "pt30_45_pt31_cumulative_tail",
+      "pt30_45_pt41_cumulative_tail"
+    ],
+    "prediction_observables": [
+      "A2UU_pt20_30_dpsi12_j1_kt1",
+      "A2LL_pt20_30_dpsi12_j1_kt1",
+      "B2UU_pt20_30_dpsi12_j1_kt1",
+      "B2LL_pt20_30_dpsi12_j1_kt1",
+      "A2UU_pt20_30_hardplane_primary_j1_kt1",
+      "A2LL_pt20_30_hardplane_primary_j1_kt1",
+      "B2UU_pt20_30_hardplane_primary_j1_kt1",
+      "B2LL_pt20_30_hardplane_primary_j1_kt1",
+      "A2UU_pt20_30_dpsi12_j1_hardshare_kt1",
+      "A2LL_pt20_30_dpsi12_j1_hardshare_kt1",
+      "B2UU_pt20_30_dpsi12_j1_hardshare_kt1",
+      "B2LL_pt20_30_dpsi12_j1_hardshare_kt1",
+      "A2UU_pt20_30_dpsi12_j1_kt2",
+      "A2LL_pt20_30_dpsi12_j1_kt2",
+      "B2UU_pt20_30_dpsi12_j1_kt2",
+      "B2LL_pt20_30_dpsi12_j1_kt2",
+      "A2UU_pt20_30_hardplane_primary_j1_kt2",
+      "A2LL_pt20_30_hardplane_primary_j1_kt2",
+      "B2UU_pt20_30_hardplane_primary_j1_kt2",
+      "B2LL_pt20_30_hardplane_primary_j1_kt2",
+      "A2UU_pt20_30_dpsi12_j1_hardshare_kt2",
+      "A2LL_pt20_30_dpsi12_j1_hardshare_kt2",
+      "B2UU_pt20_30_dpsi12_j1_hardshare_kt2",
+      "B2LL_pt20_30_dpsi12_j1_hardshare_kt2",
+      "A2UU_pt20_30_dpsi12_j2_kt1",
+      "A2LL_pt20_30_dpsi12_j2_kt1",
+      "B2UU_pt20_30_dpsi12_j2_kt1",
+      "B2LL_pt20_30_dpsi12_j2_kt1",
+      "A2UU_pt20_30_hardplane_primary_j2_kt1",
+      "A2LL_pt20_30_hardplane_primary_j2_kt1",
+      "B2UU_pt20_30_hardplane_primary_j2_kt1",
+      "B2LL_pt20_30_hardplane_primary_j2_kt1",
+      "A2UU_pt20_30_dpsi12_j2_hardshare_kt1",
+      "A2LL_pt20_30_dpsi12_j2_hardshare_kt1",
+      "B2UU_pt20_30_dpsi12_j2_hardshare_kt1",
+      "B2LL_pt20_30_dpsi12_j2_hardshare_kt1",
+      "A2UU_pt20_30_dpsi12_j2_kt2",
+      "A2LL_pt20_30_dpsi12_j2_kt2",
+      "B2UU_pt20_30_dpsi12_j2_kt2",
+      "B2LL_pt20_30_dpsi12_j2_kt2",
+      "A2UU_pt20_30_hardplane_primary_j2_kt2",
+      "A2LL_pt20_30_hardplane_primary_j2_kt2",
+      "B2UU_pt20_30_hardplane_primary_j2_kt2",
+      "B2LL_pt20_30_hardplane_primary_j2_kt2",
+      "A2UU_pt20_30_dpsi12_j2_hardshare_kt2",
+      "A2LL_pt20_30_dpsi12_j2_hardshare_kt2",
+      "B2UU_pt20_30_dpsi12_j2_hardshare_kt2",
+      "B2LL_pt20_30_dpsi12_j2_hardshare_kt2",
+      "A2UU_pt20_30_interjet_dpsi11_kt1",
+      "A2LL_pt20_30_interjet_dpsi11_kt1",
+      "B2UU_pt20_30_interjet_dpsi11_kt1",
+      "B2LL_pt20_30_interjet_dpsi11_kt1",
+      "A2UU_pt20_30_interjet_dpsi11_kt2",
+      "A2LL_pt20_30_interjet_dpsi11_kt2",
+      "B2UU_pt20_30_interjet_dpsi11_kt2",
+      "B2LL_pt20_30_interjet_dpsi11_kt2",
+      "A2UU_pt20_30_resolved_dphi31",
+      "A2LL_pt20_30_resolved_dphi31",
+      "B2UU_pt20_30_resolved_dphi31",
+      "B2LL_pt20_30_resolved_dphi31",
+      "A2UU_pt20_30_resolved_dpsi34",
+      "A2LL_pt20_30_resolved_dpsi34",
+      "B2UU_pt20_30_resolved_dpsi34",
+      "B2LL_pt20_30_resolved_dpsi34",
+      "A2UU_pt30_45_dpsi12_j1_kt1",
+      "A2LL_pt30_45_dpsi12_j1_kt1",
+      "B2UU_pt30_45_dpsi12_j1_kt1",
+      "B2LL_pt30_45_dpsi12_j1_kt1",
+      "A2UU_pt30_45_hardplane_primary_j1_kt1",
+      "A2LL_pt30_45_hardplane_primary_j1_kt1",
+      "B2UU_pt30_45_hardplane_primary_j1_kt1",
+      "B2LL_pt30_45_hardplane_primary_j1_kt1",
+      "A2UU_pt30_45_dpsi12_j1_hardshare_kt1",
+      "A2LL_pt30_45_dpsi12_j1_hardshare_kt1",
+      "B2UU_pt30_45_dpsi12_j1_hardshare_kt1",
+      "B2LL_pt30_45_dpsi12_j1_hardshare_kt1",
+      "A2UU_pt30_45_dpsi12_j1_kt2",
+      "A2LL_pt30_45_dpsi12_j1_kt2",
+      "B2UU_pt30_45_dpsi12_j1_kt2",
+      "B2LL_pt30_45_dpsi12_j1_kt2",
+      "A2UU_pt30_45_hardplane_primary_j1_kt2",
+      "A2LL_pt30_45_hardplane_primary_j1_kt2",
+      "B2UU_pt30_45_hardplane_primary_j1_kt2",
+      "B2LL_pt30_45_hardplane_primary_j1_kt2",
+      "A2UU_pt30_45_dpsi12_j1_hardshare_kt2",
+      "A2LL_pt30_45_dpsi12_j1_hardshare_kt2",
+      "B2UU_pt30_45_dpsi12_j1_hardshare_kt2",
+      "B2LL_pt30_45_dpsi12_j1_hardshare_kt2",
+      "A2UU_pt30_45_dpsi12_j2_kt1",
+      "A2LL_pt30_45_dpsi12_j2_kt1",
+      "B2UU_pt30_45_dpsi12_j2_kt1",
+      "B2LL_pt30_45_dpsi12_j2_kt1",
+      "A2UU_pt30_45_hardplane_primary_j2_kt1",
+      "A2LL_pt30_45_hardplane_primary_j2_kt1",
+      "B2UU_pt30_45_hardplane_primary_j2_kt1",
+      "B2LL_pt30_45_hardplane_primary_j2_kt1",
+      "A2UU_pt30_45_dpsi12_j2_hardshare_kt1",
+      "A2LL_pt30_45_dpsi12_j2_hardshare_kt1",
+      "B2UU_pt30_45_dpsi12_j2_hardshare_kt1",
+      "B2LL_pt30_45_dpsi12_j2_hardshare_kt1",
+      "A2UU_pt30_45_dpsi12_j2_kt2",
+      "A2LL_pt30_45_dpsi12_j2_kt2",
+      "B2UU_pt30_45_dpsi12_j2_kt2",
+      "B2LL_pt30_45_dpsi12_j2_kt2",
+      "A2UU_pt30_45_hardplane_primary_j2_kt2",
+      "A2LL_pt30_45_hardplane_primary_j2_kt2",
+      "B2UU_pt30_45_hardplane_primary_j2_kt2",
+      "B2LL_pt30_45_hardplane_primary_j2_kt2",
+      "A2UU_pt30_45_dpsi12_j2_hardshare_kt2",
+      "A2LL_pt30_45_dpsi12_j2_hardshare_kt2",
+      "B2UU_pt30_45_dpsi12_j2_hardshare_kt2",
+      "B2LL_pt30_45_dpsi12_j2_hardshare_kt2",
+      "A2UU_pt30_45_interjet_dpsi11_kt1",
+      "A2LL_pt30_45_interjet_dpsi11_kt1",
+      "B2UU_pt30_45_interjet_dpsi11_kt1",
+      "B2LL_pt30_45_interjet_dpsi11_kt1",
+      "A2UU_pt30_45_interjet_dpsi11_kt2",
+      "A2LL_pt30_45_interjet_dpsi11_kt2",
+      "B2UU_pt30_45_interjet_dpsi11_kt2",
+      "B2LL_pt30_45_interjet_dpsi11_kt2",
+      "A2UU_pt30_45_resolved_dphi31",
+      "A2LL_pt30_45_resolved_dphi31",
+      "B2UU_pt30_45_resolved_dphi31",
+      "B2LL_pt30_45_resolved_dphi31",
+      "A2UU_pt30_45_resolved_dpsi34",
+      "A2LL_pt30_45_resolved_dpsi34",
+      "B2UU_pt30_45_resolved_dpsi34",
+      "B2LL_pt30_45_resolved_dpsi34",
+      "SigmaUU_pt20_30_jet3_pt",
+      "SigmaUU_pt20_30_jet4_pt",
+      "R32_UU_pt20_30",
+      "R43_UU_pt20_30",
+      "ThirdJetVeto_UU_pt20_30",
+      "SigmaUU_pt20_30_pt31_cumulative_tail",
+      "SigmaUU_pt20_30_pt41_cumulative_tail",
+      "SigmaUU_pt30_45_jet3_pt",
+      "SigmaUU_pt30_45_jet4_pt",
+      "R32_UU_pt30_45",
+      "R43_UU_pt30_45",
+      "ThirdJetVeto_UU_pt30_45",
+      "SigmaUU_pt30_45_pt31_cumulative_tail",
+      "SigmaUU_pt30_45_pt41_cumulative_tail"
+    ],
+    "family_relation": "nominal and lhe_like_shower are independent"
+  },
+  "physics": {
+    "beams": "longitudinally polarized pp",
+    "sqrt_s_gev": 510,
+    "hard_process_accuracy": "LO",
+    "observable_level": "all stable visible final-state particles",
+    "jet_definition": "anti-kT R=0.5, |eta|<1.5, pT1>5 GeV, pT2>4 GeV",
+    "event_simulation": "QCD shower, hadronization, hadron decays, and remnants on; MPI off",
+    "truth_information": "none: stable visible particles only in MC_POLJETSHAPES_HARD",
+    "polarization_convention": "unit-helicity PP, PM, MP, and MM theory cross sections matching the STAR 510 GeV campaign",
+    "resolved_radiation": "signed particle-level jet-plane angles for jets 3 and 4, including cos(2 psi) and sine moments versus pT3/pT1 and pT4/pT1",
+    "hard_sharing_selection": "primary 0.25<z1<0.40, secondary z2>0.35, with matched kT>1 and 2 GeV working points",
+    "comparison": "The families differ only by HardProcessSpin Yes/No; both retain SpinCorrelations Yes, polarized LO hard generation and independent seeds. No removes hard spin input and polarized backward-ISR conditioning. LHE equivalence requires separate closure validation.",
+    "pdf_accuracy": "NLO PDF inputs do not promote the hard prediction to NLO accuracy",
+    "hardness_windows": "20 <= pT < 30 and 30 <= pT < 45 GeV; intra-jet/hard-plane angles use each jet's own window; inter-jet/radiation/rates use the leading-jet window; no additional jet-balance or topology cut."
+  },
+  "comparison_support": {
+    "minimum_effective_entries_per_helicity": 25,
+    "minimum_ratio_denominator_sigma": 3
+  },
+  "comparison_pair": [
+    "nominal",
+    "lhe_like_shower"
+  ],
+  "comparison_labels": {
+    "ratio": "Full spin / LHE-like",
+    "difference": "Full spin minus LHE-like",
+    "title": "Hard-process spin transfer"
+  },
+  "runner": "scripts/run_mc_poljetshapes_hard_campaign.py",
+  "sampling": {
+    "kind": "compensated_preweight",
+    "object": "/Herwig/Weights/HardJetSampling",
+    "class": "ThePEG::ReweightMinPT",
+    "library": "ReweightMinPT.so",
+    "power": 4,
+    "scale_gev": 20,
+    "only_coloured": true,
+    "application": "/Herwig/MatrixElements/SubProcess:Preweights",
+    "physical_event_weight": "inverse preweight, applied by ThePEG::StandardEventHandler::select",
+    "statistics": "Cutflow and accepted-entry fractions are weighted, not sampled-event counts. Neff=(sum w)^2/sum w^2. Validate normalization against the unbiased sample."
+  },
+  "focus_sections": [
+    {
+      "title": "20–30 GeV: primary spin-transfer tests",
+      "why": "Intra-jet and hard-plane angles use the pT window of that jet. Inter-jet angles use the leading-jet window. Compare cosine moments and sine nulls, with independent family errors; tight selections may be sparse.",
+      "plots": [
+        [
+          "ShapeUU_pt20_30_dpsi12_j1_kt1",
+          "dpsi12_j1_kt1 normalized shape",
+          "ratio"
+        ],
+        [
+          "A2UU_pt20_30_dpsi12_j1_kt1",
+          "dpsi12_j1_kt1 A2UU",
+          "difference"
+        ],
+        [
+          "A2LL_pt20_30_dpsi12_j1_kt1",
+          "dpsi12_j1_kt1 A2LL",
+          "difference"
+        ],
+        [
+          "ShapeUU_pt20_30_dpsi12_j2_kt1",
+          "dpsi12_j2_kt1 normalized shape",
+          "ratio"
+        ],
+        [
+          "A2UU_pt20_30_dpsi12_j2_kt1",
+          "dpsi12_j2_kt1 A2UU",
+          "difference"
+        ],
+        [
+          "A2LL_pt20_30_dpsi12_j2_kt1",
+          "dpsi12_j2_kt1 A2LL",
+          "difference"
+        ],
+        [
+          "ShapeUU_pt20_30_dpsi12_j1_kt2",
+          "dpsi12_j1_kt2 normalized shape",
+          "ratio"
+        ],
+        [
+          "A2UU_pt20_30_dpsi12_j1_kt2",
+          "dpsi12_j1_kt2 A2UU",
+          "difference"
+        ],
+        [
+          "A2LL_pt20_30_dpsi12_j1_kt2",
+          "dpsi12_j1_kt2 A2LL",
+          "difference"
+        ],
+        [
+          "ShapeUU_pt20_30_dpsi12_j2_kt2",
+          "dpsi12_j2_kt2 normalized shape",
+          "ratio"
+        ],
+        [
+          "A2UU_pt20_30_dpsi12_j2_kt2",
+          "dpsi12_j2_kt2 A2UU",
+          "difference"
+        ],
+        [
+          "A2LL_pt20_30_dpsi12_j2_kt2",
+          "dpsi12_j2_kt2 A2LL",
+          "difference"
+        ],
+        [
+          "ShapeUU_pt20_30_hardplane_primary_j1_kt1",
+          "hardplane_primary_j1_kt1 normalized shape",
+          "ratio"
+        ],
+        [
+          "A2UU_pt20_30_hardplane_primary_j1_kt1",
+          "hardplane_primary_j1_kt1 A2UU",
+          "difference"
+        ],
+        [
+          "A2LL_pt20_30_hardplane_primary_j1_kt1",
+          "hardplane_primary_j1_kt1 A2LL",
+          "difference"
+        ],
+        [
+          "ShapeUU_pt20_30_hardplane_primary_j2_kt1",
+          "hardplane_primary_j2_kt1 normalized shape",
+          "ratio"
+        ],
+        [
+          "A2UU_pt20_30_hardplane_primary_j2_kt1",
+          "hardplane_primary_j2_kt1 A2UU",
+          "difference"
+        ],
+        [
+          "A2LL_pt20_30_hardplane_primary_j2_kt1",
+          "hardplane_primary_j2_kt1 A2LL",
+          "difference"
+        ],
+        [
+          "ShapeUU_pt20_30_interjet_dpsi11_kt1",
+          "interjet_dpsi11_kt1 normalized shape",
+          "ratio"
+        ],
+        [
+          "A2UU_pt20_30_interjet_dpsi11_kt1",
+          "interjet_dpsi11_kt1 A2UU",
+          "difference"
+        ],
+        [
+          "A2LL_pt20_30_interjet_dpsi11_kt1",
+          "interjet_dpsi11_kt1 A2LL",
+          "difference"
+        ],
+        [
+          "ShapeUU_pt20_30_interjet_dpsi11_kt2",
+          "interjet_dpsi11_kt2 normalized shape",
+          "ratio"
+        ],
+        [
+          "A2UU_pt20_30_interjet_dpsi11_kt2",
+          "interjet_dpsi11_kt2 A2UU",
+          "difference"
+        ],
+        [
+          "A2LL_pt20_30_interjet_dpsi11_kt2",
+          "interjet_dpsi11_kt2 A2LL",
+          "difference"
+        ],
+        [
+          "ShapeUU_pt20_30_dpsi12_j1_hardshare_kt1",
+          "dpsi12_j1_hardshare_kt1 normalized shape",
+          "ratio"
+        ],
+        [
+          "A2UU_pt20_30_dpsi12_j1_hardshare_kt1",
+          "dpsi12_j1_hardshare_kt1 A2UU",
+          "difference"
+        ],
+        [
+          "A2LL_pt20_30_dpsi12_j1_hardshare_kt1",
+          "dpsi12_j1_hardshare_kt1 A2LL",
+          "difference"
+        ],
+        [
+          "ShapeUU_pt20_30_dpsi12_j2_hardshare_kt1",
+          "dpsi12_j2_hardshare_kt1 normalized shape",
+          "ratio"
+        ],
+        [
+          "A2UU_pt20_30_dpsi12_j2_hardshare_kt1",
+          "dpsi12_j2_hardshare_kt1 A2UU",
+          "difference"
+        ],
+        [
+          "A2LL_pt20_30_dpsi12_j2_hardshare_kt1",
+          "dpsi12_j2_hardshare_kt1 A2LL",
+          "difference"
+        ],
+        [
+          "B2UU_pt20_30_dpsi12_j1_kt1",
+          "Jet-1 sine null",
+          "difference"
+        ],
+        [
+          "B2LL_pt20_30_dpsi12_j1_kt1",
+          "Jet-1 LL sine null",
+          "difference"
+        ]
+      ]
+    },
+    {
+      "title": "20–30 GeV leading jet: additional radiation",
+      "why": "Spectra, rates and wide-angle planes use the leading-jet window. Jets 3/4 have pT > 2 GeV. These test radiation rates as well as azimuths.",
+      "plots": [
+        [
+          "SigmaUU_pt20_30_jet3_pt",
+          "jet3_pt cross section",
+          "ratio"
+        ],
+        [
+          "ALL_pt20_30_jet3_pt",
+          "jet3_pt ALL",
+          "difference"
+        ],
+        [
+          "SigmaUU_pt20_30_jet4_pt",
+          "jet4_pt cross section",
+          "ratio"
+        ],
+        [
+          "ALL_pt20_30_jet4_pt",
+          "jet4_pt ALL",
+          "difference"
+        ],
+        [
+          "R32_UU_pt20_30",
+          "R32_UU",
+          "ratio"
+        ],
+        [
+          "R43_UU_pt20_30",
+          "R43_UU",
+          "ratio"
+        ],
+        [
+          "ThirdJetVeto_UU_pt20_30",
+          "ThirdJetVeto_UU",
+          "ratio"
+        ],
+        [
+          "A2UU_pt20_30_resolved_dphi31",
+          "resolved_dphi31 A2UU",
+          "difference"
+        ],
+        [
+          "A2LL_pt20_30_resolved_dphi31",
+          "resolved_dphi31 A2LL",
+          "difference"
+        ],
+        [
+          "A2UU_pt20_30_resolved_dpsi34",
+          "resolved_dpsi34 A2UU",
+          "difference"
+        ],
+        [
+          "A2LL_pt20_30_resolved_dpsi34",
+          "resolved_dpsi34 A2LL",
+          "difference"
+        ]
+      ]
+    },
+    {
+      "title": "30–45 GeV: primary spin-transfer tests",
+      "why": "Intra-jet and hard-plane angles use the pT window of that jet. Inter-jet angles use the leading-jet window. Compare cosine moments and sine nulls, with independent family errors; tight selections may be sparse.",
+      "plots": [
+        [
+          "ShapeUU_pt30_45_dpsi12_j1_kt1",
+          "dpsi12_j1_kt1 normalized shape",
+          "ratio"
+        ],
+        [
+          "A2UU_pt30_45_dpsi12_j1_kt1",
+          "dpsi12_j1_kt1 A2UU",
+          "difference"
+        ],
+        [
+          "A2LL_pt30_45_dpsi12_j1_kt1",
+          "dpsi12_j1_kt1 A2LL",
+          "difference"
+        ],
+        [
+          "ShapeUU_pt30_45_dpsi12_j2_kt1",
+          "dpsi12_j2_kt1 normalized shape",
+          "ratio"
+        ],
+        [
+          "A2UU_pt30_45_dpsi12_j2_kt1",
+          "dpsi12_j2_kt1 A2UU",
+          "difference"
+        ],
+        [
+          "A2LL_pt30_45_dpsi12_j2_kt1",
+          "dpsi12_j2_kt1 A2LL",
+          "difference"
+        ],
+        [
+          "ShapeUU_pt30_45_dpsi12_j1_kt2",
+          "dpsi12_j1_kt2 normalized shape",
+          "ratio"
+        ],
+        [
+          "A2UU_pt30_45_dpsi12_j1_kt2",
+          "dpsi12_j1_kt2 A2UU",
+          "difference"
+        ],
+        [
+          "A2LL_pt30_45_dpsi12_j1_kt2",
+          "dpsi12_j1_kt2 A2LL",
+          "difference"
+        ],
+        [
+          "ShapeUU_pt30_45_dpsi12_j2_kt2",
+          "dpsi12_j2_kt2 normalized shape",
+          "ratio"
+        ],
+        [
+          "A2UU_pt30_45_dpsi12_j2_kt2",
+          "dpsi12_j2_kt2 A2UU",
+          "difference"
+        ],
+        [
+          "A2LL_pt30_45_dpsi12_j2_kt2",
+          "dpsi12_j2_kt2 A2LL",
+          "difference"
+        ],
+        [
+          "ShapeUU_pt30_45_hardplane_primary_j1_kt1",
+          "hardplane_primary_j1_kt1 normalized shape",
+          "ratio"
+        ],
+        [
+          "A2UU_pt30_45_hardplane_primary_j1_kt1",
+          "hardplane_primary_j1_kt1 A2UU",
+          "difference"
+        ],
+        [
+          "A2LL_pt30_45_hardplane_primary_j1_kt1",
+          "hardplane_primary_j1_kt1 A2LL",
+          "difference"
+        ],
+        [
+          "ShapeUU_pt30_45_hardplane_primary_j2_kt1",
+          "hardplane_primary_j2_kt1 normalized shape",
+          "ratio"
+        ],
+        [
+          "A2UU_pt30_45_hardplane_primary_j2_kt1",
+          "hardplane_primary_j2_kt1 A2UU",
+          "difference"
+        ],
+        [
+          "A2LL_pt30_45_hardplane_primary_j2_kt1",
+          "hardplane_primary_j2_kt1 A2LL",
+          "difference"
+        ],
+        [
+          "ShapeUU_pt30_45_interjet_dpsi11_kt1",
+          "interjet_dpsi11_kt1 normalized shape",
+          "ratio"
+        ],
+        [
+          "A2UU_pt30_45_interjet_dpsi11_kt1",
+          "interjet_dpsi11_kt1 A2UU",
+          "difference"
+        ],
+        [
+          "A2LL_pt30_45_interjet_dpsi11_kt1",
+          "interjet_dpsi11_kt1 A2LL",
+          "difference"
+        ],
+        [
+          "ShapeUU_pt30_45_interjet_dpsi11_kt2",
+          "interjet_dpsi11_kt2 normalized shape",
+          "ratio"
+        ],
+        [
+          "A2UU_pt30_45_interjet_dpsi11_kt2",
+          "interjet_dpsi11_kt2 A2UU",
+          "difference"
+        ],
+        [
+          "A2LL_pt30_45_interjet_dpsi11_kt2",
+          "interjet_dpsi11_kt2 A2LL",
+          "difference"
+        ],
+        [
+          "ShapeUU_pt30_45_dpsi12_j1_hardshare_kt1",
+          "dpsi12_j1_hardshare_kt1 normalized shape",
+          "ratio"
+        ],
+        [
+          "A2UU_pt30_45_dpsi12_j1_hardshare_kt1",
+          "dpsi12_j1_hardshare_kt1 A2UU",
+          "difference"
+        ],
+        [
+          "A2LL_pt30_45_dpsi12_j1_hardshare_kt1",
+          "dpsi12_j1_hardshare_kt1 A2LL",
+          "difference"
+        ],
+        [
+          "ShapeUU_pt30_45_dpsi12_j2_hardshare_kt1",
+          "dpsi12_j2_hardshare_kt1 normalized shape",
+          "ratio"
+        ],
+        [
+          "A2UU_pt30_45_dpsi12_j2_hardshare_kt1",
+          "dpsi12_j2_hardshare_kt1 A2UU",
+          "difference"
+        ],
+        [
+          "A2LL_pt30_45_dpsi12_j2_hardshare_kt1",
+          "dpsi12_j2_hardshare_kt1 A2LL",
+          "difference"
+        ],
+        [
+          "B2UU_pt30_45_dpsi12_j1_kt1",
+          "Jet-1 sine null",
+          "difference"
+        ],
+        [
+          "B2LL_pt30_45_dpsi12_j1_kt1",
+          "Jet-1 LL sine null",
+          "difference"
+        ]
+      ]
+    },
+    {
+      "title": "30–45 GeV leading jet: additional radiation",
+      "why": "Spectra, rates and wide-angle planes use the leading-jet window. Jets 3/4 have pT > 2 GeV. These test radiation rates as well as azimuths.",
+      "plots": [
+        [
+          "SigmaUU_pt30_45_jet3_pt",
+          "jet3_pt cross section",
+          "ratio"
+        ],
+        [
+          "ALL_pt30_45_jet3_pt",
+          "jet3_pt ALL",
+          "difference"
+        ],
+        [
+          "SigmaUU_pt30_45_jet4_pt",
+          "jet4_pt cross section",
+          "ratio"
+        ],
+        [
+          "ALL_pt30_45_jet4_pt",
+          "jet4_pt ALL",
+          "difference"
+        ],
+        [
+          "R32_UU_pt30_45",
+          "R32_UU",
+          "ratio"
+        ],
+        [
+          "R43_UU_pt30_45",
+          "R43_UU",
+          "ratio"
+        ],
+        [
+          "ThirdJetVeto_UU_pt30_45",
+          "ThirdJetVeto_UU",
+          "ratio"
+        ],
+        [
+          "A2UU_pt30_45_resolved_dphi31",
+          "resolved_dphi31 A2UU",
+          "difference"
+        ],
+        [
+          "A2LL_pt30_45_resolved_dphi31",
+          "resolved_dphi31 A2LL",
+          "difference"
+        ],
+        [
+          "A2UU_pt30_45_resolved_dpsi34",
+          "resolved_dpsi34 A2UU",
+          "difference"
+        ],
+        [
+          "A2LL_pt30_45_resolved_dpsi34",
+          "resolved_dpsi34 A2LL",
+          "difference"
+        ]
+      ]
+    }
+  ]
+}

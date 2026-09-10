@@ -1,0 +1,29 @@
+Name: MC_POLJETSHAPES_HARD
+Summary: Particle-level jet-shape probes of polarized parton-shower spin correlations at 510 GeV
+Status: UNVALIDATED
+Reentrant: true
+Authors:
+  - Andreas Papaefstathiou <apapaefs@kennesaw.edu>
+References:
+  - Eur. Phys. J. C 81 (2021) 681
+  - Phys. Rev. Lett. 126 (2021) 112003
+RunInfo: Requires independent PP, PM, MP, and MM polarized pp samples.
+NumEvents: 500000
+NeedsCrossSection: yes
+Beams: [p+, p+]
+Energies: [510]
+Options:
+ - R=#
+ - PTJ1MIN=#
+ - PTJ2MIN=#
+ - ETAMAX=#
+Description: >
+  Stable-visible-particle anti-kT R=0.5 dijets with pT1>5 GeV,
+  pT2>4 GeV, and |eta|<1.5. Cambridge/Aachen reclustering defines
+  signed primary-secondary and inter-jet splitting-plane angles without
+  shower-history or flavour information. Each jet's intra-jet and hard-plane
+  angles use its own 20-30 or 30-45 GeV half-open pT window. Event-level
+  inter-jet angles, jet-3/4 spectra and radiation rates use the leading-jet
+  window. Standard splittings have z1,z2>0.1 and kT>1 or 2 GeV. Hard-sharing
+  declusterings require 0.25<z1<0.40 and z2>0.35 at matched kT thresholds
+  of 1 or 2 GeV. All histograms retain compensated sampling event weights.
