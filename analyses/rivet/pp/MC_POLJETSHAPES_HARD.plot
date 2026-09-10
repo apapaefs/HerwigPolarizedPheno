@@ -136,3 +136,15 @@ END PLOT
 BEGIN PLOT /MC_POLJETSHAPES_HARD/.*_pt30_45_.*
 Title=Particle jet $30\leq p_T<45$ GeV
 END PLOT
+
+BEGIN PLOT /MC_POLJETSHAPES_HARD/.*_pt20_30_jet[34]_pt$
+Title=Leading jet $20\leq p_T<30$ GeV
+XMin=2
+XMax=30
+END PLOT
+
+BEGIN PLOT /MC_POLJETSHAPES_HARD/.*_pt30_45_jet[34]_pt$
+Title=Leading jet $30\leq p_T<45$ GeV
+XMin=2
+XMax=45
+END PLOT

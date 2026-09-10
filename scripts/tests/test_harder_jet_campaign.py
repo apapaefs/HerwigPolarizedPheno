@@ -124,6 +124,10 @@ class HarderJetTests(unittest.TestCase):
 
     def test_focus_has_harder_spectra_and_ratios(self):
         m = self.measurement
+        plot = (ROOT/m["analysis"]["plot"]).read_text()
+        self.assertIn("_pt20_30_jet[34]_pt$\nTitle=Leading jet", plot)
+        self.assertIn("XMax=30", plot)
+        self.assertIn("XMax=45", plot)
         stems = {p[0] for section in m["focus_sections"] for p in section["plots"]}
         for w in ("pt20_30", "pt30_45"):
             for j in (3,4):
