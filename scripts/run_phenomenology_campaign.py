@@ -5753,7 +5753,22 @@ def _configure_mc_poljetshapes_ratio_script(
     """Give a ratio-only Rivet script a linear scale and unity reference."""
 
     source = script.read_text(encoding="utf-8")
+    tick_marker = "# MC_POLJETSHAPES linear ratio tick formatting"
+    if tick_marker not in source and "\nplt.savefig(" in source:
+        # YODA hard-codes log locators for logarithmic source spectra. Merely
+        # changing ax_yScale leaves those locators behind on a linear ratio.
+        ticks = (
+            "\n" + tick_marker + "\n"
+            "ax.yaxis.set_major_locator(mpl.ticker.MaxNLocator(nbins=6))\n"
+            "ax.yaxis.set_minor_locator(mpl.ticker.AutoMinorLocator())\n"
+            "ax.yaxis.set_major_formatter(mpl.ticker.ScalarFormatter(useOffset=False))\n"
+            "ax.tick_params(axis='both', which='both', labelbottom=True, labelleft=True)\n"
+            "ax.xaxis.label.set_visible(True)\n"
+            "ax.yaxis.label.set_visible(True)\n"
+        )
+        source = source.replace("\nplt.savefig(", ticks + "\nplt.savefig(", 1)
     if "# MC_POLJETSHAPES spin-on/spin-off ratio presentation" in source:
+        experimental.atomic_write_text(script, source)
         return
     source, replacements = re.subn(
         r"(?m)^ax_yScale\s*=\s*['\"](?:linear|log)['\"]$",

@@ -680,7 +680,9 @@ class MCPOLJETSHAPESCampaignTests(unittest.TestCase):
             script = Path(temporary) / "ratio.py"
             script.write_text(
                 "ax_yScale = 'log'\n"
-                "\nlegend_handles = dict() # keep track of handles for the legend\n",
+                "\nlegend_handles = dict() # keep track of handles for the legend\n"
+                "ax.yaxis.set_major_locator(mpl.ticker.LogLocator())\n"
+                "plt.savefig('test.png')\n",
                 encoding="utf-8",
             )
             campaign._configure_mc_poljetshapes_ratio_script(script)
@@ -688,6 +690,12 @@ class MCPOLJETSHAPESCampaignTests(unittest.TestCase):
             self.assertIn("ax_yScale = 'linear'", configured)
             self.assertIn("ax.axhline(1.0", configured)
             self.assertIn("spin-on/spin-off ratio presentation", configured)
+            self.assertIn("MaxNLocator(nbins=6)", configured)
+            self.assertIn("labelbottom=True, labelleft=True", configured)
+            self.assertLess(configured.index("LogLocator()"), configured.index("MaxNLocator"))
+            self.assertLess(configured.index("MaxNLocator"), configured.index("plt.savefig"))
+            campaign._configure_mc_poljetshapes_ratio_script(script)
+            self.assertEqual(configured, script.read_text(encoding="utf-8"))
 
     def test_dedicated_runner_pins_measurement(self) -> None:
         self.assertEqual(
