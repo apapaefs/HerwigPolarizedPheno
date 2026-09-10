@@ -122,6 +122,29 @@ class HarderJetTests(unittest.TestCase):
             {"configuration": {"families": m["comparison_pair"], "lo_events": 500000}})
         self.assertTrue(all(not tier["passes"] for tier in result["tiers"]))
 
+    def test_loaded_sampler_copy_must_be_byte_identical(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            expected = root/"ReweightMinPT.so"
+            actual = root/"base"/"ReweightMinPT.so"
+            actual.parent.mkdir()
+            expected.write_bytes(b"validated-plugin")
+            actual.write_bytes(b"validated-plugin")
+            runtime = {"tools": {"Herwig": "/test/bin/Herwig"},
+                       "herwig_prefix": str(root), "hwshower_library": "/test/HwShower.so",
+                       "hwmehadron_library": "/test/HwMEHadron.so"}
+            output = "calling init: /test/HwShower.so\ncalling init: /test/HwMEHadron.so\ncalling init: "+str(actual)+"\n"
+            with patch.object(campaign.subprocess, "run") as run, patch.object(
+                    campaign.experimental, "_find_runtime_library", return_value=expected):
+                run.return_value = subprocess.CompletedProcess([], 0, "No\n", output)
+                campaign._preflight_hard_process_spin(self.measurement, runtime)
+                self.assertEqual(runtime["sampling_library_resolution"]["identity"],
+                                 "byte_identical_install_copy")
+                self.assertEqual(runtime["sampling_library_resolution"]["actually_loaded"], str(actual.resolve()))
+                actual.write_bytes(b"different-plugin")
+                with self.assertRaisesRegex(campaign.CampaignError, "ReweightMinPT"):
+                    campaign._preflight_hard_process_spin(self.measurement, runtime)
+
     def test_focus_has_harder_spectra_and_ratios(self):
         m = self.measurement
         plot = (ROOT/m["analysis"]["plot"]).read_text()

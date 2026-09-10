@@ -1392,8 +1392,24 @@ def _preflight_hard_process_spin(
         if sampling_library:
             sampling_path = experimental._find_runtime_library(
                 Path(runtime["herwig_prefix"]), "lib/ThePEG", "ReweightMinPT*.so*")
+            loaded_sampling_path = sampling_path.resolve()
             if sampling_path.resolve() not in resolved:
-                raise CampaignError("Could not verify the actually loaded ReweightMinPT library")
+                # An unchanged ThePEG plugin may resolve through the base
+                # installation recorded in libtool/RPO search paths. Accept
+                # that copy only after byte identity, and record the real path.
+                candidates = [path for path in resolved
+                              if path.name.startswith("ReweightMinPT") and path.is_file()]
+                if (len(candidates) != 1 or
+                        provenance.sha256_file(candidates[0]) !=
+                        provenance.sha256_file(sampling_path)):
+                    raise CampaignError("Could not verify the actually loaded ReweightMinPT library")
+                loaded_sampling_path = candidates[0]
+            runtime["sampling_library_resolution"] = {
+                "prefix_artifact": str(sampling_path.resolve()),
+                "actually_loaded": str(loaded_sampling_path),
+                "identity": ("same_path" if loaded_sampling_path == sampling_path.resolve()
+                             else "byte_identical_install_copy"),
+            }
         runtime["loaded_library_fingerprints"] = {
             str(path): provenance.file_record(path)
             for path in sorted(resolved)
@@ -5569,6 +5585,8 @@ def postprocess_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> 
         summary["loaded_library_fingerprints"] = manifest.get("runtime", {}).get("loaded_library_fingerprints", {})
     if "sampling" in measurement:
         summary["sampling"] = measurement["sampling"]
+        summary["sampling_library_resolution"] = manifest.get("runtime", {}).get(
+            "sampling_library_resolution", {})
     experimental.atomic_write_json(output_dir/"summary.json", summary)
     if central_rows:
         with (output_dir/"central.csv").open("w", encoding="utf-8", newline="") as stream:
