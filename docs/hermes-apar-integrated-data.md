@@ -97,7 +97,14 @@ claim follows from this reconstructed comparison.
 The ordinary HERMES campaign `plot` stage now constructs these plots
 automatically; `full` includes that stage. They appear in both the root Rivet
 gallery and its HERMES analysis page, under **Reconstructed Born A_parallel
-projections**. The nominal Herwig Born-cell results are used even when
+projections**. Both pages display all eight individual projection plots.
+A checksum-verified viewing copy lives beneath
+`plots/HERMES_2007_I726689/reconstructed-born/<revision>/`, so either the
+complete `plots/` directory or the analysis folder alone can be served or
+copied without links to files outside it. The independent numerical cache
+remains in `derived-integrated-data/automatic/`; modified or incomplete
+viewing copies are preserved and replaced by a new sibling revision.
+The nominal Herwig Born-cell results are used even when
 additional prediction families are requested for the ordinary Rivet panels.
 
 For a completed campaign, refresh the gallery without generating events:

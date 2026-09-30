@@ -4017,6 +4017,8 @@ def write_plot_indexes(
     body {{ font-family: sans-serif; margin: 2rem auto; max-width: 1100px; padding: 0 1rem; }}
     .plot {{ border-top: 1px solid #ccc; margin-top: 2rem; padding-top: 1rem; }}
     img {{ height: auto; max-width: 100%; }}
+    .derived-plots {{ display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }}
+    @media (max-width: 700px) {{ .derived-plots {{ grid-template-columns: 1fr; }} }}
   </style>
 </head>
 <body>
@@ -4027,13 +4029,34 @@ def write_plot_indexes(
 </html>
 """
 
+    derived = None
+    if supplemental is not None:
+        from hermes_apar_integrated_campaign import publish_gallery
+        try:
+            derived = publish_gallery(output_dir.parent, output_dir, supplemental)
+        except Exception as exc:
+            raise CampaignError(f"Could not publish the reconstructed HERMES gallery: {exc}") from exc
+
     def reconstructed_section(directory: Path) -> str:
         if supplemental is None:
             return ""
-        campaign_dir = output_dir.parent
-        derived = campaign_dir / str(supplemental["directory"])
         def link(path: Path) -> str:
             return html.escape(Path(os.path.relpath(path, directory)).as_posix())
+        cards = []
+        for selection in ("Q2GT1", "Q2GT4"):
+            threshold = 1 if selection == "Q2GT1" else 4
+            for axis in ("x", "q2"):
+                for target in ("P", "D"):
+                    stem = f"AParallel_{target}_vs_{axis}_{selection}_reconstructed"
+                    label = (f"{'Proton' if target == 'P' else 'Deuteron'}: A_parallel versus "
+                             f"{'x' if axis == 'x' else 'Q²'}, Q² &gt; {threshold} GeV²")
+                    cards.append(
+                        f'<article><h3>{label}</h3>'
+                        f'<a href="{link(derived / (stem + ".pdf"))}">'
+                        f'<img src="{link(derived / (stem + ".png"))}" alt="{label}"></a>'
+                        f'<p><a href="{link(derived / (stem + ".png"))}">PNG</a> &middot; '
+                        f'<a href="{link(derived / (stem + ".pdf"))}">PDF</a></p></article>'
+                    )
         return (
             '<section class="plot"><h2>Reconstructed Born A_parallel projections</h2>'
             '<p>Proton and deuteron versus x and Q², including Q²&gt;4 controls. '
@@ -4049,6 +4072,7 @@ def write_plot_indexes(
             f'<a href="{link(derived / "integrated-overview-Q2GT1.pdf")}">'
             f'<img src="{link(derived / "integrated-overview-Q2GT1.png")}" '
             'alt="Reconstructed proton and deuteron Born asymmetries versus x and Q²"></a>'
+            '<div class="derived-plots">' + "\n".join(cards) + '</div>'
             '</section>'
         )
 

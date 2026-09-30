@@ -3,8 +3,9 @@ from __future__ import annotations
 
 import hashlib
 import json
+import shutil
 from pathlib import Path
-from typing import Any
+from typing import Any, Mapping
 
 from hermes_apar_integrated import MEASUREMENT, REFERENCE, ROOT, reconstruct
 
@@ -139,3 +140,40 @@ def _gallery_info(campaign_dir: Path, directory: Path, key: str, *, created: boo
             "cache_key": key, "created": created,
             "estimator": "GD11-weighted published-cell asymmetries; model-assisted",
             "theory_family": "nominal"}
+
+
+def publish_gallery(campaign_dir: Path, output_dir: Path, info: Mapping[str, Any]) -> Path:
+    """Copy the validated gallery inside the analysis folder for portable viewing."""
+    source = campaign_dir / str(info["directory"])
+    key = str(info["cache_key"])
+    if source.is_symlink() or not _valid_cache(source, key):
+        raise CacheError(f"Cannot publish an incomplete reconstructed gallery: {source}")
+    record_bytes = (source / CACHE_MANIFEST).read_bytes()
+    record = json.loads(record_bytes)
+    root = output_dir / MEASUREMENT / "reconstructed-born"
+    for candidate in sorted(root.glob(f"{source.name}*")):
+        if (candidate.is_dir() and not candidate.is_symlink()
+                and _valid_cache(candidate, key)
+                and (candidate / CACHE_MANIFEST).read_bytes() == record_bytes):
+            return candidate
+    root.mkdir(parents=True, exist_ok=True)
+    attempt = 0
+    while True:
+        destination = root / (source.name if attempt == 0 else f"{source.name}-view-{attempt:03d}")
+        try:
+            destination.mkdir()
+            break
+        except FileExistsError:
+            attempt += 1
+    # Publish only the recorded files. Keep failed or modified copies as history.
+    for name in record["outputs"]:
+        path = destination / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source / name, path)
+    if ((source / CACHE_MANIFEST).read_bytes() != record_bytes
+            or not _valid_cache(source, key)
+            or any(_digest(destination / name) != expected
+                   for name, expected in record["outputs"].items())):
+        raise CacheError("Reconstructed gallery changed during publication; retry the plot stage")
+    (destination / CACHE_MANIFEST).write_bytes(record_bytes)
+    return destination

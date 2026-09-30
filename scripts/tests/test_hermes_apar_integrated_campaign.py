@@ -8,6 +8,7 @@ import html
 import io
 import json
 import re
+import shutil
 import sys
 import tempfile
 import unittest
@@ -59,6 +60,106 @@ class HermesAutomaticProjectionTests(unittest.TestCase):
     def ensure(self, side_effect=None):
         return mock.patch.object(automatic, "reconstruct",
                                  side_effect=side_effect or self.fake_reconstruct)
+
+    def source_bytes(self, directory):
+        return {path.relative_to(directory).as_posix(): path.read_bytes()
+                for path in directory.rglob("*") if path.is_file()}
+
+    def assert_gallery_is_self_contained(self, directory):
+        root = directory.resolve()
+        for index in directory.rglob("*.html"):
+            for link in re.findall(r'(?:href|src)="([^"]+)"',
+                                   index.read_text(encoding="utf-8")):
+                target = (index.parent / html.unescape(link)).resolve()
+                self.assertTrue(target.is_file(), f"{index}: {link}")
+                try:
+                    target.relative_to(root)
+                except ValueError:
+                    self.fail(f"Gallery link leaves its copied directory: {index}: {link}")
+
+    def test_published_gallery_copies_only_recorded_files_and_preserves_source_provenance(self):
+        with self.ensure():
+            info = automatic.ensure_campaign_plots(self.campaign)
+        original_info = copy.deepcopy(info)
+        source = self.campaign / info["directory"]
+        (source / "unrecorded.txt").write_text("retain only in source cache\n", encoding="utf-8")
+        original = self.source_bytes(source)
+        output = self.campaign / "plots"
+        published = automatic.publish_gallery(self.campaign, output, info)
+        self.assertEqual(published, output / projection.MEASUREMENT / "reconstructed-born" / source.name)
+        record = json.loads((source / automatic.CACHE_MANIFEST).read_text(encoding="utf-8"))
+        expected = set(record["outputs"]) | {automatic.CACHE_MANIFEST}
+        self.assertEqual(set(self.source_bytes(published)), expected)
+        self.assertFalse((published / "unrecorded.txt").exists())
+        for name in expected:
+            self.assertEqual((published / name).read_bytes(), original[name])
+        self.assertTrue(automatic._valid_cache(published, info["cache_key"]))
+        self.assertEqual(self.source_bytes(source), original)
+        self.assertEqual(info, original_info)
+
+    def test_published_gallery_reuses_intact_copy_and_preserves_damaged_revision(self):
+        with self.ensure():
+            info = automatic.ensure_campaign_plots(self.campaign)
+        source = self.campaign / info["directory"]
+        original = self.source_bytes(source)
+        output = self.campaign / "plots"
+        first = automatic.publish_gallery(self.campaign, output, info)
+        self.assertEqual(automatic.publish_gallery(self.campaign, output, info), first)
+        damaged = first / "integrated.csv"
+        damaged.write_text("retain damaged viewing copy\n", encoding="utf-8")
+        recovered = automatic.publish_gallery(self.campaign, output, info)
+        self.assertEqual(recovered.name, f"{source.name}-view-001")
+        self.assertNotEqual(first, recovered)
+        self.assertEqual(damaged.read_text(encoding="utf-8"), "retain damaged viewing copy\n")
+        self.assertEqual(automatic.publish_gallery(self.campaign, output, info), recovered)
+        self.assertTrue(automatic._valid_cache(recovered, info["cache_key"]))
+        self.assertEqual(self.source_bytes(source), original)
+
+    def test_incomplete_published_revision_is_preserved_and_recovered_in_sibling(self):
+        with self.ensure():
+            info = automatic.ensure_campaign_plots(self.campaign)
+        source = self.campaign / info["directory"]
+        original = self.source_bytes(source)
+        output = self.campaign / "plots"
+        partial = output / projection.MEASUREMENT / "reconstructed-born" / source.name
+        partial.mkdir(parents=True)
+        (partial / "partial.txt").write_text("retain unfinished viewing copy\n", encoding="utf-8")
+        recovered = automatic.publish_gallery(self.campaign, output, info)
+        self.assertEqual(recovered.name, f"{source.name}-view-001")
+        self.assertEqual((partial / "partial.txt").read_text(encoding="utf-8"),
+                         "retain unfinished viewing copy\n")
+        self.assertTrue(automatic._valid_cache(recovered, info["cache_key"]))
+        self.assertEqual(self.source_bytes(source), original)
+
+    def test_published_cache_record_must_match_canonical_source_before_reuse(self):
+        with self.ensure():
+            info = automatic.ensure_campaign_plots(self.campaign)
+        source = self.campaign / info["directory"]
+        original = self.source_bytes(source)
+        output = self.campaign / "plots"
+        first = automatic.publish_gallery(self.campaign, output, info)
+        record_path = first / automatic.CACHE_MANIFEST
+        record = json.loads(record_path.read_text(encoding="utf-8"))
+        record["inputs"] = {"foreign-input": "foreign-digest"}
+        changed = json.dumps(record, indent=2) + "\n"
+        record_path.write_text(changed, encoding="utf-8")
+        self.assertTrue(automatic._valid_cache(first, info["cache_key"]))
+        recovered = automatic.publish_gallery(self.campaign, output, info)
+        self.assertNotEqual(first, recovered)
+        self.assertEqual(record_path.read_text(encoding="utf-8"), changed)
+        self.assertEqual((recovered / automatic.CACHE_MANIFEST).read_bytes(),
+                         (source / automatic.CACHE_MANIFEST).read_bytes())
+        self.assertEqual(self.source_bytes(source), original)
+
+    def test_publishing_refuses_invalid_canonical_cache_before_creating_view(self):
+        with self.ensure():
+            info = automatic.ensure_campaign_plots(self.campaign)
+        source = self.campaign / info["directory"]
+        (source / "integrated.csv").write_text("damaged canonical cache\n", encoding="utf-8")
+        output = self.campaign / "plots"
+        with self.assertRaises(automatic.CacheError):
+            automatic.publish_gallery(self.campaign, output, info)
+        self.assertFalse(output.exists())
 
     def test_first_generation_is_separate_and_repeat_reuses_complete_cache(self):
         originals = {path: path.read_bytes() for path in
@@ -232,6 +333,11 @@ class HermesAutomaticProjectionTests(unittest.TestCase):
         (analysis / f"{script.stem}.pdf").write_bytes(b"original pdf")
         root = campaign.write_plot_indexes(
             output, {"id": "HERMES_2007_I726689"}, [script], supplemental=supplemental)
+        expected_stems = {
+            f"AParallel_{target}_vs_{axis}_{selection}_reconstructed"
+            for target in ("P", "D") for axis in ("x", "q2")
+            for selection in ("Q2GT1", "Q2GT4")
+        }
         for index in (root, analysis / "index.html"):
             text = index.read_text(encoding="utf-8")
             self.assertIn("Model-assisted experimental data", text)
@@ -241,8 +347,21 @@ class HermesAutomaticProjectionTests(unittest.TestCase):
             self.assertIn("Fit-domain sensitivity", text)
             for target in re.findall(r'(?:href|src)="([^"]+)"', text):
                 self.assertTrue((index.parent / html.unescape(target)).is_file(), target)
+            images = {Path(html.unescape(link)).name
+                      for link in re.findall(r'src="([^"]+)"', text)}
+            pdfs = {Path(html.unescape(link)).name
+                    for link in re.findall(r'href="([^"]+)"', text)}
+            self.assertTrue({f"{stem}.png" for stem in expected_stems}.issubset(images))
+            self.assertTrue({f"{stem}.pdf" for stem in expected_stems}.issubset(pdfs))
         self.assertIn(f"{script.stem}.png", (analysis / "index.html").read_text(encoding="utf-8"))
         self.assertEqual((analysis / f"{script.stem}.png").read_bytes(), b"original png")
+        self.assertEqual((analysis / f"{script.stem}.pdf").read_bytes(), b"original pdf")
+        copied_plots = Path(self.temporary.name) / "copied-plots"
+        shutil.copytree(output, copied_plots)
+        self.assert_gallery_is_self_contained(copied_plots)
+        copied_analysis = Path(self.temporary.name) / "copied-analysis"
+        shutil.copytree(analysis, copied_analysis)
+        self.assert_gallery_is_self_contained(copied_analysis)
         plain = campaign.write_plot_indexes(output, {"id": "other"}, [script])
         self.assertNotIn("Reconstructed Born", plain.read_text(encoding="utf-8"))
 
