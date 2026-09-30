@@ -28,7 +28,8 @@ NOMINAL_COMPATIBILITY_SIGNATURE = "33d36d153b40601a6bb3992c199a3d31618c6ef2dc78e
 
 class HermesReferenceTests(unittest.TestCase):
     def setUp(self) -> None:
-        self.snapshot = json.loads(SNAPSHOT_PATH.read_text(encoding="utf-8"))
+        self.reference = json.loads(SNAPSHOT_PATH.read_text(encoding="utf-8"))
+        self.snapshot = self.reference["datasets"][0]
 
     def test_all_published_values_and_errors(self) -> None:
         self.assertEqual(
@@ -176,20 +177,21 @@ class CampaignRegistryAndCardTests(unittest.TestCase):
     def setUp(self) -> None:
         self.measurement = campaign.get_measurement(MEASUREMENT_ID)
 
-    def test_registry_and_eight_job_matrix(self) -> None:
+    def test_registry_and_sixteen_job_matrix(self) -> None:
         registry = campaign.discover_registry()
         self.assertIn(MEASUREMENT_ID, registry)
         jobs = campaign.build_job_matrix(self.measurement, 100000, 10000, 1, 726689)
-        self.assertEqual(len(jobs), 8)
+        self.assertEqual(len(jobs), 16)
         self.assertEqual({job["helicity"] for job in jobs}, {"PP", "PM", "MP", "MM"})
         self.assertEqual({job["order"] for job in jobs}, {"POSNLO", "NEGNLO"})
-        self.assertEqual(sum(job["events"] for job in jobs), 440000)
-        self.assertEqual(len({job["seed"] for job in jobs}), 8)
+        self.assertEqual(sum(job["events"] for job in jobs), 880000)
+        self.assertEqual(len({job["seed"] for job in jobs}), 16)
         sharded = campaign.build_job_matrix(self.measurement, 101, 11, 2, 9000)
-        self.assertEqual(len(sharded), 16)
-        for helicity in ("PP", "PM", "MP", "MM"):
-            self.assertEqual(sum(job["events"] for job in sharded if job["helicity"] == helicity and job["order"] == "POSNLO"), 101)
-            self.assertEqual(sum(job["events"] for job in sharded if job["helicity"] == helicity and job["order"] == "NEGNLO"), 11)
+        self.assertEqual(len(sharded), 32)
+        for component in ("P", "N"):
+            for helicity in ("PP", "PM", "MP", "MM"):
+                self.assertEqual(sum(job["events"] for job in sharded if job["component"] == component and job["helicity"] == helicity and job["order"] == "POSNLO"), 101)
+                self.assertEqual(sum(job["events"] for job in sharded if job["component"] == component and job["helicity"] == helicity and job["order"] == "NEGNLO"), 11)
 
     def test_expanded_comparison_matrix(self) -> None:
         jobs = campaign.build_job_matrix(
@@ -202,22 +204,22 @@ class CampaignRegistryAndCardTests(unittest.TestCase):
             lo_events=300000,
         )
         logical = {
-            (job["family"], job["helicity"], job["order"])
+            (job["family"], job["component"], job["helicity"], job["order"])
             for job in jobs
         }
-        self.assertEqual(len(logical), 30)
-        self.assertEqual(len(jobs), 300)
-        self.assertEqual(sum(job["events"] for job in jobs), 5_490_000)
-        self.assertEqual(len({job["seed"] for job in jobs}), 300)
+        self.assertEqual(len(logical), 60)
+        self.assertEqual(len(jobs), 600)
+        self.assertEqual(sum(job["events"] for job in jobs), 10_980_000)
+        self.assertEqual(len({job["seed"] for job in jobs}), 600)
         by_family = {
             family: [job for job in jobs if job["family"] == family]
             for family in {job["family"] for job in jobs}
         }
-        self.assertEqual(len(by_family["nominal"]), 80)
-        self.assertEqual(len(by_family["unpolarized_nlo"]), 20)
-        self.assertEqual(len(by_family["polarized_lo"]), 40)
-        self.assertEqual(len(by_family["no_real_spin_nlo"]), 80)
-        self.assertEqual(len(by_family["no_shower_spin_nlo"]), 80)
+        self.assertEqual(len(by_family["nominal"]), 160)
+        self.assertEqual(len(by_family["unpolarized_nlo"]), 40)
+        self.assertEqual(len(by_family["polarized_lo"]), 80)
+        self.assertEqual(len(by_family["no_real_spin_nlo"]), 160)
+        self.assertEqual(len(by_family["no_shower_spin_nlo"]), 160)
         self.assertEqual(
             {(job["helicity"], job["order"]) for job in by_family["unpolarized_nlo"]},
             {("00", "POSNLO"), ("00", "NEGNLO")},
@@ -246,11 +248,11 @@ class CampaignRegistryAndCardTests(unittest.TestCase):
             lo_events=100,
             variation_points=points,
         )
-        # Five nominal points x eight signed-helicity components, plus the
-        # 22 central-only comparison components.
-        self.assertEqual(len(jobs), 62)
-        self.assertEqual(len({job["id"] for job in jobs}), 62)
-        self.assertEqual(len({job["seed"] for job in jobs}), 62)
+        # Five nominal points x sixteen target/helicity/sign jobs, plus
+        # 44 central-only comparison jobs.
+        self.assertEqual(len(jobs), 124)
+        self.assertEqual(len({job["id"] for job in jobs}), 124)
+        self.assertEqual(len({job["seed"] for job in jobs}), 124)
         scale_job = next(
             job for job in jobs
             if job["family"] == "nominal" and job["scale"] == 2.0
@@ -288,7 +290,7 @@ class CampaignRegistryAndCardTests(unittest.TestCase):
             groups = campaign._require_complete_matrix(
                 manifest, self.measurement, root
             )
-            self.assertEqual(len(groups), 62)
+            self.assertEqual(len(groups), 124)
 
     def test_dis_pdf_replica_quadrature_and_scale_envelope(self) -> None:
         def result(a1: float, apar: float) -> dict[str, dict[str, object]]:
@@ -342,8 +344,8 @@ class CampaignRegistryAndCardTests(unittest.TestCase):
             bands["Q2GT1"]["a1"]["polarized_pdf_68"][0], expected
         )
 
-    def test_comparisons_do_not_invalidate_nominal_manifest_signature(self) -> None:
-        self.assertEqual(
+    def test_dual_target_requires_fresh_signature_and_comparisons_are_separate(self) -> None:
+        self.assertNotEqual(
             campaign.measurement_signature(self.measurement),
             NOMINAL_COMPATIBILITY_SIGNATURE,
         )
@@ -470,13 +472,18 @@ class CampaignRegistryAndCardTests(unittest.TestCase):
         self.assertNotIn("HadronizationHandler  NULL", common)
         self.assertNotIn("CascadeHandler NULL", common)
         self.assertNotIn("DecayHandler NULL", common)
-        self.assertEqual(len(list(CARD_DIR.glob(f"{MEASUREMENT_ID}_[PM][PM]-*.in"))), 8)
-        for helicity, signs in self.measurement["cards"]["helicities"].items():
-            for order, contribution in self.measurement["cards"]["orders"].items():
-                text = (CARD_DIR / f"{MEASUREMENT_ID}_{helicity}-{order}.in").read_text(encoding="utf-8")
-                self.assertIn(f"FirstLongitudinalPolarization {signs[0]}", text)
-                self.assertIn(f"SecondLongitudinalPolarization {signs[1]}", text)
-                self.assertIn(f"Contribution {contribution}", text)
+        self.assertEqual(len(list(CARD_DIR.glob(f"{MEASUREMENT_ID}_[PN]_[PM][PM]-*.in"))), 16)
+        self.assertIn("/Herwig/Particles/n0:PDF /Herwig/Partons/HERMESPDF", common)
+        for component in ("P", "N"):
+            target = "p+" if component == "P" else "n0"
+            for helicity, signs in self.measurement["cards"]["helicities"].items():
+                for order, contribution in self.measurement["cards"]["orders"].items():
+                    text = (CARD_DIR / f"{MEASUREMENT_ID}_{component}_{helicity}-{order}.in").read_text(encoding="utf-8")
+                    self.assertIn(f"FirstLongitudinalPolarization {signs[0]}", text)
+                    self.assertIn(f"SecondLongitudinalPolarization {signs[1]}", text)
+                    self.assertIn(f"Contribution {contribution}", text)
+                    self.assertIn(f"BeamB /Herwig/Particles/{target}", text)
+                    self.assertIn(f"TargetParticle /Herwig/Particles/{target}", text)
 
     def test_analysis_uses_prompt_scattered_positron(self) -> None:
         source = (
@@ -494,7 +501,7 @@ class CampaignRegistryAndCardTests(unittest.TestCase):
 
     def test_comparison_card_family_invariants(self) -> None:
         cards = sorted(COMPARISON_CARD_DIR.glob("*.in"))
-        self.assertEqual(len(cards), 22)
+        self.assertEqual(len(cards), 44)
         families = campaign.campaign_family_specs(self.measurement, include_comparisons=True)
         self.assertEqual(
             {family_id: family["label"] for family_id, family in families.items()},
@@ -515,7 +522,7 @@ class CampaignRegistryAndCardTests(unittest.TestCase):
                 continue
             for helicity, signs in family["helicities"].items():
                 for order, contribution in family["orders"].items():
-                    stem = family["stem_pattern"].format(helicity=helicity, order=order)
+                    stem = family["stem_pattern"].format(component="P", helicity=helicity, order=order)
                     text = (COMPARISON_CARD_DIR / f"{stem}.in").read_text(encoding="utf-8")
                     self.assertIn("read ../HERMES_2007_I726689-Common.in", text)
                     self.assertIn(f"FirstLongitudinalPolarization {signs[0]}", text)
@@ -554,9 +561,9 @@ class CampaignRegistryAndCardTests(unittest.TestCase):
             ])
         self.assertEqual(status, 0)
         plan = json.loads(output.getvalue())
-        self.assertEqual(plan["logical_jobs"], 8)
-        self.assertEqual(plan["shard_jobs"], 8)
-        self.assertEqual(sum(job["events"] for job in plan["jobs"]), 800)
+        self.assertEqual(plan["logical_jobs"], 16)
+        self.assertEqual(plan["shard_jobs"], 16)
+        self.assertEqual(sum(job["events"] for job in plan["jobs"]), 1600)
         self.assertEqual(destination.exists(), before)
 
     def test_comparison_dry_run_is_resolved_and_non_mutating(self) -> None:
@@ -579,9 +586,9 @@ class CampaignRegistryAndCardTests(unittest.TestCase):
             )
         self.assertEqual(status, 0)
         plan = json.loads(output.getvalue())
-        self.assertEqual(plan["logical_jobs"], 30)
-        self.assertEqual(plan["shard_jobs"], 30)
-        self.assertEqual(sum(job["events"] for job in plan["jobs"]), 3000)
+        self.assertEqual(plan["logical_jobs"], 60)
+        self.assertEqual(plan["shard_jobs"], 60)
+        self.assertEqual(sum(job["events"] for job in plan["jobs"]), 6000)
         self.assertEqual(destination.exists(), before)
 
     def test_progress_cli_matches_validation_runner_defaults(self) -> None:
@@ -640,7 +647,7 @@ class CampaignRegistryAndCardTests(unittest.TestCase):
             )
             self.assertEqual(
                 {key: herwig[key] for key in ("completed", "running", "pending", "failed", "total")},
-                {"completed": 1, "running": 1, "pending": 5, "failed": 1, "total": 8},
+                {"completed": 1, "running": 1, "pending": 13, "failed": 1, "total": 16},
             )
             self.assertEqual(herwig["active_rows"][0][2], "50/100 (50.0%)")
             payload = campaign.build_campaign_monitor_payload(
@@ -655,7 +662,7 @@ class CampaignRegistryAndCardTests(unittest.TestCase):
             status_text = campaign.campaign_status_txt_path(root).read_text()
             self.assertEqual(status_json["phase"], "running-herwig")
             self.assertEqual(status_json["herwig"]["running"], 1)
-            self.assertIn("Shards: completed 1/8 | running 1 | pending 5 | failed 1", status_text)
+            self.assertIn("Shards: completed 1/16 | running 1 | pending 13 | failed 1", status_text)
             self.assertIn("Active shards:", status_text)
             self.assertIn("Progress", status_text)
 
@@ -714,7 +721,7 @@ class CampaignRegistryAndCardTests(unittest.TestCase):
             final_status = json.loads(campaign.campaign_status_json_path(root).read_text())
             final_manifest = json.loads((root / campaign.MANIFEST_NAME).read_text())
             self.assertEqual(final_status["phase"], "campaign-complete")
-            self.assertEqual(final_status["herwig"]["completed"], 8)
+            self.assertEqual(final_status["herwig"]["completed"], 16)
             self.assertEqual(final_status["herwig"]["pending"], 0)
             self.assertEqual(final_manifest["status"], "complete")
 
@@ -730,7 +737,7 @@ class CampaignRegistryAndCardTests(unittest.TestCase):
             successful.write_text("non-empty", encoding="utf-8")
             scheduled, blocked = campaign.pending_jobs(manifest, root, recover_failed=False)
             self.assertEqual(len(blocked), 1)
-            self.assertEqual(len(scheduled), 6)
+            self.assertEqual(len(scheduled), 14)
             failed_seed = jobs[1]["seed"]
             scheduled, blocked = campaign.pending_jobs(manifest, root, recover_failed=True)
             self.assertFalse(blocked)

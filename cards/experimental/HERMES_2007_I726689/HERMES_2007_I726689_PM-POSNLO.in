@@ -1,7 +1,0 @@
-# -*- ThePEG-repository -*-
-read HERMES_2007_I726689-Common.in
-set /Herwig/Partons/EPPolarizedExtractor:FirstLongitudinalPolarization 1
-set /Herwig/Partons/EPPolarizedExtractor:SecondLongitudinalPolarization -1
-set /Herwig/MatrixElements/PowhegMEDISNCPol:Contribution PositiveNLO
-cd /Herwig/Generators
-saverun HERMES_2007_I726689_PM-POSNLO EventGenerator

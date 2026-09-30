@@ -6,7 +6,7 @@ The primary entry point discovers both the established fixed-target DIS
 registry and the polarized-$pp$ registry.  The implemented experimental
 comparisons are:
 
-- HERMES Table 14 $A_1^p(x)$ and the separate Table 7 low-$Q^2$
+- HERMES Table 14 proton $A_1^p(x)$ and deuteron $A_1^d(x)$, and the separate Table 7 low-$Q^2$
   $A_\parallel(x,Q^2)$ projection;
 - COMPASS 2010 and 2016 proton $A_1^p$, and COMPASS 2017 deuteron
   $A_1^d$;

@@ -4,7 +4,7 @@
 # HERMES 2007 fixed-target polarized DIS common configuration
 #
 # This file intentionally does not set physical helicities, the signed NLO
-# contribution, or saverun. Those are supplied by the eight thin cards.
+# contribution, or saverun. Those are supplied by the proton/neutron thin cards.
 ############################################################
 
 read snippets/EPCollider.in
@@ -12,7 +12,7 @@ read snippets/PolarizedEP.in
 read snippets/FixedTarget.in
 
 ############################################################
-# 27.6 GeV positron beam on a proton at rest
+# 27.6 GeV positron beam; thin cards select the proton or neutron at rest
 ############################################################
 
 set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
@@ -32,6 +32,8 @@ create ThePEG::LHAPDF /Herwig/Partons/HERMESPDF ThePEGLHAPDF.so
 set /Herwig/Partons/HERMESPDF:PDFName NNPDF40_nlo_pch_as_01180
 set /Herwig/Partons/HERMESPDF:RemnantHandler /Herwig/Partons/HadronRemnants
 set /Herwig/Particles/p+:PDF /Herwig/Partons/HERMESPDF
+set /Herwig/Particles/n0:PDF /Herwig/Partons/HERMESPDF
+# ThePEG maps neutron u/d and anti-u/anti-d for both ordinary and difference PDFs.
 
 create ThePEG::LHAPDF /Herwig/Partons/HERMESDiffPDF
 set /Herwig/Partons/HERMESDiffPDF:PDFName NNPDFpol20_nlo_as_01180

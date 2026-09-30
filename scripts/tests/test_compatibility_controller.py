@@ -130,9 +130,14 @@ class ControllerConfigurationTests(unittest.TestCase):
         self.assertNotIn("HERMES_2007_I726689_LEGACY", production_measurements)
         self.assertNotIn("PHENIX_2023_I2033856", production_measurements)
 
-    def test_every_declared_campaign_resolves_to_its_exact_pending_matrix(self) -> None:
+    def test_unchanged_campaigns_retain_their_exact_historical_pending_matrix(self) -> None:
         for group in ("fixed", "star_cut_scan", "star510"):
             for item in self.config[group]:
+                if item["measurement"] == "HERMES_2007_I726689":
+                    # This frozen controller records the earlier proton-only
+                    # definition. Its dual-target incompatibility is checked
+                    # separately without changing archived event budgets.
+                    continue
                 argv = ["prepare", *controller.generation_arguments(item), "--dry-run"]
                 output = io.StringIO()
                 with contextlib.redirect_stdout(output):
@@ -146,6 +151,30 @@ class ControllerConfigurationTests(unittest.TestCase):
                 self.assertEqual(
                     {job["family"] for job in plan["jobs"]}, {"nominal"}
                 )
+
+    def test_historical_hermes_guard_rejects_the_current_dual_target_matrix(self) -> None:
+        item = next(
+            spec for spec in self.config["fixed"]
+            if spec["measurement"] == "HERMES_2007_I726689"
+        )
+        self.assertEqual(item["tag"], "compat-central-3m-20260819-v1")
+        self.assertEqual(item["expected_shards"], 800)
+        argv = ["prepare", *controller.generation_arguments(item), "--dry-run"]
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            self.assertEqual(campaign.main(argv), 0)
+        plan = json.loads(output.getvalue())
+        self.assertEqual(plan["shard_jobs"], 1600)
+        self.assertEqual(len(plan["jobs"]), 1600)
+        self.assertEqual({job["component"] for job in plan["jobs"]}, {"P", "N"})
+        manifest = {"status": "prepared", "jobs": plan["jobs"]}
+        with (
+            mock.patch.object(controller, "_manifest", return_value=manifest),
+            mock.patch.object(controller, "verify_manifest_provenance") as verify,
+        ):
+            with self.assertRaisesRegex(controller.ControllerError, "has 1600 shards, expected 800"):
+                controller.assert_prepared(item, "a" * 40)
+        verify.assert_not_called()
 
     def test_prepare_action_has_an_enforced_execution_hard_stop(self) -> None:
         verification = {"repository": {"commit": "a" * 40}}
@@ -316,6 +345,26 @@ class CorrectedPlotPackageTests(unittest.TestCase):
             str(item["destination"]) for item in fixed + sidis + star
         ]
         self.assertEqual(len(destinations), len(set(destinations)))
+
+    def test_historical_hermes_package_selects_the_proton_dataset_by_id(self) -> None:
+        config = {"fixed": [{"measurement": "HERMES_2007_I726689"}]}
+        snapshot = {
+            "schema_version": 2,
+            "datasets": [
+                {"id": "D", "rivet_path": "/REF/HERMES_2007_I726689/d14-x01-y02"},
+                {"id": "P", "rivet_path": "/REF/HERMES_2007_I726689/d14-x01-y01"},
+            ],
+        }
+        with mock.patch.object(packager, "load_json", return_value=snapshot):
+            entries = packager.fixed_plot_specs(config)
+        self.assertEqual(len(entries), 1)
+        self.assertEqual(entries[0]["stem"], "d14-x01-y01")
+        self.assertEqual(str(entries[0]["destination"]), "dis/hermes-a1")
+        for datasets in ([snapshot["datasets"][0]], [snapshot["datasets"][1]] * 2):
+            with self.subTest(datasets=datasets):
+                with mock.patch.object(packager, "load_json", return_value={"datasets": datasets}):
+                    with self.assertRaisesRegex(packager.PackageError, "exactly one proton P"):
+                        packager.fixed_plot_specs(config)
 
     def test_star_only_high_resolution_selection_is_explicit(self) -> None:
         arguments = packager.make_parser().parse_args(

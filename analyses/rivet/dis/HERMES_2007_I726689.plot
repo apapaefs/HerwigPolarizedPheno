@@ -94,3 +94,47 @@ YLabel=$\mathrm{d}\sigma_{UU}/\mathrm{d}\theta$ [pb/rad]
 LogY=1
 RatioPlot=0
 # END PLOT
+
+# BEGIN PLOT /HERMES_2007_I726689/d14-x01-y02
+Title=HERMES deuteron virtual-photon asymmetry ($Q^2>1\,\mathrm{GeV}^2$)
+XLabel=$x$
+YLabel=$A_1^d$ ($\eta A_2$ neglected in prediction)
+LogX=1
+LogY=0
+YMin=-0.15
+YMax=1.45
+RatioPlot=0
+# END PLOT
+
+# BEGIN PLOT /HERMES_2007_I726689/AParallelD_Q2GT1
+Title=Deuteron longitudinal asymmetry ($Q^2>1\,\mathrm{GeV}^2$)
+XLabel=$x$
+YLabel=$A_{\parallel}^d$
+LogX=1
+LogY=0
+YMin=-1.2
+YMax=1.2
+RatioPlot=0
+# END PLOT
+
+# BEGIN PLOT /HERMES_2007_I726689/A1d_Q2GT4
+Title=Conservative deuteron $A_1$ ($Q^2>4\,\mathrm{GeV}^2$)
+XLabel=$x$
+YLabel=$A_1^d$ ($\eta A_2$ neglected)
+LogX=1
+LogY=0
+YMin=-0.5
+YMax=1.5
+RatioPlot=0
+# END PLOT
+
+# BEGIN PLOT /HERMES_2007_I726689/AParallelD_Q2GT4
+Title=Deuteron longitudinal asymmetry ($Q^2>4\,\mathrm{GeV}^2$)
+XLabel=$x$
+YLabel=$A_{\parallel}^d$
+LogX=1
+LogY=0
+YMin=-1.2
+YMax=1.2
+RatioPlot=0
+# END PLOT

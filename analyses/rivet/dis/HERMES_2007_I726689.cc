@@ -10,7 +10,7 @@
 
 namespace Rivet {
 
-  /// HERMES longitudinally polarized fixed-target DIS at 27.6 GeV.
+  /// HERMES 27.6 GeV DIS with independent proton/neutron target components.
   class HERMES_2007_I726689 : public Analysis {
   public:
 
@@ -125,7 +125,10 @@ namespace Rivet {
       } else {
         return out;
       }
-      if (lepton.pid() != -11 || hadron.pid() != 2212) return out;
+      // Deuteron observables combine separately normalized proton/neutron samples
+      // externally; preserve identical raw histograms and laboratory selections.
+      if (lepton.pid() != -11 ||
+          (hadron.pid() != 2212 && hadron.pid() != 2112)) return out;
 
       const Particle outgoing = scatteredPositron(event, lepton);
       if (outgoing.pid() == PID::ANY) return out;

@@ -1,7 +1,7 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "id": "HERMES_2007_I726689",
-  "title": "HERMES 15-bin proton virtual-photon asymmetry A1p",
+  "title": "HERMES 15-bin proton and deuteron virtual-photon asymmetries A1p and A1d",
   "analysis": {
     "name": "HERMES_2007_I726689",
     "source": "analyses/rivet/dis/HERMES_2007_I726689.cc",
@@ -14,26 +14,58 @@
     "snapshot": "data/experimental/HERMES_2007_I726689/reference.json",
     "source_url": "https://www.desy.de/~w3hermes/TRANS/lara.g1_long-1a.dat",
     "source_sha256": "2567ee83422f8da7c3c602e2aa716c2501cc539820ba0f4f9657515ed2785997",
-    "format": "tar-five-column",
-    "expected_rows": 15,
-    "archive_member": "A1p_a15",
-    "member_sha256": "f9681449a1b478c89986b72fd17a2598899b703fa06c259b0a8781b8a956f700",
+    "format": "tar-five-column-multidataset",
     "hepdata_table": "https://doi.org/10.17182/hepdata.11211.v1/t14",
-    "prediction_path": "/HERMES_2007_I726689/d14-x01-y01"
+    "datasets": [
+      {
+        "archive_member": "A1p_a15",
+        "member_sha256": "f9681449a1b478c89986b72fd17a2598899b703fa06c259b0a8781b8a956f700",
+        "expected_rows": 15,
+        "id": "P"
+      },
+      {
+        "id": "D",
+        "archive_member": "A1d_a15",
+        "member_sha256": "51acfe83a21d0e9950477090882e59fcf7a5c752a1ed7adcd17de4901bc23176",
+        "expected_rows": 15
+      }
+    ]
   },
   "cards": {
     "directory": "cards/experimental/HERMES_2007_I726689",
     "common": "HERMES_2007_I726689-Common.in",
-    "stem_pattern": "HERMES_2007_I726689_{helicity}-{order}",
+    "stem_pattern": "HERMES_2007_I726689_{component}_{helicity}-{order}",
     "helicities": {
-      "PP": [1, 1],
-      "PM": [1, -1],
-      "MP": [-1, 1],
-      "MM": [-1, -1]
+      "PP": [
+        1,
+        1
+      ],
+      "PM": [
+        1,
+        -1
+      ],
+      "MP": [
+        -1,
+        1
+      ],
+      "MM": [
+        -1,
+        -1
+      ]
     },
     "orders": {
       "POSNLO": "PositiveNLO",
       "NEGNLO": "NegativeNLO"
+    },
+    "components": {
+      "P": {
+        "label": "proton component",
+        "particle": "p+"
+      },
+      "N": {
+        "label": "neutron component",
+        "particle": "n0"
+      }
     }
   },
   "campaign": {
@@ -47,7 +79,9 @@
     "smoke_events": 100,
     "comparison_profile": {
       "plotting": {
-        "unmatch": ["/HERMES_2007_I726689/SigmaLL_"]
+        "unmatch": [
+          "/HERMES_2007_I726689/SigmaLL_"
+        ]
       },
       "families": {
         "unpolarized_nlo": {
@@ -55,9 +89,12 @@
           "id_prefix": "UNPOL",
           "card_directory": "cards/experimental/HERMES_2007_I726689/comparisons",
           "materialized_directory": "comparisons",
-          "stem_pattern": "HERMES_2007_I726689_UNPOL_{helicity}-{order}",
+          "stem_pattern": "HERMES_2007_I726689_UNPOL_{component}_{helicity}-{order}",
           "helicities": {
-            "00": [0, 0]
+            "00": [
+              0,
+              0
+            ]
           },
           "orders": {
             "POSNLO": "PositiveNLO",
@@ -78,12 +115,24 @@
           "id_prefix": "LOPOL",
           "card_directory": "cards/experimental/HERMES_2007_I726689/comparisons",
           "materialized_directory": "comparisons",
-          "stem_pattern": "HERMES_2007_I726689_LO_{helicity}-{order}",
+          "stem_pattern": "HERMES_2007_I726689_LO_{component}_{helicity}-{order}",
           "helicities": {
-            "PP": [1, 1],
-            "PM": [1, -1],
-            "MP": [-1, 1],
-            "MM": [-1, -1]
+            "PP": [
+              1,
+              1
+            ],
+            "PM": [
+              1,
+              -1
+            ],
+            "MP": [
+              -1,
+              1
+            ],
+            "MM": [
+              -1,
+              -1
+            ]
           },
           "orders": {
             "LO": "Born"
@@ -102,12 +151,24 @@
           "id_prefix": "NOREALSPIN",
           "card_directory": "cards/experimental/HERMES_2007_I726689/comparisons",
           "materialized_directory": "comparisons",
-          "stem_pattern": "HERMES_2007_I726689_NOREALSPIN_{helicity}-{order}",
+          "stem_pattern": "HERMES_2007_I726689_NOREALSPIN_{component}_{helicity}-{order}",
           "helicities": {
-            "PP": [1, 1],
-            "PM": [1, -1],
-            "MP": [-1, 1],
-            "MM": [-1, -1]
+            "PP": [
+              1,
+              1
+            ],
+            "PM": [
+              1,
+              -1
+            ],
+            "MP": [
+              -1,
+              1
+            ],
+            "MM": [
+              -1,
+              -1
+            ]
           },
           "orders": {
             "POSNLO": "PositiveNLO",
@@ -128,12 +189,24 @@
           "id_prefix": "NOSHOWERSPIN",
           "card_directory": "cards/experimental/HERMES_2007_I726689/comparisons",
           "materialized_directory": "comparisons",
-          "stem_pattern": "HERMES_2007_I726689_NOSHOWERSPIN_{helicity}-{order}",
+          "stem_pattern": "HERMES_2007_I726689_NOSHOWERSPIN_{component}_{helicity}-{order}",
           "helicities": {
-            "PP": [1, 1],
-            "PM": [1, -1],
-            "MP": [-1, 1],
-            "MM": [-1, -1]
+            "PP": [
+              1,
+              1
+            ],
+            "PM": [
+              1,
+              -1
+            ],
+            "MP": [
+              -1,
+              1
+            ],
+            "MM": [
+              -1,
+              -1
+            ]
           },
           "orders": {
             "POSNLO": "PositiveNLO",
@@ -162,6 +235,16 @@
       "ordinary": "SigmaX_Q2GT4",
       "weighted": "SigmaOverD_X_Q2GT4",
       "covariance": "CovarianceProxy_X_Q2GT4"
+    },
+    "D_Q2GT1": {
+      "ordinary": "SigmaX_Q2GT1",
+      "weighted": "SigmaOverD_X_Q2GT1",
+      "covariance": "CovarianceProxy_X_Q2GT1"
+    },
+    "D_Q2GT4": {
+      "ordinary": "SigmaX_Q2GT4",
+      "weighted": "SigmaOverD_X_Q2GT4",
+      "covariance": "CovarianceProxy_X_Q2GT4"
     }
   },
   "outputs": {
@@ -169,17 +252,69 @@
       "a1": "/HERMES_2007_I726689/d14-x01-y01",
       "apar": "/HERMES_2007_I726689/AParallel_Q2GT1",
       "parity_pp_mm": "/HERMES_2007_I726689/Parity_PP_MM_Q2GT1",
-      "parity_pm_mp": "/HERMES_2007_I726689/Parity_PM_MP_Q2GT1"
+      "parity_pm_mp": "/HERMES_2007_I726689/Parity_PM_MP_Q2GT1",
+      "target": "P",
+      "observable": "A1p",
+      "target_model": "free proton"
     },
     "Q2GT4": {
       "a1": "/HERMES_2007_I726689/A1_Q2GT4",
       "apar": "/HERMES_2007_I726689/AParallel_Q2GT4",
       "parity_pp_mm": "/HERMES_2007_I726689/Parity_PP_MM_Q2GT4",
-      "parity_pm_mp": "/HERMES_2007_I726689/Parity_PM_MP_Q2GT4"
+      "parity_pm_mp": "/HERMES_2007_I726689/Parity_PM_MP_Q2GT4",
+      "target": "P",
+      "observable": "A1p",
+      "target_model": "free proton"
+    },
+    "D_Q2GT1": {
+      "a1": "/HERMES_2007_I726689/d14-x01-y02",
+      "apar": "/HERMES_2007_I726689/AParallelD_Q2GT1",
+      "parity_pp_mm": "/HERMES_2007_I726689/Parity_PP_MM_D_Q2GT1",
+      "parity_pm_mp": "/HERMES_2007_I726689/Parity_PM_MP_D_Q2GT1",
+      "target": "D",
+      "observable": "A1d",
+      "target_model": "per-nucleon proton+neutron impulse approximation",
+      "d_state_probability": 0.05,
+      "d_state_factor": 0.925,
+      "nuclear_effects": "binding, Fermi motion, off-shell, shadowing, and tensor b1 effects neglected",
+      "target_components": {
+        "unpolarized": {
+          "P": 0.5,
+          "N": 0.5
+        },
+        "longitudinal": {
+          "P": 0.4625,
+          "N": 0.4625
+        }
+      }
+    },
+    "D_Q2GT4": {
+      "a1": "/HERMES_2007_I726689/A1d_Q2GT4",
+      "apar": "/HERMES_2007_I726689/AParallelD_Q2GT4",
+      "parity_pp_mm": "/HERMES_2007_I726689/Parity_PP_MM_D_Q2GT4",
+      "parity_pm_mp": "/HERMES_2007_I726689/Parity_PM_MP_D_Q2GT4",
+      "target": "D",
+      "observable": "A1d",
+      "target_model": "per-nucleon proton+neutron impulse approximation",
+      "d_state_probability": 0.05,
+      "d_state_factor": 0.925,
+      "nuclear_effects": "binding, Fermi motion, off-shell, shadowing, and tensor b1 effects neglected",
+      "target_components": {
+        "unpolarized": {
+          "P": 0.5,
+          "N": 0.5
+        },
+        "longitudinal": {
+          "P": 0.4625,
+          "N": 0.4625
+        }
+      }
     }
   },
   "plotting": {
-    "unmatch": ["/HERMES_2007_I726689/Sigma(LL|UU)_"]
+    "unmatch": [
+      "/HERMES_2007_I726689/Sigma(LL|UU)_"
+    ]
   },
   "diagnostics": [
     "Accepted_X_Q2GT1",
@@ -194,11 +329,31 @@
     "Accepted_Theta_Q2GT4"
   ],
   "combination": {
-    "unpolarized": {"PP": 0.25, "PM": 0.25, "MP": 0.25, "MM": 0.25},
-    "longitudinal": {"PP": 0.25, "PM": -0.25, "MP": -0.25, "MM": 0.25}
+    "unpolarized": {
+      "PP": 0.25,
+      "PM": 0.25,
+      "MP": 0.25,
+      "MM": 0.25
+    },
+    "longitudinal": {
+      "PP": 0.25,
+      "PM": -0.25,
+      "MP": -0.25,
+      "MM": 0.25
+    },
+    "target_components": {
+      "unpolarized": {
+        "P": 1.0,
+        "N": 0.0
+      },
+      "longitudinal": {
+        "P": 1.0,
+        "N": 0.0
+      }
+    }
   },
   "physics": {
-    "beam": "27.6 GeV e+ on a fixed proton target",
+    "beam": "27.6 GeV e+ on fixed proton and neutron targets",
     "exchange": "photon",
     "unpolarized_pdf": "NNPDF40_nlo_pch_as_01180",
     "polarized_pdf": "NNPDFpol20_nlo_as_01180",
@@ -211,7 +366,13 @@
       "The eta*A2 term is neglected; g2 is not modeled",
       "R1990 supplies R(x,Q2) in the depolarization factor",
       "Q2 > 1 GeV2 touches the QMin=1 GeV boundary of both selected PDFs",
-      "Q2 > 4 GeV2 is the conservative validation selection"
-    ]
+      "Q2 > 4 GeV2 is the conservative validation selection",
+      "Proton and deuteron outputs share independent free-proton/free-neutron component samples; target coefficients are applied to normalized cross sections before asymmetry ratios",
+      "The deuteron is (p+n)/2 in an impulse approximation; only its polarized numerator is multiplied by 1-1.5*omegaD = 0.925 for omegaD=0.05 (HERMES Eq. 23)",
+      "Binding, Fermi motion, off-shell, shadowing, and tensor b1 effects are neglected in the deuteron prediction",
+      "The published deuteron asymmetry already includes the experimental tensor-asymmetry correction; that correction is not repeated on the reference data",
+      "The neutron unpolarized and longitudinal-difference PDFs use ThePEG isospin mapping u<->d and anti-u<->anti-d of the same proton LHAPDF sets"
+    ],
+    "target_model": "free proton for the default outputs and accepted-event diagnostics"
   }
 }

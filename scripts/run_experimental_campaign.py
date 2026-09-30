@@ -137,6 +137,25 @@ def _configured_components(measurement: Mapping[str, Any]) -> dict[str, dict[str
     return components
 
 
+def _validate_target_component_maps(
+    configured: Any, components: Iterable[str], context: str
+) -> None:
+    """Require explicit, finite coefficients for each independent target sample."""
+    if not isinstance(configured, Mapping) or set(configured) != {"unpolarized", "longitudinal"}:
+        raise CampaignError(f"{context} must define unpolarized and longitudinal target coefficients")
+    labels = set(components)
+    for channel, coefficients in configured.items():
+        if not isinstance(coefficients, Mapping) or set(coefficients) != labels:
+            raise CampaignError(f"{context} {channel} coefficients must match cards.components")
+        for component, value in coefficients.items():
+            try:
+                coefficient = float(value)
+            except (TypeError, ValueError, OverflowError) as exc:
+                raise CampaignError(f"{context} {channel}/{component} coefficient must be finite") from exc
+            if isinstance(value, bool) or not math.isfinite(coefficient):
+                raise CampaignError(f"{context} {channel}/{component} coefficient must be finite")
+
+
 def _validate_measurement(measurement: dict[str, Any], source: Path) -> None:
     required = {"id", "analysis", "reference", "cards", "campaign", "raw_observables", "outputs", "combination"}
     missing = sorted(required - set(measurement))
@@ -156,17 +175,18 @@ def _validate_measurement(measurement: dict[str, Any], source: Path) -> None:
         raise CampaignError(f"{measurement['id']} output selections must match raw-observable selections")
     components = _configured_components(measurement)
     target_combination = measurement["combination"].get("target_components")
-    if len(components) > 1:
-        if not isinstance(target_combination, Mapping):
-            raise CampaignError(
-                f"{measurement['id']} must define combination.target_components for multiple targets"
+    if target_combination is not None or len(components) > 1:
+        _validate_target_component_maps(
+            target_combination, components, f"{measurement['id']} combination.target_components"
+        )
+    for selection, output in measurement["outputs"].items():
+        if not isinstance(output, Mapping):
+            raise CampaignError(f"{measurement['id']} output {selection!r} must be an object")
+        if "target_components" in output:
+            _validate_target_component_maps(
+                output["target_components"], components,
+                f"{measurement['id']} outputs.{selection}.target_components",
             )
-        for channel in ("unpolarized", "longitudinal"):
-            coefficients = target_combination.get(channel)
-            if not isinstance(coefficients, Mapping) or set(coefficients) != set(components):
-                raise CampaignError(
-                    f"{measurement['id']} target-component {channel} coefficients must match cards.components"
-                )
 
     comparison_profile = measurement.get("campaign", {}).get("comparison_profile")
     if comparison_profile is None:
@@ -742,6 +762,15 @@ def _write_yoda_objects(yoda: Any, objects: Sequence[Any], destination: Path) ->
 
 def write_reference_yoda(snapshot: Mapping[str, Any], destination: Path) -> None:
     if "datasets" in snapshot:
+        datasets = snapshot["datasets"]
+        if isinstance(datasets, list) and datasets and all("bin_edges" in item for item in datasets):
+            yoda = _import_yoda()
+            objects = [
+                _reference_estimate(yoda, {**snapshot, **dataset})
+                for dataset in datasets
+            ]
+            _write_yoda_objects(yoda, objects, destination)
+            return
         try:
             from phenomenology_reference_data import write_reference_yoda as write_multi_reference
             generated = write_multi_reference(str(snapshot["measurement"]), snapshot)
@@ -752,16 +781,24 @@ def write_reference_yoda(snapshot: Mapping[str, Any], destination: Path) -> None
             shutil.copy2(generated, destination)
         return
     yoda = _import_yoda()
+    _write_yoda_objects(yoda, [_reference_estimate(yoda, snapshot)], destination)
+
+
+def _reference_estimate(yoda: Any, snapshot: Mapping[str, Any]) -> Any:
     edges = [float(value) for value in snapshot["bin_edges"]]
     path = str(snapshot.get("rivet_path", f"/REF/{snapshot['measurement']}/d01-x01-y01"))
     estimate = yoda.BinnedEstimate1D(edges, path)
+    title = str(snapshot.get("provenance", {}).get("hepdata_table", snapshot.get("id", snapshot["measurement"])))
     try:
-        estimate.setTitle(str(snapshot["provenance"]["hepdata_table"]))
+        estimate.setTitle(title)
     except Exception:
-        estimate.setAnnotation("Title", str(snapshot["provenance"]["hepdata_table"]))
+        estimate.setAnnotation("Title", title)
     estimate.setAnnotation("IsRef", 1)
     estimate.setAnnotation("Observable", str(snapshot.get("observable", "")))
     estimate.setAnnotation("Selection", str(snapshot.get("selection", "")))
+    if "target" in snapshot:
+        estimate.setAnnotation("Target", str(snapshot["target"]))
+    estimate.setAnnotation("PlotAxis", str(snapshot.get("plot_axis", "x_mean")))
     estimate.setAnnotation("PublishedXMeans", json.dumps([point["x_mean"] for point in snapshot["points"]]))
     estimate.setAnnotation("PublishedQ2MeansGeV2", json.dumps([point["q2_mean"] for point in snapshot["points"]]))
     for index, point in enumerate(snapshot["points"], start=1):
@@ -771,7 +808,35 @@ def write_reference_yoda(snapshot: Mapping[str, Any], destination: Path) -> None
         errors.update({str(label): float(error) for label, error in point["systematics"].items()})
         for label, error in errors.items():
             bin_object.setErr(-error, error, label)
-    _write_yoda_objects(yoda, [estimate], destination)
+    return estimate
+
+
+def _multi_tar_reference_rows(
+    measurement: Mapping[str, Any], snapshot: Mapping[str, Any], payload: bytes
+) -> dict[str, list[dict[str, float]]]:
+    """Verify each pinned archive member against its corresponding snapshot."""
+    if snapshot.get("schema_version") != 2 or snapshot.get("measurement") != measurement["id"]:
+        raise CampaignError("Multi-dataset reference snapshot schema or measurement does not match")
+    sources = measurement["reference"].get("datasets")
+    datasets = snapshot.get("datasets")
+    if not isinstance(sources, list) or not sources or not isinstance(datasets, list) or not datasets:
+        raise CampaignError("Multi-dataset references require non-empty source and snapshot datasets")
+    source_ids = [str(item.get("id", "")) for item in sources]
+    dataset_ids = [str(item.get("id", "")) for item in datasets]
+    if (not all(source_ids) or len(set(source_ids)) != len(source_ids)
+            or len(set(dataset_ids)) != len(dataset_ids) or set(source_ids) != set(dataset_ids)):
+        raise CampaignError("Multi-dataset reference source IDs must match unique snapshot dataset IDs")
+    by_id = {str(item["id"]): item for item in datasets}
+    result: dict[str, list[dict[str, float]]] = {}
+    for source in sources:
+        dataset_id = str(source["id"])
+        rows = extract_tar_reference(
+            payload, str(source["archive_member"]), str(source["member_sha256"]),
+            expected_rows=int(source["expected_rows"]),
+        )
+        validate_reference_snapshot(by_id[dataset_id], rows)
+        result[dataset_id] = rows
+    return result
 
 
 def fetch_reference_data(measurement: Mapping[str, Any]) -> Path:
@@ -802,7 +867,9 @@ def fetch_reference_data(measurement: Mapping[str, Any]) -> Path:
         raise CampaignError(f"Source checksum mismatch: expected {reference['source_sha256']}, got {actual}")
     reference_format = str(reference.get("format"))
     cache_name = "official-source.dat"
-    if reference_format == "tar-five-column":
+    if reference_format == "tar-five-column-multidataset":
+        rows = _multi_tar_reference_rows(measurement, snapshot, payload)
+    elif reference_format == "tar-five-column":
         rows = extract_tar_reference(
             payload,
             reference["archive_member"],
@@ -819,7 +886,8 @@ def fetch_reference_data(measurement: Mapping[str, Any]) -> Path:
             )
     else:
         raise CampaignError(f"Unsupported reference format {reference_format!r}")
-    validate_reference_snapshot(snapshot, rows)
+    if reference_format != "tar-five-column-multidataset":
+        validate_reference_snapshot(snapshot, rows)
 
     cache = CAMPAIGN_ROOT / "_data_cache" / str(measurement["id"])
     cache.mkdir(parents=True, exist_ok=True)
@@ -2734,6 +2802,12 @@ def _family_annotations(
 ) -> dict[str, str]:
     physics = measurement.get("physics", {})
     orders = [str(order) for order in family["orders"]]
+    target_uu = _target_component_coefficients(measurement, family, "unpolarized")
+    target_ll = _target_component_coefficients(measurement, family, "longitudinal")
+    active_components = [
+        component for component in target_uu
+        if component and (target_uu[component] != 0.0 or target_ll[component] != 0.0)
+    ]
     annotations = {
         "Generator": "HerwigPol full shower+hadronization",
         "CampaignFamily": family_id,
@@ -2749,7 +2823,7 @@ def _family_annotations(
         ),
         "A2G2Assumption": str(physics.get("a2_g2_assumption", "unspecified")),
         "DepolarizationModel": str(physics.get("depolarization_model", "R1990")),
-        "TargetComponents": ",".join(str(value) for value in family["components"] if value) or "single target",
+        "TargetComponents": ",".join(active_components) or "single target",
         "TargetModel": str(physics.get("target_model", "single physical target")),
     }
     if "d_state_factor" in physics:
@@ -2764,18 +2838,44 @@ def _family_annotations(
 
 
 def _target_component_coefficients(
-    measurement: Mapping[str, Any], family: Mapping[str, Any], channel: str
+    measurement: Mapping[str, Any], family: Mapping[str, Any], channel: str,
+    selection: str | None = None,
 ) -> dict[str, float]:
     components = [str(value) for value in family["components"]]
     configured = measurement["combination"].get("target_components")
-    if not isinstance(configured, Mapping):
+    if selection is not None:
+        configured = measurement["outputs"][selection].get("target_components", configured)
+    if configured is None:
         if len(components) != 1:
             raise CampaignError("Multiple target components require explicit combination coefficients")
         return {components[0]: 1.0}
-    coefficients = configured.get(channel)
-    if not isinstance(coefficients, Mapping) or set(coefficients) != set(components):
-        raise CampaignError(f"Target-component {channel} coefficients do not match the campaign family")
+    _validate_target_component_maps(configured, components, "Target-component combination")
+    coefficients = configured[channel]
     return {str(key): float(value) for key, value in coefficients.items()}
+
+
+def _selection_annotations(
+    measurement: Mapping[str, Any], selection: str, annotations: Mapping[str, str]
+) -> dict[str, str]:
+    """Annotate the target represented by this output rather than all generated beams."""
+    output = measurement["outputs"][selection]
+    result = dict(annotations)
+    for key, annotation in (("target", "Target"), ("target_model", "TargetModel")):
+        if key in output:
+            result[annotation] = str(output[key])
+    if "d_state_factor" in output:
+        if output["d_state_factor"] is None:
+            result.pop("DeuteronDStateFactor", None)
+        else:
+            result["DeuteronDStateFactor"] = str(output["d_state_factor"])
+    target = output.get("target_components", measurement["combination"].get("target_components"))
+    if isinstance(target, Mapping):
+        result["TargetComponentCombination"] = json.dumps(target, sort_keys=True)
+        result["TargetComponents"] = ",".join(
+            component for component in target["unpolarized"]
+            if any(float(target[channel][component]) != 0.0 for channel in ("unpolarized", "longitudinal"))
+        ) or "single target"
+    return result
 
 
 def _component_helicity_label(component: str, helicity: str) -> str:
@@ -2805,26 +2905,24 @@ def _load_asymmetry_family_products(
     helicity_ll_coefficients = {
         key: float(value) for key, value in measurement["combination"]["longitudinal"].items()
     }
-    target_uu_coefficients = _target_component_coefficients(
-        measurement, family, "unpolarized"
-    )
-    target_ll_coefficients = _target_component_coefficients(
-        measurement, family, "longitudinal"
-    )
-    uu_coefficients = {
-        _component_helicity_label(component, helicity):
-        target_uu_coefficients[component] * helicity_uu_coefficients[helicity]
-        for component in components
-        for helicity in helicities
-    }
-    ll_coefficients = {
-        _component_helicity_label(component, helicity):
-        target_ll_coefficients[component] * helicity_ll_coefficients[helicity]
-        for component in components
-        for helicity in helicities
-    }
     results: dict[str, dict[str, Any]] = {}
     for selection, names in measurement["raw_observables"].items():
+        target_uu_coefficients = _target_component_coefficients(
+            measurement, family, "unpolarized", str(selection)
+        )
+        target_ll_coefficients = _target_component_coefficients(
+            measurement, family, "longitudinal", str(selection)
+        )
+        uu_coefficients = {
+            _component_helicity_label(component, helicity):
+            target_uu_coefficients[component] * helicity_uu_coefficients[helicity]
+            for component in components for helicity in helicities
+        }
+        ll_coefficients = {
+            _component_helicity_label(component, helicity):
+            target_ll_coefficients[component] * helicity_ll_coefficients[helicity]
+            for component in components for helicity in helicities
+        }
         ordinary: dict[str, BinSeries] = {}
         weighted: dict[str, BinSeries] = {}
         covariance: dict[str, BinSeries] = {}
@@ -2863,6 +2961,12 @@ def _load_asymmetry_family_products(
         )
 
     diagnostics: dict[str, BinSeries] = {}
+    diagnostic_target = _target_component_coefficients(measurement, family, "unpolarized")
+    diagnostic_coefficients = {
+        _component_helicity_label(component, helicity):
+        diagnostic_target[component] * helicity_uu_coefficients[helicity]
+        for component in components for helicity in helicities
+    }
     for name in measurement.get("diagnostics", []):
         component_series: dict[str, BinSeries] = {}
         for component in components:
@@ -2873,7 +2977,7 @@ def _load_asymmetry_family_products(
             )
             for helicity in helicities:
                 component_series[_component_helicity_label(component, helicity)] = loaded[helicity]
-        diagnostics[str(name)] = linear_combine_series(component_series, uu_coefficients)
+        diagnostics[str(name)] = linear_combine_series(component_series, diagnostic_coefficients)
     return results, diagnostics
 
 
@@ -3019,6 +3123,7 @@ def _asymmetry_family_objects(
     objects: list[Any] = []
     for selection, result in results.items():
         paths = measurement["outputs"][selection]
+        selected_annotations = _selection_annotations(measurement, selection, annotations)
         a1_estimate = _estimate_from_values(
             yoda,
             result["edges"],
@@ -3026,8 +3131,8 @@ def _asymmetry_family_objects(
             result["a1_values"],
             result["a1_errors"],
             {
-                **annotations,
-                "Observable": str(snapshot.get("observable", "A1")),
+                **selected_annotations,
+                "Observable": str(paths.get("observable", snapshot.get("observable", "A1"))),
                 "Selection": selection,
             },
         )
@@ -3037,7 +3142,7 @@ def _asymmetry_family_objects(
             paths["apar"],
             result["apar_values"],
             result["apar_errors"],
-            {**annotations, "Observable": "A_parallel", "Selection": selection},
+            {**selected_annotations, "Observable": "A_parallel", "Selection": selection},
         )
         selection_bands = (
             uncertainty_bands.get(selection, {}) if uncertainty_bands else {}
@@ -3057,7 +3162,7 @@ def _asymmetry_family_objects(
                     result["parity_pp_mm_values"],
                     result["parity_pp_mm_errors"],
                     {
-                        **annotations,
+                        **selected_annotations,
                         "Observable": "(PP-MM)/(PP+MM)",
                         "Selection": selection,
                     },
@@ -3069,7 +3174,7 @@ def _asymmetry_family_objects(
                     result["parity_pm_mp_values"],
                     result["parity_pm_mp_errors"],
                     {
-                        **annotations,
+                        **selected_annotations,
                         "Observable": "(PM-MP)/(PM+MP)",
                         "Selection": selection,
                     },
@@ -3078,13 +3183,13 @@ def _asymmetry_family_objects(
                     yoda,
                     result["sigma_uu"],
                     f"/{analysis}/SigmaUU_{selection}",
-                    {**annotations, "Observable": "sigma_UU", "Selection": selection},
+                    {**selected_annotations, "Observable": "sigma_UU", "Selection": selection},
                 ),
                 _series_estimate(
                     yoda,
                     result["sigma_ll"],
                     f"/{analysis}/SigmaLL_{selection}",
-                    {**annotations, "Observable": "sigma_LL", "Selection": selection},
+                    {**selected_annotations, "Observable": "sigma_LL", "Selection": selection},
                 ),
             ]
         )
@@ -3122,6 +3227,9 @@ def _load_direct_unpolarized_products(
     orders = tuple(str(value) for value in family["orders"])
     results: dict[str, BinSeries] = {}
     for selection, names in measurement["raw_observables"].items():
+        selected_target = _target_component_coefficients(
+            measurement, family, "unpolarized", str(selection)
+        )
         loaded_components = {
             component: _load_component_series(
                 groups, campaign_dir, analysis, str(names["ordinary"]),
@@ -3131,7 +3239,7 @@ def _load_direct_unpolarized_products(
             for component in components
         }
         results[str(selection)] = linear_combine_series(
-            loaded_components, target_coefficients
+            loaded_components, selected_target
         )
     diagnostics: dict[str, BinSeries] = {}
     for name in measurement.get("diagnostics", []):
@@ -3161,6 +3269,7 @@ def _direct_unpolarized_objects(
     objects: list[Any] = []
     closure: dict[str, dict[str, list[float | None]]] = {}
     for selection, direct in direct_results.items():
+        selected_annotations = _selection_annotations(measurement, selection, annotations)
         nominal = nominal_results[selection]["sigma_uu"]
         values: list[float | None] = []
         errors: list[float | None] = []
@@ -3181,7 +3290,7 @@ def _direct_unpolarized_objects(
                     direct,
                     f"/{analysis}/SigmaUU_{selection}",
                     {
-                        **annotations,
+                        **selected_annotations,
                         "Observable": "direct sigma_00",
                         "Selection": selection,
                     },
@@ -3193,7 +3302,7 @@ def _direct_unpolarized_objects(
                     values,
                     errors,
                     {
-                        **annotations,
+                        **selected_annotations,
                         "Observable": "(sigma_UU-sigma_00)/(sigma_UU+sigma_00)",
                         "Selection": selection,
                     },
@@ -3338,7 +3447,9 @@ def postprocess_campaign(args: argparse.Namespace, measurement: Mapping[str, Any
             f"{analysis_name}/VARIATIONS/{token}"
         )
         for selection, paths in variation_measurement["outputs"].items():
-            for observable in paths:
+            for observable in ("a1", "apar", "parity_pp_mm", "parity_pm_mp"):
+                if observable not in paths:
+                    continue
                 paths[observable] = (
                     f"/{analysis_name}/VARIATIONS/{token}/"
                     f"{observable}_{selection}"
@@ -3441,6 +3552,15 @@ def postprocess_campaign(args: argparse.Namespace, measurement: Mapping[str, Any
             "sigma_LL": "(PP+MM-PM-MP)/4",
         },
         "target_combination": measurement["combination"].get("target_components", {}),
+        "output_target_combinations": {
+            selection: {
+                channel: _target_component_coefficients(
+                    measurement, nominal_spec, channel, selection
+                )
+                for channel in ("unpolarized", "longitudinal")
+            }
+            for selection in measurement["outputs"]
+        },
         "reference": snapshot["provenance"],
         "uncertainties": uncertainty_bands,
         "variation_points": [list(point) for point in configured_variations],
@@ -3870,8 +3990,11 @@ def _fixed_reference_overlay_points(
         for dataset in datasets:
             if Path(str(dataset.get("rivet_path", ""))).name != plot_stem:
                 continue
+            axis = str(dataset.get("plot_axis", "q2_mean"))
+            if axis not in {"x_mean", "q2_mean"}:
+                raise CampaignError(f"Unsupported multi-dataset reference plot axis {axis!r}")
             return [
-                {**dict(point), "plot_x": float(point["q2_mean"])}
+                {**dict(point), "plot_x": float(point[axis])}
                 for point in dataset.get("points", [])
             ]
         return None

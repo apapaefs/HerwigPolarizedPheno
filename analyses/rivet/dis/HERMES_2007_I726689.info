@@ -1,6 +1,6 @@
 Name: HERMES_2007_I726689
 Year: 2007
-Summary: Proton longitudinal spin asymmetry in 27.6 GeV positron fixed-target DIS
+Summary: Proton and deuteron longitudinal spin asymmetries in 27.6 GeV positron fixed-target DIS
 Experiment: HERMES
 Collider: HERA fixed target
 InspireID: 726689
@@ -11,14 +11,14 @@ Authors:
 References:
  - Phys.Rev.D 75 (2007) 012007
  - hep-ex/0609039
-RunInfo: Requires separate e+p samples for all four physical lepton/proton helicities.
+RunInfo: Requires independent e+p and e+n samples for all four physical lepton/nucleon helicities and separate POSNLO/NEGNLO contributions.
 NumEvents: 100000
 NeedsCrossSection: yes
-Beams: [[e+, p+]]
-Energies: [[27.6, 0.938272]]
+Beams: [[POSITRON, PROTON], [POSITRON, NEUTRON]]
+Energies: [[27.6, 0.938272], [27.6, 0.939565]]
 Description:
   Reconstructs fixed-target laboratory DIS kinematics directly from the
-  incoming proton and positron and the highest-energy prompt final-state
+  incoming proton or neutron and positron and the highest-energy prompt final-state
   positron, excluding leptons from hadron decays.
   Events satisfy 1 <= Q2 <= 20 GeV2, 0.1 < y <= 0.91, W2 > 3.24 GeV2,
   and 0.04 <= theta <= 0.22 rad. Raw cross-section, inverse-depolarization,
@@ -27,12 +27,18 @@ Description:
   a conservative diagnostic. The R1990 parameterization is used for R; the
   conversion to A1 neglects eta*A2 and does not separately model g2. The
   Q2 > 1 result reaches the lower scale boundary of the selected PDFs and is
-  therefore exploratory.
+  therefore exploratory. The external postprocessor retains proton outputs
+  and constructs per-nucleon deuteron outputs from (p+n)/2 for unpolarized
+  cross sections and 0.925*(p+n)/2 for longitudinal cross sections, before
+  taking ratios. The factor is 1-1.5*omegaD with omegaD=0.05. Binding, Fermi
+  motion, off-shell, shadowing, and tensor b1 effects are neglected. The
+  published experimental tensor-asymmetry correction is not repeated.
 Keywords:
  - DIS
  - polarized
  - fixed-target
  - asymmetry
+ - deuteron
 BibKey: HERMES:2006jyl
 BibTeX: '@article{HERMES:2006jyl,
   author = "Airapetian, A. and others",

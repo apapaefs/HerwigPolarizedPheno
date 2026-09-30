@@ -1,0 +1,11 @@
+# -*- ThePEG-repository -*-
+read ../HERMES_2007_I726689-Common.in
+set /Herwig/EventHandlers/EventHandler:BeamB /Herwig/Particles/n0
+set /Herwig/EventHandlers/FixedTargetLuminosity:TargetParticle /Herwig/Particles/n0
+set /Herwig/Partons/EPPolarizedExtractor:FirstLongitudinalPolarization 1
+set /Herwig/Partons/EPPolarizedExtractor:SecondLongitudinalPolarization -1
+set /Herwig/MatrixElements/PowhegMEDISNCPol:Contribution PositiveNLO
+set /Herwig/MatrixElements/PowhegMEDISNCPol:UsePOWHEGRealSpinVertex No
+set /Herwig/Shower/ShowerHandler:SpinCorrelations Yes
+cd /Herwig/Generators
+saverun HERMES_2007_I726689_NOREALSPIN_N_PM-POSNLO EventGenerator

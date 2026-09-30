@@ -102,6 +102,17 @@ def fixed_plot_specs(config: Mapping[str, Any]) -> list[dict[str, Any]]:
         snapshot = load_json(
             REPOSITORY / "data" / "experimental" / measurement / "reference.json"
         )
+        if measurement == "HERMES_2007_I726689" and "datasets" in snapshot:
+            # This package selects the historical proton-only campaign. The
+            # current reference also contains deuteron data, which that
+            # archived campaign did not generate.
+            datasets = snapshot["datasets"]
+            if not isinstance(datasets, list):
+                raise PackageError("HERMES reference datasets must be a list")
+            proton = [dataset for dataset in datasets if dataset.get("id") == "P"]
+            if len(proton) != 1:
+                raise PackageError("Historical HERMES plots require exactly one proton P reference dataset")
+            snapshot = proton[0]
         output.append(
             {
                 "spec": spec, "stem": Path(str(snapshot["rivet_path"])).name,
