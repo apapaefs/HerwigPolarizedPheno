@@ -86,6 +86,16 @@ weights needed to construct an experimental ratio of integrals. A
 statistical average of the published ratios would be a different observable.
 Data overlays are therefore supplied for the original cells only.
 
+An additional, explicitly model-assisted reconstruction of both integrated
+experimental directions is now available through
+[`hermes_apar_integrated.py`](../scripts/hermes_apar_integrated.py). It uses
+independent GD11 unpolarized cross-section fits, propagates the full published
+statistical covariance, and applies the same weights to the Herwig cell
+results. It writes separate derived plots without changing this campaign's
+event-level projections. See
+[`hermes-apar-integrated-data.md`](hermes-apar-integrated-data.md) for the
+within-cell assumptions, systematic bound and fit-domain sensitivity.
+
 ## References and reproducibility
 
 `data/experimental/HERMES_2007_I726689/born-apar-reference.json` records all
