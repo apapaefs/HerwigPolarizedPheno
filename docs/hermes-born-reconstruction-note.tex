@@ -1,0 +1,141 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[margin=1.8cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern,amsmath,amssymb,booktabs}
+\usepackage[colorlinks=true,urlcolor=blue,citecolor=blue,linkcolor=blue]{hyperref}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+\setlength{\abovedisplayskip}{6pt}
+\setlength{\belowdisplayskip}{6pt}
+\raggedbottom
+\newcommand{\apar}{A_{\parallel}}
+\newcommand{\gev}{\mathrm{GeV}}
+\begin{document}
+\begin{center}
+{\Large Reconstruction of the HERMES Born longitudinal asymmetry plots}\par
+\small 30 September 2026
+\end{center}
+
+We construct proton and deuteron projections of the published HERMES Born
+longitudinal asymmetry, $\apar$, using an independent fit to unpolarized
+cross sections. The original asymmetry release lacks the unpolarized cell yields
+needed to determine an integrated event-sample asymmetry directly.
+The eight reconstructed plots comprise both targets versus
+$x$ and versus $Q^2$, with $Q^2>1$ and $Q^2>4\,\gev^2$ selections.
+These are model-assisted reconstructions, conditional on the fitted weights
+and the stated bin assumptions; they are not additional published HERMES measurements.
+
+The inputs are the 45 Born $(x,Q^2)$ cells for each target in HERMES
+Tables XI and XII, available as HEPData Tables 7 and 8, and the full statistical
+correlation matrices in HEPData Tables 18 and 19~\cite{spin,data}.
+Published Born values are used directly, without multiplying $A_1$ by an
+averaged depolarization factor. Eight cells per target lie below the generator's
+$Q^2=1\,\gev^2$ boundary and receive zero weight, leaving 37 supported cells.
+
+For the Herwig cell predictions, both stored order contributions are normalized
+before subtracting NEGNLO magnitudes from POSNLO in each target-component and helicity bin.
+We then form
+\begin{equation}
+ \sigma_{\rm UU}=\frac{\sigma_{\rm PP}+\sigma_{\rm PM}+\sigma_{\rm MP}+\sigma_{\rm MM}}{4},
+ \qquad
+ \sigma_{\rm LL}=\frac{\sigma_{\rm PP}+\sigma_{\rm MM}-\sigma_{\rm PM}-\sigma_{\rm MP}}{4},
+ \qquad \apar^{\rm MC}=\frac{\sigma_{\rm LL}}{\sigma_{\rm UU}}.
+\end{equation}
+Deuteron cells already use
+$\sigma_{\rm UU}^d=(\sigma_{\rm UU}^p+\sigma_{\rm UU}^n)/2$ and
+$\sigma_{\rm LL}^d=0.925(\sigma_{\rm LL}^p+\sigma_{\rm LL}^n)/2$.
+The reconstruction does not apply this factor again. No extra depolarization,
+polarization, dilution, tensor, nuclear or normalization correction is applied
+to the experimental cells. The generator's existing finite-$Q^2$ limitations remain;
+this procedure adds no explicit $g_2$, target-mass or twist-three model.
+
+The HERMES GD11-P and GD11-D fits~\cite{unpolarized} supply the unpolarized
+$F_2$ per nucleon. We convert it to the lepton Born cross section with Eq.~(2.6)
+of Ref.~\cite{unpolarized}, using the R1998 parameterization of the virtual-photon
+longitudinal-to-transverse ratio $R=\sigma_L/\sigma_T$~\cite{r1998}.
+For output region $R_r$, source cell $B_i$ and the common fiducial region $\mathcal F$,
+we calculate
+\begin{align}
+ U_{ri}&=\int_{R_r\cap B_i\cap\mathcal F} dx\,dQ^2\,
+       \frac{d^2\sigma_{\rm UU}^{\rm GD11}}{dx\,dQ^2},
+ & W_{ri}&=\frac{U_{ri}}{\sum_j U_{rj}},\label{eq:weights}\\
+ \widehat A_r^{\rm data}&=\sum_i W_{ri}A_{\parallel,i}^{\rm data},
+ &\widehat A_r^{\rm MC}&=\sum_i W_{ri}A_{\parallel,i}^{\rm MC}.
+\end{align}
+The same positive weights act on data and Herwig cells; no Herwig unpolarized
+prediction or polarized PDF determines the experimental weights.
+Thus the reconstructed Herwig curve uses the same averaging as the reconstructed
+data. It differs from the original event-level Herwig ratio of integrated
+cross sections, which uses Herwig's own cross-section distribution and retains
+its event-level variation inside cells.
+
+The integration uses $E_\ell=27.6\,\gev$, $1<Q^2<20\,\gev^2$,
+$0.10<y<0.91$, $W^2>3.24\,\gev^2$ and
+$0.04<\theta<0.22$ radians. We restrict the reconstructed integral to the
+published cell union, whose supported $x$ range is $0.02124<x<0.9$.
+The plot definitions are
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+Selection & Versus $x$: integrate over $Q^2$ & Versus $Q^2$: integrate over $x$\\
+\midrule
+$Q^2>1\,\gev^2$ & 15 physical $x$ bins; $1<Q^2<20$ & 8 bins; $0.02124<x<0.9$\\
+$Q^2>4\,\gev^2$ & Same $x$ bins; 10 supported & 4 bins; $0.02124<x<0.9$\\
+\bottomrule
+\end{tabular}
+\end{center}
+Each row is produced for both targets. The $Q^2$ edges are
+$1,1.5,2,3,4,6,8,12,20\,\gev^2$; the stricter selection retains
+$4,6,8,12,20\,\gev^2$. Its five lowest-$x$ bins have zero accepted fitted yield
+and remain masked. The main $x$ projection merges whole source cells and needs
+no interpolation of their spin asymmetries. The $Q^2$ projections and the
+$Q^2>4$ $x$ projection split some cells and assume constant $\apar$ inside each
+split cell, on both the experimental and Herwig sides.
+
+Black points show $\widehat A^{\rm data}$ with statistical errors from
+\begin{equation}
+ C_{\rm projected}=W C_{\rm stat} W^{\mathsf T}.
+\end{equation}
+This retains correlations between source cells and between output bins sharing
+source cells. Since only experimental systematic diagonals are public, the gray
+outer bars combine the statistical error in quadrature with the conservative
+bound $s_r^{\rm bound}=\sum_i|W_{ri}|s_i$. This is not a recovered systematic
+covariance or a specified confidence interval. Published systematics already
+contain the 5.2\% proton and 5.0\% deuteron normalization uncertainties.
+Orange segments show $\widehat A^{\rm MC}$; their bands use the independent-cell
+approximation $(\delta A_r^{\rm MC})^2=\sum_iW_{ri}^2(\delta A_{\parallel,i}^{\rm MC})^2$.
+If any positively weighted MC cell has no finite prediction, that MC projection
+is masked without changing the experimental weights or covariance.
+Horizontal bars span the output bins; $x$ markers average the published cell
+mean $x$ with the fitted weights, while $Q^2$ markers use geometric bin centres.
+
+The displayed errors are conditional on central fitted weights and omit
+fit-weight and within-cell spin-shape uncertainties. The public rounded GD11
+parameter covariance matrices are indefinite and are not converted into a
+fit-error band. The overview figures simply assemble the individual plots.
+The separate sensitivity figures remove $3.24<W^2<4\,\gev^2$ from the weights,
+while retaining the same source-cell asymmetries; dashed curves show the
+resulting data and MC shifts. This region lies below GD11's stated fit domain
+and contributes about 45\% of the central weight in the final $x$ bin.
+These shifts are not one-sigma errors or measurements with a newly imposed
+experimental event cut. Additional numerical controls use ALLM97 proton weights
+(with GD11-D/GD11-P for the deuteron), R1990, and doubled Gauss quadrature order
+from 32 to 64. They are recorded as sensitivity or convergence checks, not
+added to the displayed errors.
+
+\small
+\begin{thebibliography}{4}
+\setlength{\itemsep}{0pt}
+\bibitem{spin} HERMES Collaboration, Phys. Rev. D \textbf{75} (2007) 012007,
+\href{https://arxiv.org/abs/hep-ex/0609039}{arXiv:hep-ex/0609039}.
+\bibitem{data} \href{https://www.hepdata.net/record/ins726689}{HEPData record ins726689},
+Born asymmetries and statistical correlation matrices.
+\bibitem{unpolarized} HERMES Collaboration, JHEP \textbf{05} (2011) 126,
+\href{https://arxiv.org/abs/1103.5704}{arXiv:1103.5704}.
+\bibitem{r1998} E143 Collaboration, Phys. Lett. B \textbf{452} (1999) 194--200,
+\href{https://arxiv.org/abs/hep-ex/9808028}{arXiv:hep-ex/9808028}.
+\end{thebibliography}
+\normalsize
+Full implementation details and pinned numerical inputs:
+\href{https://github.com/apapaefs/HerwigPolarizedPheno/blob/main/docs/hermes-apar-integrated-data.md}{HerwigPolarizedPheno reconstruction documentation}.
+\end{document}

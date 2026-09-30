@@ -1,5 +1,8 @@
 # Reconstructed HERMES Born longitudinal projections
 
+A short standalone explanation of the plot construction is available in
+[`hermes-born-reconstruction-note.tex`](hermes-born-reconstruction-note.tex).
+
 This calculation constructs proton and deuteron experimental projections of
 the published Born `A_parallel` cells using independent unpolarized cross-section
 fits. These are derived, model-assisted results, rather than additional HERMES
