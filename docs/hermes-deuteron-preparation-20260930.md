@@ -25,12 +25,12 @@ The isolated Odysseus source and runtime area is:
 /home/apapaefs/Projects/Herwig/validation/hermes-deuteron-20260930/pheno
 ```
 
-The new nominal production tag is `hermes_pd_3m_20260930_v2`. Its generated
+The new nominal production tag is `hermes_pd_3m_20260930_v3`. Its generated
 inputs, `.run` files, manifest, logs and outputs reside beneath that isolated
 root in:
 
 ```text
-campaigns/experimental/HERMES_2007_I726689/hermes_pd_3m_20260930_v2/
+campaigns/experimental/HERMES_2007_I726689/hermes_pd_3m_20260930_v3/
 ```
 
 It matches the event budget and shard layout of the completed Odysseus
@@ -54,7 +54,7 @@ their labels cannot supply missing neutron events or the new target outputs.
 | Total shard jobs | 1,600 |
 | Total requested events | 26,400,000 |
 | Concurrent workers | 100 |
-| Seed base | `460726689` |
+| Seed base | `560726689` |
 | Profile | `central`, nominal full spin |
 
 The opt-in comparison matrix would contain 60 logical jobs, with both
@@ -78,20 +78,22 @@ export VECLIB_MAXIMUM_THREADS=1 NUMEXPR_NUM_THREADS=1 BLIS_NUM_THREADS=1
 
 python3 scripts/run_phenomenology_campaign.py prepare \
   --measurement HERMES_2007_I726689 \
-  --tag hermes_pd_3m_20260930_v2 \
+  --tag hermes_pd_3m_20260930_v3 \
   --profile central \
   --posnlo-events 3000000 \
   --negnlo-events 300000 \
   --shards 100 \
   --jobs 100 \
-  --seed-base 460726689
+  --seed-base 560726689
 ```
 
 The primary wrapper delegates this fixed-target measurement to
 `scripts/run_experimental_campaign.py`. Preparation preflights the resolved
 Herwig executable, installed `HwMEDIS`, fixed-target library, Rivet toolchain
 and both PDF sets, and compiles the updated Rivet plugin. It regenerates the
-16 logical `.run` files before generation; rebuilding a separate source tree
+16 logical `.run` files before generation. Explicit normalized order
+coefficients restore the negative
+contribution sign in postprocessing; rebuilding a separate source tree
 alone is insufficient evidence for the runtime being used.
 
 ## Launching the prepared production
@@ -111,13 +113,13 @@ export VECLIB_MAXIMUM_THREADS=1 NUMEXPR_NUM_THREADS=1 BLIS_NUM_THREADS=1
 
 python3 campaigns/launchers/hermes-deuteron/run_validation_campaign.py full \
   --measurement HERMES_2007_I726689 \
-  --tag hermes_pd_3m_20260930_v2 \
+  --tag hermes_pd_3m_20260930_v3 \
   --profile central \
   --posnlo-events 3000000 \
   --negnlo-events 300000 \
   --shards 100 \
   --jobs 100 \
-  --seed-base 460726689 \
+  --seed-base 560726689 \
   --progress-interval 5 \
   --max-listed 32
 ```
@@ -125,22 +127,24 @@ python3 campaigns/launchers/hermes-deuteron/run_validation_campaign.py full \
 `full` reuses the matching prepared configuration, generates pending shards,
 postprocesses normalized bins and renders the proton and deuteron overlays.
 During execution the atomic tracker is available at
-`campaigns/experimental/HERMES_2007_I726689/hermes_pd_3m_20260930_v2/monitor/status.json`
+`campaigns/experimental/HERMES_2007_I726689/hermes_pd_3m_20260930_v3/monitor/status.json`
 and its `status.txt` sibling. Completed nonempty shard YODAs are recoverable;
 do not discard them or change a manifest to resume.
 
 ## Verified preparation status
 
-The final `hermes_pd_3m_20260930_v2` manifest is **prepared**: all 1,600
+The final `hermes_pd_3m_20260930_v3` manifest is **prepared**: all 1,600
 shards are planned, all 16 logical `.run` files are nonempty, and no
 production YODA outputs exist. Production events have not been launched.
-The earlier v1 preparation remains unchanged; v2 records the final plot
-metadata and a separate seed range.
+The earlier v1/v2 preparations remain unchanged. The paper audit found that
+the active generator stores NEGNLO as a positive magnitude. v3 records the
+corrected `POSNLO-NEGNLO` normalized-bin combination and a new seed range.
+Use v3 for production; v1/v2 are obsolete for the corrected definition.
 
 Validation completed on Odysseus:
 
-- All **231 regression tests passed**.
-- `hermes_pd_smoke_20260930_v2` completed **60/60 jobs**, requesting 100
+- All **247 regression tests passed**, including the independent depolarization and signed-order tests.
+- `hermes_pd_smoke_20260930_v3` completed **60/60 jobs**, requesting 100
   events per job, and postprocessed all five prediction families.
 - The primary proton/deuteron references contain 15 published points each;
   both overlays and the four deuteron plot titles were checked. Empty
@@ -156,13 +160,14 @@ establish precision or agreement with the data. The nominal production
 measurement signature is:
 
 ```text
-2dfd75f86e4519942e65916f7a56dba4b98c1c17b89c16c67bc2b65542919273
+0556fc25305904a1391d535be6b6d0b740dc1d968962e93a9005067f5f3e92dd
 ```
 
 ## Target combination
 
-For each target component and helicity, add normalized POSNLO and NEGNLO
-bins first. Form the helicity averages and differences separately for each
+For each target component and helicity, subtract normalized NEGNLO
+magnitudes from POSNLO bins first. Form the helicity averages and differences
+separately for each
 component, then apply the output-specific target coefficients:
 
 ```text
@@ -170,6 +175,11 @@ proton:   sigma_UU = sigma_UU^p; sigma_LL = sigma_LL^p
 deuteron: sigma_UU = (sigma_UU^p + sigma_UU^n)/2
           sigma_LL = 0.925*(sigma_LL^p + sigma_LL^n)/2
 ```
+
+The active generator stores both order contributions as positive magnitudes.
+For each component and helicity, first form `POSNLO-NEGNLO` at normalized-bin
+level. Independent statistical variances and covariance-proxy moments retain
+both contributions with squared order coefficients.
 
 Apply the same longitudinal coefficients to the `1/D`-weighted numerator
 for `A1`; form both asymmetry ratios only after this combination. Independent
@@ -205,6 +215,11 @@ are absent. The published deuteron reference already includes its experimental
 tensor-asymmetry correction. No extra correction is applied to those data.
 The `Q2 > 1 GeV2` output reaches the PDF validity boundary and remains
 exploratory; the `Q2 > 4 GeV2` view is the conservative validation control.
+
+The specific paper-level audit is in
+[the HERMES validation report](hermes-paper-validation-20260930.md). It
+records the omitted `eta*A2` contribution and common-Q2 averaging difference;
+these remain limits on a precision comparison with the published A1.
 
 The complete workflow and scientific definitions are documented in
 [the HERMES campaign guide](hermes-experimental-campaign.md).

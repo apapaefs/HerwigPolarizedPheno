@@ -156,6 +156,40 @@ def _validate_target_component_maps(
                 raise CampaignError(f"{context} {channel}/{component} coefficient must be finite")
 
 
+def _order_combination_coefficients(
+    measurement: Mapping[str, Any], orders: Iterable[str]
+) -> dict[str, float]:
+    """Resolve signs of stored order bins; absent coefficients preserve legacy sums."""
+    configured = measurement["combination"].get("order_coefficients")
+    if "order_coefficients" in measurement["combination"]:
+        nominal_orders = set(measurement["cards"]["orders"])
+        if not isinstance(configured, Mapping) or set(configured) != nominal_orders:
+            raise CampaignError("combination.order_coefficients must match the nominal cards.orders")
+        for order, value in configured.items():
+            if isinstance(value, bool) or not isinstance(value, (int, float)):
+                raise CampaignError(f"Order coefficient {order!r} must be a finite number")
+            try:
+                coefficient = float(value)
+            except OverflowError as exc:
+                raise CampaignError(f"Order coefficient {order!r} must be a finite number") from exc
+            if not math.isfinite(coefficient):
+                raise CampaignError(f"Order coefficient {order!r} must be a finite number")
+    return {
+        str(order): float(configured.get(str(order), 1.0)) if configured is not None else 1.0
+        for order in orders
+    }
+
+
+def _order_combination_formula(coefficients: Mapping[str, float]) -> str:
+    terms: list[str] = []
+    for order, coefficient in coefficients.items():
+        magnitude = abs(float(coefficient))
+        term = str(order) if magnitude == 1.0 else f"{magnitude:g}*{order}"
+        sign = "-" if coefficient < 0.0 else ("+" if terms else "")
+        terms.append(sign + term)
+    return "".join(terms)
+
+
 def _validate_measurement(measurement: dict[str, Any], source: Path) -> None:
     required = {"id", "analysis", "reference", "cards", "campaign", "raw_observables", "outputs", "combination"}
     missing = sorted(required - set(measurement))
@@ -171,6 +205,7 @@ def _validate_measurement(measurement: dict[str, Any], source: Path) -> None:
     orders = measurement["cards"].get("orders", {})
     if set(orders) != {"POSNLO", "NEGNLO"}:
         raise CampaignError(f"{measurement['id']} must define POSNLO and NEGNLO")
+    _order_combination_coefficients(measurement, orders)
     if set(measurement["raw_observables"]) != set(measurement["outputs"]):
         raise CampaignError(f"{measurement['id']} output selections must match raw-observable selections")
     components = _configured_components(measurement)
@@ -2625,6 +2660,7 @@ def _load_component_series(
     polarized_pdf_member: int = 0,
     unpolarized_pdf_member: int = 0,
     scale: float = 1.0,
+    order_coefficients: Mapping[str, float] | None = None,
 ) -> dict[str, BinSeries]:
     by_helicity_order: dict[tuple[str, str], BinSeries] = {}
     for helicity in helicities:
@@ -2643,8 +2679,9 @@ def _load_component_series(
                 shard_series, [int(job["events"]) for job in jobs]
             )
     return {
-        helicity: add_independent_series(
-            [by_helicity_order[(str(helicity), str(order))] for order in orders]
+        helicity: linear_combine_series(
+            {str(order): by_helicity_order[(str(helicity), str(order))] for order in orders},
+            {str(order): float((order_coefficients or {}).get(str(order), 1.0)) for order in orders},
         )
         for helicity in helicities
     }
@@ -2802,6 +2839,8 @@ def _family_annotations(
 ) -> dict[str, str]:
     physics = measurement.get("physics", {})
     orders = [str(order) for order in family["orders"]]
+    order_coefficients = _order_combination_coefficients(measurement, orders)
+    order_formula = _order_combination_formula(order_coefficients)
     target_uu = _target_component_coefficients(measurement, family, "unpolarized")
     target_ll = _target_component_coefficients(measurement, family, "longitudinal")
     active_components = [
@@ -2813,7 +2852,11 @@ def _family_annotations(
         "CampaignFamily": family_id,
         "CampaignFamilyLabel": str(family["label"]),
         "PerturbativeOrder": str(family.get("perturbative_order", ",".join(orders))),
-        "OrderCombination": "+".join(orders),
+        "OrderCombination": order_formula,
+        "OrderCoefficients": json.dumps(order_coefficients, sort_keys=True),
+        "OrderInputConvention": str(physics.get(
+            "order_input_convention", "coefficients multiply stored normalized order bins"
+        )),
         "BeamPolarization": str(family.get("beam_polarization", "unspecified")),
         "RealEmissionSpinDensity": str(
             family.get("real_emission_spin_density", "unspecified")
@@ -2829,7 +2872,7 @@ def _family_annotations(
     if "d_state_factor" in physics:
         annotations["DeuteronDStateFactor"] = str(physics["d_state_factor"])
     if set(orders) == {"POSNLO", "NEGNLO"}:
-        annotations["NLOCombination"] = "normalized POSNLO+NEGNLO bins"
+        annotations["NLOCombination"] = f"normalized {order_formula} bins"
     if str(family["postprocess"]) == "helicity_asymmetry":
         annotations["HelicityCombination"] = "independent PP,PM,MP,MM samples"
     else:
@@ -2899,6 +2942,7 @@ def _load_asymmetry_family_products(
     components = tuple(str(value) for value in family["components"])
     helicities = tuple(str(value) for value in family["helicities"])
     orders = tuple(str(value) for value in family["orders"])
+    order_coefficients = _order_combination_coefficients(measurement, orders)
     helicity_uu_coefficients = {
         key: float(value) for key, value in measurement["combination"]["unpolarized"].items()
     }
@@ -2931,17 +2975,17 @@ def _load_asymmetry_family_products(
             loaded_ordinary = _load_component_series(
                 groups, campaign_dir, analysis, str(names["ordinary"]),
                 family_id, component, helicities, orders,
-                polarized_pdf_member, unpolarized_pdf_member, scale,
+                polarized_pdf_member, unpolarized_pdf_member, scale, order_coefficients,
             )
             loaded_weighted = _load_component_series(
                 groups, campaign_dir, analysis, str(names["weighted"]),
                 family_id, component, helicities, orders,
-                polarized_pdf_member, unpolarized_pdf_member, scale,
+                polarized_pdf_member, unpolarized_pdf_member, scale, order_coefficients,
             )
             loaded_covariance = _load_component_series(
                 groups, campaign_dir, analysis, str(names["covariance"]),
                 family_id, component, helicities, orders,
-                polarized_pdf_member, unpolarized_pdf_member, scale,
+                polarized_pdf_member, unpolarized_pdf_member, scale, order_coefficients,
             )
             ordinary_by_component[component] = loaded_ordinary
             for helicity in helicities:
@@ -2973,7 +3017,7 @@ def _load_asymmetry_family_products(
             loaded = _load_component_series(
                 groups, campaign_dir, analysis, str(name), family_id,
                 component, helicities, orders,
-                polarized_pdf_member, unpolarized_pdf_member, scale,
+                polarized_pdf_member, unpolarized_pdf_member, scale, order_coefficients,
             )
             for helicity in helicities:
                 component_series[_component_helicity_label(component, helicity)] = loaded[helicity]
@@ -3225,6 +3269,7 @@ def _load_direct_unpolarized_products(
         measurement, family, "unpolarized"
     )
     orders = tuple(str(value) for value in family["orders"])
+    order_coefficients = _order_combination_coefficients(measurement, orders)
     results: dict[str, BinSeries] = {}
     for selection, names in measurement["raw_observables"].items():
         selected_target = _target_component_coefficients(
@@ -3234,7 +3279,7 @@ def _load_direct_unpolarized_products(
             component: _load_component_series(
                 groups, campaign_dir, analysis, str(names["ordinary"]),
                 family_id, component, ("00",), orders,
-                polarized_pdf_member, unpolarized_pdf_member, scale,
+                polarized_pdf_member, unpolarized_pdf_member, scale, order_coefficients,
             )["00"]
             for component in components
         }
@@ -3247,7 +3292,7 @@ def _load_direct_unpolarized_products(
             component: _load_component_series(
                 groups, campaign_dir, analysis, str(name),
                 family_id, component, ("00",), orders,
-                polarized_pdf_member, unpolarized_pdf_member, scale,
+                polarized_pdf_member, unpolarized_pdf_member, scale, order_coefficients,
             )["00"]
             for component in components
         }
@@ -3552,6 +3597,15 @@ def postprocess_campaign(args: argparse.Namespace, measurement: Mapping[str, Any
             "sigma_LL": "(PP+MM-PM-MP)/4",
         },
         "target_combination": measurement["combination"].get("target_components", {}),
+        "order_combination": {
+            "coefficients": _order_combination_coefficients(measurement, nominal_spec["orders"]),
+            "formula": _order_combination_formula(
+                _order_combination_coefficients(measurement, nominal_spec["orders"])
+            ),
+            "input_convention": measurement.get("physics", {}).get(
+                "order_input_convention", "coefficients multiply stored normalized order bins"
+            ),
+        },
         "output_target_combinations": {
             selection: {
                 channel: _target_component_coefficients(
@@ -3611,6 +3665,7 @@ def postprocess_campaign(args: argparse.Namespace, measurement: Mapping[str, Any
             "real_emission_spin_density": family.get("real_emission_spin_density"),
             "shower_spin_correlations": family.get("shower_spin_correlations"),
             "beam_polarization": family.get("beam_polarization"),
+            "order_coefficients": _order_combination_coefficients(measurement, family["orders"]),
             "yoda": str(yoda_outputs[family_id].relative_to(campaign_dir)),
             "bins": product["rows"],
             "diagnostics": {

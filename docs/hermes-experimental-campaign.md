@@ -38,15 +38,25 @@ NNPDF40 NLO and NNPDFpol2.0 NLO, so it is exploratory. The `Q2 > 4 GeV2`
 view is the conservative HerwigPol validation region.
 
 The R1990 fit supplies `R(x,Q2)` in the longitudinal depolarization factor
-`D` defined by `A_parallel = D (A1 + eta A2)`. The prediction sets `A2=0`
-and does not model `g2`; [the HERMES paper](https://arxiv.org/pdf/hep-ex/0609039)
-reports averaged `g2` contributions of about 0.54% for the proton and 1.9% for
-the deuteron in Eq. (20). Raw ordinary, `1/D`-weighted, and
+`D` defined by `A_parallel = D (A1 + eta A2)`. The prediction neglects
+`eta*A2` and does not model `g2`. HERMES's final published `A1` extraction
+uses fitted nonzero `g2` through Eqs. (22), (40), and (41); this prediction
+therefore retains an approximation to that extraction. The paper's 0.54% and
+1.9% average `g2` terms in Eq. (20) are not bounds on the omitted `eta*A2`
+term in `A1`, particularly at high `x`. Setting `g2=0` would not set `A2=0`.
+Raw ordinary, `1/D`-weighted, and
 `1/sqrt(D)` covariance-proxy histograms retain the within-sample covariance
 needed for the ratio uncertainty.
 
-For each target component and helicity, normalized POSNLO and NEGNLO bins
-are added before the physical combinations
+The active DIS generator stores both POSNLO and NEGNLO as nonnegative
+magnitudes. For each target component and helicity, HERMES applies the
+explicit `combination.order_coefficients` map `POSNLO=+1`, `NEGNLO=-1`
+to normalized bins before the physical combinations. Independent variances
+add with squared coefficients; the ordinary/weighted covariance also retains
+both orders because each numerator/denominator sign product is positive.
+No sign is inferred from individual bin values. The same convention applies
+to direct `00`, all NLO comparison families, and PDF/scale variations; LO
+retains coefficient `+1`. The physical combinations are
 
 ```text
 sigma_UU = (PP + PM + MP + MM) / 4
@@ -98,6 +108,16 @@ and `A1d_a15` archive members. Both have the same published mean `x` and `Q2`.
 The source archive and both member SHA-256 checksums are pinned in the
 snapshot and measurement descriptor. The published experimental systematic
 column already includes the proton/deuteron normalization uncertainty.
+
+The paper's 15-point values average evolved `Q2` sub-bins at their common
+mean scale. Current predictions integrate the selected event cross sections
+and do not reproduce that statistical averaging/evolution procedure. The
+`Q2 > 4 GeV2` curves are internal controls; the published `Q2 > 1 GeV2`
+reference is not reused as a measurement with that new cut. The snapshot also
+does not provide a full experimental inter-bin covariance matrix.
+
+The equation, correction-factor, and normalized-order audit is documented in
+[the specific HERMES validation report](hermes-paper-validation-20260930.md).
 
 Campaign execution is offline. To explicitly download and revalidate the
 official source, refresh the cached archive, and regenerate the deterministic

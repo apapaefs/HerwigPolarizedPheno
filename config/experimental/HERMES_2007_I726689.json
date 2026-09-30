@@ -329,6 +329,10 @@
     "Accepted_Theta_Q2GT4"
   ],
   "combination": {
+    "order_coefficients": {
+      "POSNLO": 1.0,
+      "NEGNLO": -1.0
+    },
     "unpolarized": {
       "PP": 0.25,
       "PM": 0.25,
@@ -353,6 +357,7 @@
     }
   },
   "physics": {
+    "order_input_convention": "POSNLO and NEGNLO YODA store contribution magnitudes; normalized NEGNLO bins are subtracted",
     "beam": "27.6 GeV e+ on fixed proton and neutron targets",
     "exchange": "photon",
     "unpolarized_pdf": "NNPDF40_nlo_pch_as_01180",
