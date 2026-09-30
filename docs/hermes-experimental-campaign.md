@@ -295,7 +295,11 @@ historical `.plot` file at the campaign's pinned Git commit.  Any concurrent
 change to the descriptor, analysis, cards, reference data, or support files is
 still refused, and the refresh hashes are written to the manifest.
 
-Campaign configuration is immutable. The proton-only historical tags,
+The generation configuration is immutable. Runtime concurrency (`--jobs`)
+may change when launching or resuming an existing tag; its actual value is
+recorded in execution history while the preparation configuration is retained.
+Event counts, shards, seeds, inputs and prediction families stay locked.
+The proton-only historical tags,
 including `hermes_prod_300k_20260721`, retain their original scope. Do not
 relabel those manifests, append neutron jobs, or attempt a plot-only refresh
 to obtain the deuteron prediction. Changed analysis, cards, reference data,

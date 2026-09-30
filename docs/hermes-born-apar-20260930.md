@@ -155,12 +155,18 @@ python3 campaigns/launchers/hermes-born-apar/run_validation_campaign.py full \
   --measurement HERMES_2007_I726689 \
   --tag hermes_pd_born_3m_20260930_v4 --profile central \
   --posnlo-events 3000000 --negnlo-events 300000 \
-  --shards 100 --jobs 100 --seed-base 660726689 \
+  --shards 100 --jobs 380 --seed-base 660726689 \
   --progress-interval 5 --max-listed 32
 ```
 
 The nominal measurement signature is
 `949bc6907f789aee2e33207f85d83896fa16d9f53216010da366ce6829e66cc1`.
+The preparation recorded 100 workers. `--jobs` controls runtime concurrency
+and may be changed, including to 380, when launching or resuming the same
+tag. The stored preparation configuration remains unchanged; the execution
+history records the actual worker count. Event counts, shard count, seeds,
+physics inputs and prediction families remain locked. The earlier runner
+incorrectly treated a worker-count change as an incompatible manifest.
 The earlier [preparation guide](hermes-deuteron-preparation-20260930.md)
 retains the historical v3 setup and its normalization audit.
 

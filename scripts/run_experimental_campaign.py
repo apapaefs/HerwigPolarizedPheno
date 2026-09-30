@@ -1839,10 +1839,27 @@ def _manifest_configuration(
 
 def _assert_manifest_compatible(manifest: Mapping[str, Any], expected: Mapping[str, Any]) -> None:
     actual = manifest.get("configuration")
-    if actual != expected:
-        raise CampaignError(
-            "An incompatible manifest already exists. Use a new tag rather than overwriting an existing campaign."
+    if isinstance(actual, Mapping):
+        # Worker concurrency is a runtime choice, independent of the saved job
+        # matrix. Keep its original preparation value in historical manifests.
+        actual_locked = dict(actual)
+        expected_locked = dict(expected)
+        actual_locked.pop("jobs", None)
+        expected_locked.pop("jobs", None)
+        if actual_locked == expected_locked:
+            return
+        differing_keys = sorted(
+            key for key in actual_locked.keys() | expected_locked.keys()
+            if key not in actual_locked or key not in expected_locked
+            or actual_locked[key] != expected_locked[key]
         )
+        detail = f" Locked settings differ: {', '.join(differing_keys)}."
+    else:
+        detail = " The saved configuration is missing or invalid."
+    raise CampaignError(
+        "An incompatible manifest already exists. Use a new tag rather than overwriting an existing campaign."
+        + detail
+    )
 
 
 def prepare_campaign(args: argparse.Namespace, measurement: Mapping[str, Any]) -> Path:
@@ -2319,13 +2336,15 @@ def run_campaign(args: argparse.Namespace, measurement: Mapping[str, Any]) -> Pa
         print(f"Campaign {measurement['id']}/{args.tag} is already complete")
         return campaign_dir
 
+    max_workers = max(1, int(options["jobs"]))
     manifest["status"] = "running"
     manifest["updated_at"] = utc_now()
-    manifest["history"].append({"at": utc_now(), "action": "campaign", "scheduled": len(scheduled)})
+    manifest["history"].append(
+        {"at": utc_now(), "action": "campaign", "scheduled": len(scheduled), "max_workers": max_workers}
+    )
     atomic_write_json(manifest_path, manifest)
     by_id = {job["id"]: job for job in manifest["jobs"]}
     failures: list[JobResult] = []
-    max_workers = max(1, int(options["jobs"]))
     max_listed = max(0, int(getattr(args, "max_listed", 12)))
     progress_interval = float(getattr(args, "progress_interval", 5.0))
     interactive = sys.stdout.isatty()
