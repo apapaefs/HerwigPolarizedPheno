@@ -84,7 +84,7 @@ class HermesAutomaticProjectionTests(unittest.TestCase):
             first = automatic.ensure_campaign_plots(self.campaign)
             old_index = self.campaign / first["index"]
             old_contents = old_index.read_bytes()
-            self.summary.write_text(self.summary.read_text() + " \n", encoding="utf-8")
+            self.summary.write_text(self.summary.read_text(encoding="utf-8") + " \n", encoding="utf-8")
             second = automatic.ensure_campaign_plots(self.campaign)
         self.assertEqual(reconstruct.call_count, 2)
         self.assertTrue(second["created"])
@@ -102,7 +102,7 @@ class HermesAutomaticProjectionTests(unittest.TestCase):
         self.assertTrue(second["created"])
         self.assertEqual(first["cache_key"], second["cache_key"])
         self.assertNotEqual(first["directory"], second["directory"])
-        self.assertEqual(damaged.read_text(), "damaged reconstruction\n")
+        self.assertEqual(damaged.read_text(encoding="utf-8"), "damaged reconstruction\n")
 
     def test_failed_reconstruction_never_becomes_reusable(self):
         def failed(summary, output, **options):
@@ -122,7 +122,7 @@ class HermesAutomaticProjectionTests(unittest.TestCase):
         reconstruct.assert_called_once()
         self.assertTrue(recovered["created"])
         self.assertFalse(reused["created"])
-        self.assertEqual(partials[0].read_text(), "retain for diagnosis\n")
+        self.assertEqual(partials[0].read_text(encoding="utf-8"), "retain for diagnosis\n")
         self.assertNotEqual(partials[0].parent,
                             self.campaign / recovered["directory"])
 
@@ -136,7 +136,7 @@ class HermesAutomaticProjectionTests(unittest.TestCase):
         self.assertEqual(reconstruct.call_count, 2)
         self.assertNotEqual(first["cache_key"], second["cache_key"])
         record = json.loads((self.campaign / second["directory"] /
-                             automatic.CACHE_MANIFEST).read_text())
+                             automatic.CACHE_MANIFEST).read_text(encoding="utf-8"))
         self.assertIn(str(source.resolve()), record["inputs"])
         self.assertEqual(record["settings"], automatic.SETTINGS)
         self.assertIn("fit-domain-sensitivity-Q2GT1.pdf", record["outputs"])
@@ -144,7 +144,7 @@ class HermesAutomaticProjectionTests(unittest.TestCase):
     def test_source_change_during_render_does_not_publish_a_completion_record(self):
         def changing(summary, output, **options):
             result = self.fake_reconstruct(summary, output, **options)
-            self.summary.write_text(self.summary.read_text() + " \n", encoding="utf-8")
+            self.summary.write_text(self.summary.read_text(encoding="utf-8") + " \n", encoding="utf-8")
             return result
 
         with self.ensure(changing):
@@ -233,7 +233,7 @@ class HermesAutomaticProjectionTests(unittest.TestCase):
         root = campaign.write_plot_indexes(
             output, {"id": "HERMES_2007_I726689"}, [script], supplemental=supplemental)
         for index in (root, analysis / "index.html"):
-            text = index.read_text()
+            text = index.read_text(encoding="utf-8")
             self.assertIn("Model-assisted experimental data", text)
             self.assertIn("nominal Herwig cell predictions", text)
             self.assertIn("event-level Monte Carlo integrals", text)
@@ -241,13 +241,13 @@ class HermesAutomaticProjectionTests(unittest.TestCase):
             self.assertIn("Fit-domain sensitivity", text)
             for target in re.findall(r'(?:href|src)="([^"]+)"', text):
                 self.assertTrue((index.parent / html.unescape(target)).is_file(), target)
-        self.assertIn(f"{script.stem}.png", (analysis / "index.html").read_text())
+        self.assertIn(f"{script.stem}.png", (analysis / "index.html").read_text(encoding="utf-8"))
         self.assertEqual((analysis / f"{script.stem}.png").read_bytes(), b"original png")
         plain = campaign.write_plot_indexes(output, {"id": "other"}, [script])
-        self.assertNotIn("Reconstructed Born", plain.read_text())
+        self.assertNotIn("Reconstructed Born", plain.read_text(encoding="utf-8"))
 
     def test_sparse_mc_masks_predictions_without_changing_data_weights_or_covariance(self):
-        reference = json.loads(projection.REFERENCE.read_text())
+        reference = json.loads(projection.REFERENCE.read_text(encoding="utf-8"))
         rows = []
         missing_identity = None
         for dataset in reference["datasets"]:
