@@ -3972,6 +3972,8 @@ def write_plot_indexes(
     output_dir: Path,
     measurement: Mapping[str, Any],
     plot_scripts: Sequence[Path],
+    *,
+    supplemental: Mapping[str, Any] | None = None,
 ) -> Path:
     """Wrap sequentially generated Rivet plots in a small static HTML report.
 
@@ -4025,6 +4027,31 @@ def write_plot_indexes(
 </html>
 """
 
+    def reconstructed_section(directory: Path) -> str:
+        if supplemental is None:
+            return ""
+        campaign_dir = output_dir.parent
+        derived = campaign_dir / str(supplemental["directory"])
+        def link(path: Path) -> str:
+            return html.escape(Path(os.path.relpath(path, directory)).as_posix())
+        return (
+            '<section class="plot"><h2>Reconstructed Born A_parallel projections</h2>'
+            '<p>Proton and deuteron versus x and Q², including Q²&gt;4 controls. '
+            'Model-assisted experimental data and the nominal Herwig cell predictions '
+            'use the same independent GD11 unpolarized cross-section weights. '
+            'These differ from the event-level Monte Carlo integrals.</p>'
+            '<p>Errors are conditional on the central fit. Split cells assume constant '
+            'asymmetry; fit-domain sensitivity plots accompany the high-x extrapolation.</p>'
+            f'<p><a href="{link(derived / "index.html")}">All reconstructed plots and assumptions</a> '
+            f'&middot; <a href="{link(derived / "integrated.csv")}">CSV</a> '
+            f'&middot; <a href="{link(derived / "integrated.json")}">Weights and covariance</a> '
+            f'&middot; <a href="{link(derived / "fit-domain-sensitivity-Q2GT1.pdf")}">Fit-domain sensitivity</a></p>'
+            f'<a href="{link(derived / "integrated-overview-Q2GT1.pdf")}">'
+            f'<img src="{link(derived / "integrated-overview-Q2GT1.png")}" '
+            'alt="Reconstructed proton and deuteron Born asymmetries versus x and Q²"></a>'
+            '</section>'
+        )
+
     grouped: dict[Path, list[Path]] = {}
     for script in plot_scripts:
         try:
@@ -4034,7 +4061,7 @@ def write_plot_indexes(
         grouped.setdefault(relative_directory, []).append(script)
 
     title = str(measurement.get("title", measurement["id"]))
-    root_sections: list[str] = []
+    root_sections: list[str] = [reconstructed_section(output_dir)]
     for relative_directory, scripts in sorted(grouped.items(), key=lambda item: str(item[0])):
         directory = output_dir / relative_directory
         directory.mkdir(parents=True, exist_ok=True)
@@ -4044,7 +4071,7 @@ def write_plot_indexes(
             continue
         child_title = f"{title} — {relative_directory.as_posix()}"
         child_index = directory / "index.html"
-        child_index.write_text(document(child_title, cards), encoding="utf-8")
+        child_index.write_text(document(child_title, reconstructed_section(directory) + cards), encoding="utf-8")
         link = html.escape((relative_directory / "index.html").as_posix())
         label = html.escape(relative_directory.as_posix())
         root_sections.append(f'<p><a href="{link}">{label}</a> ({len(scripts)} plots)</p>')
@@ -4052,6 +4079,18 @@ def write_plot_indexes(
     index = output_dir / "index.html"
     index.write_text(document(title, "\n".join(root_sections)), encoding="utf-8")
     return index
+
+
+def _hermes_reconstructed_plot_gallery(
+    campaign_dir: Path, measurement: Mapping[str, Any],
+) -> dict[str, Any] | None:
+    if measurement["id"] != "HERMES_2007_I726689":
+        return None
+    from hermes_apar_integrated_campaign import ensure_campaign_plots
+    try:
+        return ensure_campaign_plots(campaign_dir)
+    except Exception as exc:
+        raise CampaignError(f"Could not construct the HERMES Born projection gallery: {exc}") from exc
 
 
 def plot_script_has_finite_y(script: Path) -> bool:
@@ -4513,7 +4552,8 @@ def plot_campaign(args: argparse.Namespace, measurement: Mapping[str, Any]) -> P
             rendered_scripts.append(script)
     if not any(output_dir.rglob("*.png")):
         raise CampaignError(f"Generated Rivet scripts produced no PNG plots below {output_dir}")
-    index = write_plot_indexes(output_dir, measurement, rendered_scripts)
+    reconstructed = _hermes_reconstructed_plot_gallery(campaign_dir, measurement)
+    index = write_plot_indexes(output_dir, measurement, rendered_scripts, supplemental=reconstructed)
     if not _nonempty(index):
         raise CampaignError(f"Could not create Rivet plot index {index}")
     manifest["plots"] = {
@@ -4523,6 +4563,8 @@ def plot_campaign(args: argparse.Namespace, measurement: Mapping[str, Any]) -> P
             resolve_dispol_path(str(measurement["analysis"]["plot"]))
         ),
     }
+    if reconstructed is not None:
+        manifest["plots"]["reconstructed_born_projections"] = reconstructed
     if plot_metadata_refresh is not None:
         manifest["plots"]["presentation_only_refresh"] = plot_metadata_refresh
     manifest["updated_at"] = utc_now()

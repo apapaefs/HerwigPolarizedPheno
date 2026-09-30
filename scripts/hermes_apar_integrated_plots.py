@@ -59,6 +59,10 @@ def _panel(axis: Any, rows: list[dict[str, Any]], target: str, projection: str,
                                      facecolor="#d55e00", alpha=0.18, edgecolor="none",
                                      zorder=1))
         first = False
+    missing = sum(row.get("mc_a_parallel") is None for row in valid)
+    if missing:
+        axis.text(0.02, 0.98, f"Herwig unavailable in {missing} bin(s): missing source-cell ratios",
+                  transform=axis.transAxes, va="top", fontsize=6.5, color="#a43f00")
     if sensitivity:
         data_x, data_y, mc_x, mc_y = [], [], [], []
         for row in valid:
@@ -181,6 +185,7 @@ article{display:inline-block;width:49%;vertical-align:top}img{width:100%}p{line-
 <h1>Reconstructed HERMES integrated Born asymmetries</h1>
 <p>Published proton and deuteron Born cells projected using independent GD11 unpolarized fits.
 These are model-assisted reconstructions. The Herwig comparison uses the same weights on its cell results.</p>
+<p>Missing Herwig source-cell ratios mask their contributing projection bins; experimental weights are retained unchanged.</p>
 <p>Statistical errors use the complete experimental covariance. Gray errors add a conservative
 bound for unknown systematic correlations; the published normalization is already included.
 Errors are conditional on the central fit. The x-integrated Q² projection and Q²&gt;4 x controls

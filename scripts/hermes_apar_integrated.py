@@ -107,6 +107,10 @@ def _mc_cells(summary: Mapping[str, Any], cells: list[dict[str, Any]]) -> list[d
         if not cell["supported_prediction"]:
             result.append(None)
             continue
+        if row["a_parallel"] is None and row["a_parallel_stat"] is None:
+            # Geometric support does not imply a finite ratio in a sparse run.
+            result.append(None)
+            continue
         value = _finite(row["a_parallel"], f"{identity} A_parallel")
         error = _finite(row["a_parallel_stat"], f"{identity} A_parallel error")
         if error < 0:
@@ -206,6 +210,9 @@ def build_projection_snapshot(
             weights = [value / total for value in yields] if total else [0.0] * 45
             matrix.append(weights)
             supported = total > 0
+            missing_mc = [cell["global_bin"] for weight, cell, prediction in zip(weights, cells, mc)
+                          if weight > 0 and prediction is None]
+            mc_supported = supported and not missing_mc
             center = (sum(weight * cell["x_mean"] for weight, cell in zip(weights, cells))
                       if row["projection"] == "x" and supported
                       else math.sqrt(row["bin_low"] * row["bin_high"]))
@@ -213,6 +220,7 @@ def build_projection_snapshot(
                 raise ProjectionError("Derived marker lies outside its projection bin")
             row.update(
                 supported=supported, marker=center,
+                mc_supported=mc_supported, mc_missing_global_bins=missing_mc,
                 marker_convention=("fitted-weight average of published full-cell mean x"
                                    if row["projection"] == "x" else "geometric target-bin center"),
                 fitted_uu_pb=total,
@@ -227,10 +235,10 @@ def build_projection_snapshot(
                                                               for weight, cell in zip(weights, cells)))
                                                 if supported else None),
                 mc_a_parallel=(sum(weight * prediction["value"] for weight, prediction in zip(weights, mc)
-                                   if prediction is not None) if supported else None),
+                                   if prediction is not None) if mc_supported else None),
                 mc_stat_independent_cell_approx=(math.sqrt(sum(weight * weight * prediction["stat"] ** 2
                                                                 for weight, prediction in zip(weights, mc)
-                                                                if prediction is not None)) if supported else None),
+                                                                if prediction is not None)) if mc_supported else None),
             )
         projected = projected_covariance(matrix, covariance)
         for index, row in enumerate(rows):
@@ -271,6 +279,7 @@ def build_projection_snapshot(
             "Published normalization uncertainty is already included in systematic errors and is not added or subtracted again",
             "Fit parameter covariance and within-cell spin-shape uncertainty are not included in conditional experimental bars",
             "MC statistical errors use an independent-cell approximation; full MC cell covariance is unavailable",
+            "Missing MC source-cell ratios mask any projection with positive weight on that cell; data weights are never renormalized to available MC",
             "Unsupported Q2<1 source cells retain zero projection weights and are never extrapolated",
         ],
         "uncertainties": {
@@ -295,12 +304,14 @@ def build_projection_snapshot(
                 varied_rows = control["targets"][target]["bins"]
                 for central, varied in zip(central_rows, varied_rows):
                     valid = central["supported"] and varied["supported"]
+                    mc_valid = valid and central["mc_supported"] and varied["mc_supported"]
                     variation = {
                         "supported": varied["supported"],
+                        "mc_supported": varied["mc_supported"],
                         "data_shift": varied["a_parallel"] - central["a_parallel"] if valid else None,
-                        "mc_shift": varied["mc_a_parallel"] - central["mc_a_parallel"] if valid else None,
+                        "mc_shift": varied["mc_a_parallel"] - central["mc_a_parallel"] if mc_valid else None,
                         "data_minus_mc_shift": ((varied["a_parallel"] - varied["mc_a_parallel"])
-                                                - (central["a_parallel"] - central["mc_a_parallel"])) if valid else None,
+                                                - (central["a_parallel"] - central["mc_a_parallel"])) if mc_valid else None,
                         "fitted_uu_pb": varied["fitted_uu_pb"],
                     }
                     central.setdefault("weight_controls", {})[name] = variation
@@ -316,6 +327,7 @@ def write_outputs(snapshot: Mapping[str, Any], output: Path) -> None:
     (output / "integrated.json").write_text(json.dumps(snapshot, indent=2, allow_nan=False) + "\n", encoding="utf-8")
     columns = ["id", "target", "projection", "selection", "bin", "bin_low", "bin_high", "marker", "supported",
                "a_parallel", "stat", "systematic_upper_bound", "systematic_diagonal_diagnostic",
+               "mc_supported", "mc_missing_global_bins",
                "stat_plus_systematic_upper_bound", "mc_a_parallel", "mc_stat_independent_cell_approx",
                "fitted_uu_pb", "cell_constant_assumption", "source_global_bins", "split_global_bins",
                "fit_domain_extrapolated_uu_fraction"]
@@ -328,7 +340,7 @@ def write_outputs(snapshot: Mapping[str, Any], output: Path) -> None:
         for target in ("P", "D"):
             for row in snapshot["targets"][target]["bins"]:
                 values = {key: row.get(key) for key in columns}
-                for key in ("source_global_bins", "split_global_bins"):
+                for key in ("source_global_bins", "split_global_bins", "mc_missing_global_bins"):
                     values[key] = " ".join(str(value) for value in values[key])
                 for name in control_names:
                     for field in control_fields:
@@ -336,36 +348,32 @@ def write_outputs(snapshot: Mapping[str, Any], output: Path) -> None:
                 writer.writerow(values)
 
 
-def main() -> None:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--reference", type=Path, default=REFERENCE)
-    parser.add_argument("--summary", type=Path, required=True, help="Existing production postprocess/summary.json")
-    parser.add_argument("--output", type=Path, required=True, help="New, empty reconstruction directory")
-    parser.add_argument("--model", choices=("GD11", "ALLM97_HYBRID"), default="GD11")
-    parser.add_argument("--quadrature-order", type=int, default=32)
-    parser.add_argument("--no-plots", action="store_true", help="Write numerical reconstruction only")
-    parser.add_argument("--no-controls", action="store_true", help="Skip fit/R/acceptance/convergence sensitivity scans")
-    args = parser.parse_args()
+def reconstruct(
+    summary_path: Path, output: Path, *, reference_path: Path = REFERENCE,
+    model: str = "GD11", quadrature_order: int = 32,
+    plots: bool = True, controls: bool = True,
+) -> dict[str, Any]:
+    """Write a complete reconstruction into a new directory, without events."""
     from hermes_unpolarized_fit import DEFAULT_CUTS, MODEL_METADATA, SNAPSHOT_PATH, integrate_cross_section
-    if args.reference.resolve() == REFERENCE.resolve():
+    if reference_path.resolve() == REFERENCE.resolve():
         from hermes_born_reference_data import validate_vendored
         reference = validate_vendored(ROOT)
     else:
-        reference = json.loads(args.reference.read_text(encoding="utf-8"))
-    summary = json.loads(args.summary.read_text(encoding="utf-8"))
+        reference = json.loads(reference_path.read_text(encoding="utf-8"))
+    summary = json.loads(summary_path.read_text(encoding="utf-8"))
     def make_integrator(**changes: Any) -> Integrator:
-        options = {"model": args.model, "quadrature_order": args.quadrature_order}
+        options = {"model": model, "quadrature_order": quadrature_order}
         options.update(changes)
         def integrator(target: str, xlow: float, xhigh: float, qlow: float, qhigh: float) -> float:
             return integrate_cross_section(target, xlow, xhigh, qlow, qhigh, **options)
         return integrator
-    control_integrators = None if args.no_controls else {
+    control_integrators = None if not controls else {
         "ALLM97_HYBRID": make_integrator(model="ALLM97_HYBRID"),
         "R1990": make_integrator(r_model="R1990"),
         "W2GT4": make_integrator(w2_min=4.0),
-        "quadrature_double": make_integrator(quadrature_order=2 * args.quadrature_order),
+        "quadrature_double": make_integrator(quadrature_order=2 * quadrature_order),
     }
-    fit = {"model": args.model, "quadrature_order": args.quadrature_order,
+    fit = {"model": model, "quadrature_order": quadrature_order,
            "cuts": DEFAULT_CUTS, "metadata": MODEL_METADATA,
            "controls": {
                "ALLM97_HYBRID": "Alternative unpolarized F2 shape; hybrid deuteron uses the GD11 D/P ratio",
@@ -386,14 +394,30 @@ def main() -> None:
                 row["fraction_of_fitted_uu_below_W2_4"] = max(0., min(1., fraction)) if fraction is not None else None
                 row["fit_domain_extrapolated_uu_fraction"] = row["fraction_of_fitted_uu_below_W2_4"]
     snapshot["input_files"] = {
-        "reference": {"path": str(args.reference.resolve()), "sha256": hashlib.sha256(args.reference.read_bytes()).hexdigest()},
-        "summary": {"path": str(args.summary.resolve()), "sha256": hashlib.sha256(args.summary.read_bytes()).hexdigest()},
+        "reference": {"path": str(reference_path.resolve()), "sha256": hashlib.sha256(reference_path.read_bytes()).hexdigest()},
+        "summary": {"path": str(summary_path.resolve()), "sha256": hashlib.sha256(summary_path.read_bytes()).hexdigest()},
         "unpolarized_fit": {"path": str(SNAPSHOT_PATH.resolve()), "sha256": hashlib.sha256(SNAPSHOT_PATH.read_bytes()).hexdigest()},
     }
-    write_outputs(snapshot, args.output)
-    if not args.no_plots:
+    write_outputs(snapshot, output)
+    if plots:
         from hermes_apar_integrated_plots import render
-        render(snapshot, args.output)
+        render(snapshot, output)
+    return snapshot
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--reference", type=Path, default=REFERENCE)
+    parser.add_argument("--summary", type=Path, required=True, help="Existing production postprocess/summary.json")
+    parser.add_argument("--output", type=Path, required=True, help="New, empty reconstruction directory")
+    parser.add_argument("--model", choices=("GD11", "ALLM97_HYBRID"), default="GD11")
+    parser.add_argument("--quadrature-order", type=int, default=32)
+    parser.add_argument("--no-plots", action="store_true", help="Write numerical reconstruction only")
+    parser.add_argument("--no-controls", action="store_true", help="Skip fit/R/acceptance/convergence sensitivity scans")
+    args = parser.parse_args()
+    reconstruct(args.summary, args.output, reference_path=args.reference, model=args.model,
+                quadrature_order=args.quadrature_order, plots=not args.no_plots,
+                controls=not args.no_controls)
     print(f"Wrote 84 derived P/D projection bins and full statistical covariance to {args.output}")
 
 

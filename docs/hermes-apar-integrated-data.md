@@ -94,6 +94,42 @@ claim follows from this reconstructed comparison.
 
 ## Running and outputs
 
+The ordinary HERMES campaign `plot` stage now constructs these plots
+automatically; `full` includes that stage. They appear in both the root Rivet
+gallery and its HERMES analysis page, under **Reconstructed Born A_parallel
+projections**. The nominal Herwig Born-cell results are used even when
+additional prediction families are requested for the ordinary Rivet panels.
+
+For a completed campaign, refresh the gallery without generating events:
+
+```bash
+python3 scripts/run_phenomenology_campaign.py plot \
+  --measurement HERMES_2007_I726689 \
+  --tag hermes_pd_born_3m_20260930_v4
+```
+
+The reconstruction runs after normalized physical-helicity postprocessing,
+outside the Rivet event loop. The Rivet plugin, published reference YODA,
+event-level integrated predictions and immutable generation signature are
+unchanged. An existing summary must contain all Born cells; older campaigns without those observables need
+the appropriate analysis outputs before reconstruction is possible.
+Sparse runs may have null Monte Carlo ratios in geometrically supported cells.
+Every projection receiving positive weight from such a cell has its Monte Carlo
+value masked and labeled unavailable. Experimental weights, values and
+covariance remain complete; they are never renormalized to the available
+Monte Carlo cells.
+
+Automatic outputs live in `derived-integrated-data/automatic/<input-hash>/`.
+The cache key covers the nominal summary, independent fit, pinned reference
+and raw sources, reconstruction code and settings. Repeat plotting checks
+every output checksum before reusing a complete cache. Changed inputs or
+damaged/incomplete products create a separate revision; prior products are
+preserved. A completion manifest is written only after all numerical,
+projection and sensitivity files exist and the inputs have been rechecked.
+The analysis and common-card source pins guard against silently reusing
+the present fitted acceptance after a future selection change.
+
+The standalone helper remains available for separate reconstructions.
 The helper reads an existing production summary and writes a separate output
 directory. It launches no events and does not modify the campaign manifest,
 generation signature, raw YODA, original reference snapshot or existing plots.

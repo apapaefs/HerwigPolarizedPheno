@@ -91,7 +91,8 @@ experimental directions is now available through
 [`hermes_apar_integrated.py`](../scripts/hermes_apar_integrated.py). It uses
 independent GD11 unpolarized cross-section fits, propagates the full published
 statistical covariance, and applies the same weights to the Herwig cell
-results. It writes separate derived plots without changing this campaign's
+results. The normal campaign `plot` and `full` stages now add its separate
+derived plots to the Rivet gallery automatically, preserving this campaign's
 event-level projections. See
 [`hermes-apar-integrated-data.md`](hermes-apar-integrated-data.md) for the
 within-cell assumptions, systematic bound and fit-domain sensitivity.
