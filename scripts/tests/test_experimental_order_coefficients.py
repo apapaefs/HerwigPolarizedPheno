@@ -22,8 +22,15 @@ MAGNITUDES = {
 }
 
 
-def descriptor():
-    return copy.deepcopy(campaign.get_measurement(MEASUREMENT))
+def descriptor(*, all_selections=False):
+    measurement = copy.deepcopy(campaign.get_measurement(MEASUREMENT))
+    if not all_selections:
+        # The independent magnitude fixture below has one invented bin and
+        # tests order arithmetic, rather than the published Born-cell geometry.
+        selections = ("Q2GT1", "Q2GT4", "D_Q2GT1", "D_Q2GT4")
+        for block in ("outputs", "raw_observables"):
+            measurement[block] = {key: measurement[block][key] for key in selections}
+    return measurement
 
 
 def magnitude_inputs(family_id="nominal", helicities=tuple(SIGNS), member=0):
@@ -194,7 +201,7 @@ class ExperimentalOrderCoefficientTests(unittest.TestCase):
         self.assertEqual(json.loads(born["OrderCoefficients"]), {"LO": 1.})
 
     def test_new_storage_sign_contract_rejects_old_campaign_signature(self):
-        measurement = descriptor()
+        measurement = descriptor(all_selections=True)
         old = copy.deepcopy(measurement)
         old["combination"].pop("order_coefficients")
         old["physics"].pop("order_input_convention")

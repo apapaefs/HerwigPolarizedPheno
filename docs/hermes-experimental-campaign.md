@@ -3,6 +3,11 @@
 This workflow compares HerwigPol with the HERMES 15-bin proton and deuteron
 virtual-photon asymmetry measurements in Table 14 of
 [HEPData record 11211](https://doi.org/10.17182/hepdata.11211.v1/t14).
+It also compares direct longitudinal asymmetries with the 45 unfolded Born
+cells per target in Tables 7 and 8, and provides both Q2-integrated x and
+x-integrated Q2 predictions. The cell boundaries, support masks, projection
+definitions and source validation are documented in
+[the Born A_parallel report](hermes-born-apar-20260930.md).
 It is independent of the general DIS validation campaign. Independent proton
 and neutron samples supply both targets, with four separately generated
 physical helicities for each component. The proton prediction remains
@@ -37,7 +42,7 @@ published `Q2 > 1 GeV2` view reaches the `QMin = 1 GeV` boundary of both
 NNPDF40 NLO and NNPDFpol2.0 NLO, so it is exploratory. The `Q2 > 4 GeV2`
 view is the conservative HerwigPol validation region.
 
-The R1990 fit supplies `R(x,Q2)` in the longitudinal depolarization factor
+For the A1 estimator, the R1990 fit supplies `R(x,Q2)` in the longitudinal depolarization factor
 `D` defined by `A_parallel = D (A1 + eta A2)`. The prediction neglects
 `eta*A2` and does not model `g2`. HERMES's final published `A1` extraction
 uses fitted nonzero `g2` through Eqs. (22), (40), and (41); this prediction
@@ -46,7 +51,9 @@ therefore retains an approximation to that extraction. The paper's 0.54% and
 term in `A1`, particularly at high `x`. Setting `g2=0` would not set `A2=0`.
 Raw ordinary, `1/D`-weighted, and
 `1/sqrt(D)` covariance-proxy histograms retain the within-sample covariance
-needed for the ratio uncertainty.
+needed for the ratio uncertainty. Direct A_parallel outputs use ordinary
+histograms only and do not apply D or an eta*A2 subtraction. This observable
+change does not add explicit g2, target-mass or twist-3 physics to Herwig.
 
 The active DIS generator stores both POSNLO and NEGNLO as nonnegative
 magnitudes. For each target component and helicity, HERMES applies the
@@ -118,6 +125,10 @@ does not provide a full experimental inter-bin covariance matrix.
 
 The equation, correction-factor, and normalized-order audit is documented in
 [the specific HERMES validation report](hermes-paper-validation-20260930.md).
+The supplementary `born-apar-reference.json` pins all 90 Born points and
+two 45x45 statistical covariance matrices. The merged reference YODA has
+40 panels and 120 points. Experimental projections are not inferred from
+these ratios without the unpolarized yield weights.
 
 Campaign execution is offline. To explicitly download and revalidate the
 official source, refresh the cached archive, and regenerate the deterministic

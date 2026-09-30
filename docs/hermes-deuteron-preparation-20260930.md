@@ -1,5 +1,11 @@
 # HERMES proton and deuteron preparation, 30 September 2026
 
+The later [Born A_parallel extension](hermes-born-apar-20260930.md) has a
+fresh prepared Odysseus tag, `hermes_pd_born_3m_20260930_v4`, with the same
+event budget. Use its source area and launch command to obtain the Born
+cells and both integrated projections. The v3 preparation below records
+the preceding A1/deuteron and normalized-order audit.
+
 The updated `HERMES_2007_I726689` analysis accepts separate fixed proton and
 neutron components and derives both published Table 14 target views from one
 campaign. The existing proton paths remain available; the deuteron reference
@@ -139,7 +145,10 @@ production YODA outputs exist. Production events have not been launched.
 The earlier v1/v2 preparations remain unchanged. The paper audit found that
 the active generator stores NEGNLO as a positive magnitude. v3 records the
 corrected `POSNLO-NEGNLO` normalized-bin combination and a new seed range.
-Use v3 for production; v1/v2 are obsolete for the corrected definition.
+v3 has the corrected A1/order-sign definition; v1/v2 are obsolete. The later
+[Born A_parallel extension](hermes-born-apar-20260930.md) changes the analysis
+signature and requires a fresh v4 preparation to obtain its cell and
+x-integrated Q2 histograms. v3 is not a preparation for those new outputs.
 
 Validation completed on Odysseus:
 

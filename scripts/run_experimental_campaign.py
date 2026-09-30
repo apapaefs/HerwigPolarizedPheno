@@ -217,6 +217,24 @@ def _validate_measurement(measurement: dict[str, Any], source: Path) -> None:
     for selection, output in measurement["outputs"].items():
         if not isinstance(output, Mapping):
             raise CampaignError(f"{measurement['id']} output {selection!r} must be an object")
+        estimator = str(output.get("estimator", "a1"))
+        if estimator not in {"a1", "a_parallel"}:
+            raise CampaignError(f"Unknown estimator {estimator!r} for output {selection!r}")
+        if str(output.get("axis", "x")) not in {"x", "q2"}:
+            raise CampaignError(f"Unknown axis for output {selection!r}")
+        names = measurement["raw_observables"][selection]
+        if estimator == "a_parallel":
+            if set(names) != {"ordinary"} or "a1" in output:
+                raise CampaignError(
+                    f"Direct A_parallel output {selection!r} must use only an ordinary histogram and no A1 path"
+                )
+            if "apar" not in output:
+                raise CampaignError(f"Direct A_parallel output {selection!r} requires an apar path")
+        if "supported_bins" in output:
+            bins = output["supported_bins"]
+            if (not isinstance(bins, list) or any(type(value) is not int or value < 1 for value in bins)
+                    or len(set(bins)) != len(bins)):
+                raise CampaignError(f"Output {selection!r} supported_bins must be unique positive bin numbers")
         if "target_components" in output:
             _validate_target_component_maps(
                 output["target_components"], components,
@@ -511,7 +529,8 @@ def depolarization(x: float, y: float, q2: float, proton_mass: float = 0.9382720
     """Longitudinal virtual-photon depolarization factor D.
 
     This is the conventional factor in A_parallel = D (A1 + eta A2). The
-    workflow sets A2=0 when forming A1 from the 1/D-weighted cross section.
+    inverse-D estimator neglects eta*A2 when forming A1. The ordinary
+    A_parallel estimator never invokes this conversion.
     """
     if not (0.0 < y < 1.0):
         raise ValueError("Depolarization requires 0 < y < 1")
@@ -795,6 +814,71 @@ def _write_yoda_objects(yoda: Any, objects: Sequence[Any], destination: Path) ->
     yoda.write(list(objects), str(destination))
 
 
+def _additional_reference_paths(measurement: Mapping[str, Any]) -> list[Path]:
+    configured = measurement["reference"].get("additional_snapshots", [])
+    if not isinstance(configured, list):
+        raise CampaignError("reference.additional_snapshots must be a list")
+    paths: list[Path] = []
+    for item in configured:
+        if (not isinstance(item, Mapping) or set(item) != {"path", "sha256"}
+                or not isinstance(item["path"], str)
+                or not re.fullmatch(r"[0-9a-f]{64}", str(item["sha256"]))):
+            raise CampaignError("Each additional reference snapshot requires path and a SHA-256 checksum")
+        path = resolve_dispol_path(item["path"])
+        if path in paths:
+            raise CampaignError("Additional reference snapshot paths must be unique")
+        if not path.is_file() or sha256_file(path) != item["sha256"]:
+            raise CampaignError(f"Additional reference snapshot checksum mismatch: {item['path']}")
+        paths.append(path)
+    return paths
+
+
+def _reference_source_paths(snapshot: Mapping[str, Any]) -> list[Path]:
+    configured = snapshot.get("source_files", [])
+    if not isinstance(configured, list):
+        raise CampaignError("Reference source_files must be a list")
+    paths: list[Path] = []
+    for item in configured:
+        if (not isinstance(item, Mapping) or set(item) != {"path", "sha256"}
+                or not isinstance(item["path"], str)
+                or not re.fullmatch(r"[0-9a-f]{64}", str(item["sha256"]))):
+            raise CampaignError("Each reference source file requires path and a SHA-256 checksum")
+        path = resolve_dispol_path(item["path"])
+        if path in paths:
+            raise CampaignError("Reference source file paths must be unique")
+        if not path.is_file() or sha256_file(path) != item["sha256"]:
+            raise CampaignError(f"Reference source file checksum mismatch: {item['path']}")
+        paths.append(path)
+    return paths
+
+
+def load_reference_snapshot(measurement: Mapping[str, Any]) -> dict[str, Any]:
+    """Merge checksum-pinned reference panels without guessing their target or axis."""
+    snapshot = load_json(resolve_dispol_path(measurement["reference"]["snapshot"]))
+    additional = _additional_reference_paths(measurement)
+    if not additional:
+        return snapshot
+    merged = copy.deepcopy(snapshot)
+    if not isinstance(merged.get("datasets"), list):
+        raise CampaignError("Supplementary reference snapshots require a primary datasets list")
+    provenance: list[Any] = []
+    for path in additional:
+        supplement = load_json(path)
+        _reference_source_paths(supplement)
+        if (supplement.get("measurement") != measurement["id"]
+                or not isinstance(supplement.get("datasets"), list)):
+            raise CampaignError(f"Supplementary reference snapshot has a different measurement or no datasets: {path}")
+        merged["datasets"].extend(copy.deepcopy(supplement["datasets"]))
+        provenance.append(supplement.get("provenance", {}))
+    paths = [str(dataset.get("rivet_path", "")) for dataset in merged["datasets"]]
+    ids = [str(dataset.get("id", "")) for dataset in merged["datasets"]]
+    if (not all(paths) or len(set(paths)) != len(paths)
+            or not all(ids) or len(set(ids)) != len(ids)):
+        raise CampaignError("Merged reference datasets require unique explicit IDs and Rivet paths")
+    merged.setdefault("provenance", {})["additional_references"] = provenance
+    return merged
+
+
 def write_reference_yoda(snapshot: Mapping[str, Any], destination: Path) -> None:
     if "datasets" in snapshot:
         datasets = snapshot["datasets"]
@@ -817,6 +901,24 @@ def write_reference_yoda(snapshot: Mapping[str, Any], destination: Path) -> None
         return
     yoda = _import_yoda()
     _write_yoda_objects(yoda, [_reference_estimate(yoda, snapshot)], destination)
+
+
+def ensure_reference_yoda(
+    measurement: Mapping[str, Any], campaign_dir: Path,
+    snapshot: Mapping[str, Any] | None = None,
+) -> Path:
+    """Materialize supplementary references in the ignored campaign cache."""
+    supplementary = bool(measurement["reference"].get("additional_snapshots"))
+    destination = (
+        campaign_dir / "reference" / Path(str(measurement["analysis"]["reference_yoda"])).name
+        if supplementary else resolve_dispol_path(measurement["analysis"]["reference_yoda"])
+    )
+    if supplementary or not destination.is_file() or destination.stat().st_size == 0:
+        write_reference_yoda(
+            load_reference_snapshot(measurement) if snapshot is None else snapshot,
+            destination,
+        )
+    return destination
 
 
 def _reference_estimate(yoda: Any, snapshot: Mapping[str, Any]) -> Any:
@@ -939,7 +1041,10 @@ def fetch_reference_data(measurement: Mapping[str, Any]) -> Path:
             "rows": rows,
         },
     )
-    write_reference_yoda(snapshot, resolve_dispol_path(measurement["analysis"]["reference_yoda"]))
+    if reference.get("additional_snapshots"):
+        ensure_reference_yoda(measurement, cache)
+    else:
+        write_reference_yoda(load_reference_snapshot(measurement), resolve_dispol_path(measurement["analysis"]["reference_yoda"]))
     return archive_path
 
 
@@ -1294,7 +1399,10 @@ def analysis_environment(measurement: Mapping[str, Any], campaign_dir: Path, run
         value for value in (str(plugin_dir), *analysis_dirs, old_analysis_path) if value
     )
     environment["RIVET_DATA_PATH"] = os.pathsep.join(
-        value for value in (*analysis_dirs, old_data_path) if value
+        value for value in (
+            str(campaign_dir / "reference") if measurement["reference"].get("additional_snapshots") else "",
+            *analysis_dirs, old_data_path,
+        ) if value
     )
     if runtime.get("rivet_plugin_compiler"):
         environment["CXX"] = str(runtime["rivet_plugin_compiler"])
@@ -1326,6 +1434,12 @@ def measurement_signature(
             for path in spec.get("support_files", [])
         )
     files.append(resolve_dispol_path(measurement["reference"]["snapshot"]))
+    additional_references = _additional_reference_paths(measurement)
+    files.extend(additional_references)
+    files.extend(dict.fromkeys(
+        path for snapshot_path in additional_references
+        for path in _reference_source_paths(load_json(snapshot_path))
+    ))
     if measurement["reference"].get("raw_snapshot"):
         files.append(resolve_dispol_path(str(measurement["reference"]["raw_snapshot"])))
     card_dir = resolve_dispol_path(measurement["cards"]["directory"])
@@ -1762,10 +1876,8 @@ def prepare_campaign(args: argparse.Namespace, measurement: Mapping[str, Any]) -
         ),
     )
 
-    snapshot = load_json(resolve_dispol_path(measurement["reference"]["snapshot"]))
-    reference_yoda = resolve_dispol_path(measurement["analysis"]["reference_yoda"])
-    if not reference_yoda.is_file() or reference_yoda.stat().st_size == 0:
-        write_reference_yoda(snapshot, reference_yoda)
+    snapshot = load_reference_snapshot(measurement)
+    ensure_reference_yoda(measurement, campaign_dir, snapshot)
 
     source_card_dir = resolve_dispol_path(measurement["cards"]["directory"])
     materialized = campaign_dir / "cards"
@@ -1813,6 +1925,10 @@ def prepare_campaign(args: argparse.Namespace, measurement: Mapping[str, Any]) -
         "path": measurement["reference"]["snapshot"],
         "sha256": sha256_file(resolve_dispol_path(measurement["reference"]["snapshot"])),
     }
+    if measurement["reference"].get("additional_snapshots"):
+        manifest["reference_snapshot"]["additional_snapshots"] = copy.deepcopy(
+            measurement["reference"]["additional_snapshots"]
+        )
     manifest["history"].append({"at": utc_now(), "action": "prepare"})
     atomic_write_json(manifest_path, manifest)
 
@@ -2746,8 +2862,8 @@ def _series_estimate(
 
 def _asymmetry_outputs(
     ordinary: Mapping[str, BinSeries],
-    weighted: Mapping[str, BinSeries],
-    covariance_proxy: Mapping[str, BinSeries],
+    weighted: Mapping[str, BinSeries] | None,
+    covariance_proxy: Mapping[str, BinSeries] | None,
     unpolarized_coefficients: Mapping[str, float],
     longitudinal_coefficients: Mapping[str, float],
     parity_ordinary: Mapping[str, BinSeries] | None = None,
@@ -2755,9 +2871,17 @@ def _asymmetry_outputs(
     parity_source = ordinary if parity_ordinary is None else parity_ordinary
     sigma_uu = linear_combine_series(ordinary, unpolarized_coefficients)
     sigma_ll = linear_combine_series(ordinary, longitudinal_coefficients)
-    sigma_ll_over_d = linear_combine_series(weighted, longitudinal_coefficients)
+    if (weighted is None) != (covariance_proxy is None):
+        raise CampaignError("The inverse-D estimator requires both weighted and covariance histograms")
+    sigma_ll_over_d = (
+        linear_combine_series(weighted, longitudinal_coefficients)
+        if weighted is not None else None
+    )
     covariance_parallel = _covariance_array(ordinary, longitudinal_coefficients, unpolarized_coefficients)
-    covariance_a1 = _covariance_array(covariance_proxy, longitudinal_coefficients, unpolarized_coefficients)
+    covariance_a1 = (
+        _covariance_array(covariance_proxy, longitudinal_coefficients, unpolarized_coefficients)
+        if covariance_proxy is not None else None
+    )
     apar_values: list[float | None] = []
     apar_errors: list[float | None] = []
     a1_values: list[float | None] = []
@@ -2773,12 +2897,13 @@ def _asymmetry_outputs(
         )
         apar_values.append(value)
         apar_errors.append(error)
-        value, error = ratio_with_covariance(
-            sigma_ll_over_d.values[index], sigma_ll_over_d.variances[index],
-            sigma_uu.values[index], sigma_uu.variances[index], covariance_a1[index]
-        )
-        a1_values.append(value)
-        a1_errors.append(error)
+        if sigma_ll_over_d is not None and covariance_a1 is not None:
+            value, error = ratio_with_covariance(
+                sigma_ll_over_d.values[index], sigma_ll_over_d.variances[index],
+                sigma_uu.values[index], sigma_uu.variances[index], covariance_a1[index]
+            )
+            a1_values.append(value)
+            a1_errors.append(error)
         value, error = parity_residual(
             parity_source["PP"].values[index], parity_source["PP"].variances[index],
             parity_source["MM"].values[index], parity_source["MM"].variances[index]
@@ -2791,46 +2916,77 @@ def _asymmetry_outputs(
         )
         parity_pm_mp_values.append(value)
         parity_pm_mp_errors.append(error)
-    return {
+    result = {
         "edges": sigma_uu.edges,
         "sigma_uu": sigma_uu,
         "sigma_ll": sigma_ll,
-        "sigma_ll_over_d": sigma_ll_over_d,
         "apar_values": apar_values,
         "apar_errors": apar_errors,
-        "a1_values": a1_values,
-        "a1_errors": a1_errors,
         "parity_pp_mm_values": parity_pp_mm_values,
         "parity_pp_mm_errors": parity_pp_mm_errors,
         "parity_pm_mp_values": parity_pm_mp_values,
         "parity_pm_mp_errors": parity_pm_mp_errors,
     }
+    if sigma_ll_over_d is not None:
+        result.update(sigma_ll_over_d=sigma_ll_over_d, a1_values=a1_values, a1_errors=a1_errors)
+    return result
+
+
+def _selection_supported_bins(output: Mapping[str, Any], count: int) -> set[int]:
+    bins = set(output.get("supported_bins", range(1, count + 1)))
+    if any(type(index) is not int or not 1 <= index <= count for index in bins):
+        raise CampaignError("Selection supported_bins are outside the histogram bin range")
+    return bins
+
+
+def _mask_selection_results(result: dict[str, Any], output: Mapping[str, Any]) -> None:
+    supported = _selection_supported_bins(output, len(result["edges"]) - 1)
+    result["supported_bins"] = sorted(supported)
+    result["axis"] = str(output.get("axis", "x"))
+    for key in ("apar_values", "apar_errors", "a1_values", "a1_errors",
+                "parity_pp_mm_values", "parity_pp_mm_errors", "parity_pm_mp_values", "parity_pm_mp_errors"):
+        if key in result:
+            result[key] = [value if index in supported else None
+                           for index, value in enumerate(result[key], start=1)]
+
+
+def _mask_unsupported_estimate(estimate: Any, supported: set[int], count: int) -> Any:
+    for index in range(1, count + 1):
+        if index not in supported:
+            estimate.maskBin(index)
+    return estimate
 
 
 def _summary_rows(selection: str, result: Mapping[str, Any]) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     edges = result["edges"]
+    axis = str(result.get("axis", "x"))
+    supported_bins = set(result.get("supported_bins", range(1, len(edges))))
     for index in range(len(edges) - 1):
-        rows.append(
-            {
+        supported = index + 1 in supported_bins
+        row = {
                 "selection": selection,
                 "bin": index + 1,
-                "x_low": edges[index],
-                "x_high": edges[index + 1],
-                "sigma_uu_pb": result["sigma_uu"].values[index],
-                "sigma_uu_stat_pb": math.sqrt(max(0.0, result["sigma_uu"].variances[index])),
-                "sigma_ll_pb": result["sigma_ll"].values[index],
-                "sigma_ll_stat_pb": math.sqrt(max(0.0, result["sigma_ll"].variances[index])),
+                "axis": axis,
+                "bin_low": edges[index],
+                "bin_high": edges[index + 1],
+                f"{axis}_low": edges[index],
+                f"{axis}_high": edges[index + 1],
+                "supported": supported,
+                "sigma_uu_pb": result["sigma_uu"].values[index] if supported else None,
+                "sigma_uu_stat_pb": math.sqrt(max(0.0, result["sigma_uu"].variances[index])) if supported else None,
+                "sigma_ll_pb": result["sigma_ll"].values[index] if supported else None,
+                "sigma_ll_stat_pb": math.sqrt(max(0.0, result["sigma_ll"].variances[index])) if supported else None,
                 "a_parallel": result["apar_values"][index],
                 "a_parallel_stat": result["apar_errors"][index],
-                "a1": result["a1_values"][index],
-                "a1_stat": result["a1_errors"][index],
                 "parity_pp_mm": result["parity_pp_mm_values"][index],
                 "parity_pp_mm_stat": result["parity_pp_mm_errors"][index],
                 "parity_pm_mp": result["parity_pm_mp_values"][index],
                 "parity_pm_mp_stat": result["parity_pm_mp_errors"][index],
             }
-        )
+        if "a1_values" in result:
+            row.update(a1=result["a1_values"][index], a1_stat=result["a1_errors"][index])
+        rows.append(row)
     return rows
 
 
@@ -2903,6 +3059,22 @@ def _selection_annotations(
     """Annotate the target represented by this output rather than all generated beams."""
     output = measurement["outputs"][selection]
     result = dict(annotations)
+    result["PlotAxis"] = "q2_mean" if output.get("axis", "x") == "q2" else "x_mean"
+    if output.get("estimator", "a1") == "a_parallel":
+        result.update(
+            Estimator="ordinary sigma_LL / ordinary sigma_UU",
+            DepolarizationModel="not used by the direct A_parallel estimator",
+            A2G2Assumption="no A_parallel-to-A1 conversion; generator physics retained",
+        )
+    for key, annotation in (("projection", "Projection"), ("reference_status", "ReferenceStatus"),
+                            ("apar_integration_variable", "AParallelIntegrationVariable"),
+                            ("apar_integration_range", "AParallelIntegrationRange"),
+                            ("integration_variable", "IntegrationVariable"),
+                            ("integration_range", "IntegrationRange"),
+                            ("x_range", "XRange"), ("supported_bins", "SupportedBins")):
+        if key in output:
+            result[annotation] = (json.dumps(output[key]) if isinstance(output[key], (list, dict))
+                                  else str(output[key]))
     for key, annotation in (("target", "Target"), ("target_model", "TargetModel")):
         if key in output:
             result[annotation] = str(output[key])
@@ -2918,6 +3090,19 @@ def _selection_annotations(
             component for component in target["unpolarized"]
             if any(float(target[channel][component]) != 0.0 for channel in ("unpolarized", "longitudinal"))
         ) or "single target"
+    return result
+
+
+def _apar_annotations(annotations: Mapping[str, Any]) -> dict[str, Any]:
+    result = dict(annotations)
+    suffix = {"proton": "p", "deuteron": "d", "P": "p", "D": "d"}.get(str(result.get("Target", "")), "")
+    result.update(
+        Observable=f"A_parallel{suffix}",
+        Estimator="ordinary sigma_LL / ordinary sigma_UU",
+        DepolarizationCorrection="none",
+        DepolarizationModel="not used by the direct A_parallel estimator",
+        A2G2Assumption="no analysis-level A2 neglect; generated cross-section model",
+    )
     return result
 
 
@@ -2951,6 +3136,7 @@ def _load_asymmetry_family_products(
     }
     results: dict[str, dict[str, Any]] = {}
     for selection, names in measurement["raw_observables"].items():
+        direct_apar = measurement["outputs"][selection].get("estimator", "a1") == "a_parallel"
         target_uu_coefficients = _target_component_coefficients(
             measurement, family, "unpolarized", str(selection)
         )
@@ -2977,12 +3163,12 @@ def _load_asymmetry_family_products(
                 family_id, component, helicities, orders,
                 polarized_pdf_member, unpolarized_pdf_member, scale, order_coefficients,
             )
-            loaded_weighted = _load_component_series(
+            loaded_weighted = {} if direct_apar else _load_component_series(
                 groups, campaign_dir, analysis, str(names["weighted"]),
                 family_id, component, helicities, orders,
                 polarized_pdf_member, unpolarized_pdf_member, scale, order_coefficients,
             )
-            loaded_covariance = _load_component_series(
+            loaded_covariance = {} if direct_apar else _load_component_series(
                 groups, campaign_dir, analysis, str(names["covariance"]),
                 family_id, component, helicities, orders,
                 polarized_pdf_member, unpolarized_pdf_member, scale, order_coefficients,
@@ -2991,8 +3177,9 @@ def _load_asymmetry_family_products(
             for helicity in helicities:
                 label = _component_helicity_label(component, helicity)
                 ordinary[label] = loaded_ordinary[helicity]
-                weighted[label] = loaded_weighted[helicity]
-                covariance[label] = loaded_covariance[helicity]
+                if not direct_apar:
+                    weighted[label] = loaded_weighted[helicity]
+                    covariance[label] = loaded_covariance[helicity]
         parity_ordinary = {
             helicity: linear_combine_series(
                 {component: ordinary_by_component[component][helicity] for component in components},
@@ -3001,8 +3188,10 @@ def _load_asymmetry_family_products(
             for helicity in helicities
         }
         results[str(selection)] = _asymmetry_outputs(
-            ordinary, weighted, covariance, uu_coefficients, ll_coefficients, parity_ordinary
+            ordinary, None if direct_apar else weighted, None if direct_apar else covariance,
+            uu_coefficients, ll_coefficients, parity_ordinary
         )
+        _mask_selection_results(results[str(selection)], measurement["outputs"][selection])
 
     diagnostics: dict[str, BinSeries] = {}
     diagnostic_target = _target_component_coefficients(measurement, family, "unpolarized")
@@ -3081,6 +3270,8 @@ def aggregate_dis_uncertainties(
             ("a1", "a1_values", "a1_errors"),
             ("apar", "apar_values", "apar_errors"),
         ):
+            if value_key not in central_result:
+                continue
             central = central_result[value_key]
             polarized = _dis_replica_sigma(
                 variation_results, polarized_members, selection, value_key, central
@@ -3168,36 +3359,37 @@ def _asymmetry_family_objects(
     for selection, result in results.items():
         paths = measurement["outputs"][selection]
         selected_annotations = _selection_annotations(measurement, selection, annotations)
-        a1_estimate = _estimate_from_values(
-            yoda,
-            result["edges"],
-            paths["a1"],
-            result["a1_values"],
-            result["a1_errors"],
-            {
-                **selected_annotations,
-                "Observable": str(paths.get("observable", snapshot.get("observable", "A1"))),
-                "Selection": selection,
-            },
+        selection_bands = (
+            uncertainty_bands.get(selection, {}) if uncertainty_bands else {}
         )
+        if "a1_values" in result:
+            a1_estimate = _estimate_from_values(
+                yoda,
+                result["edges"],
+                paths["a1"],
+                result["a1_values"],
+                result["a1_errors"],
+                {
+                    **selected_annotations,
+                    "Observable": str(paths.get("observable", snapshot.get("observable", "A1"))),
+                    "Selection": selection,
+                },
+            )
+            _attach_dis_bands(a1_estimate, result["a1_values"], selection_bands.get("a1"))
+            objects.append(a1_estimate)
         apar_estimate = _estimate_from_values(
             yoda,
             result["edges"],
             paths["apar"],
             result["apar_values"],
             result["apar_errors"],
-            {**selected_annotations, "Observable": "A_parallel", "Selection": selection},
+            {**_apar_annotations(selected_annotations), "Selection": selection},
         )
-        selection_bands = (
-            uncertainty_bands.get(selection, {}) if uncertainty_bands else {}
-        )
-        _attach_dis_bands(a1_estimate, result["a1_values"], selection_bands.get("a1"))
         _attach_dis_bands(
             apar_estimate, result["apar_values"], selection_bands.get("apar")
         )
         objects.extend(
             [
-                a1_estimate,
                 apar_estimate,
                 _estimate_from_values(
                     yoda,
@@ -3237,6 +3429,9 @@ def _asymmetry_family_objects(
                 ),
             ]
         )
+        supported = set(result.get("supported_bins", range(1, len(result["edges"]))))
+        for estimate in objects[-(6 if "a1_values" in result else 5):]:
+            _mask_unsupported_estimate(estimate, supported, len(result["edges"]) - 1)
     for name, series in diagnostics.items():
         objects.append(
             _series_estimate(
@@ -3315,6 +3510,7 @@ def _direct_unpolarized_objects(
     closure: dict[str, dict[str, list[float | None]]] = {}
     for selection, direct in direct_results.items():
         selected_annotations = _selection_annotations(measurement, selection, annotations)
+        supported = _selection_supported_bins(measurement["outputs"][selection], len(direct.values))
         nominal = nominal_results[selection]["sigma_uu"]
         values: list[float | None] = []
         errors: list[float | None] = []
@@ -3325,8 +3521,8 @@ def _direct_unpolarized_objects(
                 direct.values[index],
                 direct.variances[index],
             )
-            values.append(value)
-            errors.append(error)
+            values.append(value if index + 1 in supported else None)
+            errors.append(error if index + 1 in supported else None)
         closure[selection] = {"values": values, "errors": errors}
         objects.extend(
             [
@@ -3354,6 +3550,8 @@ def _direct_unpolarized_objects(
                 ),
             ]
         )
+        for estimate in objects[-2:]:
+            _mask_unsupported_estimate(estimate, supported, len(direct.values))
     for name, series in diagnostics.items():
         objects.append(
             _series_estimate(
@@ -3370,18 +3568,27 @@ def _direct_unpolarized_objects(
 def _direct_unpolarized_rows(
     direct_results: Mapping[str, BinSeries],
     closure: Mapping[str, Mapping[str, Sequence[float | None]]],
+    measurement: Mapping[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     for selection, series in direct_results.items():
+        output = measurement["outputs"][selection] if measurement is not None else {}
+        axis = str(output.get("axis", "x"))
+        supported_bins = _selection_supported_bins(output, len(series.values))
         for index, value in enumerate(series.values):
+            supported = index + 1 in supported_bins
             rows.append(
                 {
                     "selection": selection,
                     "bin": index + 1,
-                    "x_low": series.edges[index],
-                    "x_high": series.edges[index + 1],
-                    "sigma_00_pb": value,
-                    "sigma_00_stat_pb": math.sqrt(max(0.0, series.variances[index])),
+                    "axis": axis,
+                    "bin_low": series.edges[index],
+                    "bin_high": series.edges[index + 1],
+                    f"{axis}_low": series.edges[index],
+                    f"{axis}_high": series.edges[index + 1],
+                    "supported": supported,
+                    "sigma_00_pb": value if supported else None,
+                    "sigma_00_stat_pb": math.sqrt(max(0.0, series.variances[index])) if supported else None,
                     "uu_00_closure": closure[selection]["values"][index],
                     "uu_00_closure_stat": closure[selection]["errors"][index],
                 }
@@ -3393,7 +3600,9 @@ def _write_summary_csv(path: Path, rows: Sequence[Mapping[str, Any]]) -> None:
     if not rows:
         return
     with path.open("w", encoding="utf-8", newline="") as stream:
-        writer = csv.DictWriter(stream, fieldnames=list(rows[0]))
+        # Mixed x/Q2 and A1/direct-A_parallel rows have different meaningful columns.
+        fieldnames = list(dict.fromkeys(key for row in rows for key in row))
+        writer = csv.DictWriter(stream, fieldnames=fieldnames)
         writer.writeheader()
         writer.writerows(rows)
 
@@ -3419,7 +3628,7 @@ def postprocess_campaign(args: argparse.Namespace, measurement: Mapping[str, Any
             ),
         )
     groups = _require_complete_matrix(manifest, measurement, campaign_dir)
-    snapshot = load_json(resolve_dispol_path(measurement["reference"]["snapshot"]))
+    snapshot = load_reference_snapshot(measurement)
     yoda = _import_yoda()
     include_comparisons = bool(manifest["configuration"].get("comparisons", False))
     family_specs = campaign_family_specs(measurement, include_comparisons)
@@ -3553,7 +3762,7 @@ def postprocess_campaign(args: argparse.Namespace, measurement: Mapping[str, Any
             "diagnostics": diagnostics,
             "closure": closure,
             "objects": objects,
-            "rows": _direct_unpolarized_rows(direct_results, closure),
+            "rows": _direct_unpolarized_rows(direct_results, closure, measurement),
         }
 
     postprocess_dir = campaign_dir / "postprocess"
@@ -3621,7 +3830,7 @@ def postprocess_campaign(args: argparse.Namespace, measurement: Mapping[str, Any
         "masked_bins": {
             selection: [
                 index + 1
-                for index, value in enumerate(result["a1_values"])
+                for index, value in enumerate(result.get("a1_values", result["apar_values"]))
                 if value is None
             ]
             for selection, result in nominal_results.items()
@@ -3681,7 +3890,7 @@ def postprocess_campaign(args: argparse.Namespace, measurement: Mapping[str, Any
             family_summary["masked_bins"] = {
                 selection: [
                     index + 1
-                    for index, value in enumerate(result["a1_values"])
+                    for index, value in enumerate(result.get("a1_values", result["apar_values"]))
                     if value is None
                 ]
                 for selection, result in product["results"].items()
@@ -3857,6 +4066,50 @@ def plot_script_has_finite_y(script: Path) -> bool:
     )
 
 
+def apply_published_reference_coordinates(
+    script: Path, points: Sequence[Mapping[str, Any]] | None,
+) -> None:
+    """Place the reference markers at published means, keeping physical bin edges.
+
+    YODA's plot generator forces all estimates to their bin centres. Reference
+    means are display coordinates; the theory still represents bin integrals.
+    """
+    if not points:
+        return
+    if any(not all(key in point and math.isfinite(float(point[key])) for key in ("plot_x", "value"))
+           for point in points):
+        raise CampaignError("Published reference coordinates require finite means and values")
+    source = script.read_text(encoding="utf-8")
+    marker = "# curve from input yoda files in main panel"
+    if marker not in source:
+        raise CampaignError(f"Cannot locate the Rivet reference plotting point in {script}")
+    coordinates = [float(point["plot_x"]) for point in points]
+    values = [float(point["value"]) for point in points]
+    adjustment = [
+        "# Use published reference means, preserving theory bin edges and integrals",
+        "_published_ref_key = next(iter(dataf['yvals']))",
+        f"_published_ref_x = np.asarray({coordinates!r}, dtype=float)",
+        f"_published_ref_y = np.asarray({values!r}, dtype=float)",
+        "_published_ref_actual_y = np.asarray(dataf['yvals'][_published_ref_key], dtype=float)",
+        "if (_published_ref_actual_y.shape != _published_ref_y.shape or",
+        "        not np.allclose(_published_ref_actual_y, _published_ref_y, rtol=1e-8, atol=1e-12)):",
+        "    raise RuntimeError('Published reference points do not match the first plotted data curve')",
+        "_published_ref_edges = np.asarray(dataf['xedges'][_published_ref_key], dtype=float)",
+        "if (_published_ref_edges.size != _published_ref_x.size + 1 or",
+        "        np.any(_published_ref_x < _published_ref_edges[:-1]) or",
+        "        np.any(_published_ref_x > _published_ref_edges[1:])):",
+        "    raise RuntimeError('Published reference means lie outside their physical bins')",
+        "dataf['xpoints'][_published_ref_key] = _published_ref_x.tolist()",
+        "dataf['xerrs'][_published_ref_key] = [",
+        "    (_published_ref_x - _published_ref_edges[:-1]).tolist(),",
+        "    (_published_ref_edges[1:] - _published_ref_x).tolist()]",
+        "if 'ref_xerrs' in dataf:",
+        "    dataf['ref_xerrs'] = dataf['xerrs'][_published_ref_key]",
+    ]
+    source = source.replace(marker, "\n".join(adjustment) + "\n\n" + marker, 1)
+    script.write_text(source, encoding="utf-8")
+
+
 def add_experimental_error_overlay(
     script: Path,
     points: Sequence[Mapping[str, Any]] | None,
@@ -3893,7 +4146,11 @@ def add_experimental_error_overlay(
     overlay = ["# Experimental display components added by the campaign runner"]
     if show_statistical:
         stat_values = [float(point["stat"]) for point in normalized]
-        stat_note_y = 0.84 if low_q2 else 0.025
+        lower_legend = re.search(r"\bloc\s*=\s*['\"]lower", source) is not None
+        stat_note_y = 0.97 if lower_legend else (0.84 if low_q2 else 0.025)
+        stat_note_x = 0.98 if lower_legend else 0.02
+        stat_note_horizontal = "right" if lower_legend else "left"
+        stat_note_vertical = "top" if lower_legend else "bottom"
         overlay.extend(
             [
                 f"_data_x = {x_values!r}",
@@ -3902,8 +4159,8 @@ def add_experimental_error_overlay(
                 "ax.errorbar(_data_x, _data_y, yerr=_data_stat, fmt='none',",
                 "            ecolor='black', elinewidth=1.7, capsize=2.5,",
                 "            capthick=1.2, zorder=10)",
-                f"ax.text(0.02, {stat_note_y}, 'inner bars: statistical; outer bars: total',",
-                "        transform=ax.transAxes, fontsize=7, ha='left', va='bottom')",
+                f"ax.text({stat_note_x}, {stat_note_y}, 'inner bars: statistical; outer bars: total',",
+                f"        transform=ax.transAxes, fontsize=7, ha={stat_note_horizontal!r}, va={stat_note_vertical!r})",
             ]
         )
     if low_q2:
@@ -3920,6 +4177,26 @@ def add_experimental_error_overlay(
             ]
         )
     source = source.replace(marker, "\n".join(overlay) + "\n\n" + marker, 1)
+    script.write_text(source, encoding="utf-8")
+
+
+def ensure_plot_canvas_draw(script: Path) -> None:
+    """Use complete MathText fonts and initialize layout before each format save."""
+    source = script.read_text(encoding="utf-8")
+    # Rivet's no-TeX fallback selects DejaVu Sans but leaves the style's custom
+    # Palatino math fonts active. Missing font variants can hide math axis labels.
+    source = re.sub(
+        r"(?m)^([ \t]*)(plt\.rcParams\[['\"]text\.usetex['\"]\]\s*=\s*False)\s*$",
+        r"\1\2\n\1plt.rcParams['mathtext.fontset'] = 'dejavusans'",
+        source,
+    )
+    source, count = re.subn(
+        r"(?m)^([ \t]*)plt\.savefig\(",
+        r"\1fig.canvas.draw()\n\1plt.savefig(",
+        source,
+    )
+    if count == 0:
+        raise CampaignError(f"Cannot locate the Rivet figure save calls in {script}")
     script.write_text(source, encoding="utf-8")
 
 
@@ -4162,6 +4439,7 @@ def plot_campaign(args: argparse.Namespace, measurement: Mapping[str, Any]) -> P
             herwig=existing_herwig_monitor(campaign_dir),
         ),
     )
+    ensure_reference_yoda(measurement, campaign_dir)
     environment = analysis_environment(measurement, campaign_dir, runtime)
     mpl_cache = campaign_dir / "work" / "matplotlib-cache"
     mpl_cache.mkdir(parents=True, exist_ok=True)
@@ -4175,13 +4453,15 @@ def plot_campaign(args: argparse.Namespace, measurement: Mapping[str, Any]) -> P
         raise CampaignError(f"rivet-mkhtml did not generate plot scripts below {output_dir}")
     script_log = campaign_dir / "logs" / "rivet-plot-scripts.log"
     rendered_scripts: list[Path] = []
-    snapshot = load_json(resolve_dispol_path(measurement["reference"]["snapshot"]))
+    snapshot = load_reference_snapshot(measurement)
     summary_path = campaign_dir / "postprocess" / "summary.json"
     summary = load_json(summary_path) if summary_path.is_file() else {}
     with script_log.open("w", encoding="utf-8") as log:
         for script in plot_scripts:
             log.write(f"script: {script}\n")
             log.flush()
+            reference_points = _fixed_reference_overlay_points(measurement, snapshot, script.stem)
+            apply_published_reference_coordinates(script, reference_points)
             add_theory_uncertainty_overlay(
                 script,
                 _fixed_theory_uncertainty_bands(measurement, summary, script.stem),
@@ -4189,11 +4469,12 @@ def plot_campaign(args: argparse.Namespace, measurement: Mapping[str, Any]) -> P
             )
             add_experimental_error_overlay(
                 script,
-                _fixed_reference_overlay_points(measurement, snapshot, script.stem),
+                reference_points,
                 show_statistical=bool(
                     getattr(args, "plot_data_components", False)
                 ),
             )
+            ensure_plot_canvas_draw(script)
             if not plot_script_has_finite_y(script):
                 log.write(
                     "skipped: non-renderable finite-data/axis-limit state\n"

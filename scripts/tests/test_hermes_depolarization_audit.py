@@ -98,6 +98,11 @@ EXPECTED = {
 
 def postprocess_moments(moments, measurement=None):
     measurement = copy.deepcopy(measurement or campaign.get_measurement(MEASUREMENT))
+    # These one-bin physical strata isolate the inverse-D and target factors;
+    # do not reinterpret them as the distinct published two-dimensional cells.
+    selections = ("Q2GT1", "Q2GT4", "D_Q2GT1", "D_Q2GT4")
+    for block in ("outputs", "raw_observables"):
+        measurement[block] = {key: measurement[block][key] for key in selections}
     measurement["diagnostics"] = []
     family = campaign.campaign_family_specs(measurement, False)["nominal"]
 
