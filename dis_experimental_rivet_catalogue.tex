@@ -1,0 +1,470 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern,microtype,amsmath,amssymb}
+\usepackage[margin=21mm]{geometry}
+\usepackage{booktabs,longtable,tabularx,array,enumitem,needspace,pdflscape}
+\usepackage{xcolor,fancyhdr}
+\usepackage[colorlinks=true,linkcolor=blue!45!black,urlcolor=blue!45!black,citecolor=blue!45!black]{hyperref}
+\hypersetup{pdftitle={Experimental DIS Rivet analyses in HerwigPolarizedPheno},pdfsubject={Catalogue of experimental measurements and implemented analysis coverage}}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+\setlength{\emergencystretch}{2em}
+\setlength{\headheight}{14pt}
+\setlist[description]{font=\normalfont\bfseries,leftmargin=0pt,labelindent=0pt,itemsep=3pt,parsep=0pt}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small Experimental DIS Rivet analyses}
+\fancyhead[R]{\small HerwigPolarizedPheno}
+\fancyfoot[C]{\thepage}
+\newcommand{\GeV}{\mathrm{GeV}}
+\newcommand{\id}[1]{{\small\texttt{\detokenize{#1}}}}
+\newcommand{\summaryname}[1]{\texttt{\detokenize{#1}}}
+\newcommand{\summaryfile}[1]{\href{https://github.com/apapaefs/HerwigPolarizedPheno/blob/105045bd757aaa6b217e87811dc5f9a22a8d1cef/analyses/rivet/dis/#1.cc}{\texttt{\detokenize{#1.cc}}}}
+\begin{document}
+
+\begin{landscape}
+\thispagestyle{empty}
+\begingroup
+\begin{center}
+{\Large\bfseries Experimental DIS Rivet analyses: summary\par}
+\end{center}
+\vspace{-2pt}
+\fontsize{9.3}{11.4}\selectfont
+\setlength{\tabcolsep}{3pt}
+\renewcommand{\arraystretch}{1.14}
+\begin{tabularx}{\linewidth}{@{}l>{\raggedright\arraybackslash}Xlcll@{}}
+\toprule
+\textbf{Rivet name} & \textbf{Observable} & \textbf{arXiv paper} &
+\shortstack{\textbf{Energy [GeV]}\\$E_\ell;\sqrt{s_{\ell N}}$} &
+\textbf{Implemented beams} & \textbf{Analysis source file}\\
+\midrule
+\summaryname{COMPASS_2009_I820721} & Deuteron $A_1^{\pi^\pm,K^\pm}$ & \href{https://arxiv.org/abs/0905.2828}{0905.2828} & 160; 17.4 & $\mu^+p,\mu^+n$ & \summaryfile{COMPASS_2009_I820721}\\
+\summaryname{COMPASS_2010_I843494} & Inclusive proton $A_1$ & \href{https://arxiv.org/abs/1001.4654}{1001.4654} & 160; 17.4 & $\mu^+p$ & \summaryfile{COMPASS_2010_I843494}\\
+\summaryname{COMPASS_2010_I862410} & Proton $A_1^{\pi^\pm,K^\pm}$ & \href{https://arxiv.org/abs/1007.4061}{1007.4061} & 160; 17.4 & $\mu^+p$ & \summaryfile{COMPASS_2010_I862410}\\
+\summaryname{COMPASS_2013_I1236358} & Low-$p_T$ inverse slopes & \href{https://arxiv.org/abs/1305.7317}{1305.7317} & 160; 17.4 & $\mu^+p,\mu^+n$ & \summaryfile{COMPASS_2013_I1236358}\\
+\summaryname{COMPASS_2014_I1278730} & Unpolarized cosine amplitudes & \href{https://arxiv.org/abs/1401.6284}{1401.6284} & 160; 17.4 & $\mu^+p,\mu^+n$ & \summaryfile{COMPASS_2014_I1278730}\\
+\summaryname{COMPASS_2016_I1357198} & Inclusive proton $A_1$ & \href{https://arxiv.org/abs/1503.08935}{1503.08935} & 200; 19.4 & $\mu^+p$ & \summaryfile{COMPASS_2016_I1357198}\\
+\summaryname{COMPASS_2017_I1444985} & $\pi^\pm,h^\pm$ multiplicities & \href{https://arxiv.org/abs/1604.02695}{1604.02695} & 160; 17.4 & $\mu^+p,\mu^+n$ & \summaryfile{COMPASS_2017_I1444985}\\
+\summaryname{COMPASS_2017_I1483098} & $K^\pm$ multiplicities & \href{https://arxiv.org/abs/1608.06760}{1608.06760} & 160; 17.4 & $\mu^+p,\mu^+n$ & \summaryfile{COMPASS_2017_I1483098}\\
+\summaryname{COMPASS_2017_I1501480} & Inclusive deuteron $A_1$ & \href{https://arxiv.org/abs/1612.00620}{1612.00620} & 160; 17.4 & $\mu^+p,\mu^+n$ & \summaryfile{COMPASS_2017_I1501480}\\
+\summaryname{COMPASS_2018_I1624692} & $p_T^2$-dependent $h^\pm$ multiplicities & \href{https://arxiv.org/abs/1709.07374}{1709.07374} & 160; 17.4 & $\mu^+p,\mu^+n$ & \summaryfile{COMPASS_2018_I1624692}\\
+\summaryname{COMPASS_2020_I1788430} & High-$z$ $\bar p/p$, $K^-/K^+$ ratios & \href{https://arxiv.org/abs/2003.11791}{2003.11791} & 160; 17.4 & $\mu^+p,\mu^+n$ & \summaryfile{COMPASS_2020_I1788430}\\
+\summaryname{COMPASS_2025_I2840545} & Hydrogen $\pi^\pm,K^\pm,h^\pm$ multiplicities & \href{https://arxiv.org/abs/2410.12005}{2410.12005} & 160; 17.4 & $\mu^+p$ & \summaryfile{COMPASS_2025_I2840545}\\
+\summaryname{COMPASS_2026_I3096394} & Corrected isoscalar multiplicities & \href{https://arxiv.org/abs/2512.23727}{2512.23727} & 160; 17.4 & $\mu^+p,\mu^+n$ & \summaryfile{COMPASS_2026_I3096394}\\
+\summaryname{HERMES_2007_I726689} & Inclusive proton $A_1$ & \href{https://arxiv.org/abs/hep-ex/0609039}{hep-ex/0609039} & 27.6; 7.26 & $e^+p$ & \summaryfile{HERMES_2007_I726689}\\
+\summaryname{HERMES_2007_I726689_LEGACY} & Proton $A_\parallel(x,Q^2)$ & \href{https://arxiv.org/abs/hep-ex/0609039}{hep-ex/0609039} & 27.6; 7.26 & $e^+p$ & \summaryfile{HERMES_2007_I726689_LEGACY}\\
+\summaryname{HERMES_2013_I1111237} & Unpolarized cosine moments & \href{https://arxiv.org/abs/1204.4161}{1204.4161} & 27.6; 7.26 & $e^+p,e^+n$ & \summaryfile{HERMES_2013_I1111237}\\
+\summaryname{HERMES_2013_I1208547} & H/D $\pi^\pm,K^\pm$ multiplicities & \href{https://arxiv.org/abs/1212.5407}{1212.5407} & 27.6; 7.26 & $e^\pm p,e^\pm n$ & \summaryfile{HERMES_2013_I1208547}\\
+\summaryname{HERMES_2019_I1698889} & Identified-hadron $A_\parallel$ & \href{https://arxiv.org/abs/1810.07054}{1810.07054} & 27.6; 7.26 & $e^+p,e^+n$ & \summaryfile{HERMES_2019_I1698889}\\
+\bottomrule
+\end{tabularx}
+
+\vspace{5pt}
+All 18 implementations are included; the legacy HERMES entry shares its
+experimental paper with the main 2007 entry. Paper identifiers and source
+filenames are clickable. All source files are relative to
+\href{https://github.com/apapaefs/HerwigPolarizedPheno/tree/105045bd757aaa6b217e87811dc5f9a22a8d1cef/analyses/rivet/dis}{\texttt{analyses/rivet/dis/}}
+in the pinned \texttt{HerwigPolarizedPheno} repository.
+
+All entries use a fixed target. The energy column gives the nominal laboratory
+lepton energy $E_\ell$ followed by the approximate free-lepton--nucleon collision
+energy $\sqrt{s_{\ell N}}=\sqrt{m_\ell^2+m_N^2+2m_NE_\ell}$ for a stationary
+proton/neutron. It is distinct from the hadronic invariant mass $W$.
+The beam column describes implemented inputs; free $p/n$ yields form the
+isoscalar/deuteron predictions. The HERMES 2013 multiplicity source accepts
+$e^\pm$, with current cards using $e^+$; the COMPASS 2025 measurement combines
+$\mu^\pm$, while its implementation uses $\mu^+$.
+\endgroup
+\vfill
+\begin{center}\thepage\end{center}
+\end{landscape}
+\begin{center}
+{\LARGE\bfseries Experimental DIS analyses\\[3pt] in HerwigPolarizedPheno\par}
+\vspace{5pt}
+{\large Rivet implementation catalogue\par}
+30 September 2026
+\end{center}
+
+\section{Scope and interpretation}
+This catalogue includes every experimental-measurement-linked Rivet analysis
+implemented by a \texttt{.cc} file in
+\href{https://github.com/apapaefs/HerwigPolarizedPheno/tree/105045bd757aaa6b217e87811dc5f9a22a8d1cef/analyses/rivet/dis}{\texttt{analyses/rivet/dis/}}.
+There are \textbf{18 implementations: 13 COMPASS and five HERMES}, corresponding
+to 17 distinct experimental publications. The HERMES 2007 legacy entry is a
+second projection of the same measurement. The HERMES 2013 azimuthal entry
+corresponds to a published measurement but currently provides a diagnostic
+without numerical experimental reference data. All measurements use fixed
+targets; no H1 or ZEUS implementation occurs in this directory.
+
+The catalogue is pinned to commit
+\href{https://github.com/apapaefs/HerwigPolarizedPheno/commit/105045bd757aaa6b217e87811dc5f9a22a8d1cef}{\texttt{105045bd757a}}.
+The 76 directory files were checked against the GitHub snapshot.
+Each entry describes the \emph{implemented generator-level selection} and
+the subset of published observables covered. Every \texttt{.info} file declares
+\texttt{Status: UNVALIDATED}. Reference transcription, generator-level closure
+and a full detector/trigger/background/response reproduction are distinct
+validation tasks; these entries do not establish the last of these.
+
+\subsection*{Variables and observable construction}
+With incoming lepton $k$, outgoing lepton $k'$ and target $P$, define
+$q=k-k'$, $Q^2=-q^2$, $x=Q^2/(2P\cdot q)$, $y=P\cdot q/(P\cdot k)$
+and $W^2=(P+q)^2$. For a hadron, $z=P\cdot p_h/(P\cdot q)$ and $p_T$
+is transverse to the virtual-photon direction. Energies and momenta below
+are in GeV; $Q^2$, $W^2$ and $p_T^2$ are in $\GeV^2$.
+The COMPASS helpers reconstruct DIS from the highest-energy prompt outgoing
+$\mu^+$, excluding muons from hadron decays.
+
+The longitudinal analyses fill helicity-resolved yields and, where required,
+inverse-depolarization inputs. Postprocessing combines the physical beam
+helicities and constructs $A_\parallel$ or $A_1$, with
+$A_\parallel=D(A_1+\eta A_2)$; the inclusive and COMPASS $A_1$ estimators
+neglect $\eta A_2$. Multiplicities are hadron yields divided by selected DIS
+yields and the specified bin widths. Signed POSNLO and NEGNLO contributions
+are combined at normalized-bin level before target sums, ratios or fits.
+The unpolarized analyses use zero-polarization samples.
+
+For isoscalar/deuteron predictions, the workflow combines free proton and
+neutron samples. This approximation does not reproduce the material target
+or nuclear binding, Fermi motion and shadowing. Polarized COMPASS deuteron
+longitudinal yields additionally use the 0.925 deuteron D-state factor.
+\clearpage
+
+\section{Complete inventory}
+\small
+\begin{longtable}{@{}p{0.48\textwidth}p{0.41\textwidth}r@{}}
+\toprule
+Rivet identifier & Implemented experimental observable & Ref.\\
+\midrule
+\endhead
+\id{COMPASS_2009_I820721} & $A_{1,d}^{\pi^\pm,K^\pm}(x)$ & \cite{r820721}\\[4pt]
+\id{COMPASS_2010_I843494} & $A_1^p(x)$, 160 GeV & \cite{r843494}\\[4pt]
+\id{COMPASS_2010_I862410} & $A_{1,p}^{\pi^\pm,K^\pm}(x)$ & \cite{r862410}\\[4pt]
+\id{COMPASS_2013_I1236358} & Low-$p_T$ inverse slopes & \cite{r1236358}\\[4pt]
+\id{COMPASS_2014_I1278730} & $\cos\phi_h$, $\cos2\phi_h$ amplitudes & \cite{r1278730}\\[4pt]
+\id{COMPASS_2016_I1357198} & $A_1^p(x)$, 200 GeV & \cite{r1357198}\\[4pt]
+\id{COMPASS_2017_I1444985} & $\pi^\pm,h^\pm$ multiplicities & \cite{r1444985}\\[4pt]
+\id{COMPASS_2017_I1483098} & $K^\pm$ multiplicities & \cite{r1483098}\\[4pt]
+\id{COMPASS_2017_I1501480} & $A_1^d(x)$ & \cite{r1501480}\\[4pt]
+\id{COMPASS_2018_I1624692} & $h^\pm$ multiplicities versus $p_T^2$ & \cite{r1624692}\\[4pt]
+\id{COMPASS_2020_I1788430} & High-$z$ $\bar p/p$, $K^-/K^+$ ratios & \cite{r1788430}\\[4pt]
+\id{COMPASS_2025_I2840545} & $\pi^\pm,K^\pm,h^\pm$ on hydrogen & \cite{r2840545}\\[4pt]
+\id{COMPASS_2026_I3096394} & Corrected isoscalar multiplicities & \cite{r3096394}\\[4pt]
+\id{HERMES_2007_I726689} & Inclusive proton $A_1^p(x)$ & \cite{r726689}\\[4pt]
+\id{HERMES_2007_I726689_LEGACY} & Proton $A_\parallel(x,Q^2)$, Table 7 & \cite{r726689}\\[4pt]
+\id{HERMES_2013_I1111237} & Unpolarized azimuthal moments & \cite{r1111237}\\[4pt]
+\id{HERMES_2013_I1208547} & $\pi^\pm,K^\pm$ multiplicities & \cite{r1208547}\\[4pt]
+\id{HERMES_2019_I1698889} & Identified-hadron $A_\parallel$ & \cite{r1698889}\\[4pt]
+\bottomrule
+\end{longtable}
+\normalsize
+
+The 2017 COMPASS pion/hadron and kaon multiplicity releases remain separate
+entries for reproducibility. The corrected 2026 addendum supersedes these
+older releases. The summaries below identify the stored reference source,
+rather than inferring data availability from the presence of a reference
+\texttt{.yoda.gz} file: some reference YODA are generated by the workflow.
+
+\subsection*{Common COMPASS multiplicity window}
+The 2017 pion/hadron and kaon, 2025 hydrogen, and 2026 corrected isoscalar
+implementations apply a species-dependent, whole-$z$-bin restriction to both
+the hadron numerator and the DIS denominator:
+\begin{equation}
+ \frac{\sqrt{(12\,\GeV)^2+m_h^2}}{z_{\min}}
+ <\nu=\frac{P\cdot q}{M}<
+ \frac{\sqrt{(40\,\GeV)^2+m_h^2}}{z_{\max}}.
+ \label{eq:nu}
+\end{equation}
+Here $m_h$ is the pion mass for pions/unidentified hadrons and the kaon mass
+for kaons. This condition is imposed for each published cell. The generated
+vertex angle is not used as a replacement for the RICH entrance geometry
+corrected through the experiment's acceptance procedure. Fixed-beam cells
+outside the implemented kinematic domain remain explicitly masked.
+\clearpage
+\section{COMPASS analyses}
+\Needspace{20\baselineskip}
+\subsection{\texorpdfstring{Identified-hadron deuteron spin asymmetries (2009)}{Identified-hadron deuteron spin asymmetries (2009)}}
+\id{COMPASS_2009_I820721}\quad\cite{r820721}
+\begin{description}
+\item[Measurement and setup.] $A_{1,d}^{\pi^\pm,K^\pm}(x)$ from longitudinally polarized 160 GeV $\mu^+$ scattering on deuterium. The implementation combines independent free proton and neutron helicity samples.
+\item[Implemented selection.] $Q^2>1$, $0.1<y<0.9$, $0.004<x<0.3$; stable $\pi^\pm,K^\pm$ with $0.2<z<0.85$ and $10<p_h<50$. The helper checks the nominal 160 GeV beam. No explicit $W$ or hadron-angle cut occurs in this source.
+\item[Reference coverage.] Four species, each with 10 $x$ bins: 40 asymmetry values from \href{https://www.hepdata.net/record/ins820721?version=1}{HEPData v1, Tables 1--4}. Paper-source differences are retained in a frozen audit.
+\item[Scope.] Postprocessing forms $A_1$ from ordinary and inverse-$D$ yields with finite-muon-mass $D$ and R1998, neglecting $\eta A_2$. The plugin does not perform the paper\textquotesingle s quark-helicity extraction or its inclusive measurement.
+\end{description}
+{\small\href{https://github.com/apapaefs/HerwigPolarizedPheno/blob/105045bd757aaa6b217e87811dc5f9a22a8d1cef/analyses/rivet/dis/COMPASS_2009_I820721.cc}{Analysis source}\quad|\quad\href{https://github.com/apapaefs/HerwigPolarizedPheno/blob/105045bd757aaa6b217e87811dc5f9a22a8d1cef/analyses/rivet/dis/COMPASS_2009_I820721.info}{Metadata}\quad|\quad\href{https://inspirehep.net/literature/820721}{INSPIRE record}}
+\Needspace{20\baselineskip}
+\subsection{\texorpdfstring{Inclusive proton spin asymmetry at 160 GeV (2010)}{Inclusive proton spin asymmetry at 160 GeV (2010)}}
+\id{COMPASS_2010_I843494}\quad\cite{r843494}
+\begin{description}
+\item[Measurement and setup.] $A_1^p(x)$ from longitudinally polarized 160 GeV $\mu^+$ scattering on the proton in an NH$_3$ target. Generation uses a free proton at rest.
+\item[Implemented selection.] $Q^2>1$, $0.1<y<0.9$, $0.004<x<0.7$ and finite positive $D$. There is no explicit $W$ or upper-$Q^2$ veto. A separate nested $Q^2>4$ fill is a validation diagnostic.
+\item[Reference coverage.] 15 $x$ bins from \href{https://doi.org/10.17182/hepdata.61588.v2/t1}{HEPData Table 1, v2}. The correct paper is arXiv:1001.4654; this catalogue uses a distinct citation from the 2010 SIDIS entry despite their duplicated metadata BibKey.
+\item[Scope.] Physical-helicity postprocessing constructs $A_1$ with finite-muon-mass R1998 depolarization and $\eta A_2=0$. The paper\textquotesingle s $g_1$ determination and Bjorken-sum-rule analysis are outside the implemented observable set.
+\end{description}
+{\small\href{https://github.com/apapaefs/HerwigPolarizedPheno/blob/105045bd757aaa6b217e87811dc5f9a22a8d1cef/analyses/rivet/dis/COMPASS_2010_I843494.cc}{Analysis source}\quad|\quad\href{https://github.com/apapaefs/HerwigPolarizedPheno/blob/105045bd757aaa6b217e87811dc5f9a22a8d1cef/analyses/rivet/dis/COMPASS_2010_I843494.info}{Metadata}\quad|\quad\href{https://inspirehep.net/literature/843494}{INSPIRE record}}
+
+\clearpage
+\Needspace{20\baselineskip}
+\subsection{\texorpdfstring{Identified-hadron proton spin asymmetries (2010)}{Identified-hadron proton spin asymmetries (2010)}}
+\id{COMPASS_2010_I862410}\quad\cite{r862410}
+\begin{description}
+\item[Measurement and setup.] $A_{1,p}^{\pi^\pm,K^\pm}(x)$ from longitudinally polarized 160 GeV $\mu^+$ scattering on hydrogen/protons. The current campaign supplies free-proton samples.
+\item[Implemented selection.] $Q^2>1$, $0.1<y<0.9$, $0.004<x<0.7$; stable $\pi^\pm,K^\pm$ with $0.2<z<0.85$ and $10<p_h<50$. The shared helper checks the nominal 160 GeV beam. No explicit $W$ or hadron-angle cut is imposed.
+\item[Reference coverage.] Four species with 12 $x$ bins each: 48 primary asymmetry values. Numerical values and correlations are reconstructed from checksum-pinned paper source, arXiv:1007.4061.
+\item[Scope.] External helicity combination uses event-aggregated ordinary, inverse-$D$ and covariance inputs, finite-muon-mass R1998 depolarization and $\eta A_2=0$. This plugin covers the proton SIDIS asymmetries, rather than all older deuteron data or the paper\textquotesingle s global quark-helicity extraction.
+\end{description}
+{\small\href{https://github.com/apapaefs/HerwigPolarizedPheno/blob/105045bd757aaa6b217e87811dc5f9a22a8d1cef/analyses/rivet/dis/COMPASS_2010_I862410.cc}{Analysis source}\quad|\quad\href{https://github.com/apapaefs/HerwigPolarizedPheno/blob/105045bd757aaa6b217e87811dc5f9a22a8d1cef/analyses/rivet/dis/COMPASS_2010_I862410.info}{Metadata}\quad|\quad\href{https://inspirehep.net/literature/862410}{INSPIRE record}}
+\Needspace{20\baselineskip}
+\subsection{\texorpdfstring{Low-transverse-momentum inverse slopes (2013)}{Low-transverse-momentum inverse slopes (2013)}}
+\id{COMPASS_2013_I1236358}\quad\cite{r1236358}
+\begin{description}
+\item[Measurement and setup.] Low-$p_T$ inverse-slope parameter $b$ in $A\exp(-p_T^2/b)$ for $h^\pm$, using spin-averaged 160 GeV $\mu^+$ data on isoscalar $^6$LiD. Generation uses a zero-polarization free-$p/n$ mixture.
+\item[Implemented selection.] $Q^2>1$, $W^2>25$, $0.1<y<0.9$; the 23 published $(x,Q^2)$ cells lie within $0.0045\le x<0.12$, $1\le Q^2<10$. Hadrons require $0.2\le z<0.8$, $0.1\le p_T<0.85$, with the pion-mass convention for unidentified hadrons.
+\item[Reference coverage.] 368 slope values: 23 cells $\times$ eight $z$ bins $\times$ two charges, transcribed from the pinned paper tables. The \href{https://doi.org/10.1140/epjc/s10052-014-3255-y}{2015 erratum} leaves the slopes unchanged.
+\item[Scope.] Generalized least squares fits bin-integrated exponentials to 36 signed $p_T^2$ yields per cell, retaining covariance and negative bins. Variance, covariance and yield-significance requirements are Monte Carlo support criteria. Poor shape is flagged; exact replay of the collaboration\textquotesingle s extraction is unproven. Other spectra and fitted parameters are outside this plugin.
+\end{description}
+{\small\href{https://github.com/apapaefs/HerwigPolarizedPheno/blob/105045bd757aaa6b217e87811dc5f9a22a8d1cef/analyses/rivet/dis/COMPASS_2013_I1236358.cc}{Analysis source}\quad|\quad\href{https://github.com/apapaefs/HerwigPolarizedPheno/blob/105045bd757aaa6b217e87811dc5f9a22a8d1cef/analyses/rivet/dis/COMPASS_2013_I1236358.info}{Metadata}\quad|\quad\href{https://inspirehep.net/literature/1236358}{INSPIRE record}}
+
+\clearpage
+\Needspace{20\baselineskip}
+\subsection{\texorpdfstring{Unpolarized azimuthal cosine amplitudes (2014)}{Unpolarized azimuthal cosine amplitudes (2014)}}
+\id{COMPASS_2014_I1278730}\quad\cite{r1278730}
+\begin{description}
+\item[Measurement and setup.] $A_{UU}^{\cos\phi_h}$ and $A_{UU}^{\cos2\phi_h}$ for $h^\pm$ versus $x,z,p_T$ and $(x,z,p_T)$, from target-spin-averaged 160 GeV $\mu^+$ data on $^6$LiD. Generation uses zero-polarization $p/n$ samples.
+\item[Implemented selection.] $Q^2>1$, $W^2>25$, $0.003<x<0.13$, $0.2<y<0.9$, virtual-photon angle $\theta_{\gamma^*}<60$ mrad; $0.2\le z<0.85$, $0.1\le p_T<1$. Unidentified hadrons use the pion-mass $z$ convention.
+\item[Reference coverage.] 480 cosine-amplitude values from pinned paper Tables 2--12, including overlapping one- and three-dimensional projections.
+\item[Scope.] Postprocessing fits bin-integrated constant, cosine and nuisance sine terms to 14 of 16 $\phi_h$ bins, excluding the bins adjacent to zero, and divides by mean depolarization factors with full covariance. The published beam-spin sine asymmetry is omitted; a fitted nuisance is not its prediction. Exact numerical replay of the experimental extraction remains unproven.
+\end{description}
+{\small\href{https://github.com/apapaefs/HerwigPolarizedPheno/blob/105045bd757aaa6b217e87811dc5f9a22a8d1cef/analyses/rivet/dis/COMPASS_2014_I1278730.cc}{Analysis source}\quad|\quad\href{https://github.com/apapaefs/HerwigPolarizedPheno/blob/105045bd757aaa6b217e87811dc5f9a22a8d1cef/analyses/rivet/dis/COMPASS_2014_I1278730.info}{Metadata}\quad|\quad\href{https://inspirehep.net/literature/1278730}{INSPIRE record}}
+\Needspace{20\baselineskip}
+\subsection{\texorpdfstring{Inclusive proton spin asymmetry at 200 GeV (2016)}{Inclusive proton spin asymmetry at 200 GeV (2016)}}
+\id{COMPASS_2016_I1357198}\quad\cite{r1357198}
+\begin{description}
+\item[Measurement and setup.] $A_1^p(x)$ from longitudinally polarized 200 GeV $\mu^+$ scattering on an NH$_3$ target, represented by a free proton at rest.
+\item[Implemented selection.] $1<Q^2\le190$, $W^2>12$, $0.1<y<0.9$, $0.0025<x<0.7$ and finite positive $D$. A separate $Q^2>4$ fill is a validation diagnostic.
+\item[Reference coverage.] 17 $x$ bins from \href{https://doi.org/10.17182/hepdata.72819.v1/t2}{HEPData Table 2, v1}. The reference normalizer documents an upper-edge typo correction while retaining the raw source.
+\item[Scope.] The primary comparison is $A_1$, constructed with finite-muon-mass R1998 depolarization and $\eta A_2=0$; $g_1$ columns are provenance only. Fixed 200 GeV generation approximates the accepted experimental momentum interval. With NNPDFpol2.0, the related fitted $g_1$ data prevent interpreting this as independent PDF validation.
+\end{description}
+{\small\href{https://github.com/apapaefs/HerwigPolarizedPheno/blob/105045bd757aaa6b217e87811dc5f9a22a8d1cef/analyses/rivet/dis/COMPASS_2016_I1357198.cc}{Analysis source}\quad|\quad\href{https://github.com/apapaefs/HerwigPolarizedPheno/blob/105045bd757aaa6b217e87811dc5f9a22a8d1cef/analyses/rivet/dis/COMPASS_2016_I1357198.info}{Metadata}\quad|\quad\href{https://inspirehep.net/literature/1357198}{INSPIRE record}}
+
+\clearpage
+\Needspace{20\baselineskip}
+\subsection{\texorpdfstring{Pion and unidentified-hadron multiplicities (2017)}{Pion and unidentified-hadron multiplicities (2017)}}
+\id{COMPASS_2017_I1444985}\quad\cite{r1444985}
+\begin{description}
+\item[Measurement and setup.] $dM^{\pi^\pm,h^\pm}/dz$ in sparse $(x,y,z)$ cells for 160 GeV muon DIS on an isoscalar $^6$LiD target. Zero-polarization free $p/n$ yields are summed before the ratio.
+\item[Implemented selection.] $Q^2>1$, $W>5$, $0.004<x<0.4$, $0.1<y<0.7$; $0.2\le z\le0.85$, $12<p_h<40$, and Eq.~\eqref{eq:nu} with pion mass in both numerator and denominator.
+\item[Reference coverage.] \href{https://www.hepdata.net/record/ins1444985?version=1}{HEPData v1, Tables 1--4}: 311 cells for each of four species, giving 1,244 values. Five cells per species are outside nominal 160 GeV support; 306 remain before statistical masks.
+\item[Scope.] The 2026 addendum supersedes this pinned older release. Experimental radiative/diffractive correction columns are retained as provenance; they are not applied to the generator. No generated vertex-angle surrogate for RICH geometry is imposed.
+\end{description}
+{\small\href{https://github.com/apapaefs/HerwigPolarizedPheno/blob/105045bd757aaa6b217e87811dc5f9a22a8d1cef/analyses/rivet/dis/COMPASS_2017_I1444985.cc}{Analysis source}\quad|\quad\href{https://github.com/apapaefs/HerwigPolarizedPheno/blob/105045bd757aaa6b217e87811dc5f9a22a8d1cef/analyses/rivet/dis/COMPASS_2017_I1444985.info}{Metadata}\quad|\quad\href{https://inspirehep.net/literature/1444985}{INSPIRE record}}
+\Needspace{20\baselineskip}
+\subsection{\texorpdfstring{Charged-kaon multiplicities (2017)}{Charged-kaon multiplicities (2017)}}
+\id{COMPASS_2017_I1483098}\quad\cite{r1483098}
+\begin{description}
+\item[Measurement and setup.] $dM^{K^\pm}/dz$ in sparse $(x,y,z)$ cells for 160 GeV muon DIS on an isoscalar $^6$LiD target, using zero-polarization free-$p/n$ yields.
+\item[Implemented selection.] $Q^2>1$, $W>5$, $0.004<x<0.4$, $0.1<y<0.7$; $0.2\le z\le0.85$, $12<p_h<40$, and Eq.~\eqref{eq:nu} with kaon mass in both numerator and denominator.
+\item[Reference coverage.] \href{https://www.hepdata.net/record/ins1483098?version=1}{HEPData v1, Tables 1--2}: 309 cells per charge, giving 618 values. Four cells per charge are outside nominal 160 GeV support; 305 remain before statistical masks.
+\item[Scope.] Truth kaon identification and same-event numerator/denominator covariance are used. The corrected 2026 release supersedes this older reference. Unsupported cells are masked, and no RICH vertex-angle surrogate or experimental correction factors are applied to Herwig.
+\end{description}
+{\small\href{https://github.com/apapaefs/HerwigPolarizedPheno/blob/105045bd757aaa6b217e87811dc5f9a22a8d1cef/analyses/rivet/dis/COMPASS_2017_I1483098.cc}{Analysis source}\quad|\quad\href{https://github.com/apapaefs/HerwigPolarizedPheno/blob/105045bd757aaa6b217e87811dc5f9a22a8d1cef/analyses/rivet/dis/COMPASS_2017_I1483098.info}{Metadata}\quad|\quad\href{https://inspirehep.net/literature/1483098}{INSPIRE record}}
+
+\clearpage
+\Needspace{20\baselineskip}
+\subsection{\texorpdfstring{Final inclusive deuteron spin asymmetry (2017)}{Final inclusive deuteron spin asymmetry (2017)}}
+\id{COMPASS_2017_I1501480}\quad\cite{r1501480}
+\begin{description}
+\item[Measurement and setup.] $A_1^d(x)$ from longitudinally polarized 160 GeV $\mu^+$ DIS on deuterium. Independent free-$p/n$ samples give $\sigma_{UU}=(p+n)/2$ and $\sigma_{LL}=0.925(p+n)/2$.
+\item[Implemented selection.] $1<Q^2\le100$, $W^2>16$, $0.1<y<0.9$, $0.004<x<0.7$ and finite positive $D$. A separate nested $Q^2>4$ fill is diagnostic.
+\item[Reference coverage.] 15 $x$ bins from \href{https://doi.org/10.17182/hepdata.78374.v1/t1}{HEPData Table 1, v1}. The experimental $g_1$ columns are retained for provenance rather than used as an implemented $g_1$ prediction.
+\item[Scope.] $A_1$ uses finite-muon-mass R1998 depolarization and $\eta A_2=0$. The target approximation omits tensor structure and further nuclear effects. Fixed 160 GeV generation approximates the experimental momentum interval. These related $g_1$ data enter NNPDFpol2.0, so a comparison with that fit is not independent PDF validation.
+\end{description}
+{\small\href{https://github.com/apapaefs/HerwigPolarizedPheno/blob/105045bd757aaa6b217e87811dc5f9a22a8d1cef/analyses/rivet/dis/COMPASS_2017_I1501480.cc}{Analysis source}\quad|\quad\href{https://github.com/apapaefs/HerwigPolarizedPheno/blob/105045bd757aaa6b217e87811dc5f9a22a8d1cef/analyses/rivet/dis/COMPASS_2017_I1501480.info}{Metadata}\quad|\quad\href{https://inspirehep.net/literature/1501480}{INSPIRE record}}
+\Needspace{20\baselineskip}
+\subsection{\texorpdfstring{Transverse-momentum-dependent multiplicities (2018)}{Transverse-momentum-dependent multiplicities (2018)}}
+\id{COMPASS_2018_I1624692}\quad\cite{r1624692}
+\begin{description}
+\item[Measurement and setup.] $d^2M^{h^\pm}/(dz\,dp_T^2)$ in sparse $(x,Q^2,z,p_T^2)$ cells for 160 GeV muon DIS on an isoscalar target. Generation uses zero-polarization free $p/n$ components.
+\item[Implemented selection.] $Q^2>1$, $W^2>25$, $0.003<x<0.4$, $0.1<y<0.9$; $0.2\le z\le0.8$, $0.02\le p_T^2\le3$, subject to released cell bounds. Stable charged hadrons use the pion-mass convention in $z$.
+\item[Reference coverage.] \href{https://www.hepdata.net/record/ins1624692?version=1}{Complete HEPData v1 submission}: 4,664 values, 2,332 per charge from 162 tables. This is the audited released count.
+\item[Scope.] Postprocessing sums signed contributions and targets before division by the DIS yield and $\Delta z\,\Delta p_T^2$, retaining covariance. The differential multiplicities are covered; the paper\textquotesingle s subsequent exponential/power-law fit parameters are not. Experimental correction factors are not reapplied to generator events.
+\end{description}
+{\small\href{https://github.com/apapaefs/HerwigPolarizedPheno/blob/105045bd757aaa6b217e87811dc5f9a22a8d1cef/analyses/rivet/dis/COMPASS_2018_I1624692.cc}{Analysis source}\quad|\quad\href{https://github.com/apapaefs/HerwigPolarizedPheno/blob/105045bd757aaa6b217e87811dc5f9a22a8d1cef/analyses/rivet/dis/COMPASS_2018_I1624692.info}{Metadata}\quad|\quad\href{https://inspirehep.net/literature/1624692}{INSPIRE record}}
+
+\clearpage
+\Needspace{20\baselineskip}
+\subsection{\texorpdfstring{High-$z$ antiproton/proton and kaon ratios (2020)}{High-z antiproton/proton and kaon ratios (2020)}}
+\id{COMPASS_2020_I1788430}\quad\cite{r1788430}
+\begin{description}
+\item[Measurement and setup.] $R_p=M^{\bar p}/M^p$ and $R_K=M^{K^-}/M^{K^+}$ for 160 GeV $\mu^+$ DIS on isoscalar $^6$LiD. Zero-polarization free-$p/n$ yields are combined before charge ratios.
+\item[Implemented selection.] $Q^2>1$, $W^2>25$, $0.01<x<0.4$, $0.1<y<1$, $\theta_h<180$ mrad. Protons/antiprotons: $20\le p_h\le60$, $0.5\le z\le1.1$. Kaons: $x\le0.05$, $40\le p_h\le55$, $0.75\le z\le1.05$. Cell upper edges are admitted within $10^{-12}$ numerical tolerance; global event cuts remain strict.
+\item[Reference coverage.] 67 values from pinned paper Tables 1--3: 18 $R_p(x,z)$, 34 low-$x$ $R_p(z,p_h)$ and 15 low-$x$ $R_K(z,p_h)$ values. The inherited kaon selection is separately pinned.
+\item[Scope.] Published reconstructed-$z$ bin limits are applied to truth $z$; corrected mean $z$ supplies display coordinates. Same-event charge covariance is retained, and overlapping tables remain separate comparison groups. The frozen provenance records no HEPData submission, so paper tables are the numerical authority.
+\end{description}
+{\small\href{https://github.com/apapaefs/HerwigPolarizedPheno/blob/105045bd757aaa6b217e87811dc5f9a22a8d1cef/analyses/rivet/dis/COMPASS_2020_I1788430.cc}{Analysis source}\quad|\quad\href{https://github.com/apapaefs/HerwigPolarizedPheno/blob/105045bd757aaa6b217e87811dc5f9a22a8d1cef/analyses/rivet/dis/COMPASS_2020_I1788430.info}{Metadata}\quad|\quad\href{https://inspirehep.net/literature/1788430}{INSPIRE record}}
+\Needspace{20\baselineskip}
+\subsection{\texorpdfstring{Identified and unidentified multiplicities on hydrogen (2025)}{Identified and unidentified multiplicities on hydrogen (2025)}}
+\id{COMPASS_2025_I2840545}\quad\cite{r2840545}
+\begin{description}
+\item[Measurement and setup.] $dM^{\pi^\pm,K^\pm,h^\pm}/dz$ on liquid hydrogen, measured with 160 GeV muon beams of both electric charges. The implementation uses zero-polarization $\mu^+p$ samples only.
+\item[Implemented selection.] $Q^2>1$, $W>5$, $0.004<x<0.4$, $0.1<y<0.7$; $0.2\le z\le0.85$, $12<p_h<40$, and the species-dependent Eq.~\eqref{eq:nu} in numerator and denominator.
+\item[Reference coverage.] \href{https://www.hepdata.net/record/ins2840545?version=1}{HEPData v1}: 1,804 values. Each charge has 302 cells for pions and unidentified hadrons and 298 for kaons. All released cells have nominal fixed-energy support.
+\item[Scope.] Truth species identification, event-aggregated yields and covariance determine multiplicities. The single-charge simulation is an approximation to the combined-charge experimental sample. Improved experimental radiative corrections remain part of reference provenance; detector/RICH or radiative corrections are not applied to Herwig.
+\end{description}
+{\small\href{https://github.com/apapaefs/HerwigPolarizedPheno/blob/105045bd757aaa6b217e87811dc5f9a22a8d1cef/analyses/rivet/dis/COMPASS_2025_I2840545.cc}{Analysis source}\quad|\quad\href{https://github.com/apapaefs/HerwigPolarizedPheno/blob/105045bd757aaa6b217e87811dc5f9a22a8d1cef/analyses/rivet/dis/COMPASS_2025_I2840545.info}{Metadata}\quad|\quad\href{https://inspirehep.net/literature/2840545}{INSPIRE record}}
+
+\clearpage
+\Needspace{20\baselineskip}
+\subsection{\texorpdfstring{Corrected isoscalar multiplicities (2026 addendum)}{Corrected isoscalar multiplicities (2026 addendum)}}
+\id{COMPASS_2026_I3096394}\quad\cite{r3096394}
+\begin{description}
+\item[Measurement and setup.] Corrected $dM^{\pi^\pm,K^\pm,h^\pm}/dz$ for the earlier 160 GeV isoscalar measurements. Zero-polarization $\mu^+p$ and $\mu^+n$ yields form the isoscalar prediction.
+\item[Implemented selection.] $Q^2>1$, $W>5$, $0.004<x<0.4$, $0.1<y<0.7$; $0.2\le z\le0.85$, $12<p_h<40$, and Eq.~\eqref{eq:nu} with the appropriate hadron mass in both yields.
+\item[Reference coverage.] \href{https://www.hepdata.net/record/ins3096394?version=1}{Corrected HEPData v1 release}: 1,834 values. Each charge has 306 pion/hadron cells and 305 kaon cells. All released cells have nominal fixed-energy support.
+\item[Scope.] This addendum supersedes the two 2017 multiplicity references and is the current corrected isoscalar comparison. Improved radiative corrections update the experimental data. Statistical or denominator failures can still mask predictions; nominal support alone does not establish data agreement.
+\end{description}
+{\small\href{https://github.com/apapaefs/HerwigPolarizedPheno/blob/105045bd757aaa6b217e87811dc5f9a22a8d1cef/analyses/rivet/dis/COMPASS_2026_I3096394.cc}{Analysis source}\quad|\quad\href{https://github.com/apapaefs/HerwigPolarizedPheno/blob/105045bd757aaa6b217e87811dc5f9a22a8d1cef/analyses/rivet/dis/COMPASS_2026_I3096394.info}{Metadata}\quad|\quad\href{https://inspirehep.net/literature/3096394}{INSPIRE record}}
+
+\clearpage
+\section{HERMES analyses}
+\Needspace{20\baselineskip}
+\subsection{\texorpdfstring{Inclusive proton spin asymmetry (2007)}{Inclusive proton spin asymmetry (2007)}}
+\id{HERMES_2007_I726689}\quad\cite{r726689}
+\begin{description}
+\item[Measurement and setup.] $A_1^p(x)$ from longitudinally polarized 27.6 GeV $e^+$ DIS on a proton. Four independent physical-helicity samples provide ordinary and inverse-$D$ cross-section inputs.
+\item[Implemented selection.] $1\le Q^2\le20$, $W^2>3.24$, $0.10<y\le0.91$, $0.0212\le x\le0.900$, and scattered-lepton angle $0.04\le\theta_\ell\le0.22$ rad. The highest-energy prompt positron defines DIS kinematics. A $Q^2>4$ selection is diagnostic.
+\item[Reference coverage.] 15 proton $A_1$ points from \href{https://doi.org/10.17182/hepdata.11211.v1/t14}{HEPData Table 14}, checked against the official pinned HERMES archive.
+\item[Scope.] Postprocessing constructs the $A_1$ proxy with R1990 depolarization and neglects $\eta A_2$. This covers the proton subset of a paper also studying deuteron/neutron $g_1$. The circular lepton-angle envelope does not reproduce the year-dependent rectangular spectrometer response.
+\end{description}
+{\small\href{https://github.com/apapaefs/HerwigPolarizedPheno/blob/105045bd757aaa6b217e87811dc5f9a22a8d1cef/analyses/rivet/dis/HERMES_2007_I726689.cc}{Analysis source}\quad|\quad\href{https://github.com/apapaefs/HerwigPolarizedPheno/blob/105045bd757aaa6b217e87811dc5f9a22a8d1cef/analyses/rivet/dis/HERMES_2007_I726689.info}{Metadata}\quad|\quad\href{https://inspirehep.net/literature/726689}{INSPIRE record}}
+\Needspace{20\baselineskip}
+\subsection{\texorpdfstring{Auxiliary low-$Q^2$ proton projection (2007 legacy)}{Auxiliary low-Q2 proton projection (2007 legacy)}}
+\id{HERMES_2007_I726689_LEGACY}\quad\cite{r726689}
+\begin{description}
+\item[Measurement and setup.] Born longitudinal $A_\parallel(x,Q^2)$ from the same 27.6 GeV $e^+p$ measurement as the preceding entry. It is an additional implementation, not an additional experimental publication.
+\item[Implemented selection.] $0.18<Q^2<20$, $W^2>3.24$, $0.10<y<0.91$, $0.0041\le x<0.9$, and $0.04<\theta_\ell<0.22$ rad. Physical-helicity yields are combined without depolarization reweighting.
+\item[Reference coverage.] 45 measured values in 19 $x$ slices from \href{https://doi.org/10.17182/hepdata.11211.v1/t7}{HEPData Table 7}. The per-$x$ integration boundaries in $Q^2$ remain unverified.
+\item[Scope.] Use as an auxiliary projection until authoritative cell boundaries are available. Generator scales below 1 GeV are frozen; the eight points with mean $Q^2<1$ are excluded from quantitative pulls/goodness-of-fit. Exact experimental bin integration and perturbative control in those low-$Q^2$ cells are not established.
+\end{description}
+{\small\href{https://github.com/apapaefs/HerwigPolarizedPheno/blob/105045bd757aaa6b217e87811dc5f9a22a8d1cef/analyses/rivet/dis/HERMES_2007_I726689_LEGACY.cc}{Analysis source}\quad|\quad\href{https://github.com/apapaefs/HerwigPolarizedPheno/blob/105045bd757aaa6b217e87811dc5f9a22a8d1cef/analyses/rivet/dis/HERMES_2007_I726689_LEGACY.info}{Metadata}\quad|\quad\href{https://inspirehep.net/literature/726689}{INSPIRE record}}
+
+\clearpage
+\Needspace{20\baselineskip}
+\subsection{\texorpdfstring{Unpolarized azimuthal moments (2013 diagnostic)}{Unpolarized azimuthal moments (2013 diagnostic)}}
+\id{HERMES_2013_I1111237}\quad\cite{r1111237}
+\begin{description}
+\item[Measurement and setup.] Direct $\langle\cos\phi_h\rangle$ and $\langle\cos2\phi_h\rangle$ for $h^\pm,\pi^\pm,K^\pm$ on hydrogen/deuterium. The implementation uses zero-polarization 27.6 GeV $e^+$ with free $p/n$ targets; the publication includes both lepton charges.
+\item[Implemented selection.] $Q^2>1$, $W^2>10$, $0.023\le x<0.60$, $0.20\le y<0.85$; $x_F>0.2$, $0.20\le z<1.00$, $0.05\le p_T<1.30$. Hadrons/pions require $1<p_h<15$ and kaons $2<p_h<15$. No explicit lepton- or hadron-angle cut is present.
+\item[Reference coverage.] The exact $5\times5\times6\times6$ $(x,y,z,p_T)$ grid contains 900 cells per target/species/charge group. Two moments for 12 groups give 21,600 potential values. \textbf{No numerical experimental values or covariance are vendored} at the pinned revision.
+\item[Scope.] This remains a data-free generator diagnostic corresponding to the experimental paper. The repository records an unavailable collaboration endpoint during implementation; it does not supply pseudo-data, experimental pulls or goodness-of-fit.
+\end{description}
+{\small\href{https://github.com/apapaefs/HerwigPolarizedPheno/blob/105045bd757aaa6b217e87811dc5f9a22a8d1cef/analyses/rivet/dis/HERMES_2013_I1111237.cc}{Analysis source}\quad|\quad\href{https://github.com/apapaefs/HerwigPolarizedPheno/blob/105045bd757aaa6b217e87811dc5f9a22a8d1cef/analyses/rivet/dis/HERMES_2013_I1111237.info}{Metadata}\quad|\quad\href{https://inspirehep.net/literature/1111237}{INSPIRE record}}
+\Needspace{20\baselineskip}
+\subsection{\texorpdfstring{Identified-hadron multiplicities (2013)}{Identified-hadron multiplicities (2013)}}
+\id{HERMES_2013_I1208547}\quad\cite{r1208547}
+\begin{description}
+\item[Measurement and setup.] Charged-pion/kaon multiplicities on hydrogen and deuterium at 27.6 GeV, in five alternative three-dimensional binnings. The source accepts $e^\pm$; current zero-polarization cards use $e^+$ with free $p/n$ targets.
+\item[Implemented selection.] $Q^2>1$, $W^2>10$, $0.10<y<0.85$; matched released cells span $0.023\le x<0.60$, $0.2\le z\le1.1$, $0\le p_T\le1.2$. Stable $\pi^\pm,K^\pm$ require $2<p_h<15$. Only the $(z,Q^2)$ grid imposes the cell upper bound $Q^2=15$; there is no common angle or $x_F$ cut.
+\item[Reference coverage.] 6,592 retained cells in 40 target/species/binning datasets from the complete pinned vector-meson-subtracted HERMES archive. There are 104 readable projections with 928 points; \href{https://doi.org/10.17182/hepdata.62097.v1}{64 HEPData tables} provide projection checks.
+\item[Scope.] Ratios and density normalizations use event-level numerator/denominator covariance; the released dense statistical covariance is preserved. High-$z$ cells remain annotated. Alternative binnings overlap and require separate comparisons in the absence of cross-binning covariance.
+\end{description}
+{\small\href{https://github.com/apapaefs/HerwigPolarizedPheno/blob/105045bd757aaa6b217e87811dc5f9a22a8d1cef/analyses/rivet/dis/HERMES_2013_I1208547.cc}{Analysis source}\quad|\quad\href{https://github.com/apapaefs/HerwigPolarizedPheno/blob/105045bd757aaa6b217e87811dc5f9a22a8d1cef/analyses/rivet/dis/HERMES_2013_I1208547.info}{Metadata}\quad|\quad\href{https://inspirehep.net/literature/1208547}{INSPIRE record}}
+
+\clearpage
+\Needspace{20\baselineskip}
+\subsection{\texorpdfstring{Identified-hadron longitudinal asymmetries (2019)}{Identified-hadron longitudinal asymmetries (2019)}}
+\id{HERMES_2019_I1698889}\quad\cite{r1698889}
+\begin{description}
+\item[Measurement and setup.] Primary $A_\parallel$ for proton $\pi^\pm$ and deuteron $\pi^\pm,K^\pm$ at 27.6 GeV, plus auxiliary charge-difference $A_1$. Independent $e^+p/e^+n$ helicity samples model the publication\textquotesingle s $e^\pm$ hydrogen/deuterium data.
+\item[Implemented selection.] $Q^2>1$, $W^2>10$, $y<0.85$, $0.023\le x<0.60$, $0.04<\theta_\ell<0.22$ rad; $x_F>0.1$, $0.1<z<0.8$. Most projections require $z>0.2$; only $(x,z)$ retains $0.1<z<0.2$. Proton pions: $4<p_h<13.8$; deuteron pions/kaons: $2<p_h<15$. Unidentified deuteron hadrons use $0.5<p_h<15$.
+\item[Reference coverage.] Pinned APS supplement: 765 primary points (54 $x$, 126 $xz$, 108 $xp_T$, 477 $xzp_T$) plus 36 charge-difference $A_1$ values. The $p_T$ grids extend to 2 GeV; $x$/$xz$ yields have no common upper-$p_T$ veto.
+\item[Scope.] No hadron-angle acceptance is imposed. The published deuteron $A_\parallel$ already contains its D-state correction; no additional factor is applied. The 180 published spin-cosine amplitudes are excluded from generator overlays because the implemented optional cosine output is an unpolarized yield moment, not a fitted spin asymmetry.
+\end{description}
+{\small\href{https://github.com/apapaefs/HerwigPolarizedPheno/blob/105045bd757aaa6b217e87811dc5f9a22a8d1cef/analyses/rivet/dis/HERMES_2019_I1698889.cc}{Analysis source}\quad|\quad\href{https://github.com/apapaefs/HerwigPolarizedPheno/blob/105045bd757aaa6b217e87811dc5f9a22a8d1cef/analyses/rivet/dis/HERMES_2019_I1698889.info}{Metadata}\quad|\quad\href{https://inspirehep.net/literature/1698889}{INSPIRE record}}
+\clearpage\begin{thebibliography}{99}\raggedright
+\bibitem{r820721} COMPASS Collaboration,
+\emph{Flavour Separation of Helicity Distributions from Deep Inelastic Muon-Deuteron Scattering},
+Phys. Lett. B 680 (2009) 217--224.
+\href{https://doi.org/10.1016/j.physletb.2009.08.065}{doi:10.1016/j.physletb.2009.08.065};\quad\href{https://arxiv.org/abs/0905.2828}{arXiv:0905.2828}.
+
+\bibitem{r843494} COMPASS Collaboration,
+\emph{The Spin-dependent Structure Function of the Proton $g_1^p$ and a Test of the Bjorken Sum Rule},
+Phys. Lett. B 690 (2010) 466--472.
+\href{https://doi.org/10.1016/j.physletb.2010.05.069}{doi:10.1016/j.physletb.2010.05.069};\quad\href{https://arxiv.org/abs/1001.4654}{arXiv:1001.4654}.
+
+\bibitem{r862410} COMPASS Collaboration,
+\emph{Quark helicity distributions from longitudinal spin asymmetries in muon-proton and muon-deuteron scattering},
+Phys. Lett. B 693 (2010) 227--235.
+\href{https://doi.org/10.1016/j.physletb.2010.08.034}{doi:10.1016/j.physletb.2010.08.034};\quad\href{https://arxiv.org/abs/1007.4061}{arXiv:1007.4061}.
+
+\bibitem{r1236358} COMPASS Collaboration,
+\emph{Hadron Transverse Momentum Distributions in Muon Deep Inelastic Scattering at 160 GeV/c},
+Eur. Phys. J. C 73 (2013) 2531.
+\href{https://doi.org/10.1140/epjc/s10052-013-2531-6}{doi:10.1140/epjc/s10052-013-2531-6};\quad\href{https://arxiv.org/abs/1305.7317}{arXiv:1305.7317}.
+
+\bibitem{r1278730} COMPASS Collaboration,
+\emph{Measurement of azimuthal hadron asymmetries in semi-inclusive deep inelastic scattering off unpolarised nucleons},
+Nucl. Phys. B 886 (2014) 1046--1077.
+\href{https://doi.org/10.1016/j.nuclphysb.2014.07.019}{doi:10.1016/j.nuclphysb.2014.07.019};\quad\href{https://arxiv.org/abs/1401.6284}{arXiv:1401.6284}.
+
+\bibitem{r1357198} COMPASS Collaboration,
+\emph{The Spin Structure Function $g_1^p$ of the Proton and a Test of the Bjorken Sum Rule},
+Phys. Lett. B 753 (2016) 18--28.
+\href{https://doi.org/10.1016/j.physletb.2015.11.064}{doi:10.1016/j.physletb.2015.11.064};\quad\href{https://arxiv.org/abs/1503.08935}{arXiv:1503.08935}.
+
+\bibitem{r1444985} COMPASS Collaboration,
+\emph{Multiplicities of charged pions and unidentified charged hadrons from deep-inelastic scattering of muons off an isoscalar target},
+Phys. Lett. B 764 (2017) 1--10.
+\href{https://doi.org/10.1016/j.physletb.2016.09.042}{doi:10.1016/j.physletb.2016.09.042};\quad\href{https://arxiv.org/abs/1604.02695}{arXiv:1604.02695}.
+
+\bibitem{r1483098} COMPASS Collaboration,
+\emph{Multiplicities of charged kaons from deep-inelastic muon scattering off an isoscalar target},
+Phys. Lett. B 767 (2017) 133--141.
+\href{https://doi.org/10.1016/j.physletb.2017.01.053}{doi:10.1016/j.physletb.2017.01.053};\quad\href{https://arxiv.org/abs/1608.06760}{arXiv:1608.06760}.
+
+\bibitem{r1501480} COMPASS Collaboration,
+\emph{Final COMPASS results on the deuteron spin-dependent structure function $g_1^d$ and the Bjorken sum rule},
+Phys. Lett. B 769 (2017) 34--41.
+\href{https://doi.org/10.1016/j.physletb.2017.03.018}{doi:10.1016/j.physletb.2017.03.018};\quad\href{https://arxiv.org/abs/1612.00620}{arXiv:1612.00620}.
+
+\bibitem{r1624692} COMPASS Collaboration,
+\emph{Transverse-momentum-dependent Multiplicities of Charged Hadrons in Muon-Deuteron Deep Inelastic Scattering},
+Phys. Rev. D 97 (2018) 032006.
+\href{https://doi.org/10.1103/PhysRevD.97.032006}{doi:10.1103/PhysRevD.97.032006};\quad\href{https://arxiv.org/abs/1709.07374}{arXiv:1709.07374}.
+
+\bibitem{r1788430} COMPASS Collaboration,
+\emph{Antiproton over proton and $K^-$ over $K^+$ multiplicity ratios at high z in DIS},
+Phys. Lett. B 807 (2020) 135600.
+\href{https://doi.org/10.1016/j.physletb.2020.135600}{doi:10.1016/j.physletb.2020.135600};\quad\href{https://arxiv.org/abs/2003.11791}{arXiv:2003.11791}.
+
+\bibitem{r2840545} COMPASS Collaboration,
+\emph{Multiplicities of positive and negative pions, kaons and unidentified hadrons from deep-inelastic scattering of muons off a liquid hydrogen target},
+Phys. Rev. D 112 (2025) 012002.
+\href{https://doi.org/10.1103/q4rb-bhcg}{doi:10.1103/q4rb-bhcg};\quad\href{https://arxiv.org/abs/2410.12005}{arXiv:2410.12005}.
+
+\bibitem{r3096394} COMPASS Collaboration,
+\emph{Addendum to multiplicities of charged pions, kaons and unidentified charged hadrons on an isoscalar target measured by COMPASS Collaboration},
+Phys. Lett. B 875 (2026) 140266.
+\href{https://doi.org/10.1016/j.physletb.2026.140266}{doi:10.1016/j.physletb.2026.140266};\quad\href{https://arxiv.org/abs/2512.23727}{arXiv:2512.23727}.
+
+\bibitem{r726689} HERMES Collaboration,
+\emph{Precise determination of the spin structure function $g_1$ of the proton, deuteron and neutron},
+Phys. Rev. D 75 (2007) 012007.
+\href{https://doi.org/10.1103/PhysRevD.75.012007}{doi:10.1103/PhysRevD.75.012007};\quad\href{https://arxiv.org/abs/hep-ex/0609039}{arXiv:hep-ex/0609039}.
+
+\bibitem{r1111237} HERMES Collaboration,
+\emph{Azimuthal distributions of charged hadrons, pions, and kaons produced in deep-inelastic scattering off unpolarized protons and deuterons},
+Phys. Rev. D 87 (2013) 012010.
+\href{https://doi.org/10.1103/PhysRevD.87.012010}{doi:10.1103/PhysRevD.87.012010};\quad\href{https://arxiv.org/abs/1204.4161}{arXiv:1204.4161}.
+
+\bibitem{r1208547} HERMES Collaboration,
+\emph{Multiplicities of charged pions and kaons from semi-inclusive deep-inelastic scattering by the proton and the deuteron},
+Phys. Rev. D 87 (2013) 074029.
+\href{https://doi.org/10.1103/PhysRevD.87.074029}{doi:10.1103/PhysRevD.87.074029};\quad\href{https://arxiv.org/abs/1212.5407}{arXiv:1212.5407}.
+
+\bibitem{r1698889} HERMES Collaboration,
+\emph{Longitudinal double-spin asymmetries in semi-inclusive deep-inelastic scattering of electrons and positrons by protons and deuterons},
+Phys. Rev. D 99 (2019) 112001.
+\href{https://doi.org/10.1103/PhysRevD.99.112001}{doi:10.1103/PhysRevD.99.112001};\quad\href{https://arxiv.org/abs/1810.07054}{arXiv:1810.07054}.
+\end{thebibliography}
+\end{document}
