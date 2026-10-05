@@ -68,6 +68,42 @@ proton/deuteron cells against Q2, at each published mean Q2. The reference
 markers and both total and optional statistical bars use those means;
 the theory steps retain their physical bin edges.
 
+## Paper panels of all Born cells
+
+The campaign `plot` and `full` stages automatically create separate proton
+and deuteron figures with five columns and four rows. Nineteen panels show
+the fixed-x slices in increasing x; the twentieth tile contains the legend.
+Each figure contains all 45 published Born A_parallel cells, including the
+eight cells below Q2=1 GeV2 with data only. The horizontal axis is logarithmic
+Q2, with the same 0.18–20 GeV2 range in every panel. Vertical limits are
+shared within each row and match between the two targets; they include zero
+and the full experimental and Monte Carlo error bars.
+
+Black data markers are placed at the published mean Q2. Their inner bars
+show the statistical error, and their outer bars show the quadrature sum of
+the statistical and published combined systematic errors. The published
+systematic error already includes the normalization uncertainty. Orange
+steps show the nominal Herwig LL/UU ratio in the physical cell boundaries,
+with its statistical uncertainty as a band. Empty Monte Carlo cells retain
+their data markers without a theory prediction. No depolarization factor,
+additional target correction or unpolarized-fit weighting is applied by
+this renderer.
+
+The vector PDF and PNG outputs are named
+`AParallel_P_BornCells_5x4` and `AParallel_D_BornCells_5x4`. They are embedded
+in both campaign and analysis HTML indexes and saved under
+`plots/HERMES_2007_I726689/born-cell-panels/<input-checksum>/`, alongside
+`born-cells.json`, `born-cells.csv` and a portable `index.html`. The numerical
+snapshot records the original cell values, uncertainties, geometry, theory
+support and plotting settings. A complete cache is reused only after all
+recorded output checksums pass; changed inputs or incomplete outputs produce
+a separate revision. Existing campaign outputs are retained.
+
+These figures use the postprocessed cell results, so a completed v4 campaign
+needs only its `plot` stage repeated to add them. No new event generation or
+postprocessing is required. The implementation is in
+[`hermes_born_cell_plots.py`](../scripts/hermes_born_cell_plots.py).
+
 ## Both integrated directions
 
 Each projection forms the ratio after integrating the ordinary helicity
