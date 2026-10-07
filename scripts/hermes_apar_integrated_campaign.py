@@ -29,9 +29,9 @@ SOURCE_INPUTS = (
 # not merely giving an old acceptance calculation a new cache key.
 FIDUCIAL_SOURCES = {
     ROOT / "analyses/rivet/dis/HERMES_2007_I726689.cc":
-        "29ea7fa2db2276f56a35bacb32c9b7a570c0c25876af97582251fad04beea4be",
+        "79ad77c9b7981f6a9cd13b5cc0ed0f869828b39005ef08493581e9e953f74d14",
     ROOT / "cards/experimental/HERMES_2007_I726689/HERMES_2007_I726689-Common.in":
-        "9657649425143b93e3fafc8368b5c9c92cd1f47aa4453114f7d2b63416a49202",
+        "58cfdc8d24fc76d62ac548b02b5031677bf206d47cf5d1947016a98c63c59d49",
 }
 REQUIRED_OUTPUTS = {"integrated.json", "integrated.csv", "index.html"} | {
     f"{stem}-{selection}.{suffix}"
@@ -94,8 +94,11 @@ def ensure_campaign_plots(campaign_dir: Path) -> dict[str, Any]:
             "HERMES reconstructed plots need postprocess/summary.json with the "
             "Born cells; run postprocess on the completed campaign first."
         )
-    if json.loads(summary_path.read_text(encoding="utf-8")).get("measurement") != MEASUREMENT:
+    summary = json.loads(summary_path.read_text(encoding="utf-8"))
+    if summary.get("measurement") != MEASUREMENT:
         raise CacheError("The reconstructed gallery requires a HERMES_2007_I726689 summary")
+    if summary.get("acceptance") != "rectangle_intersect_polar_ring":
+        raise CacheError("Rectangle weights require a v5 rectangle-intersect-polar-ring summary; preserve earlier ring-only reconstructions")
     _validate_fiducial_sources()
     from hermes_unpolarized_fit import MODEL_METADATA, SNAPSHOT_PATH
     if MODEL_METADATA["snapshot_sha256"] != _digest(SNAPSHOT_PATH):

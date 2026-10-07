@@ -13,6 +13,12 @@ and neutron samples supply both targets, with four separately generated
 physical helicities for each component. The proton prediction remains
 `d14-x01-y01`; the deuteron prediction is `d14-x01-y02`.
 
+The current v5 configuration fixes missing physical generation support and
+uses a rectangular primary aperture with a shared-event ring control. See
+[the 6 October preparation guide](hermes-v5-preparation-20261006.md) for
+the exact matched production budget and validation status. V4 remains a
+historical comparison, not a corrected prediction.
+
 ## Physics definition
 
 The analysis reconstructs the fixed-target laboratory kinematics from the
@@ -35,14 +41,25 @@ The event selection is
 - `0.1 < y <= 0.91`;
 - `W2 > 3.24 GeV2`;
 - `0.04 <= theta <= 0.22 rad`;
-- the published `0.0212 <= x <= 0.9` range.
+- primary aperture `abs(theta_x)<0.17` and `0.04<abs(theta_y)<0.14 rad`;
+- `0.0212 <= x <= 0.9` for historical one-dimensional projections,
+  with the thesis-precision x edges for native Born cells.
+
+The ring control omits only the projected-angle requirements and is filled
+on the same events. Rectangle and ring results retain separate acceptance
+identities in summaries, compact plots and GD11 reconstruction weights;
+their MC errors are correlated. The generator is intentionally looser:
+`MinW2=2 GeV2` and `Miny=.095`. Its massless light-cone W2/y variables are
+not identical to the physical quantities above. Equal numerical cuts in v4
+removed accepted physical events and require new generation to correct.
 
 The same quantities are filled for a nested `Q2 > 4 GeV2` selection. The
 published `Q2 > 1 GeV2` view reaches the `QMin = 1 GeV` boundary of both
 NNPDF40 NLO and NNPDFpol2.0 NLO, so it is exploratory. The `Q2 > 4 GeV2`
 view is the conservative HerwigPol validation region.
 
-For the A1 estimator, the R1990 fit supplies `R(x,Q2)` in the longitudinal depolarization factor
+For the A1 estimator, the full three-fit R1990 average supplies `R(x,Q2)`
+in the longitudinal depolarization factor
 `D` defined by `A_parallel = D (A1 + eta A2)`. The prediction neglects
 `eta*A2` and does not model `g2`. HERMES's final published `A1` extraction
 uses fitted nonzero `g2` through Eqs. (22), (40), and (41); this prediction
@@ -89,6 +106,14 @@ asymmetries would give a different estimator and is not used. The proton and
 deuteron outputs share proton events, so their Monte Carlo errors are not
 independent, although each output retains its own ratio covariance.
 
+The primary acceptance has identity `rectangle_intersect_polar_ring`.
+`RingControl_` selectors retain the polar-ring result on the same events.
+For each control, the summary includes the ring-minus-primary difference,
+its paired statistical error and the primary/control covariance for
+A_parallel and, where applicable, A1. The compact acceptance gallery shows
+these cell differences with their paired errors; the two standalone error
+bars must not be treated as independent.
+
 The spin reduction `0.925 = 1 - 1.5*omegaD`, with `omegaD=0.05`, follows
 [Eq. (23) of the inclusive HERMES paper](https://arxiv.org/pdf/hep-ex/0609039).
 This per-nucleon impulse approximation omits binding, Fermi motion,
@@ -116,9 +141,11 @@ The source archive and both member SHA-256 checksums are pinned in the
 snapshot and measurement descriptor. The published experimental systematic
 column already includes the proton/deuteron normalization uncertainty.
 
-The paper's 15-point values average evolved `Q2` sub-bins at their common
-mean scale. Current predictions integrate the selected event cross sections
-and do not reproduce that statistical averaging/evolution procedure. The
+The paper's 15-point A1 values are Q2 averages carrying evolution
+uncertainties. Its explicit evolution and covariance-weighted averaging
+derivations concern g1; the complete A1 sequence is not separately
+reconstructed here. Current predictions integrate selected event cross
+sections and do not reproduce the experimental averaging prescription. The
 `Q2 > 4 GeV2` curves are internal controls; the published `Q2 > 1 GeV2`
 reference is not reused as a measurement with that new cut. The snapshot also
 does not provide a full experimental inter-bin covariance matrix.
@@ -209,7 +236,7 @@ the campaign manifest.
 Run from the source workspace and load the campaign environment first:
 
 ```bash
-cd /Users/apapaefs/Projects/HerwigPol/.worktrees/hermes-deuteron-20260930
+cd /Users/apapaefs/Projects/HerwigPolarizedPheno
 source /opt/homebrew/opt/modules/init/bash
 module purge
 module load herwig/pol
@@ -218,8 +245,9 @@ module load herwig/pol
 The primary entry point is `scripts/run_phenomenology_campaign.py`; it
 delegates this fixed-target measurement to the experimental runner. The
 stage commands below are valid through either entry point. See
-[the 30 September preparation note](hermes-deuteron-preparation-20260930.md)
-for the prepared nominal production tag and launch command.
+[the v5 preparation note](hermes-v5-preparation-20261006.md)
+for the current nominal production tag, preparation command and launch plan.
+The September notes retain historical configurations.
 
 Discover registered measurements:
 
@@ -249,7 +277,7 @@ Run a complete 100-event-per-logical-job smoke campaign:
 ```bash
 python3 scripts/run_experimental_campaign.py full \
   --measurement HERMES_2007_I726689 \
-  --tag hermes_pd_smoke_20260930_v1 --smoke --jobs 4
+  --tag hermes_pd_smoke_20261006_v5_example --smoke --jobs 4
 ```
 
 Add `--comparisons` to smoke-test all five prediction families. Smoke mode
@@ -258,7 +286,7 @@ uses 100 events for each of the 60 logical jobs, including LO:
 ```bash
 python3 scripts/run_experimental_campaign.py full \
   --measurement HERMES_2007_I726689 \
-  --tag hermes_pd_comparison_smoke_20260930_v1 \
+  --tag hermes_pd_comparison_smoke_20261006_v5_example \
   --comparisons \
   --smoke \
   --jobs 4
@@ -319,7 +347,7 @@ module load herwig/pol
 
 python3 scripts/run_experimental_campaign.py full \
   --measurement HERMES_2007_I726689 \
-  --tag hermes_pd_spin_suite_300k_20260930_v1 \
+  --tag hermes_pd_spin_suite_300k_20261006_v5_example \
   --comparisons \
   --posnlo-events 300000 \
   --negnlo-events 30000 \

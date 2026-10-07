@@ -361,6 +361,11 @@ def reconstruct(
     else:
         reference = json.loads(reference_path.read_text(encoding="utf-8"))
     summary = json.loads(summary_path.read_text(encoding="utf-8"))
+    if summary.get("acceptance") != DEFAULT_CUTS["acceptance"]:
+        raise ProjectionError(
+            "The fitted rectangle weights require a v5 rectangle-intersect-polar-ring summary. "
+            "Do not reweight an earlier ring-only campaign; preserve its prior reconstruction."
+        )
     def make_integrator(**changes: Any) -> Integrator:
         options = {"model": model, "quadrature_order": quadrature_order}
         options.update(changes)
@@ -377,7 +382,7 @@ def reconstruct(
            "cuts": DEFAULT_CUTS, "metadata": MODEL_METADATA,
            "controls": {
                "ALLM97_HYBRID": "Alternative unpolarized F2 shape; hybrid deuteron uses the GD11 D/P ratio",
-               "R1990": "Alternative R parameterization in the fitted unpolarized cross section",
+               "R1990": "Whitlow three-fit average in the fitted unpolarized cross section; central GD11/R1998 is unchanged",
                "W2GT4": "Stricter W2 domain; changes reconstructed acceptance and is not a same-fiducial uncertainty",
                "quadrature_double": "Numerical convergence check at twice the central quadrature order",
            } if control_integrators else {},

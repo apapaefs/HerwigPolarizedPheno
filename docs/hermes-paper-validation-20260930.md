@@ -7,11 +7,45 @@ canonical GitHub commit is `c4e9de1f311937db0f4573accfbba8f28a30e3bf`.
 The audit distinguishes correction-factor closure from a complete
 reproduction of the experiment's finite-Q2 extraction and averaging.
 
-## Verdict
+## 6 October follow-up: generation support and acceptance
+
+The factor and reference checks below remain useful, but they did not validate
+physical phase-space coverage. The later audit found a generation-window
+defect in v3/v4: equal numerical generator and Rivet cuts do not select equal
+kinematics for a massive fixed target. Some of the 37 cells above Q2=1 were
+only partly generated. The previous conclusion of full support is withdrawn.
+
+For a target at rest, put a=M/(2E). The active generator's light-cone fraction
+and massless DIS window obey
+
+```text
+xi = x / (1 + a*x)
+W2_generator = W2_physical - M^2 + a*Q2
+y_generator = y_physical * (1 + a*x) / (1 + a)
+```
+
+Thus `MinW2=3.24` removed physical events accepted by Rivet near its W2 cut,
+and `Miny=.1` removed a narrow part of the physical lower-y boundary. A v4
+example, x=.7 and Q2=6 GeV2, has W2_physical=3.4518 GeV2 but
+W2_generator=2.6734 GeV2. Preserving the lepton momentum through the shower
+does not cure this difference in variable definitions. V5 uses generation
+`MinW2=2 GeV2`, `Miny=.095`, retaining the exact physical cuts in Rivet.
+Missing events cannot be restored by replotting or reweighting old YODAs.
+
+V5 also makes the rectangular spectrometer aperture, intersected with the
+published polar-angle envelope, the primary selection. The polar-angle ring
+is retained as a control on the same events. The former fit-B-only R choice
+is replaced by the full three-fit R1990 average for the A1 proxy. See the
+[v5 preparation and validation guide](hermes-v5-preparation-20261006.md).
+Historical runtime counts and hashes below describe the September audit;
+they are not validation evidence for the revised selection.
+
+## Verdict of the September factor audit
 
 The lepton depolarization factor and deuteron spin factor are each applied
 once. Published reference values are not corrected a second time. The
-reference data and scalar DIS selection match the selected paper entries.
+reference data and the numerical scalar Rivet cuts match the selected paper
+entries. This does not establish generator coverage or the detector aperture.
 
 A separate NLO normalization error was found: the active generator emits
 NEGNLO as a positive magnitude, while the old experimental loader added it
@@ -25,7 +59,7 @@ missing order sign.
 
 The corrected prediction remains an approximation to the published A1:
 eta*A2 and a consistent finite-Q2 g2 treatment are absent, and its event
-averaging differs from the paper's common-Q2 statistical averaging/evolution.
+averaging does not reproduce the published Q2-averaged A1 prescription.
 This audit does not establish quantitative agreement with the measured curves.
 
 ## Factors from event generation to the plotted ratio
@@ -69,15 +103,22 @@ This epsilon form reproduces the implemented D algebra independently. Combining
 the paper's Eqs. (20), (37), (40)-(41) closes the last identity to floating-point precision.
 HERMES explicitly uses R1990 for its A1 extraction (Sec. VI B, printed p. 16).
 The R parameterization is an empirical analysis conversion; it is not a
-recalculation of generator-native FL/F1.
+recalculation of generator-native FL/F1. The September implementation used
+Whitlow fit B alone. Fit B is a published form, but the thesis definition of
+R1990 is `(Ra+Rb+Rc)/3`; v5 uses that full average. This change affects the
+inverse-D A1 estimator, not direct Born Aparallel. Mean-point diagnostics
+support the revised convention but do not establish the exact experimental
+implementation at every point.
 
 The 27.6 GeV positron beam, Q2 in [1,20] GeV2, y in (.1,.91], W2>3.24GeV2,
 theta in [.04,.22] rad and x in [.0212,.9] match the selected Q2>1 publication
 region and Fig. 4's scalar envelope. The body text's angular unit typo does not
 replace the radian values labelled in Fig. 4. The implementation selects the
 highest-energy prompt outgoing positron, consistent with the paper's leading
-lepton selection for this QED-radiation-free generator setup. It models the
-scalar acceptance envelope, not the full spectrometer response. Cards use
+lepton selection for this QED-radiation-free generator setup. The September
+implementation modeled the scalar acceptance envelope. V5 additionally
+intersects it with the rectangular aperture, while still omitting detector
+response. Cards use
 QCD shower interactions and apply no detector/QED radiative correction to the
 already Born-unfolded data. The Q2>4 outputs are internal controls with no
 separate published reference.
@@ -126,26 +167,32 @@ shift Aparallel/D relative to A1 by 11.84%. This is not an estimate from the
 paper's fitted g2, and the paper's .54%/1.9% g2-term averages in Eq. (20) do not
 bound this A1 conversion error.
 
-Table XXII's 15 x-points average Q2 sub-bins after evolution to a common mean
-scale; our curves are accepted-event cross-section-weighted ratios with no
-such evolution/statistical reaveraging. A faithful precision reproduction
-needs an explicit, consistent finite-Q2 g1/g2/unpolarized baseline and matching
-bin prescription. No paper-model numerical g2 correction has been silently
+Table XXII's 15 A1 points are Q2-averaged results carrying evolution
+uncertainties. The paper explicitly describes g1 evolution in Eq. (38) and
+covariance-weighted averaging in Appendix B; it does not separately specify
+the complete A1 averaging/evolution sequence. Our accepted-event
+cross-section-weighted proxy does not reproduce that experimental
+prescription. Correlated statistical averaging is not simply weighting by
+the inverse diagonal variances. A faithful precision reproduction needs an
+explicit, consistent finite-Q2 g1/g2/unpolarized baseline and matching bin
+prescription. No paper-model numerical g2 correction has been silently
 added, and no target-mass/higher-twist treatment is inferred from a massive
 nucleon in the event record.
 
 The deuteron model is free (p+n)/2 with fixed omegaD=.05, without binding,
 Fermi motion, off-shell effects, shadowing or tensor structure functions. The
 Monte Carlo error band does not include these nuclear uncertainties or a
-cross-target covariance matrix. Full experimental inter-bin covariance is
-not provided by the current snapshot. Q2>1 reaches the selected PDF boundary;
-Q2>4 is the conservative internal control.
+cross-target covariance matrix. The original A1 snapshot does not provide
+its full experimental inter-bin covariance; the later Born snapshot does
+retain both published 45x45 statistical matrices. Q2>1 reaches the selected
+PDF boundary; Q2>4 is an analyst-selected internal control, not a published
+measurement or a guarantee that power corrections are negligible.
 
 Other descriptors using the historical inclusive order sum are unchanged by
 this scoped HERMES repair and require a separate signed-stream audit before
 using their old curves as quantitative NLO predictions.
 
-## Completed runtime validation and replacement preparation
+## Historical September runtime validation and replacement preparation
 
 The active Odysseus `herwig/pol` environment passed all **247 regression tests**,
 including the independent factor, reference and order-magnitude tests. Fresh

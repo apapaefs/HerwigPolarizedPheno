@@ -24,7 +24,8 @@ DEFAULT_CUTS = dict(SNAPSHOT["cuts"])
 MODEL_METADATA = {
     "central": "GD11-P/D F2 with R1998; independent unpolarized world-data fits",
     "control": "ALLM97 proton F2; deuteron hybrid ALLM97-P * GD11-D / GD11-P",
-    "alternate_R": "R1990 changes only the unpolarized cross-section conversion",
+    "alternate_R": "R1990 three-fit average changes only the unpolarized cross-section conversion",
+    "acceptance": "Projected rectangle intersected with the 0.04--0.22 rad polar ring; azimuthally uniform longitudinal inclusive cross section",
     "sources": SNAPSHOT["sources"],
     "snapshot_sha256": hashlib.sha256(_SNAPSHOT_BYTES).hexdigest(),
     "fit_validity": SNAPSHOT["fit_validity"],
@@ -86,8 +87,11 @@ def longitudinal_ratio(x, q2, r_model: str = "R1998"):
     theta = 1 + 12 * q2 / (q2 + 1) * .125**2 / (.125**2 + x*x)
     logq = np.log(q2 / .04)
     if r_model == "R1990":
-        a, b, c = SNAPSHOT["R1990_coefficients"]
-        result = a / logq * theta + b / q2 + c / (q2*q2 + .09)
+        a, b, c = (SNAPSHOT["R1990_coefficients"][key] for key in ("a", "b", "c"))
+        ra = a[0] / logq * theta + a[1] / (q2**4 + a[2]**4)**.25
+        rb = b[0] / logq * theta + b[1] / q2 + b[2] / (q2*q2 + .09)
+        rc = c[0] / logq * theta + c[1] / np.sqrt((q2 - 5 * (1 - x)**5)**2 + c[2]**2)
+        result = (ra + rb + rc) / 3
     elif r_model == "R1998":
         a, b, c = (SNAPSHOT["R1998_coefficients"][key] for key in ("a", "b", "c"))
         ra = a[0] / logq * theta + a[1] / (q2**4 + a[2]**4)**.25 * (1 + a[3]*x + a[4]*x*x) * x**a[5]
@@ -114,15 +118,17 @@ def differential_cross_section(target: str, x, q2, model: str = "GD11", r_model:
     return _scalar_if_scalar(result)
 
 
+def _theta_boundary(theta):
+    s = math.sin(theta/2)**2
+    return (0., 4*_E*_E*s, 2*_E/_M*s, 1.)
+
+
 def _boundary_functions(q2low, q2high, w2_min):
     # Each Q2 boundary is (n0+n1*x)/(d0+d1*x). All intersections are analytic.
-    def theta_boundary(theta):
-        s = math.sin(theta/2)**2
-        return (0., 4*_E*_E*s, 2*_E/_M*s, 1.)
     lower = [(q2low, 0., 1., 0.), (0., 2*_M*_E*DEFAULT_CUTS["y_min"], 1., 0.),
-             (0., w2_min-_M*_M, 1., -1.), theta_boundary(DEFAULT_CUTS["theta_min_rad"])]
+             (0., w2_min-_M*_M, 1., -1.), _theta_boundary(DEFAULT_CUTS["theta_min_rad"])]
     upper = [(q2high, 0., 1., 0.), (0., 2*_M*_E*DEFAULT_CUTS["y_max"], 1., 0.),
-             theta_boundary(DEFAULT_CUTS["theta_max_rad"])]
+             _theta_boundary(DEFAULT_CUTS["theta_max_rad"])]
     return lower, upper
 
 
@@ -164,20 +170,66 @@ def _gauss(order):
     return np.polynomial.legendre.leggauss(order)
 
 
+def azimuth_acceptance(theta, acceptance: str = "rectangle"):
+    """Fraction of azimuth accepted at a polar angle, including the ring.
+
+    Projected lab angles obey tan(theta_x)=tan(theta)*cos(phi), and likewise
+    for theta_y. For longitudinal inclusive DIS the cross section is uniform
+    in phi, so choosing the transverse y axis as vertical is immaterial.
+    This geometric aperture is not a detector-efficiency model.
+    """
+    if acceptance not in {"rectangle", "ring"}:
+        raise ValueError(f"Unknown HERMES acceptance: {acceptance}")
+    theta = np.asarray(theta, dtype=float)
+    if np.any(~np.isfinite(theta)) or np.any(theta < 0):
+        raise ValueError("Polar angles must be finite and nonnegative")
+    inside = (theta >= DEFAULT_CUTS["theta_min_rad"]) & (theta <= DEFAULT_CUTS["theta_max_rad"])
+    if acceptance == "ring":
+        return _scalar_if_scalar(inside.astype(float))
+    # Outside the forward ring the value is zero; use a benign denominator
+    # there so neither theta=0 nor backward angles trigger invalid ratios.
+    radius = np.where(inside, np.tan(theta), 1.)
+    vertical_min = math.tan(DEFAULT_CUTS["theta_vertical_min_rad"])
+    vertical_max = math.tan(DEFAULT_CUTS["theta_vertical_max_rad"])
+    horizontal_max = math.tan(DEFAULT_CUTS["theta_horizontal_max_rad"])
+    lower = np.maximum(np.arcsin(np.clip(vertical_min / radius, 0, 1)),
+                       np.arccos(np.clip(horizontal_max / radius, 0, 1)))
+    upper = np.arcsin(np.clip(vertical_max / radius, 0, 1))
+    return _scalar_if_scalar(np.where(inside, 2 / math.pi * np.maximum(0., upper - lower), 0.))
+
+
+def _aperture_boundaries():
+    """Q2 curves at every branch change of the projected aperture fraction."""
+    vertical_min = math.tan(DEFAULT_CUTS["theta_vertical_min_rad"])
+    vertical_max = math.tan(DEFAULT_CUTS["theta_vertical_max_rad"])
+    horizontal_max = math.tan(DEFAULT_CUTS["theta_horizontal_max_rad"])
+    angles = (DEFAULT_CUTS["theta_vertical_min_rad"],
+              DEFAULT_CUTS["theta_vertical_max_rad"],
+              DEFAULT_CUTS["theta_horizontal_max_rad"],
+              math.atan(math.hypot(horizontal_max, vertical_min)),
+              math.atan(math.hypot(horizontal_max, vertical_max)))
+    return [_theta_boundary(angle) for angle in sorted(set(angles))]
+
+
 def integrate_cross_section(target: str, xlow: float, xhigh: float, q2low: float,
                             q2high: float, quadrature_order: int = 32,
                             model: str = "GD11", r_model: str = "R1998",
-                            w2_min: float = 3.24) -> float:
-    """Integrate independent σUU over a cell intersection, returning pb.
+                            w2_min: float = 3.24, acceptance: str = "rectangle") -> float:
+    """Integrate independent sigma_UU over a cell intersection, returning pb.
 
-    Applies the actual v4 Q2/y/W2/theta/x cuts. Gauss integration splits x
-    at every analytic boundary crossing and integrates in log(Q2), so empty
-    or narrow clipped cells are handled without rectangular cut sampling.
+    Applies the physical v5 Q2/y/W2/x cuts and, by default, the projected
+    rectangle intersected with the polar ring. acceptance="ring" is an
+    explicit historical geometric control. The independent fit has no
+    generation-window restriction: the v5 generator fully covers this region.
+    All analytic cut/aperture crossings split x and Q2 before quadrature.
+    Sine-squared coordinates regularize aperture square roots at endpoints.
     w2_min=4 is a fit-domain weight sensitivity control, not a new MC cut.
     """
     target = _target(target)
     if model not in {"GD11", "ALLM97_HYBRID"} or r_model not in {"R1998", "R1990"}:
         raise ValueError("Unknown unpolarized model")
+    if acceptance not in {"rectangle", "ring"}:
+        raise ValueError(f"Unknown HERMES acceptance: {acceptance}")
     if not all(math.isfinite(v) for v in (xlow, xhigh, q2low, q2high, w2_min)):
         raise ValueError("Cell boundaries must be finite")
     if xhigh < xlow or q2high < q2low or w2_min < DEFAULT_CUTS["w2_min_GeV2"]:
@@ -188,18 +240,31 @@ def integrate_cross_section(target: str, xlow: float, xhigh: float, q2low: float
     if xhigh <= xlow or q2high <= q2low:
         return 0.
     lower, upper = _boundary_functions(q2low, q2high, w2_min)
-    points = _breakpoints(xlow, xhigh, lower+upper)
+    aperture = _aperture_boundaries() if acceptance == "rectangle" else []
+    points = _breakpoints(xlow, xhigh, lower + upper + aperture)
+    # u in [0,1], with vanishing derivative at both endpoints. Applied to x
+    # and log(Q2), this removes the square-root cusps of clipped azimuth arcs.
+    angle = (nodes + 1) * math.pi / 4
+    fractions = np.sin(angle)**2
+    transformed_weights = weights * math.pi / 2 * np.sin(angle) * np.cos(angle)
     result = 0.
     for xa, xb in zip(points[:-1], points[1:]):
-        x = (xa+xb)/2 + (xb-xa)/2 * nodes
+        x = xa + (xb - xa) * fractions
         low, high = q2_limits(x, q2low, q2high, w2_min)
-        # The boundary splitting guarantees a segment is wholly open or closed.
         if np.all(high <= low):
             continue
         if np.any(high <= low):
             raise RuntimeError("Analytic fiducial boundary segmentation failed")
-        logs = np.log(low), np.log(high)
-        q2 = np.exp((logs[0][:, None]+logs[1][:, None])/2 + (logs[1]-logs[0])[:, None]/2 * nodes)
-        inner = np.sum(differential_cross_section(target, x[:, None], q2, model, r_model) * q2 * weights, axis=1) * (logs[1]-logs[0])/2
-        result += float(np.dot(weights, inner)) * (xb-xa)/2
+        q2_segments = [low] + [np.clip(_evaluate_boundary(b, x), low, high) for b in aperture] + [high]
+        for qa, qb in zip(q2_segments[:-1], q2_segments[1:]):
+            if np.all(qb <= qa):
+                continue
+            loglow, logwidth = np.log(qa), np.log(qb / qa)
+            q2 = np.exp(loglow[:, None] + logwidth[:, None] * fractions)
+            y = q2 / (2 * _M * _E * x[:, None])
+            theta = 2 * np.arcsin(np.sqrt(np.clip(q2 / (4 * _E**2 * (1 - y)), 0., 1.)))
+            density = differential_cross_section(target, x[:, None], q2, model, r_model)
+            density *= azimuth_acceptance(theta, acceptance)
+            inner = np.sum(density * q2 * transformed_weights, axis=1) * logwidth
+            result += float(np.dot(transformed_weights, inner)) * (xb - xa)
     return result

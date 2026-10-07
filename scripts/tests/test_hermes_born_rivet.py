@@ -130,7 +130,7 @@ class CanonicalBornAcceptanceTests(unittest.TestCase):
 #define vetoEvent return
 struct DISKinematicsView {
   bool valid=true;
-  double Q2=2., x=.063, y=.4, W2=10., theta=.1;
+  double Q2=2., x=.063, y=.4, W2=10., theta=.1, thetaX=.06, thetaY=.08;
 };
 struct Event { DISKinematicsView dis; };
 double fixtureWeight=2.;
@@ -167,9 +167,13 @@ public:
   DISKinematicsView disKinematics(const Event& event) {return event.dis;}
   double depolarization(double,double,double) {return fixtureD;}
 '''
+        histogram_struct = source[source.index("    struct HistogramSet {"):]
+        histogram_struct = histogram_struct[:histogram_struct.index("    };") + len("    };")]
+        code += histogram_struct
         code += initialization
+        code += cpp_definition(source, "bookSelection")
         code += cpp_definition(source, "analyze")
-        for method in ("fillBornCell", "fillMeasurement", "fillDiagnostics"):
+        for method in ("inRectangularAperture", "fillSelection", "fillBornCell", "fillMeasurement", "fillDiagnostics"):
             code += cpp_definition(source, method)
         code += fields + '\n};\n'
         code += r'''
@@ -181,7 +185,7 @@ int main() {
   for(double edge:init._bornXEdges) std::cout << " " << edge;
   std::cout << "\n";
   for(const auto& item:init.booked) {
-    if(item.first.find("BornSigmaQ2_")!=0 && item.first.find("SigmaQ2_")!=0) continue;
+
     std::cout << "E " << item.first;
     for(double edge:item.second->edges) std::cout << " " << edge;
     std::cout << "\n";
@@ -189,7 +193,7 @@ int main() {
   std::set<Hist*> scaled;
   for(const auto& hist:init._scaled) scaled.insert(hist.get());
   std::cout << "S " << init._scaled.size() << " " << scaled.size() << "\n";
-  for(int scenario=0;scenario<14;++scenario) {
+  for(int scenario=0;scenario<23;++scenario) {
     CanonicalAnalysis analysis;
     analysis.init();
     Event event;
@@ -206,17 +210,48 @@ int main() {
     if(scenario==11) event.dis.x=.02124;
     if(scenario==12) event.dis.x=.056809;
     if(scenario==13) event.dis.x=.05681;
+    if(scenario==14) event.dis.thetaY=0.;  // In ring, outside vertical aperture.
+    if(scenario==15) event.dis.thetaX=.17;
+    if(scenario==16) event.dis.thetaY=.04;
+    if(scenario==17) event.dis.thetaY=.14;
+    if(scenario==18) {event.dis.thetaX=-.169; event.dis.thetaY=-.139;}
+    if(scenario==19) event.dis.theta=.220001;  // Polar veto remains explicit.
+    if(scenario==20) {event.dis.W2=3.25; event.dis.x=.7; event.dis.Q2=6.;}
+    if(scenario==21) event.dis.thetaX=std::numeric_limits<double>::quiet_NaN();
+    if(scenario==22) {event.dis.W2=3.95; event.dis.x=.7; event.dis.Q2=6.5;}
+
     analysis.analyze(event);
     std::cout << "F " << scenario;
     for(const std::string name:{"SigmaX_Q2GT1","SigmaOverD_X_Q2GT1",
       "SigmaQ2_Q2GT1","SigmaQ2_Q2GT4","Accepted_X_Q2GT1",
-      "BornSigmaQ2_X04","BornSigmaQ2_X05","BornSigmaQ2_X08","BornSigmaQ2_X09"}) {
+      "BornSigmaQ2_X04","BornSigmaQ2_X05","BornSigmaQ2_X08","BornSigmaQ2_X09",
+      "RingControl_SigmaX_Q2GT1", "Accepted_W2Fine_Q2GT1",
+      "RingControl_Accepted_W2Fine_Q2GT1"}) {
       const auto& hist=analysis.booked[name];
       double total=0.; for(double value:hist->sumW) total+=value;
       std::cout << " " << hist->fills << " " << total;
     }
     std::cout << "\n";
   }
+  // Mixture of primary and ring-only events with signed weights. The common
+  // numerator/denominator moments must be exactly the primary subset moments.
+  CanonicalAnalysis shared; shared.init();
+  Event event;
+  double covariance=0.;
+  for(int i=0;i<3;++i) {
+    fixtureWeight=i==0 ? 2. : (i==1 ? -3. : 5.);
+    event.dis.thetaY=i==2 ? 0. : .08;
+    shared.analyze(event);
+    if(i<2) covariance+=fixtureWeight*fixtureWeight;
+  }
+  auto total=[](const std::vector<double>& values) {
+    double result=0.; for(double value:values) result+=value; return result;
+  };
+  std::cout << "C " << covariance << " "
+    << total(shared.booked["SigmaX_Q2GT1"]->sumW2) << " "
+    << total(shared.booked["RingControl_SigmaX_Q2GT1"]->sumW2) << " "
+    << total(shared.booked["SigmaX_Q2GT1"]->sumW) << " "
+    << total(shared.booked["RingControl_SigmaX_Q2GT1"]->sumW) << "\n";
 }
 '''
         cpp = directory / "canonical-hermes-acceptance.cc"
@@ -236,6 +271,8 @@ int main() {
                 cls.rows[int(fields[1])] = list(map(float, fields[2:]))
             elif fields[0] == "S":
                 cls.scaled = tuple(map(int, fields[1:]))
+            elif fields[0] == "C":
+                cls.shared_moments = list(map(float, fields[1:]))
             elif fields[0] == "X":
                 cls.xedges = list(map(float, fields[1:]))
 
@@ -251,7 +288,7 @@ int main() {
 
     def test_acceptance_and_nested_cut_are_applied_to_direct_observable(self):
         for scenario in (4, 7, 8, 9):
-            self.assertEqual(self.rows[scenario], [0.] * 18)
+            self.assertEqual(self.rows[scenario], [0.] * 24)
         self.assertEqual(self.rows[5][6:8], [0., 0.])
         self.assertEqual(self.rows[6][6:8], [1., 2.])
 
@@ -289,8 +326,32 @@ int main() {
         for index, expected in enumerate(geometry["q2_edges_by_x"], 1):
             self.assertEqual(self.edges[f"BornSigmaQ2_X{index:02d}"], expected)
 
+
+    def test_rectangle_is_primary_and_ring_control_retains_rejected_azimuths(self):
+        for scenario in (14, 15, 16, 17, 21):
+            self.assertEqual(self.rows[scenario][:18], [0.] * 18)
+            self.assertEqual(self.rows[scenario][18:20], [1., 2.])
+        self.assertEqual(self.rows[18][:2], [1., 2.])
+        self.assertEqual(self.rows[19], [0.] * 24)
+        for name, edges in self.edges.items():
+            if not name.startswith("RingControl_"):
+                self.assertEqual(edges, self.edges["RingControl_" + name])
+
+    def test_fine_low_W2_diagnostic_resolves_previously_missing_region(self):
+        edges = self.edges["Accepted_W2Fine_Q2GT1"]
+        self.assertEqual(len(edges), 29)
+        self.assertAlmostEqual(edges[0], 3.24)
+        self.assertAlmostEqual(edges[-1], 6.04)
+        for low, high in zip(edges, edges[1:]):
+            self.assertAlmostEqual(high - low, .1)
+        for scenario in (20, 22):
+            self.assertEqual(self.rows[scenario][20:24], [1., 2., 1., 2.])
+
+    def test_shared_covariance_is_primary_squared_weight_moment(self):
+        self.assertEqual(self.shared_moments, [13., 13., 38., -1., 4.])
+
     def test_every_raw_histogram_is_normalized_exactly_once(self):
-        self.assertEqual(self.scaled, (37, 37))
+        self.assertEqual(self.scaled, (76, 76))
 
 
 if __name__ == "__main__":

@@ -21,7 +21,10 @@ Description:
   incoming proton or neutron and positron and the highest-energy prompt final-state
   positron, excluding leptons from hadron decays.
   Events satisfy 1 <= Q2 <= 20 GeV2, 0.1 < y <= 0.91, W2 > 3.24 GeV2,
-  and 0.04 <= theta <= 0.22 rad. Raw cross-section, inverse-depolarization,
+  and 0.04 <= theta <= 0.22 rad. The primary selection also applies the
+  projected-angle aperture |theta_x| < 0.17 and 0.04 < |theta_y| < 0.14 rad.
+  RingControl_ counterparts retain the polar ring on the same events.
+  Raw cross-section, inverse-depolarization,
   and covariance-proxy histograms are supplied for external four-helicity
   normalized POSNLO-NEGNLO combination for the stored positive order
   magnitudes. Direct Born A_parallel estimators use only the ordinary
@@ -29,14 +32,16 @@ Description:
   Born cell histograms follow the physical 19-x-slice, 45-cell binning from
   the primary HERMES analysis (Ehrenfried thesis, Appendix C), within the
   final paper's Q2 window. Eight complete Q2<1 cells have no generator
-  support and remain masked; 37 cells are fully supported. Both Q2-integrated
+  support and remain masked. The other 37 cells are within the Q2 support;
+  their coverage additionally requires the widened v5 generator envelope.
+  The pre-v5 generation W2/y cuts removed part of several cells. Both Q2-integrated
   x and x-integrated Q2 projections are ratios of integrated ordinary helicity
   cross sections. Projection x boundaries retain the existing rounded
   0.0212 <= x <= 0.9 range, separately from the physical Born cell boundaries.
   These are leading-power Herwig predictions. Forming a direct ratio does
   not add an explicit g2, target-mass, or twist-3 model.
   A nested Q2 > 4 GeV2 selection is included as
-  a conservative diagnostic. The R1990 parameterization is used for R; the
+  a conservative diagnostic. R uses the Whitlow R1990 mean of fits A, B and C; the
   conversion to A1 neglects eta*A2 and does not separately model g2. The
   Q2 > 1 result reaches the lower scale boundary of the selected PDFs and is
   therefore exploratory. The external postprocessor retains proton outputs

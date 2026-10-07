@@ -91,10 +91,10 @@ class HermesReferenceTests(unittest.TestCase):
             campaign.extract_tar_reference(buffer.getvalue(), "A1p_a15", "0" * 64)
 
     def test_r1990_and_depolarization_regression(self) -> None:
-        self.assertAlmostEqual(campaign.r1990(0.0264, 1.12), 0.3849652739293007, places=14)
-        self.assertAlmostEqual(campaign.depolarization(0.0264, 0.7, 1.12), 0.6892389962810934, places=14)
-        self.assertAlmostEqual(campaign.r1990(0.173, 4.31), 0.1733090342715093, places=14)
-        self.assertAlmostEqual(campaign.depolarization(0.173, 0.4, 4.31), 0.40974444682567857, places=14)
+        self.assertAlmostEqual(campaign.r1990(0.0264, 1.12), 0.34166533177946749213, places=14)
+        self.assertAlmostEqual(campaign.depolarization(0.0264, 0.7, 1.12), 0.7030502026628281, places=14)
+        self.assertAlmostEqual(campaign.r1990(0.173, 4.31), 0.18625742296198792093, places=14)
+        self.assertAlmostEqual(campaign.depolarization(0.173, 0.4, 4.31), 0.405734444688617, places=14)
         with self.assertRaises(ValueError):
             campaign.depolarization(0.1, 0.0, 4.0)
 

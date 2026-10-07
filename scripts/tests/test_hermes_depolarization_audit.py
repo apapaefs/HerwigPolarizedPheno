@@ -41,15 +41,22 @@ EVENTS = {
 }
 KINEMATICS = ((.0264, .7, 1.12), (.173, .4, 4.31), (.4583, .3, 8.53),
               (.5819, .5, 10.16), (.7248, .32, 12.21))
+# Independent 60-digit Decimal evaluation at the above kinematic points;
+# these literals pin both Python and the compiled canonical C++ function.
+R1990_REFERENCE = (.34166533177946749213, .18625742296198792093,
+                  .07955411014766420907, .06648141272129384393,
+                  .05600868979803555416)
 
 
 def epsilon_depolarization(x, y, q2):
     """HERMES epsilon definition and D=[1-(1-y)epsilon]/[1+epsilon R]."""
-    # Independent coefficient inputs from Whitlow R1990 fit B. Do not call
-    # either production R or production D while constructing the expectation.
-    fit_b = (.0635, .5747, -.3534)
-    theta = 1. + 12. * q2 / (q2 + 1.) * .015625 / (.015625 + x**2)
-    r = fit_b[0] * theta / math.log(q2 / .04) + fit_b[1] / q2 + fit_b[2] / (q2**2 + .09)
+    # Independent transcription of Whitlow thesis Eqs. 5.31--5.35. Do not
+    # call production R/D or read its coefficients to form the expectation.
+    h = (1. + 12. * q2 / (q2 + 1.) * .015625 / (.015625 + x**2)) / math.log(q2 / .04)
+    fit_a = .0672 * h + .4671 / math.sqrt(math.sqrt(q2**4 + 1.8979**4))
+    fit_b = .0635 * h + .5747 / q2 - .3534 / (q2**2 + .09)
+    fit_c = .0599 * h + .5088 / math.sqrt((q2 - 5. * (1. - x)**5)**2 + 2.1081**2)
+    r = (fit_a + fit_b + fit_c) / 3.
     gamma_squared = 4. * .9382720813**2 * x**2 / q2
     epsilon = ((1. - y - gamma_squared * y**2 / 4.)
                / (1. - y + y**2 / 2. + gamma_squared * y**2 / 4.))
@@ -151,10 +158,11 @@ def assert_closure(testcase, results):
 
 class DepolarizationArithmeticTests(unittest.TestCase):
     def test_python_D_agrees_with_independent_epsilon_definition(self):
-        for x, y, q2 in KINEMATICS:
+        for (x, y, q2), pinned_r in zip(KINEMATICS, R1990_REFERENCE):
             with self.subTest(x=x, y=y, q2=q2):
                 expected_r, expected_d = epsilon_depolarization(x, y, q2)
-                self.assertAlmostEqual(campaign.r1990(x, q2), expected_r, places=14)
+                self.assertAlmostEqual(expected_r, pinned_r, delta=3e-16)
+                self.assertAlmostEqual(campaign.r1990(x, q2), pinned_r, delta=3e-16)
                 self.assertAlmostEqual(campaign.depolarization(x, y, q2), expected_d, places=14)
 
     def test_varying_D_physical_strata_and_poisson_ratio_variances(self):
@@ -263,6 +271,7 @@ using Histo1DPtr=std::shared_ptr<Hist>;
         for index, kinematics in enumerate(KINEMATICS):
             expected_r, expected_d = epsilon_depolarization(*kinematics)
             actual_r, actual_d = self.depolarizations[index]
+            self.assertAlmostEqual(actual_r, R1990_REFERENCE[index], delta=3e-16)
             self.assertAlmostEqual(actual_r, expected_r, places=14)
             self.assertAlmostEqual(actual_d, expected_d, places=14)
 

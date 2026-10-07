@@ -48,6 +48,34 @@ class HermesUnpolarizedFitTests(unittest.TestCase):
             expected *= 389379323.
             self.assertAlmostEqual(fit.differential_cross_section(target, x, q2)/expected, 1., delta=1e-14)
 
+    def test_three_fit_R1990_matches_independent_high_precision_points(self):
+        # 60-digit Decimal transcription of Whitlow thesis Eqs. 5.31--5.35,
+        # evaluated independently of this module, its JSON and runner helpers.
+        points = ((.0264, 1.12, .34166533177946749213),
+                  (.1059, 2.97, .27389316207872881261),
+                  (.3598, 5.7, .11453648676818418253),
+                  (.7, 6., .09797577893483088850),
+                  (.7248, 12.21, .05600868979803555416))
+        for x, q2, expected in points:
+            self.assertAlmostEqual(fit.longitudinal_ratio(x, q2, "R1990"), expected, delta=3e-16)
+
+    def test_exact_aperture_fraction_against_projected_angle_azimuth_sampling(self):
+        # An independent, uniform-azimuth sampling of the actual projected
+        # lab cuts also checks the polar-ring intersection and rotated axes.
+        count = 200000
+        phi = (np.arange(count) + .5) * 2 * math.pi / count
+        for theta in (.03, .04, .041, .10, .139, .14, .16, .174, .18, .218, .22, .221):
+            for offset in (0., .371):
+                horizontal = np.arctan(np.tan(theta) * np.cos(phi + offset))
+                vertical = np.arctan(np.tan(theta) * np.sin(phi + offset))
+                accepted = ((abs(horizontal) < .17) & (abs(vertical) > .04)
+                            & (abs(vertical) < .14) & (.04 <= theta <= .22))
+                self.assertAlmostEqual(fit.azimuth_acceptance(theta), float(accepted.mean()),
+                                       delta=4 / count)
+        for theta in (.03, .1, .23):
+            self.assertEqual(fit.azimuth_acceptance(theta, "ring"), float(.04 <= theta <= .22))
+        self.assertEqual(fit.azimuth_acceptance(0.), 0.)
+
     def test_HERMES_geometry_boundaries_match_direct_kinematics(self):
         energy = fit.DEFAULT_CUTS["beam_energy_GeV"]
         mass = fit.DEFAULT_CUTS["nucleon_mass_GeV"]
@@ -66,7 +94,7 @@ class HermesUnpolarizedFitTests(unittest.TestCase):
 
     def test_integral_Jacobian_and_disjoint_cell_additivity(self):
         with patch.object(fit, "differential_cross_section", side_effect=lambda target, x, q2, *args: np.ones_like(q2)):
-            self.assertAlmostEqual(fit.integrate_cross_section("P", .1, .105, 2., 2.1), .005*.1, delta=1e-16)
+            self.assertAlmostEqual(fit.integrate_cross_section("P", .1, .105, 2., 2.1, acceptance="ring"), .005*.1, delta=1e-16)
         total = fit.integrate_cross_section("D", .0212, .9, 1, 20)
         pieces = sum(fit.integrate_cross_section("D", a, b, c, d)
                      for a, b in ((.0212, .1), (.1, .3), (.3, .9))
@@ -94,6 +122,8 @@ class HermesUnpolarizedFitTests(unittest.TestCase):
                         self.assertEqual(b, 0.)
                         continue
                     self.assertGreater(a, 0.)
+                    ring = fit.integrate_cross_section(*args, acceptance="ring")
+                    self.assertLess(a, ring)
                     self.assertAlmostEqual(a/b, 1., delta=3e-11)
                     control = fit.integrate_cross_section(*args, w2_min=4.)
                     self.assertGreaterEqual(control, 0.)
@@ -120,6 +150,8 @@ class HermesUnpolarizedFitTests(unittest.TestCase):
         for call in (lambda: fit.f2("N", .1, 2.), lambda: fit.f2("P", 0., 2.),
                      lambda: fit.integrate_cross_section("P", .1, .2, 1., 2., model="made_up"),
                      lambda: fit.integrate_cross_section("P", .2, .1, 1., 2.),
+                     lambda: fit.integrate_cross_section("P", .1, .2, 1., 2., acceptance="unknown"),
+                     lambda: fit.azimuth_acceptance(-.1),
                      lambda: fit.integrate_cross_section("P", .1, .2, 1., 2., w2_min=3.),
                      lambda: fit.integrate_cross_section("P", .1, .2, 1., 2., quadrature_order=2)):
             with self.assertRaises(ValueError):

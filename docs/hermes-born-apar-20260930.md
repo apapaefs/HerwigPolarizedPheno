@@ -8,6 +8,12 @@ XII of [the HERMES paper](https://arxiv.org/abs/hep-ex/0609039), exposed as
 published cells in 19 x slices. The measured-asymmetry column is retained in
 the raw source for verification; the comparison uses only the Born column.
 
+The current acceptance and generation-window revision is documented in the
+[6 October v5 guide](hermes-v5-preparation-20261006.md). V4 results are retained
+as historical products: their generator excluded part of the physical
+acceptance, and they used the polar-angle ring rather than the rectangular
+aperture. The reference values and signed-helicity algebra remain valid.
+
 ## Estimator and corrections
 
 For every ordinary normalized bin, first subtract the stored nonnegative
@@ -55,13 +61,22 @@ cell and sets the outer Q2 window to 0.18–20 GeV2. The snapshot records
 both these physical boundaries and the rounded x labels used by HEPData.
 The legacy midpoint-based Q2 estimates are not used by this comparison.
 
-The existing generator selection, 27.6 GeV e+, `1<=Q2<=20`,
-`0.1<y<=0.91`, `W2>3.24`, `0.04<=theta<=0.22`, is retained. All 37
-supported cells per target lie wholly above Q2=1. The other eight cells
-per target lie below that boundary and are explicitly masked in theory
-YODA, summary JSON/CSV and controls, while their published points remain
-visible. There is no partially filled cell presented as a full-cell
-prediction. The Q2=1 PDF boundary remains exploratory.
+The physical Rivet selection uses 27.6 GeV e+, `1<=Q2<=20`,
+`0.1<y<=0.91`, `W2>3.24` and `0.04<=theta<=0.22` radians. In v5 the
+primary selection also requires `abs(theta_x)<0.17` and
+`0.04<abs(theta_y)<0.14` radians. The ring without these projected-angle
+requirements is a shared-event acceptance control. These two selections
+have separate raw moments and postprocessed acceptance identities.
+
+Thirty-seven cells per target lie wholly above Q2=1. This is a Q2 support
+mask, not proof of full generation coverage: v4 partly populated some of
+those cells because its massless generator-window W2/y definitions differed
+from Rivet's massive-target quantities. V5 loosens only the generation
+window to `MinW2=2` and `Miny=.095`, leaving the physical analysis cuts
+above in place. Real-event support checks are described in the v5 guide.
+The other eight cells remain explicitly masked in theory YODA, summary
+JSON/CSV and controls, with their published points visible. The Q2=1 PDF
+boundary remains exploratory.
 
 Panels `/HERMES_2007_I726689/d07-xNN-y02` and `d08-xNN-y02` show the
 proton/deuteron cells against Q2, at each published mean Q2. The reference
@@ -83,8 +98,11 @@ Black data markers are placed at the published mean Q2. Their inner bars
 show the statistical error, and their outer bars show the quadrature sum of
 the statistical and published combined systematic errors. The published
 systematic error already includes the normalization uncertainty. Orange
-steps show the nominal Herwig LL/UU ratio in the physical cell boundaries,
-with its statistical uncertainty as a band. Empty Monte Carlo cells retain
+steps show the primary rectangular-acceptance Herwig LL/UU ratio in the
+physical cell boundaries, with its statistical uncertainty as a band. V5
+also retains the ring selection as an explicitly labelled control in the
+compact plots and numerical summaries; it is correlated with the primary
+curve because both use the same generated events. Empty Monte Carlo cells retain
 their data markers without a theory prediction. No depolarization factor,
 additional target correction or unpolarized-fit weighting is applied by
 this renderer.
@@ -99,9 +117,11 @@ support and plotting settings. A complete cache is reused only after all
 recorded output checksums pass; changed inputs or incomplete outputs produce
 a separate revision. Existing campaign outputs are retained.
 
-These figures use the postprocessed cell results, so a completed v4 campaign
-needs only its `plot` stage repeated to add them. No new event generation or
-postprocessing is required. The implementation is in
+These figures use the postprocessed cell results. The earlier addition of
+the 5x4 renderer to v4 required only plotting with its compatible source.
+That does not apply to v5's physics changes: a fresh campaign is needed to
+populate the missing acceptance and new control histograms. Do not refresh
+v4 with v5 source or relabel its outputs as corrected. The renderer is in
 [`hermes_born_cell_plots.py`](../scripts/hermes_born_cell_plots.py).
 
 ## Both integrated directions
@@ -160,64 +180,21 @@ cell geometry, analysis or outputs requires a fresh campaign tag and new
 
 ## Campaign preparation
 
-The new histograms share the same generated events and do not enlarge the
-nominal 16-run P/N × four-helicity × two-order matrix. A dry-run of the
-matched Odysseus budget succeeds with 1,600 shards and 26.4M events:
+Use the [v5 preparation and validation guide](hermes-v5-preparation-20261006.md)
+for the current configuration and commands. Rectangle and ring observables
+share events, so the nominal generation matrix remains sixteen P/N ×
+four-helicity × two-order runs. The proposed matched production budget is
+3M POSNLO/300k NEGNLO per component/helicity, 100 shards each and 26.4M
+requested events in total. V5 uses a fresh tag and seed base.
 
-```bash
-python3 scripts/run_experimental_campaign.py prepare \
-  --measurement HERMES_2007_I726689 \
-  --tag hermes_pd_born_3m_20260930_v4 \
-  --posnlo-events 3000000 --negnlo-events 300000 \
-  --shards 100 --jobs 100 --seed-base 660726689 --dry-run
-```
+The September v4 production completed all 1,600 shards. Its prior 60-job
+smoke and arithmetic tests established execution and estimator closure,
+not complete physical generation support. Its events, manifests and plots
+remain unchanged for comparison; missing phase space cannot be recovered
+from those outputs. Earlier v3 lacks the Born-cell and Q2-projection
+histograms and is also retained as history.
 
-The new nominal tag is **prepared** in the separate Odysseus source area
-`/home/apapaefs/Projects/Herwig/validation/hermes-born-apar-20260930/pheno`:
-all 16 logical `.run` files are nonempty, all 1,600 shards are planned,
-and no production YODAs exist. The active `herwig/pol` executable and all
-seven recorded runtime artifacts, including installed HwMEDIS, match both
-the completed proton production and v3. Only the private Rivet plugin was
-built. Earlier v3 manifests, events and source areas remain unchanged.
-
-Fresh `hermes_pd_born_smoke_20260930_v4` completed all 60 jobs, requesting
-100 events each across five prediction families. Saved outputs were
-postprocessed and rerendered with the final runner. All 287 tests pass
-on Odysseus as well as locally. The exact nominal preparation plan also
-passes a dry-run through the thermalguard-compatible launcher. No nominal
-production event command has been run.
-
-To launch the prepared nominal production, use the matched environment and
-options:
-
-```bash
-cd /home/apapaefs/Projects/Herwig/validation/hermes-born-apar-20260930/pheno
-source /etc/profile.d/modules.sh
-module purge
-module load herwig/pol
-export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1
-export VECLIB_MAXIMUM_THREADS=1 NUMEXPR_NUM_THREADS=1 BLIS_NUM_THREADS=1
-
-python3 campaigns/launchers/hermes-born-apar/run_validation_campaign.py full \
-  --measurement HERMES_2007_I726689 \
-  --tag hermes_pd_born_3m_20260930_v4 --profile central \
-  --posnlo-events 3000000 --negnlo-events 300000 \
-  --shards 100 --jobs 380 --seed-base 660726689 \
-  --progress-interval 5 --max-listed 32
-```
-
-The nominal measurement signature is
-`949bc6907f789aee2e33207f85d83896fa16d9f53216010da366ce6829e66cc1`.
-The preparation recorded 100 workers. `--jobs` controls runtime concurrency
-and may be changed, including to 380, when launching or resuming the same
-tag. The stored preparation configuration remains unchanged; the execution
-history records the actual worker count. Event counts, shard count, seeds,
-physics inputs and prediction families remain locked. The earlier runner
-incorrectly treated a worker-count change as an incompatible manifest.
-The earlier [preparation guide](hermes-deuteron-preparation-20260930.md)
-retains the historical v3 setup and its normalization audit.
-
-## Validation
+## Historical reference and arithmetic validation
 
 An independent comparison with paper Tables XI/XII checked 990 numerical
 fields across 90 rows: x limits, x/y/Q2 means, measured/Born asymmetries,
@@ -232,8 +209,9 @@ direct-00 controls, LO and uncertainty variations, and published-mean
 plot coordinates. The final suite passes 287 tests with native YODA available.
 A private Rivet 4.1.2/YODA 2.1.2 plugin passes 916 independent raw-moment,
 normalization and error checks on 45 on-shell proton and 45 neutron events:
-all 37 supported cells fill once, and the eight unsupported cells remain
-empty. Actual-YODA postprocessing passes 4,208 independent checks across
+all 37 cells above Q2=1 fill once, and the eight lower cells remain
+empty. This supplied-event fixture bypassed the generator and therefore did
+not test the generation-window coverage later found incomplete in v4. Actual-YODA postprocessing passes 4,208 independent checks across
 60 controlled streams, all five families and all 46 selectors; the maximum
 scaled ratio/error difference is 4.20e-15. Six representative Born and
 projection plots were rendered and inspected, including published means,

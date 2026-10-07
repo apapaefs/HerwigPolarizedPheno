@@ -33,6 +33,7 @@ class HermesAutomaticProjectionTests(unittest.TestCase):
         self.summary = postprocess / "summary.json"
         self.summary.write_text(json.dumps({
             "measurement": "HERMES_2007_I726689", "tag": "toy", "bins": [],
+            "acceptance": "rectangle_intersect_polar_ring",
         }) + "\n", encoding="utf-8")
         self.manifest = self.campaign / "manifest.json"
         self.manifest.write_text('{"generation_signature":"unchanged"}\n', encoding="utf-8")
@@ -272,6 +273,18 @@ class HermesAutomaticProjectionTests(unittest.TestCase):
                 automatic.ensure_campaign_plots(self.campaign)
         reconstruct.assert_not_called()
         self.assertFalse((self.old_standalone.parent / "automatic").exists())
+
+    def test_old_ring_summary_cannot_reuse_rectangle_weights(self):
+        summary = json.loads(self.summary.read_text(encoding="utf-8"))
+        del summary["acceptance"]
+        self.summary.write_text(json.dumps(summary), encoding="utf-8")
+        with self.ensure() as reconstruct:
+            with self.assertRaisesRegex(automatic.CacheError, "earlier ring-only"):
+                automatic.ensure_campaign_plots(self.campaign)
+        reconstruct.assert_not_called()
+        with self.assertRaisesRegex(projection.ProjectionError, "earlier ring-only"):
+            projection.reconstruct(self.summary, self.campaign / "refused", plots=False)
+        self.assertFalse((self.campaign / "refused").exists())
 
     def test_missing_and_foreign_summary_are_refused_before_rendering(self):
         with self.ensure() as reconstruct:

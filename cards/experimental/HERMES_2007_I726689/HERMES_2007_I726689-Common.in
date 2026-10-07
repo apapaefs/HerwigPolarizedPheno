@@ -49,7 +49,11 @@ set /Herwig/Shower/ShowerHandler:PDFB /Herwig/Partons/ShowerLOPDF
 set /Herwig/Partons/RemnantDecayer:DISOneRemnantFallback RelaxMass
 
 ############################################################
-# HERMES phase space; the laboratory theta cut is applied in Rivet
+# Generation envelope; exact massive-target HERMES cuts are applied in Rivet
+# SimpleDISCut/native DIS sampling use massless partonic W2 and y. At fixed
+# target energy E: W2_gen=W2_physical-M^2+Q2*M/(2E), and
+# y_gen=y_physical*(1+x*M/(2E))/(1+M/(2E)). Leave support margin
+# for both proton and neutron targets; do not copy physical thresholds here.
 ############################################################
 
 set /Herwig/EventHandlers/EventHandler:Cuts:ScaleMin 0.0*GeV2
@@ -58,9 +62,9 @@ set /Herwig/EventHandlers/EventHandler:Cuts:X2Min 1.0e-6
 set /Herwig/EventHandlers/EventHandler:Cuts:MHatMin 0.0*GeV
 set /Herwig/Cuts/NeutralCurrentCut:MinQ2 1.0*GeV2
 set /Herwig/Cuts/NeutralCurrentCut:MaxQ2 20.0*GeV2
-set /Herwig/Cuts/NeutralCurrentCut:Miny 0.10
+set /Herwig/Cuts/NeutralCurrentCut:Miny 0.095
 set /Herwig/Cuts/NeutralCurrentCut:Maxy 0.91
-set /Herwig/Cuts/NeutralCurrentCut:MinW2 3.24*GeV2
+set /Herwig/Cuts/NeutralCurrentCut:MinW2 2.0*GeV2
 set /Herwig/Cuts/NeutralCurrentCut:MaxW2 1.0e10*GeV2
 
 ############################################################

@@ -517,12 +517,16 @@ def emit_progress(lines: Sequence[str], interactive: bool) -> None:
 
 
 def r1990(x: float, q2: float) -> float:
-    """Whitlow R1990 fit B, with Q2 expressed in GeV^2."""
+    """Whitlow R1990 mean of fits a, b, c (SLAC-R-357 Eqs. 5.31-5.35)."""
     if x <= 0.0 or q2 <= 0.04:
         raise ValueError("R1990 requires x > 0 and Q2 > 0.04 GeV2")
     scale = 0.125**2
     theta = 1.0 + 12.0 * q2 / (q2 + 1.0) * scale / (scale + x * x)
-    return 0.0635 / math.log(q2 / 0.04) * theta + 0.5747 / q2 - 0.3534 / (q2 * q2 + 0.09)
+    common = theta / math.log(q2 / 0.04)
+    ra = 0.0672 * common + 0.4671 / (q2**4 + 1.8979**4)**0.25
+    rb = 0.0635 * common + 0.5747 / q2 - 0.3534 / (q2*q2 + 0.09)
+    rc = 0.0599 * common + 0.5088 / math.sqrt((q2 - 5*(1-x)**5)**2 + 2.1081**2)
+    return (ra + rb + rc) / 3.0
 
 
 def depolarization(x: float, y: float, q2: float, proton_mass: float = 0.9382720813) -> float:
@@ -2939,6 +2943,7 @@ def _asymmetry_outputs(
         "edges": sigma_uu.edges,
         "sigma_uu": sigma_uu,
         "sigma_ll": sigma_ll,
+        "covariance_parallel": covariance_parallel,
         "apar_values": apar_values,
         "apar_errors": apar_errors,
         "parity_pp_mm_values": parity_pp_mm_values,
@@ -2947,8 +2952,48 @@ def _asymmetry_outputs(
         "parity_pm_mp_errors": parity_pm_mp_errors,
     }
     if sigma_ll_over_d is not None:
-        result.update(sigma_ll_over_d=sigma_ll_over_d, a1_values=a1_values, a1_errors=a1_errors)
+        result.update(sigma_ll_over_d=sigma_ll_over_d, covariance_a1=covariance_a1,
+                      a1_values=a1_values, a1_errors=a1_errors)
     return result
+
+
+def _paired_acceptance_difference(primary: Mapping[str, Any], control: dict[str, Any]) -> None:
+    """Ring minus its rectangular subset, using their shared Poisson moments.
+
+    Stream normalization and signed-order variances have already been combined.
+    Each primary event is also in the ring with identical weights; hence cross-
+    selection moments equal the primary moments, including inverse-D products.
+    """
+    if primary["edges"] != control["edges"]:
+        raise CampaignError("Paired acceptance selections have different bin edges")
+    control["paired_difference"] = {}
+    for observable, value_key, error_key, numerator_key, covariance_key in (
+        ("a_parallel", "apar_values", "apar_errors", "sigma_ll", "covariance_parallel"),
+        ("a1", "a1_values", "a1_errors", "sigma_ll_over_d", "covariance_a1"),
+    ):
+        if value_key not in primary:
+            continue
+        differences, errors, covariances = [], [], []
+        for i, (a, b) in enumerate(zip(primary[value_key], control[value_key])):
+            if a is None or b is None:
+                differences.append(None); errors.append(None); covariances.append(None)
+                continue
+            up = primary["sigma_uu"].values[i]
+            ur = control["sigma_uu"].values[i]
+            lp = primary[numerator_key].values[i]
+            lr = control[numerator_key].values[i]
+            shared = primary[covariance_key][i]
+            cov = (primary[numerator_key].variances[i] / (up*ur)
+                   - shared * (lr/(up*ur*ur) + lp/(up*up*ur))
+                   + lp*lr*primary["sigma_uu"].variances[i]/(up*up*ur*ur))
+            vp, vr = primary[error_key][i]**2, control[error_key][i]**2
+            variance = vp + vr - 2*cov
+            if variance < -1.e-10 * max(vp+vr, abs(2*cov), 1.e-30):
+                raise CampaignError("Inconsistent paired acceptance covariance")
+            differences.append(b-a); errors.append(math.sqrt(max(0., variance))); covariances.append(cov)
+        control["paired_difference"][observable] = {
+            "values": differences, "errors": errors, "covariance": covariances,
+        }
 
 
 def _selection_supported_bins(output: Mapping[str, Any], count: int) -> set[int]:
@@ -3005,6 +3050,14 @@ def _summary_rows(selection: str, result: Mapping[str, Any]) -> list[dict[str, A
             }
         if "a1_values" in result:
             row.update(a1=result["a1_values"][index], a1_stat=result["a1_errors"][index])
+        if "acceptance" in result:
+            row["acceptance"] = result["acceptance"]
+        if "paired_primary" in result:
+            row["paired_primary"] = result["paired_primary"]
+            for observable, difference in result.get("paired_difference", {}).items():
+                row[f"ring_minus_primary_{observable}"] = difference["values"][index]
+                row[f"ring_minus_primary_{observable}_stat"] = difference["errors"][index]
+                row[f"primary_ring_{observable}_covariance"] = difference["covariance"][index]
         rows.append(row)
     return rows
 
@@ -3079,6 +3132,8 @@ def _selection_annotations(
     output = measurement["outputs"][selection]
     result = dict(annotations)
     result["PlotAxis"] = "q2_mean" if output.get("axis", "x") == "q2" else "x_mean"
+    if "acceptance" in output:
+        result["Acceptance"] = str(output["acceptance"])
     if output.get("estimator", "a1") == "a_parallel":
         result.update(
             Estimator="ordinary sigma_LL / ordinary sigma_UU",
@@ -3211,6 +3266,14 @@ def _load_asymmetry_family_products(
             uu_coefficients, ll_coefficients, parity_ordinary
         )
         _mask_selection_results(results[str(selection)], measurement["outputs"][selection])
+        if "acceptance" in measurement["outputs"][selection]:
+            results[str(selection)]["acceptance"] = measurement["outputs"][selection]["acceptance"]
+
+    for selection, output in measurement["outputs"].items():
+        if "paired_primary" in output:
+            primary = str(output["paired_primary"])
+            results[selection]["paired_primary"] = primary
+            _paired_acceptance_difference(results[primary], results[selection])
 
     diagnostics: dict[str, BinSeries] = {}
     diagnostic_target = _target_component_coefficients(measurement, family, "unpolarized")
@@ -3377,6 +3440,8 @@ def _asymmetry_family_objects(
     objects: list[Any] = []
     for selection, result in results.items():
         paths = measurement["outputs"][selection]
+        if paths.get("summary_only", False):
+            continue
         selected_annotations = _selection_annotations(measurement, selection, annotations)
         selection_bands = (
             uncertainty_bands.get(selection, {}) if uncertainty_bands else {}
@@ -3543,6 +3608,8 @@ def _direct_unpolarized_objects(
             values.append(value if index + 1 in supported else None)
             errors.append(error if index + 1 in supported else None)
         closure[selection] = {"values": values, "errors": errors}
+        if measurement["outputs"][selection].get("summary_only", False):
+            continue
         objects.extend(
             [
                 _series_estimate(
@@ -3816,6 +3883,7 @@ def postprocess_campaign(args: argparse.Namespace, measurement: Mapping[str, Any
 
     rows = family_products["nominal"]["rows"]
     summary = {
+        "acceptance": measurement.get("physics", {}).get("acceptance", "unspecified"),
         "measurement": measurement["id"],
         "tag": args.tag,
         "created_at": utc_now(),
@@ -3975,6 +4043,7 @@ def write_plot_indexes(
     *,
     supplemental: Mapping[str, Any] | None = None,
     born_cells: Mapping[str, Any] | None = None,
+    acceptance_controls: Mapping[str, Any] | None = None,
 ) -> Path:
     """Wrap sequentially generated Rivet plots in a small static HTML report.
 
@@ -4119,6 +4188,26 @@ def write_plot_indexes(
             + "\n".join(cards) + '</section>'
         )
 
+    def acceptance_section(directory: Path) -> str:
+        if acceptance_controls is None:
+            return ""
+        gallery = output_dir.parent / str(acceptance_controls["directory"])
+        cards = []
+        for target in ("P", "D"):
+            stem = f"AcceptanceControl_{target}"
+            def link(suffix):
+                path = gallery / f"{stem}.{suffix}"
+                if not _nonempty(path):
+                    raise CampaignError(f"Missing acceptance comparison: {path}")
+                return html.escape(Path(os.path.relpath(path, directory)).as_posix())
+            cards.append(f'<a href="{link("pdf")}"><img src="{link("png")}" '
+                         f'alt="{target}: rectangle and ring acceptance comparison"></a>')
+        return ('<section class="plot"><h2>Angular acceptance control</h2>'
+                '<p>The rectangle intersected with the polar-angle cut is primary. '
+                'The ring is a control from the same events. Difference errors include '
+                'their shared-event covariance; these are MC sensitivity comparisons.</p>'
+                + "".join(cards) + '</section>')
+
     grouped: dict[Path, list[Path]] = {}
     for script in plot_scripts:
         try:
@@ -4128,7 +4217,7 @@ def write_plot_indexes(
         grouped.setdefault(relative_directory, []).append(script)
 
     title = str(measurement.get("title", measurement["id"]))
-    root_sections: list[str] = [born_cell_section(output_dir), reconstructed_section(output_dir)]
+    root_sections: list[str] = [born_cell_section(output_dir), reconstructed_section(output_dir), acceptance_section(output_dir)]
     for relative_directory, scripts in sorted(grouped.items(), key=lambda item: str(item[0])):
         directory = output_dir / relative_directory
         directory.mkdir(parents=True, exist_ok=True)
@@ -4139,7 +4228,7 @@ def write_plot_indexes(
         child_title = f"{title} — {relative_directory.as_posix()}"
         child_index = directory / "index.html"
         child_index.write_text(
-            document(child_title, born_cell_section(directory) + reconstructed_section(directory) + cards),
+            document(child_title, born_cell_section(directory) + reconstructed_section(directory) + acceptance_section(directory) + cards),
             encoding="utf-8",
         )
         link = html.escape((relative_directory / "index.html").as_posix())
@@ -4636,8 +4725,13 @@ def plot_campaign(args: argparse.Namespace, measurement: Mapping[str, Any]) -> P
         raise CampaignError(f"Generated Rivet scripts produced no PNG plots below {output_dir}")
     reconstructed = _hermes_reconstructed_plot_gallery(campaign_dir, measurement)
     born_cells = _hermes_born_cell_plot_gallery(campaign_dir, output_dir, measurement)
+    acceptance_controls = None
+    if measurement["id"] == "HERMES_2007_I726689" and measurement.get("physics", {}).get("acceptance"):
+        from hermes_acceptance_control import ensure_gallery
+        acceptance_controls = ensure_gallery(campaign_dir, output_dir)
     index = write_plot_indexes(
         output_dir, measurement, rendered_scripts, supplemental=reconstructed, born_cells=born_cells,
+        acceptance_controls=acceptance_controls,
     )
     if not _nonempty(index):
         raise CampaignError(f"Could not create Rivet plot index {index}")
@@ -4652,6 +4746,8 @@ def plot_campaign(args: argparse.Namespace, measurement: Mapping[str, Any]) -> P
         manifest["plots"]["reconstructed_born_projections"] = reconstructed
     if born_cells is not None:
         manifest["plots"]["born_cell_panels"] = born_cells
+    if acceptance_controls is not None:
+        manifest["plots"]["acceptance_controls"] = acceptance_controls
     if plot_metadata_refresh is not None:
         manifest["plots"]["presentation_only_refresh"] = plot_metadata_refresh
     manifest["updated_at"] = utc_now()

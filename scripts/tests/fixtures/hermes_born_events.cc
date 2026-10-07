@@ -10,6 +10,9 @@
 #include <fstream>
 #include <iostream>
 #include <memory>
+#include <limits>
+#include <sstream>
+#include <algorithm>
 #include <string>
 #include <vector>
 
@@ -41,7 +44,7 @@ void twoBody(const GenVertexPtr& vertex, V parent, double mass, int pid) {
   vertex->add_particle_out(particle(boost({0.,0.,momentum,energy},parent),pid));
   vertex->add_particle_out(particle(boost({0.,0.,-momentum,total-energy},parent),111));
 }
-struct Point {int bin; double x,q2,weight;};
+struct Point {int bin; double x,q2,weight,phi=std::numeric_limits<double>::quiet_NaN();};
 int main(int argc,char** argv) {
   if (argc!=4) {
     std::cerr << "Usage: generate target-pid points.txt output.hepmc\n";
@@ -54,7 +57,12 @@ int main(int argc,char** argv) {
   std::vector<Point> points;
   Point point;
   double totalWeight=0.;
-  while (input>>point.bin>>point.x>>point.q2>>point.weight) {
+  std::string line;
+  while (std::getline(input,line)) {
+    std::istringstream row(line);
+    point.phi=std::numeric_limits<double>::quiet_NaN();
+    if (!(row>>point.bin>>point.x>>point.q2>>point.weight)) continue;
+    row>>point.phi;  // Optional explicit azimuth for ring-only/aperture tests.
     points.push_back(point); totalWeight+=point.weight;
   }
   if(points.empty()) return 2;
@@ -69,7 +77,18 @@ int main(int argc,char** argv) {
     const double cosine=(energy*scattered-ME*ME-row.q2/2.)/(beamP*outP);
     assert(cosine>=-1. && cosine<=1.);
     const V beam={0.,0.,beamP,energy}, target={0.,0.,0.,mass};
-    const V lepton={outP*std::sqrt(1.-cosine*cosine),0.,outP*cosine,scattered};
+    double phi=row.phi;
+    if (!std::isfinite(phi)) {
+      // Four-column fixtures choose an azimuth inside the projected aperture
+      // whenever the polar angle permits it. A fifth column overrides this.
+      const double slope=std::tan(std::acos(cosine));
+      const double low=std::max(std::tan(.04), std::sqrt(std::max(0.,
+        slope*slope-std::tan(.17)*std::tan(.17))));
+      const double high=std::min(slope,std::tan(.14));
+      phi=high>low ? std::asin((low+high)/(2.*slope)) : 0.;
+    }
+    const double pt=outP*std::sqrt(1.-cosine*cosine);
+    const V lepton={pt*std::cos(phi),pt*std::sin(phi),outP*cosine,scattered};
     const V q=beam-lepton;
     assert(std::abs(-q.mass2()-row.q2)<1.e-10);
     auto vertex=std::make_shared<GenVertex>();

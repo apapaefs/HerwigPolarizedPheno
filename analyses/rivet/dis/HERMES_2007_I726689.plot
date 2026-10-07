@@ -626,3 +626,11 @@ XLabel=$Q^2$ [GeV$^2$]
 # BEGIN PLOT /HERMES_2007_I726689/Sigma(UU|LL)_(Born[PD]_X[0-9]+|[PD]_Q2PROJ_Q2GT[14])$
 XLabel=$Q^2$ [GeV$^2$]
 # END PLOT
+
+# BEGIN PLOT /HERMES_2007_I726689/UU_Accepted_W2Fine_*
+Title=Low-mass generation-support diagnostic
+XLabel=$W^2$ [GeV$^2$]
+YLabel=$\mathrm{d}\sigma_{UU}/\mathrm{d}W^2$ [pb/GeV$^2$]
+LogY=0
+RatioPlot=0
+# END PLOT

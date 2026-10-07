@@ -377,6 +377,152 @@
     },
     "D_Q2PROJ_Q2GT4": {
       "ordinary": "SigmaQ2_Q2GT4"
+    },
+    "RingControl_Q2GT1": {
+      "ordinary": "RingControl_SigmaX_Q2GT1",
+      "weighted": "RingControl_SigmaOverD_X_Q2GT1",
+      "covariance": "RingControl_CovarianceProxy_X_Q2GT1"
+    },
+    "RingControl_Q2GT4": {
+      "ordinary": "RingControl_SigmaX_Q2GT4",
+      "weighted": "RingControl_SigmaOverD_X_Q2GT4",
+      "covariance": "RingControl_CovarianceProxy_X_Q2GT4"
+    },
+    "RingControl_D_Q2GT1": {
+      "ordinary": "RingControl_SigmaX_Q2GT1",
+      "weighted": "RingControl_SigmaOverD_X_Q2GT1",
+      "covariance": "RingControl_CovarianceProxy_X_Q2GT1"
+    },
+    "RingControl_D_Q2GT4": {
+      "ordinary": "RingControl_SigmaX_Q2GT4",
+      "weighted": "RingControl_SigmaOverD_X_Q2GT4",
+      "covariance": "RingControl_CovarianceProxy_X_Q2GT4"
+    },
+    "RingControl_BornP_X01": {
+      "ordinary": "RingControl_BornSigmaQ2_X01"
+    },
+    "RingControl_BornP_X02": {
+      "ordinary": "RingControl_BornSigmaQ2_X02"
+    },
+    "RingControl_BornP_X03": {
+      "ordinary": "RingControl_BornSigmaQ2_X03"
+    },
+    "RingControl_BornP_X04": {
+      "ordinary": "RingControl_BornSigmaQ2_X04"
+    },
+    "RingControl_BornP_X05": {
+      "ordinary": "RingControl_BornSigmaQ2_X05"
+    },
+    "RingControl_BornP_X06": {
+      "ordinary": "RingControl_BornSigmaQ2_X06"
+    },
+    "RingControl_BornP_X07": {
+      "ordinary": "RingControl_BornSigmaQ2_X07"
+    },
+    "RingControl_BornP_X08": {
+      "ordinary": "RingControl_BornSigmaQ2_X08"
+    },
+    "RingControl_BornP_X09": {
+      "ordinary": "RingControl_BornSigmaQ2_X09"
+    },
+    "RingControl_BornP_X10": {
+      "ordinary": "RingControl_BornSigmaQ2_X10"
+    },
+    "RingControl_BornP_X11": {
+      "ordinary": "RingControl_BornSigmaQ2_X11"
+    },
+    "RingControl_BornP_X12": {
+      "ordinary": "RingControl_BornSigmaQ2_X12"
+    },
+    "RingControl_BornP_X13": {
+      "ordinary": "RingControl_BornSigmaQ2_X13"
+    },
+    "RingControl_BornP_X14": {
+      "ordinary": "RingControl_BornSigmaQ2_X14"
+    },
+    "RingControl_BornP_X15": {
+      "ordinary": "RingControl_BornSigmaQ2_X15"
+    },
+    "RingControl_BornP_X16": {
+      "ordinary": "RingControl_BornSigmaQ2_X16"
+    },
+    "RingControl_BornP_X17": {
+      "ordinary": "RingControl_BornSigmaQ2_X17"
+    },
+    "RingControl_BornP_X18": {
+      "ordinary": "RingControl_BornSigmaQ2_X18"
+    },
+    "RingControl_BornP_X19": {
+      "ordinary": "RingControl_BornSigmaQ2_X19"
+    },
+    "RingControl_BornD_X01": {
+      "ordinary": "RingControl_BornSigmaQ2_X01"
+    },
+    "RingControl_BornD_X02": {
+      "ordinary": "RingControl_BornSigmaQ2_X02"
+    },
+    "RingControl_BornD_X03": {
+      "ordinary": "RingControl_BornSigmaQ2_X03"
+    },
+    "RingControl_BornD_X04": {
+      "ordinary": "RingControl_BornSigmaQ2_X04"
+    },
+    "RingControl_BornD_X05": {
+      "ordinary": "RingControl_BornSigmaQ2_X05"
+    },
+    "RingControl_BornD_X06": {
+      "ordinary": "RingControl_BornSigmaQ2_X06"
+    },
+    "RingControl_BornD_X07": {
+      "ordinary": "RingControl_BornSigmaQ2_X07"
+    },
+    "RingControl_BornD_X08": {
+      "ordinary": "RingControl_BornSigmaQ2_X08"
+    },
+    "RingControl_BornD_X09": {
+      "ordinary": "RingControl_BornSigmaQ2_X09"
+    },
+    "RingControl_BornD_X10": {
+      "ordinary": "RingControl_BornSigmaQ2_X10"
+    },
+    "RingControl_BornD_X11": {
+      "ordinary": "RingControl_BornSigmaQ2_X11"
+    },
+    "RingControl_BornD_X12": {
+      "ordinary": "RingControl_BornSigmaQ2_X12"
+    },
+    "RingControl_BornD_X13": {
+      "ordinary": "RingControl_BornSigmaQ2_X13"
+    },
+    "RingControl_BornD_X14": {
+      "ordinary": "RingControl_BornSigmaQ2_X14"
+    },
+    "RingControl_BornD_X15": {
+      "ordinary": "RingControl_BornSigmaQ2_X15"
+    },
+    "RingControl_BornD_X16": {
+      "ordinary": "RingControl_BornSigmaQ2_X16"
+    },
+    "RingControl_BornD_X17": {
+      "ordinary": "RingControl_BornSigmaQ2_X17"
+    },
+    "RingControl_BornD_X18": {
+      "ordinary": "RingControl_BornSigmaQ2_X18"
+    },
+    "RingControl_BornD_X19": {
+      "ordinary": "RingControl_BornSigmaQ2_X19"
+    },
+    "RingControl_P_Q2PROJ_Q2GT1": {
+      "ordinary": "RingControl_SigmaQ2_Q2GT1"
+    },
+    "RingControl_P_Q2PROJ_Q2GT4": {
+      "ordinary": "RingControl_SigmaQ2_Q2GT4"
+    },
+    "RingControl_D_Q2PROJ_Q2GT1": {
+      "ordinary": "RingControl_SigmaQ2_Q2GT1"
+    },
+    "RingControl_D_Q2PROJ_Q2GT4": {
+      "ordinary": "RingControl_SigmaQ2_Q2GT4"
     }
   },
   "outputs": {
@@ -393,7 +539,8 @@
       "apar_integration_range": [
         1.0,
         20.0
-      ]
+      ],
+      "acceptance": "rectangle_intersect_polar_ring"
     },
     "Q2GT4": {
       "a1": "/HERMES_2007_I726689/A1_Q2GT4",
@@ -408,7 +555,8 @@
       "apar_integration_range": [
         4.0,
         20.0
-      ]
+      ],
+      "acceptance": "rectangle_intersect_polar_ring"
     },
     "D_Q2GT1": {
       "a1": "/HERMES_2007_I726689/d14-x01-y02",
@@ -436,7 +584,8 @@
       "apar_integration_range": [
         1.0,
         20.0
-      ]
+      ],
+      "acceptance": "rectangle_intersect_polar_ring"
     },
     "D_Q2GT4": {
       "a1": "/HERMES_2007_I726689/A1d_Q2GT4",
@@ -464,7 +613,8 @@
       "apar_integration_range": [
         4.0,
         20.0
-      ]
+      ],
+      "acceptance": "rectangle_intersect_polar_ring"
     },
     "BornP_X01": {
       "estimator": "a_parallel",
@@ -478,7 +628,8 @@
       "supported_bins": [],
       "x_low": 0.00406,
       "x_high": 0.00733,
-      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4"
+      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4",
+      "acceptance": "rectangle_intersect_polar_ring"
     },
     "BornP_X02": {
       "estimator": "a_parallel",
@@ -492,7 +643,8 @@
       "supported_bins": [],
       "x_low": 0.00733,
       "x_high": 0.01177,
-      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4"
+      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4",
+      "acceptance": "rectangle_intersect_polar_ring"
     },
     "BornP_X03": {
       "estimator": "a_parallel",
@@ -506,7 +658,8 @@
       "supported_bins": [],
       "x_low": 0.01177,
       "x_high": 0.01677,
-      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4"
+      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4",
+      "acceptance": "rectangle_intersect_polar_ring"
     },
     "BornP_X04": {
       "estimator": "a_parallel",
@@ -520,7 +673,8 @@
       "supported_bins": [],
       "x_low": 0.01677,
       "x_high": 0.02124,
-      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4"
+      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4",
+      "acceptance": "rectangle_intersect_polar_ring"
     },
     "BornP_X05": {
       "estimator": "a_parallel",
@@ -536,7 +690,8 @@
       ],
       "x_low": 0.02124,
       "x_high": 0.02948,
-      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4"
+      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4",
+      "acceptance": "rectangle_intersect_polar_ring"
     },
     "BornP_X06": {
       "estimator": "a_parallel",
@@ -552,7 +707,8 @@
       ],
       "x_low": 0.02948,
       "x_high": 0.03619,
-      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4"
+      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4",
+      "acceptance": "rectangle_intersect_polar_ring"
     },
     "BornP_X07": {
       "estimator": "a_parallel",
@@ -568,7 +724,8 @@
       ],
       "x_low": 0.03619,
       "x_high": 0.04442,
-      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4"
+      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4",
+      "acceptance": "rectangle_intersect_polar_ring"
     },
     "BornP_X08": {
       "estimator": "a_parallel",
@@ -584,7 +741,8 @@
       ],
       "x_low": 0.04442,
       "x_high": 0.05681,
-      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4"
+      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4",
+      "acceptance": "rectangle_intersect_polar_ring"
     },
     "BornP_X09": {
       "estimator": "a_parallel",
@@ -602,7 +760,8 @@
       ],
       "x_low": 0.05681,
       "x_high": 0.07265,
-      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4"
+      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4",
+      "acceptance": "rectangle_intersect_polar_ring"
     },
     "BornP_X10": {
       "estimator": "a_parallel",
@@ -620,7 +779,8 @@
       ],
       "x_low": 0.07265,
       "x_high": 0.09291,
-      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4"
+      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4",
+      "acceptance": "rectangle_intersect_polar_ring"
     },
     "BornP_X11": {
       "estimator": "a_parallel",
@@ -638,7 +798,8 @@
       ],
       "x_low": 0.09291,
       "x_high": 0.11882,
-      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4"
+      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4",
+      "acceptance": "rectangle_intersect_polar_ring"
     },
     "BornP_X12": {
       "estimator": "a_parallel",
@@ -656,7 +817,8 @@
       ],
       "x_low": 0.11882,
       "x_high": 0.15195,
-      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4"
+      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4",
+      "acceptance": "rectangle_intersect_polar_ring"
     },
     "BornP_X13": {
       "estimator": "a_parallel",
@@ -674,7 +836,8 @@
       ],
       "x_low": 0.15195,
       "x_high": 0.19432,
-      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4"
+      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4",
+      "acceptance": "rectangle_intersect_polar_ring"
     },
     "BornP_X14": {
       "estimator": "a_parallel",
@@ -692,7 +855,8 @@
       ],
       "x_low": 0.19432,
       "x_high": 0.2485,
-      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4"
+      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4",
+      "acceptance": "rectangle_intersect_polar_ring"
     },
     "BornP_X15": {
       "estimator": "a_parallel",
@@ -710,7 +874,8 @@
       ],
       "x_low": 0.2485,
       "x_high": 0.3178,
-      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4"
+      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4",
+      "acceptance": "rectangle_intersect_polar_ring"
     },
     "BornP_X16": {
       "estimator": "a_parallel",
@@ -728,7 +893,8 @@
       ],
       "x_low": 0.3178,
       "x_high": 0.40641,
-      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4"
+      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4",
+      "acceptance": "rectangle_intersect_polar_ring"
     },
     "BornP_X17": {
       "estimator": "a_parallel",
@@ -746,7 +912,8 @@
       ],
       "x_low": 0.40641,
       "x_high": 0.51974,
-      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4"
+      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4",
+      "acceptance": "rectangle_intersect_polar_ring"
     },
     "BornP_X18": {
       "estimator": "a_parallel",
@@ -764,7 +931,8 @@
       ],
       "x_low": 0.51974,
       "x_high": 0.66466,
-      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4"
+      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4",
+      "acceptance": "rectangle_intersect_polar_ring"
     },
     "BornP_X19": {
       "estimator": "a_parallel",
@@ -782,7 +950,8 @@
       ],
       "x_low": 0.66466,
       "x_high": 0.9,
-      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4"
+      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4",
+      "acceptance": "rectangle_intersect_polar_ring"
     },
     "BornD_X01": {
       "estimator": "a_parallel",
@@ -809,7 +978,8 @@
           "P": 0.4625,
           "N": 0.4625
         }
-      }
+      },
+      "acceptance": "rectangle_intersect_polar_ring"
     },
     "BornD_X02": {
       "estimator": "a_parallel",
@@ -836,7 +1006,8 @@
           "P": 0.4625,
           "N": 0.4625
         }
-      }
+      },
+      "acceptance": "rectangle_intersect_polar_ring"
     },
     "BornD_X03": {
       "estimator": "a_parallel",
@@ -863,7 +1034,8 @@
           "P": 0.4625,
           "N": 0.4625
         }
-      }
+      },
+      "acceptance": "rectangle_intersect_polar_ring"
     },
     "BornD_X04": {
       "estimator": "a_parallel",
@@ -890,7 +1062,8 @@
           "P": 0.4625,
           "N": 0.4625
         }
-      }
+      },
+      "acceptance": "rectangle_intersect_polar_ring"
     },
     "BornD_X05": {
       "estimator": "a_parallel",
@@ -919,7 +1092,8 @@
           "P": 0.4625,
           "N": 0.4625
         }
-      }
+      },
+      "acceptance": "rectangle_intersect_polar_ring"
     },
     "BornD_X06": {
       "estimator": "a_parallel",
@@ -948,7 +1122,8 @@
           "P": 0.4625,
           "N": 0.4625
         }
-      }
+      },
+      "acceptance": "rectangle_intersect_polar_ring"
     },
     "BornD_X07": {
       "estimator": "a_parallel",
@@ -977,7 +1152,8 @@
           "P": 0.4625,
           "N": 0.4625
         }
-      }
+      },
+      "acceptance": "rectangle_intersect_polar_ring"
     },
     "BornD_X08": {
       "estimator": "a_parallel",
@@ -1006,7 +1182,8 @@
           "P": 0.4625,
           "N": 0.4625
         }
-      }
+      },
+      "acceptance": "rectangle_intersect_polar_ring"
     },
     "BornD_X09": {
       "estimator": "a_parallel",
@@ -1037,7 +1214,8 @@
           "P": 0.4625,
           "N": 0.4625
         }
-      }
+      },
+      "acceptance": "rectangle_intersect_polar_ring"
     },
     "BornD_X10": {
       "estimator": "a_parallel",
@@ -1068,7 +1246,8 @@
           "P": 0.4625,
           "N": 0.4625
         }
-      }
+      },
+      "acceptance": "rectangle_intersect_polar_ring"
     },
     "BornD_X11": {
       "estimator": "a_parallel",
@@ -1099,7 +1278,8 @@
           "P": 0.4625,
           "N": 0.4625
         }
-      }
+      },
+      "acceptance": "rectangle_intersect_polar_ring"
     },
     "BornD_X12": {
       "estimator": "a_parallel",
@@ -1130,7 +1310,8 @@
           "P": 0.4625,
           "N": 0.4625
         }
-      }
+      },
+      "acceptance": "rectangle_intersect_polar_ring"
     },
     "BornD_X13": {
       "estimator": "a_parallel",
@@ -1161,7 +1342,8 @@
           "P": 0.4625,
           "N": 0.4625
         }
-      }
+      },
+      "acceptance": "rectangle_intersect_polar_ring"
     },
     "BornD_X14": {
       "estimator": "a_parallel",
@@ -1192,7 +1374,8 @@
           "P": 0.4625,
           "N": 0.4625
         }
-      }
+      },
+      "acceptance": "rectangle_intersect_polar_ring"
     },
     "BornD_X15": {
       "estimator": "a_parallel",
@@ -1223,7 +1406,8 @@
           "P": 0.4625,
           "N": 0.4625
         }
-      }
+      },
+      "acceptance": "rectangle_intersect_polar_ring"
     },
     "BornD_X16": {
       "estimator": "a_parallel",
@@ -1254,7 +1438,8 @@
           "P": 0.4625,
           "N": 0.4625
         }
-      }
+      },
+      "acceptance": "rectangle_intersect_polar_ring"
     },
     "BornD_X17": {
       "estimator": "a_parallel",
@@ -1285,7 +1470,8 @@
           "P": 0.4625,
           "N": 0.4625
         }
-      }
+      },
+      "acceptance": "rectangle_intersect_polar_ring"
     },
     "BornD_X18": {
       "estimator": "a_parallel",
@@ -1316,7 +1502,8 @@
           "P": 0.4625,
           "N": 0.4625
         }
-      }
+      },
+      "acceptance": "rectangle_intersect_polar_ring"
     },
     "BornD_X19": {
       "estimator": "a_parallel",
@@ -1347,7 +1534,8 @@
           "P": 0.4625,
           "N": 0.4625
         }
-      }
+      },
+      "acceptance": "rectangle_intersect_polar_ring"
     },
     "P_Q2PROJ_Q2GT1": {
       "estimator": "a_parallel",
@@ -1363,7 +1551,8 @@
         0.0212,
         0.9
       ],
-      "reference_status": "prediction only; asymmetry tables lack unpolarized yield weights for equivalent integrated data"
+      "reference_status": "prediction only; asymmetry tables lack unpolarized yield weights for equivalent integrated data",
+      "acceptance": "rectangle_intersect_polar_ring"
     },
     "P_Q2PROJ_Q2GT4": {
       "estimator": "a_parallel",
@@ -1379,7 +1568,8 @@
         0.0212,
         0.9
       ],
-      "reference_status": "prediction only; asymmetry tables lack unpolarized yield weights for equivalent integrated data"
+      "reference_status": "prediction only; asymmetry tables lack unpolarized yield weights for equivalent integrated data",
+      "acceptance": "rectangle_intersect_polar_ring"
     },
     "D_Q2PROJ_Q2GT1": {
       "estimator": "a_parallel",
@@ -1408,7 +1598,8 @@
           "P": 0.4625,
           "N": 0.4625
         }
-      }
+      },
+      "acceptance": "rectangle_intersect_polar_ring"
     },
     "D_Q2PROJ_Q2GT4": {
       "estimator": "a_parallel",
@@ -1437,7 +1628,1205 @@
           "P": 0.4625,
           "N": 0.4625
         }
-      }
+      },
+      "acceptance": "rectangle_intersect_polar_ring"
+    },
+    "RingControl_Q2GT1": {
+      "a1": "/HERMES_2007_I726689/RingControl_d14-x01-y01",
+      "apar": "/HERMES_2007_I726689/RingControl_AParallel_Q2GT1",
+      "parity_pp_mm": "/HERMES_2007_I726689/RingControl_Parity_PP_MM_Q2GT1",
+      "parity_pm_mp": "/HERMES_2007_I726689/RingControl_Parity_PM_MP_Q2GT1",
+      "target": "P",
+      "observable": "A1p",
+      "target_model": "free proton",
+      "axis": "x",
+      "apar_integration_variable": "Q2",
+      "apar_integration_range": [
+        1.0,
+        20.0
+      ],
+      "acceptance": "polar_ring_control",
+      "summary_only": true,
+      "paired_primary": "Q2GT1"
+    },
+    "RingControl_Q2GT4": {
+      "a1": "/HERMES_2007_I726689/RingControl_A1_Q2GT4",
+      "apar": "/HERMES_2007_I726689/RingControl_AParallel_Q2GT4",
+      "parity_pp_mm": "/HERMES_2007_I726689/RingControl_Parity_PP_MM_Q2GT4",
+      "parity_pm_mp": "/HERMES_2007_I726689/RingControl_Parity_PM_MP_Q2GT4",
+      "target": "P",
+      "observable": "A1p",
+      "target_model": "free proton",
+      "axis": "x",
+      "apar_integration_variable": "Q2",
+      "apar_integration_range": [
+        4.0,
+        20.0
+      ],
+      "acceptance": "polar_ring_control",
+      "summary_only": true,
+      "paired_primary": "Q2GT4"
+    },
+    "RingControl_D_Q2GT1": {
+      "a1": "/HERMES_2007_I726689/RingControl_d14-x01-y02",
+      "apar": "/HERMES_2007_I726689/RingControl_AParallelD_Q2GT1",
+      "parity_pp_mm": "/HERMES_2007_I726689/RingControl_Parity_PP_MM_D_Q2GT1",
+      "parity_pm_mp": "/HERMES_2007_I726689/RingControl_Parity_PM_MP_D_Q2GT1",
+      "target": "D",
+      "observable": "A1d",
+      "target_model": "per-nucleon proton+neutron impulse approximation",
+      "d_state_probability": 0.05,
+      "d_state_factor": 0.925,
+      "nuclear_effects": "binding, Fermi motion, off-shell, shadowing, and tensor b1 effects neglected",
+      "target_components": {
+        "unpolarized": {
+          "P": 0.5,
+          "N": 0.5
+        },
+        "longitudinal": {
+          "P": 0.4625,
+          "N": 0.4625
+        }
+      },
+      "axis": "x",
+      "apar_integration_variable": "Q2",
+      "apar_integration_range": [
+        1.0,
+        20.0
+      ],
+      "acceptance": "polar_ring_control",
+      "summary_only": true,
+      "paired_primary": "D_Q2GT1"
+    },
+    "RingControl_D_Q2GT4": {
+      "a1": "/HERMES_2007_I726689/RingControl_A1d_Q2GT4",
+      "apar": "/HERMES_2007_I726689/RingControl_AParallelD_Q2GT4",
+      "parity_pp_mm": "/HERMES_2007_I726689/RingControl_Parity_PP_MM_D_Q2GT4",
+      "parity_pm_mp": "/HERMES_2007_I726689/RingControl_Parity_PM_MP_D_Q2GT4",
+      "target": "D",
+      "observable": "A1d",
+      "target_model": "per-nucleon proton+neutron impulse approximation",
+      "d_state_probability": 0.05,
+      "d_state_factor": 0.925,
+      "nuclear_effects": "binding, Fermi motion, off-shell, shadowing, and tensor b1 effects neglected",
+      "target_components": {
+        "unpolarized": {
+          "P": 0.5,
+          "N": 0.5
+        },
+        "longitudinal": {
+          "P": 0.4625,
+          "N": 0.4625
+        }
+      },
+      "axis": "x",
+      "apar_integration_variable": "Q2",
+      "apar_integration_range": [
+        4.0,
+        20.0
+      ],
+      "acceptance": "polar_ring_control",
+      "summary_only": true,
+      "paired_primary": "D_Q2GT4"
+    },
+    "RingControl_BornP_X01": {
+      "estimator": "a_parallel",
+      "axis": "q2",
+      "apar": "/HERMES_2007_I726689/RingControl_d07-x01-y02",
+      "parity_pp_mm": "/HERMES_2007_I726689/RingControl_Parity_PP_MM_BornP_X01",
+      "parity_pm_mp": "/HERMES_2007_I726689/RingControl_Parity_PM_MP_BornP_X01",
+      "target": "P",
+      "observable": "A_parallelp",
+      "target_model": "free proton",
+      "supported_bins": [],
+      "x_low": 0.00406,
+      "x_high": 0.00733,
+      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4",
+      "acceptance": "polar_ring_control",
+      "summary_only": true,
+      "paired_primary": "BornP_X01"
+    },
+    "RingControl_BornP_X02": {
+      "estimator": "a_parallel",
+      "axis": "q2",
+      "apar": "/HERMES_2007_I726689/RingControl_d07-x02-y02",
+      "parity_pp_mm": "/HERMES_2007_I726689/RingControl_Parity_PP_MM_BornP_X02",
+      "parity_pm_mp": "/HERMES_2007_I726689/RingControl_Parity_PM_MP_BornP_X02",
+      "target": "P",
+      "observable": "A_parallelp",
+      "target_model": "free proton",
+      "supported_bins": [],
+      "x_low": 0.00733,
+      "x_high": 0.01177,
+      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4",
+      "acceptance": "polar_ring_control",
+      "summary_only": true,
+      "paired_primary": "BornP_X02"
+    },
+    "RingControl_BornP_X03": {
+      "estimator": "a_parallel",
+      "axis": "q2",
+      "apar": "/HERMES_2007_I726689/RingControl_d07-x03-y02",
+      "parity_pp_mm": "/HERMES_2007_I726689/RingControl_Parity_PP_MM_BornP_X03",
+      "parity_pm_mp": "/HERMES_2007_I726689/RingControl_Parity_PM_MP_BornP_X03",
+      "target": "P",
+      "observable": "A_parallelp",
+      "target_model": "free proton",
+      "supported_bins": [],
+      "x_low": 0.01177,
+      "x_high": 0.01677,
+      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4",
+      "acceptance": "polar_ring_control",
+      "summary_only": true,
+      "paired_primary": "BornP_X03"
+    },
+    "RingControl_BornP_X04": {
+      "estimator": "a_parallel",
+      "axis": "q2",
+      "apar": "/HERMES_2007_I726689/RingControl_d07-x04-y02",
+      "parity_pp_mm": "/HERMES_2007_I726689/RingControl_Parity_PP_MM_BornP_X04",
+      "parity_pm_mp": "/HERMES_2007_I726689/RingControl_Parity_PM_MP_BornP_X04",
+      "target": "P",
+      "observable": "A_parallelp",
+      "target_model": "free proton",
+      "supported_bins": [],
+      "x_low": 0.01677,
+      "x_high": 0.02124,
+      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4",
+      "acceptance": "polar_ring_control",
+      "summary_only": true,
+      "paired_primary": "BornP_X04"
+    },
+    "RingControl_BornP_X05": {
+      "estimator": "a_parallel",
+      "axis": "q2",
+      "apar": "/HERMES_2007_I726689/RingControl_d07-x05-y02",
+      "parity_pp_mm": "/HERMES_2007_I726689/RingControl_Parity_PP_MM_BornP_X05",
+      "parity_pm_mp": "/HERMES_2007_I726689/RingControl_Parity_PM_MP_BornP_X05",
+      "target": "P",
+      "observable": "A_parallelp",
+      "target_model": "free proton",
+      "supported_bins": [
+        2
+      ],
+      "x_low": 0.02124,
+      "x_high": 0.02948,
+      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4",
+      "acceptance": "polar_ring_control",
+      "summary_only": true,
+      "paired_primary": "BornP_X05"
+    },
+    "RingControl_BornP_X06": {
+      "estimator": "a_parallel",
+      "axis": "q2",
+      "apar": "/HERMES_2007_I726689/RingControl_d07-x06-y02",
+      "parity_pp_mm": "/HERMES_2007_I726689/RingControl_Parity_PP_MM_BornP_X06",
+      "parity_pm_mp": "/HERMES_2007_I726689/RingControl_Parity_PM_MP_BornP_X06",
+      "target": "P",
+      "observable": "A_parallelp",
+      "target_model": "free proton",
+      "supported_bins": [
+        2
+      ],
+      "x_low": 0.02948,
+      "x_high": 0.03619,
+      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4",
+      "acceptance": "polar_ring_control",
+      "summary_only": true,
+      "paired_primary": "BornP_X06"
+    },
+    "RingControl_BornP_X07": {
+      "estimator": "a_parallel",
+      "axis": "q2",
+      "apar": "/HERMES_2007_I726689/RingControl_d07-x07-y02",
+      "parity_pp_mm": "/HERMES_2007_I726689/RingControl_Parity_PP_MM_BornP_X07",
+      "parity_pm_mp": "/HERMES_2007_I726689/RingControl_Parity_PM_MP_BornP_X07",
+      "target": "P",
+      "observable": "A_parallelp",
+      "target_model": "free proton",
+      "supported_bins": [
+        2
+      ],
+      "x_low": 0.03619,
+      "x_high": 0.04442,
+      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4",
+      "acceptance": "polar_ring_control",
+      "summary_only": true,
+      "paired_primary": "BornP_X07"
+    },
+    "RingControl_BornP_X08": {
+      "estimator": "a_parallel",
+      "axis": "q2",
+      "apar": "/HERMES_2007_I726689/RingControl_d07-x08-y02",
+      "parity_pp_mm": "/HERMES_2007_I726689/RingControl_Parity_PP_MM_BornP_X08",
+      "parity_pm_mp": "/HERMES_2007_I726689/RingControl_Parity_PM_MP_BornP_X08",
+      "target": "P",
+      "observable": "A_parallelp",
+      "target_model": "free proton",
+      "supported_bins": [
+        2
+      ],
+      "x_low": 0.04442,
+      "x_high": 0.05681,
+      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4",
+      "acceptance": "polar_ring_control",
+      "summary_only": true,
+      "paired_primary": "BornP_X08"
+    },
+    "RingControl_BornP_X09": {
+      "estimator": "a_parallel",
+      "axis": "q2",
+      "apar": "/HERMES_2007_I726689/RingControl_d07-x09-y02",
+      "parity_pp_mm": "/HERMES_2007_I726689/RingControl_Parity_PP_MM_BornP_X09",
+      "parity_pm_mp": "/HERMES_2007_I726689/RingControl_Parity_PM_MP_BornP_X09",
+      "target": "P",
+      "observable": "A_parallelp",
+      "target_model": "free proton",
+      "supported_bins": [
+        1,
+        2,
+        3
+      ],
+      "x_low": 0.05681,
+      "x_high": 0.07265,
+      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4",
+      "acceptance": "polar_ring_control",
+      "summary_only": true,
+      "paired_primary": "BornP_X09"
+    },
+    "RingControl_BornP_X10": {
+      "estimator": "a_parallel",
+      "axis": "q2",
+      "apar": "/HERMES_2007_I726689/RingControl_d07-x10-y02",
+      "parity_pp_mm": "/HERMES_2007_I726689/RingControl_Parity_PP_MM_BornP_X10",
+      "parity_pm_mp": "/HERMES_2007_I726689/RingControl_Parity_PM_MP_BornP_X10",
+      "target": "P",
+      "observable": "A_parallelp",
+      "target_model": "free proton",
+      "supported_bins": [
+        1,
+        2,
+        3
+      ],
+      "x_low": 0.07265,
+      "x_high": 0.09291,
+      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4",
+      "acceptance": "polar_ring_control",
+      "summary_only": true,
+      "paired_primary": "BornP_X10"
+    },
+    "RingControl_BornP_X11": {
+      "estimator": "a_parallel",
+      "axis": "q2",
+      "apar": "/HERMES_2007_I726689/RingControl_d07-x11-y02",
+      "parity_pp_mm": "/HERMES_2007_I726689/RingControl_Parity_PP_MM_BornP_X11",
+      "parity_pm_mp": "/HERMES_2007_I726689/RingControl_Parity_PM_MP_BornP_X11",
+      "target": "P",
+      "observable": "A_parallelp",
+      "target_model": "free proton",
+      "supported_bins": [
+        1,
+        2,
+        3
+      ],
+      "x_low": 0.09291,
+      "x_high": 0.11882,
+      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4",
+      "acceptance": "polar_ring_control",
+      "summary_only": true,
+      "paired_primary": "BornP_X11"
+    },
+    "RingControl_BornP_X12": {
+      "estimator": "a_parallel",
+      "axis": "q2",
+      "apar": "/HERMES_2007_I726689/RingControl_d07-x12-y02",
+      "parity_pp_mm": "/HERMES_2007_I726689/RingControl_Parity_PP_MM_BornP_X12",
+      "parity_pm_mp": "/HERMES_2007_I726689/RingControl_Parity_PM_MP_BornP_X12",
+      "target": "P",
+      "observable": "A_parallelp",
+      "target_model": "free proton",
+      "supported_bins": [
+        1,
+        2,
+        3
+      ],
+      "x_low": 0.11882,
+      "x_high": 0.15195,
+      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4",
+      "acceptance": "polar_ring_control",
+      "summary_only": true,
+      "paired_primary": "BornP_X12"
+    },
+    "RingControl_BornP_X13": {
+      "estimator": "a_parallel",
+      "axis": "q2",
+      "apar": "/HERMES_2007_I726689/RingControl_d07-x13-y02",
+      "parity_pp_mm": "/HERMES_2007_I726689/RingControl_Parity_PP_MM_BornP_X13",
+      "parity_pm_mp": "/HERMES_2007_I726689/RingControl_Parity_PM_MP_BornP_X13",
+      "target": "P",
+      "observable": "A_parallelp",
+      "target_model": "free proton",
+      "supported_bins": [
+        1,
+        2,
+        3
+      ],
+      "x_low": 0.15195,
+      "x_high": 0.19432,
+      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4",
+      "acceptance": "polar_ring_control",
+      "summary_only": true,
+      "paired_primary": "BornP_X13"
+    },
+    "RingControl_BornP_X14": {
+      "estimator": "a_parallel",
+      "axis": "q2",
+      "apar": "/HERMES_2007_I726689/RingControl_d07-x14-y02",
+      "parity_pp_mm": "/HERMES_2007_I726689/RingControl_Parity_PP_MM_BornP_X14",
+      "parity_pm_mp": "/HERMES_2007_I726689/RingControl_Parity_PM_MP_BornP_X14",
+      "target": "P",
+      "observable": "A_parallelp",
+      "target_model": "free proton",
+      "supported_bins": [
+        1,
+        2,
+        3
+      ],
+      "x_low": 0.19432,
+      "x_high": 0.2485,
+      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4",
+      "acceptance": "polar_ring_control",
+      "summary_only": true,
+      "paired_primary": "BornP_X14"
+    },
+    "RingControl_BornP_X15": {
+      "estimator": "a_parallel",
+      "axis": "q2",
+      "apar": "/HERMES_2007_I726689/RingControl_d07-x15-y02",
+      "parity_pp_mm": "/HERMES_2007_I726689/RingControl_Parity_PP_MM_BornP_X15",
+      "parity_pm_mp": "/HERMES_2007_I726689/RingControl_Parity_PM_MP_BornP_X15",
+      "target": "P",
+      "observable": "A_parallelp",
+      "target_model": "free proton",
+      "supported_bins": [
+        1,
+        2,
+        3
+      ],
+      "x_low": 0.2485,
+      "x_high": 0.3178,
+      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4",
+      "acceptance": "polar_ring_control",
+      "summary_only": true,
+      "paired_primary": "BornP_X15"
+    },
+    "RingControl_BornP_X16": {
+      "estimator": "a_parallel",
+      "axis": "q2",
+      "apar": "/HERMES_2007_I726689/RingControl_d07-x16-y02",
+      "parity_pp_mm": "/HERMES_2007_I726689/RingControl_Parity_PP_MM_BornP_X16",
+      "parity_pm_mp": "/HERMES_2007_I726689/RingControl_Parity_PM_MP_BornP_X16",
+      "target": "P",
+      "observable": "A_parallelp",
+      "target_model": "free proton",
+      "supported_bins": [
+        1,
+        2,
+        3
+      ],
+      "x_low": 0.3178,
+      "x_high": 0.40641,
+      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4",
+      "acceptance": "polar_ring_control",
+      "summary_only": true,
+      "paired_primary": "BornP_X16"
+    },
+    "RingControl_BornP_X17": {
+      "estimator": "a_parallel",
+      "axis": "q2",
+      "apar": "/HERMES_2007_I726689/RingControl_d07-x17-y02",
+      "parity_pp_mm": "/HERMES_2007_I726689/RingControl_Parity_PP_MM_BornP_X17",
+      "parity_pm_mp": "/HERMES_2007_I726689/RingControl_Parity_PM_MP_BornP_X17",
+      "target": "P",
+      "observable": "A_parallelp",
+      "target_model": "free proton",
+      "supported_bins": [
+        1,
+        2,
+        3
+      ],
+      "x_low": 0.40641,
+      "x_high": 0.51974,
+      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4",
+      "acceptance": "polar_ring_control",
+      "summary_only": true,
+      "paired_primary": "BornP_X17"
+    },
+    "RingControl_BornP_X18": {
+      "estimator": "a_parallel",
+      "axis": "q2",
+      "apar": "/HERMES_2007_I726689/RingControl_d07-x18-y02",
+      "parity_pp_mm": "/HERMES_2007_I726689/RingControl_Parity_PP_MM_BornP_X18",
+      "parity_pm_mp": "/HERMES_2007_I726689/RingControl_Parity_PM_MP_BornP_X18",
+      "target": "P",
+      "observable": "A_parallelp",
+      "target_model": "free proton",
+      "supported_bins": [
+        1,
+        2,
+        3
+      ],
+      "x_low": 0.51974,
+      "x_high": 0.66466,
+      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4",
+      "acceptance": "polar_ring_control",
+      "summary_only": true,
+      "paired_primary": "BornP_X18"
+    },
+    "RingControl_BornP_X19": {
+      "estimator": "a_parallel",
+      "axis": "q2",
+      "apar": "/HERMES_2007_I726689/RingControl_d07-x19-y02",
+      "parity_pp_mm": "/HERMES_2007_I726689/RingControl_Parity_PP_MM_BornP_X19",
+      "parity_pm_mp": "/HERMES_2007_I726689/RingControl_Parity_PM_MP_BornP_X19",
+      "target": "P",
+      "observable": "A_parallelp",
+      "target_model": "free proton",
+      "supported_bins": [
+        1,
+        2,
+        3
+      ],
+      "x_low": 0.66466,
+      "x_high": 0.9,
+      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4",
+      "acceptance": "polar_ring_control",
+      "summary_only": true,
+      "paired_primary": "BornP_X19"
+    },
+    "RingControl_BornD_X01": {
+      "estimator": "a_parallel",
+      "axis": "q2",
+      "apar": "/HERMES_2007_I726689/RingControl_d08-x01-y02",
+      "parity_pp_mm": "/HERMES_2007_I726689/RingControl_Parity_PP_MM_BornD_X01",
+      "parity_pm_mp": "/HERMES_2007_I726689/RingControl_Parity_PM_MP_BornD_X01",
+      "target": "D",
+      "observable": "A_paralleld",
+      "target_model": "per-nucleon proton+neutron impulse approximation",
+      "supported_bins": [],
+      "x_low": 0.00406,
+      "x_high": 0.00733,
+      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4",
+      "d_state_probability": 0.05,
+      "d_state_factor": 0.925,
+      "nuclear_effects": "binding, Fermi motion, off-shell, shadowing, and tensor b1 effects neglected",
+      "target_components": {
+        "unpolarized": {
+          "P": 0.5,
+          "N": 0.5
+        },
+        "longitudinal": {
+          "P": 0.4625,
+          "N": 0.4625
+        }
+      },
+      "acceptance": "polar_ring_control",
+      "summary_only": true,
+      "paired_primary": "BornD_X01"
+    },
+    "RingControl_BornD_X02": {
+      "estimator": "a_parallel",
+      "axis": "q2",
+      "apar": "/HERMES_2007_I726689/RingControl_d08-x02-y02",
+      "parity_pp_mm": "/HERMES_2007_I726689/RingControl_Parity_PP_MM_BornD_X02",
+      "parity_pm_mp": "/HERMES_2007_I726689/RingControl_Parity_PM_MP_BornD_X02",
+      "target": "D",
+      "observable": "A_paralleld",
+      "target_model": "per-nucleon proton+neutron impulse approximation",
+      "supported_bins": [],
+      "x_low": 0.00733,
+      "x_high": 0.01177,
+      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4",
+      "d_state_probability": 0.05,
+      "d_state_factor": 0.925,
+      "nuclear_effects": "binding, Fermi motion, off-shell, shadowing, and tensor b1 effects neglected",
+      "target_components": {
+        "unpolarized": {
+          "P": 0.5,
+          "N": 0.5
+        },
+        "longitudinal": {
+          "P": 0.4625,
+          "N": 0.4625
+        }
+      },
+      "acceptance": "polar_ring_control",
+      "summary_only": true,
+      "paired_primary": "BornD_X02"
+    },
+    "RingControl_BornD_X03": {
+      "estimator": "a_parallel",
+      "axis": "q2",
+      "apar": "/HERMES_2007_I726689/RingControl_d08-x03-y02",
+      "parity_pp_mm": "/HERMES_2007_I726689/RingControl_Parity_PP_MM_BornD_X03",
+      "parity_pm_mp": "/HERMES_2007_I726689/RingControl_Parity_PM_MP_BornD_X03",
+      "target": "D",
+      "observable": "A_paralleld",
+      "target_model": "per-nucleon proton+neutron impulse approximation",
+      "supported_bins": [],
+      "x_low": 0.01177,
+      "x_high": 0.01677,
+      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4",
+      "d_state_probability": 0.05,
+      "d_state_factor": 0.925,
+      "nuclear_effects": "binding, Fermi motion, off-shell, shadowing, and tensor b1 effects neglected",
+      "target_components": {
+        "unpolarized": {
+          "P": 0.5,
+          "N": 0.5
+        },
+        "longitudinal": {
+          "P": 0.4625,
+          "N": 0.4625
+        }
+      },
+      "acceptance": "polar_ring_control",
+      "summary_only": true,
+      "paired_primary": "BornD_X03"
+    },
+    "RingControl_BornD_X04": {
+      "estimator": "a_parallel",
+      "axis": "q2",
+      "apar": "/HERMES_2007_I726689/RingControl_d08-x04-y02",
+      "parity_pp_mm": "/HERMES_2007_I726689/RingControl_Parity_PP_MM_BornD_X04",
+      "parity_pm_mp": "/HERMES_2007_I726689/RingControl_Parity_PM_MP_BornD_X04",
+      "target": "D",
+      "observable": "A_paralleld",
+      "target_model": "per-nucleon proton+neutron impulse approximation",
+      "supported_bins": [],
+      "x_low": 0.01677,
+      "x_high": 0.02124,
+      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4",
+      "d_state_probability": 0.05,
+      "d_state_factor": 0.925,
+      "nuclear_effects": "binding, Fermi motion, off-shell, shadowing, and tensor b1 effects neglected",
+      "target_components": {
+        "unpolarized": {
+          "P": 0.5,
+          "N": 0.5
+        },
+        "longitudinal": {
+          "P": 0.4625,
+          "N": 0.4625
+        }
+      },
+      "acceptance": "polar_ring_control",
+      "summary_only": true,
+      "paired_primary": "BornD_X04"
+    },
+    "RingControl_BornD_X05": {
+      "estimator": "a_parallel",
+      "axis": "q2",
+      "apar": "/HERMES_2007_I726689/RingControl_d08-x05-y02",
+      "parity_pp_mm": "/HERMES_2007_I726689/RingControl_Parity_PP_MM_BornD_X05",
+      "parity_pm_mp": "/HERMES_2007_I726689/RingControl_Parity_PM_MP_BornD_X05",
+      "target": "D",
+      "observable": "A_paralleld",
+      "target_model": "per-nucleon proton+neutron impulse approximation",
+      "supported_bins": [
+        2
+      ],
+      "x_low": 0.02124,
+      "x_high": 0.02948,
+      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4",
+      "d_state_probability": 0.05,
+      "d_state_factor": 0.925,
+      "nuclear_effects": "binding, Fermi motion, off-shell, shadowing, and tensor b1 effects neglected",
+      "target_components": {
+        "unpolarized": {
+          "P": 0.5,
+          "N": 0.5
+        },
+        "longitudinal": {
+          "P": 0.4625,
+          "N": 0.4625
+        }
+      },
+      "acceptance": "polar_ring_control",
+      "summary_only": true,
+      "paired_primary": "BornD_X05"
+    },
+    "RingControl_BornD_X06": {
+      "estimator": "a_parallel",
+      "axis": "q2",
+      "apar": "/HERMES_2007_I726689/RingControl_d08-x06-y02",
+      "parity_pp_mm": "/HERMES_2007_I726689/RingControl_Parity_PP_MM_BornD_X06",
+      "parity_pm_mp": "/HERMES_2007_I726689/RingControl_Parity_PM_MP_BornD_X06",
+      "target": "D",
+      "observable": "A_paralleld",
+      "target_model": "per-nucleon proton+neutron impulse approximation",
+      "supported_bins": [
+        2
+      ],
+      "x_low": 0.02948,
+      "x_high": 0.03619,
+      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4",
+      "d_state_probability": 0.05,
+      "d_state_factor": 0.925,
+      "nuclear_effects": "binding, Fermi motion, off-shell, shadowing, and tensor b1 effects neglected",
+      "target_components": {
+        "unpolarized": {
+          "P": 0.5,
+          "N": 0.5
+        },
+        "longitudinal": {
+          "P": 0.4625,
+          "N": 0.4625
+        }
+      },
+      "acceptance": "polar_ring_control",
+      "summary_only": true,
+      "paired_primary": "BornD_X06"
+    },
+    "RingControl_BornD_X07": {
+      "estimator": "a_parallel",
+      "axis": "q2",
+      "apar": "/HERMES_2007_I726689/RingControl_d08-x07-y02",
+      "parity_pp_mm": "/HERMES_2007_I726689/RingControl_Parity_PP_MM_BornD_X07",
+      "parity_pm_mp": "/HERMES_2007_I726689/RingControl_Parity_PM_MP_BornD_X07",
+      "target": "D",
+      "observable": "A_paralleld",
+      "target_model": "per-nucleon proton+neutron impulse approximation",
+      "supported_bins": [
+        2
+      ],
+      "x_low": 0.03619,
+      "x_high": 0.04442,
+      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4",
+      "d_state_probability": 0.05,
+      "d_state_factor": 0.925,
+      "nuclear_effects": "binding, Fermi motion, off-shell, shadowing, and tensor b1 effects neglected",
+      "target_components": {
+        "unpolarized": {
+          "P": 0.5,
+          "N": 0.5
+        },
+        "longitudinal": {
+          "P": 0.4625,
+          "N": 0.4625
+        }
+      },
+      "acceptance": "polar_ring_control",
+      "summary_only": true,
+      "paired_primary": "BornD_X07"
+    },
+    "RingControl_BornD_X08": {
+      "estimator": "a_parallel",
+      "axis": "q2",
+      "apar": "/HERMES_2007_I726689/RingControl_d08-x08-y02",
+      "parity_pp_mm": "/HERMES_2007_I726689/RingControl_Parity_PP_MM_BornD_X08",
+      "parity_pm_mp": "/HERMES_2007_I726689/RingControl_Parity_PM_MP_BornD_X08",
+      "target": "D",
+      "observable": "A_paralleld",
+      "target_model": "per-nucleon proton+neutron impulse approximation",
+      "supported_bins": [
+        2
+      ],
+      "x_low": 0.04442,
+      "x_high": 0.05681,
+      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4",
+      "d_state_probability": 0.05,
+      "d_state_factor": 0.925,
+      "nuclear_effects": "binding, Fermi motion, off-shell, shadowing, and tensor b1 effects neglected",
+      "target_components": {
+        "unpolarized": {
+          "P": 0.5,
+          "N": 0.5
+        },
+        "longitudinal": {
+          "P": 0.4625,
+          "N": 0.4625
+        }
+      },
+      "acceptance": "polar_ring_control",
+      "summary_only": true,
+      "paired_primary": "BornD_X08"
+    },
+    "RingControl_BornD_X09": {
+      "estimator": "a_parallel",
+      "axis": "q2",
+      "apar": "/HERMES_2007_I726689/RingControl_d08-x09-y02",
+      "parity_pp_mm": "/HERMES_2007_I726689/RingControl_Parity_PP_MM_BornD_X09",
+      "parity_pm_mp": "/HERMES_2007_I726689/RingControl_Parity_PM_MP_BornD_X09",
+      "target": "D",
+      "observable": "A_paralleld",
+      "target_model": "per-nucleon proton+neutron impulse approximation",
+      "supported_bins": [
+        1,
+        2,
+        3
+      ],
+      "x_low": 0.05681,
+      "x_high": 0.07265,
+      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4",
+      "d_state_probability": 0.05,
+      "d_state_factor": 0.925,
+      "nuclear_effects": "binding, Fermi motion, off-shell, shadowing, and tensor b1 effects neglected",
+      "target_components": {
+        "unpolarized": {
+          "P": 0.5,
+          "N": 0.5
+        },
+        "longitudinal": {
+          "P": 0.4625,
+          "N": 0.4625
+        }
+      },
+      "acceptance": "polar_ring_control",
+      "summary_only": true,
+      "paired_primary": "BornD_X09"
+    },
+    "RingControl_BornD_X10": {
+      "estimator": "a_parallel",
+      "axis": "q2",
+      "apar": "/HERMES_2007_I726689/RingControl_d08-x10-y02",
+      "parity_pp_mm": "/HERMES_2007_I726689/RingControl_Parity_PP_MM_BornD_X10",
+      "parity_pm_mp": "/HERMES_2007_I726689/RingControl_Parity_PM_MP_BornD_X10",
+      "target": "D",
+      "observable": "A_paralleld",
+      "target_model": "per-nucleon proton+neutron impulse approximation",
+      "supported_bins": [
+        1,
+        2,
+        3
+      ],
+      "x_low": 0.07265,
+      "x_high": 0.09291,
+      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4",
+      "d_state_probability": 0.05,
+      "d_state_factor": 0.925,
+      "nuclear_effects": "binding, Fermi motion, off-shell, shadowing, and tensor b1 effects neglected",
+      "target_components": {
+        "unpolarized": {
+          "P": 0.5,
+          "N": 0.5
+        },
+        "longitudinal": {
+          "P": 0.4625,
+          "N": 0.4625
+        }
+      },
+      "acceptance": "polar_ring_control",
+      "summary_only": true,
+      "paired_primary": "BornD_X10"
+    },
+    "RingControl_BornD_X11": {
+      "estimator": "a_parallel",
+      "axis": "q2",
+      "apar": "/HERMES_2007_I726689/RingControl_d08-x11-y02",
+      "parity_pp_mm": "/HERMES_2007_I726689/RingControl_Parity_PP_MM_BornD_X11",
+      "parity_pm_mp": "/HERMES_2007_I726689/RingControl_Parity_PM_MP_BornD_X11",
+      "target": "D",
+      "observable": "A_paralleld",
+      "target_model": "per-nucleon proton+neutron impulse approximation",
+      "supported_bins": [
+        1,
+        2,
+        3
+      ],
+      "x_low": 0.09291,
+      "x_high": 0.11882,
+      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4",
+      "d_state_probability": 0.05,
+      "d_state_factor": 0.925,
+      "nuclear_effects": "binding, Fermi motion, off-shell, shadowing, and tensor b1 effects neglected",
+      "target_components": {
+        "unpolarized": {
+          "P": 0.5,
+          "N": 0.5
+        },
+        "longitudinal": {
+          "P": 0.4625,
+          "N": 0.4625
+        }
+      },
+      "acceptance": "polar_ring_control",
+      "summary_only": true,
+      "paired_primary": "BornD_X11"
+    },
+    "RingControl_BornD_X12": {
+      "estimator": "a_parallel",
+      "axis": "q2",
+      "apar": "/HERMES_2007_I726689/RingControl_d08-x12-y02",
+      "parity_pp_mm": "/HERMES_2007_I726689/RingControl_Parity_PP_MM_BornD_X12",
+      "parity_pm_mp": "/HERMES_2007_I726689/RingControl_Parity_PM_MP_BornD_X12",
+      "target": "D",
+      "observable": "A_paralleld",
+      "target_model": "per-nucleon proton+neutron impulse approximation",
+      "supported_bins": [
+        1,
+        2,
+        3
+      ],
+      "x_low": 0.11882,
+      "x_high": 0.15195,
+      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4",
+      "d_state_probability": 0.05,
+      "d_state_factor": 0.925,
+      "nuclear_effects": "binding, Fermi motion, off-shell, shadowing, and tensor b1 effects neglected",
+      "target_components": {
+        "unpolarized": {
+          "P": 0.5,
+          "N": 0.5
+        },
+        "longitudinal": {
+          "P": 0.4625,
+          "N": 0.4625
+        }
+      },
+      "acceptance": "polar_ring_control",
+      "summary_only": true,
+      "paired_primary": "BornD_X12"
+    },
+    "RingControl_BornD_X13": {
+      "estimator": "a_parallel",
+      "axis": "q2",
+      "apar": "/HERMES_2007_I726689/RingControl_d08-x13-y02",
+      "parity_pp_mm": "/HERMES_2007_I726689/RingControl_Parity_PP_MM_BornD_X13",
+      "parity_pm_mp": "/HERMES_2007_I726689/RingControl_Parity_PM_MP_BornD_X13",
+      "target": "D",
+      "observable": "A_paralleld",
+      "target_model": "per-nucleon proton+neutron impulse approximation",
+      "supported_bins": [
+        1,
+        2,
+        3
+      ],
+      "x_low": 0.15195,
+      "x_high": 0.19432,
+      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4",
+      "d_state_probability": 0.05,
+      "d_state_factor": 0.925,
+      "nuclear_effects": "binding, Fermi motion, off-shell, shadowing, and tensor b1 effects neglected",
+      "target_components": {
+        "unpolarized": {
+          "P": 0.5,
+          "N": 0.5
+        },
+        "longitudinal": {
+          "P": 0.4625,
+          "N": 0.4625
+        }
+      },
+      "acceptance": "polar_ring_control",
+      "summary_only": true,
+      "paired_primary": "BornD_X13"
+    },
+    "RingControl_BornD_X14": {
+      "estimator": "a_parallel",
+      "axis": "q2",
+      "apar": "/HERMES_2007_I726689/RingControl_d08-x14-y02",
+      "parity_pp_mm": "/HERMES_2007_I726689/RingControl_Parity_PP_MM_BornD_X14",
+      "parity_pm_mp": "/HERMES_2007_I726689/RingControl_Parity_PM_MP_BornD_X14",
+      "target": "D",
+      "observable": "A_paralleld",
+      "target_model": "per-nucleon proton+neutron impulse approximation",
+      "supported_bins": [
+        1,
+        2,
+        3
+      ],
+      "x_low": 0.19432,
+      "x_high": 0.2485,
+      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4",
+      "d_state_probability": 0.05,
+      "d_state_factor": 0.925,
+      "nuclear_effects": "binding, Fermi motion, off-shell, shadowing, and tensor b1 effects neglected",
+      "target_components": {
+        "unpolarized": {
+          "P": 0.5,
+          "N": 0.5
+        },
+        "longitudinal": {
+          "P": 0.4625,
+          "N": 0.4625
+        }
+      },
+      "acceptance": "polar_ring_control",
+      "summary_only": true,
+      "paired_primary": "BornD_X14"
+    },
+    "RingControl_BornD_X15": {
+      "estimator": "a_parallel",
+      "axis": "q2",
+      "apar": "/HERMES_2007_I726689/RingControl_d08-x15-y02",
+      "parity_pp_mm": "/HERMES_2007_I726689/RingControl_Parity_PP_MM_BornD_X15",
+      "parity_pm_mp": "/HERMES_2007_I726689/RingControl_Parity_PM_MP_BornD_X15",
+      "target": "D",
+      "observable": "A_paralleld",
+      "target_model": "per-nucleon proton+neutron impulse approximation",
+      "supported_bins": [
+        1,
+        2,
+        3
+      ],
+      "x_low": 0.2485,
+      "x_high": 0.3178,
+      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4",
+      "d_state_probability": 0.05,
+      "d_state_factor": 0.925,
+      "nuclear_effects": "binding, Fermi motion, off-shell, shadowing, and tensor b1 effects neglected",
+      "target_components": {
+        "unpolarized": {
+          "P": 0.5,
+          "N": 0.5
+        },
+        "longitudinal": {
+          "P": 0.4625,
+          "N": 0.4625
+        }
+      },
+      "acceptance": "polar_ring_control",
+      "summary_only": true,
+      "paired_primary": "BornD_X15"
+    },
+    "RingControl_BornD_X16": {
+      "estimator": "a_parallel",
+      "axis": "q2",
+      "apar": "/HERMES_2007_I726689/RingControl_d08-x16-y02",
+      "parity_pp_mm": "/HERMES_2007_I726689/RingControl_Parity_PP_MM_BornD_X16",
+      "parity_pm_mp": "/HERMES_2007_I726689/RingControl_Parity_PM_MP_BornD_X16",
+      "target": "D",
+      "observable": "A_paralleld",
+      "target_model": "per-nucleon proton+neutron impulse approximation",
+      "supported_bins": [
+        1,
+        2,
+        3
+      ],
+      "x_low": 0.3178,
+      "x_high": 0.40641,
+      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4",
+      "d_state_probability": 0.05,
+      "d_state_factor": 0.925,
+      "nuclear_effects": "binding, Fermi motion, off-shell, shadowing, and tensor b1 effects neglected",
+      "target_components": {
+        "unpolarized": {
+          "P": 0.5,
+          "N": 0.5
+        },
+        "longitudinal": {
+          "P": 0.4625,
+          "N": 0.4625
+        }
+      },
+      "acceptance": "polar_ring_control",
+      "summary_only": true,
+      "paired_primary": "BornD_X16"
+    },
+    "RingControl_BornD_X17": {
+      "estimator": "a_parallel",
+      "axis": "q2",
+      "apar": "/HERMES_2007_I726689/RingControl_d08-x17-y02",
+      "parity_pp_mm": "/HERMES_2007_I726689/RingControl_Parity_PP_MM_BornD_X17",
+      "parity_pm_mp": "/HERMES_2007_I726689/RingControl_Parity_PM_MP_BornD_X17",
+      "target": "D",
+      "observable": "A_paralleld",
+      "target_model": "per-nucleon proton+neutron impulse approximation",
+      "supported_bins": [
+        1,
+        2,
+        3
+      ],
+      "x_low": 0.40641,
+      "x_high": 0.51974,
+      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4",
+      "d_state_probability": 0.05,
+      "d_state_factor": 0.925,
+      "nuclear_effects": "binding, Fermi motion, off-shell, shadowing, and tensor b1 effects neglected",
+      "target_components": {
+        "unpolarized": {
+          "P": 0.5,
+          "N": 0.5
+        },
+        "longitudinal": {
+          "P": 0.4625,
+          "N": 0.4625
+        }
+      },
+      "acceptance": "polar_ring_control",
+      "summary_only": true,
+      "paired_primary": "BornD_X17"
+    },
+    "RingControl_BornD_X18": {
+      "estimator": "a_parallel",
+      "axis": "q2",
+      "apar": "/HERMES_2007_I726689/RingControl_d08-x18-y02",
+      "parity_pp_mm": "/HERMES_2007_I726689/RingControl_Parity_PP_MM_BornD_X18",
+      "parity_pm_mp": "/HERMES_2007_I726689/RingControl_Parity_PM_MP_BornD_X18",
+      "target": "D",
+      "observable": "A_paralleld",
+      "target_model": "per-nucleon proton+neutron impulse approximation",
+      "supported_bins": [
+        1,
+        2,
+        3
+      ],
+      "x_low": 0.51974,
+      "x_high": 0.66466,
+      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4",
+      "d_state_probability": 0.05,
+      "d_state_factor": 0.925,
+      "nuclear_effects": "binding, Fermi motion, off-shell, shadowing, and tensor b1 effects neglected",
+      "target_components": {
+        "unpolarized": {
+          "P": 0.5,
+          "N": 0.5
+        },
+        "longitudinal": {
+          "P": 0.4625,
+          "N": 0.4625
+        }
+      },
+      "acceptance": "polar_ring_control",
+      "summary_only": true,
+      "paired_primary": "BornD_X18"
+    },
+    "RingControl_BornD_X19": {
+      "estimator": "a_parallel",
+      "axis": "q2",
+      "apar": "/HERMES_2007_I726689/RingControl_d08-x19-y02",
+      "parity_pp_mm": "/HERMES_2007_I726689/RingControl_Parity_PP_MM_BornD_X19",
+      "parity_pm_mp": "/HERMES_2007_I726689/RingControl_Parity_PM_MP_BornD_X19",
+      "target": "D",
+      "observable": "A_paralleld",
+      "target_model": "per-nucleon proton+neutron impulse approximation",
+      "supported_bins": [
+        1,
+        2,
+        3
+      ],
+      "x_low": 0.66466,
+      "x_high": 0.9,
+      "reference_binning": "primary analysis thesis numerical cuts, verified against final paper Figure 4",
+      "d_state_probability": 0.05,
+      "d_state_factor": 0.925,
+      "nuclear_effects": "binding, Fermi motion, off-shell, shadowing, and tensor b1 effects neglected",
+      "target_components": {
+        "unpolarized": {
+          "P": 0.5,
+          "N": 0.5
+        },
+        "longitudinal": {
+          "P": 0.4625,
+          "N": 0.4625
+        }
+      },
+      "acceptance": "polar_ring_control",
+      "summary_only": true,
+      "paired_primary": "BornD_X19"
+    },
+    "RingControl_P_Q2PROJ_Q2GT1": {
+      "estimator": "a_parallel",
+      "axis": "q2",
+      "apar": "/HERMES_2007_I726689/RingControl_AParallelQ2_Q2GT1",
+      "parity_pp_mm": "/HERMES_2007_I726689/RingControl_Parity_PP_MM_P_Q2PROJ_Q2GT1",
+      "parity_pm_mp": "/HERMES_2007_I726689/RingControl_Parity_PM_MP_P_Q2PROJ_Q2GT1",
+      "target": "P",
+      "observable": "A_parallelp",
+      "target_model": "free proton",
+      "integration_variable": "x",
+      "integration_range": [
+        0.0212,
+        0.9
+      ],
+      "reference_status": "prediction only; asymmetry tables lack unpolarized yield weights for equivalent integrated data",
+      "acceptance": "polar_ring_control",
+      "summary_only": true,
+      "paired_primary": "P_Q2PROJ_Q2GT1"
+    },
+    "RingControl_P_Q2PROJ_Q2GT4": {
+      "estimator": "a_parallel",
+      "axis": "q2",
+      "apar": "/HERMES_2007_I726689/RingControl_AParallelQ2_Q2GT4",
+      "parity_pp_mm": "/HERMES_2007_I726689/RingControl_Parity_PP_MM_P_Q2PROJ_Q2GT4",
+      "parity_pm_mp": "/HERMES_2007_I726689/RingControl_Parity_PM_MP_P_Q2PROJ_Q2GT4",
+      "target": "P",
+      "observable": "A_parallelp",
+      "target_model": "free proton",
+      "integration_variable": "x",
+      "integration_range": [
+        0.0212,
+        0.9
+      ],
+      "reference_status": "prediction only; asymmetry tables lack unpolarized yield weights for equivalent integrated data",
+      "acceptance": "polar_ring_control",
+      "summary_only": true,
+      "paired_primary": "P_Q2PROJ_Q2GT4"
+    },
+    "RingControl_D_Q2PROJ_Q2GT1": {
+      "estimator": "a_parallel",
+      "axis": "q2",
+      "apar": "/HERMES_2007_I726689/RingControl_AParallelDQ2_Q2GT1",
+      "parity_pp_mm": "/HERMES_2007_I726689/RingControl_Parity_PP_MM_D_Q2PROJ_Q2GT1",
+      "parity_pm_mp": "/HERMES_2007_I726689/RingControl_Parity_PM_MP_D_Q2PROJ_Q2GT1",
+      "target": "D",
+      "observable": "A_paralleld",
+      "target_model": "per-nucleon proton+neutron impulse approximation",
+      "integration_variable": "x",
+      "integration_range": [
+        0.0212,
+        0.9
+      ],
+      "reference_status": "prediction only; asymmetry tables lack unpolarized yield weights for equivalent integrated data",
+      "d_state_probability": 0.05,
+      "d_state_factor": 0.925,
+      "nuclear_effects": "binding, Fermi motion, off-shell, shadowing, and tensor b1 effects neglected",
+      "target_components": {
+        "unpolarized": {
+          "P": 0.5,
+          "N": 0.5
+        },
+        "longitudinal": {
+          "P": 0.4625,
+          "N": 0.4625
+        }
+      },
+      "acceptance": "polar_ring_control",
+      "summary_only": true,
+      "paired_primary": "D_Q2PROJ_Q2GT1"
+    },
+    "RingControl_D_Q2PROJ_Q2GT4": {
+      "estimator": "a_parallel",
+      "axis": "q2",
+      "apar": "/HERMES_2007_I726689/RingControl_AParallelDQ2_Q2GT4",
+      "parity_pp_mm": "/HERMES_2007_I726689/RingControl_Parity_PP_MM_D_Q2PROJ_Q2GT4",
+      "parity_pm_mp": "/HERMES_2007_I726689/RingControl_Parity_PM_MP_D_Q2PROJ_Q2GT4",
+      "target": "D",
+      "observable": "A_paralleld",
+      "target_model": "per-nucleon proton+neutron impulse approximation",
+      "integration_variable": "x",
+      "integration_range": [
+        0.0212,
+        0.9
+      ],
+      "reference_status": "prediction only; asymmetry tables lack unpolarized yield weights for equivalent integrated data",
+      "d_state_probability": 0.05,
+      "d_state_factor": 0.925,
+      "nuclear_effects": "binding, Fermi motion, off-shell, shadowing, and tensor b1 effects neglected",
+      "target_components": {
+        "unpolarized": {
+          "P": 0.5,
+          "N": 0.5
+        },
+        "longitudinal": {
+          "P": 0.4625,
+          "N": 0.4625
+        }
+      },
+      "acceptance": "polar_ring_control",
+      "summary_only": true,
+      "paired_primary": "D_Q2PROJ_Q2GT4"
     }
   },
   "plotting": {
@@ -1455,7 +2844,9 @@
     "Accepted_Q2_Q2GT4",
     "Accepted_Y_Q2GT4",
     "Accepted_W2_Q2GT4",
-    "Accepted_Theta_Q2GT4"
+    "Accepted_Theta_Q2GT4",
+    "Accepted_W2Fine_Q2GT1",
+    "RingControl_Accepted_W2Fine_Q2GT1"
   ],
   "combination": {
     "order_coefficients": {
@@ -1494,7 +2885,7 @@
     "primary_q2_min_gev2": 1.0,
     "conservative_q2_min_gev2": 4.0,
     "a2_g2_assumption": "eta*A2 = 0; g2 is not modeled",
-    "depolarization_model": "R1990 fit B",
+    "depolarization_model": "R1990 arithmetic mean of Whitlow fits a, b, c",
     "primary_status": "exploratory at the PDF QMin boundary",
     "assumptions": [
       "Only the A1 proxy neglects eta*A2; direct A_parallel uses ordinary helicity cross sections. No explicit finite-Q2 g2/target-mass/twist-3 model is supplied.",
@@ -1506,9 +2897,20 @@
       "Binding, Fermi motion, off-shell, shadowing, and tensor b1 effects are neglected in the deuteron prediction",
       "The published deuteron asymmetry already includes the experimental tensor-asymmetry correction; that correction is not repeated on the reference data",
       "The neutron unpolarized and longitudinal-difference PDFs use ThePEG isospin mapping u<->d and anti-u<->anti-d of the same proton LHAPDF sets",
-      "Born A_parallel references use the published 45 x,Q2 cells for each target; all eight Q2<1 cells per target are explicitly masked in theory, leaving 37 supported cells",
-      "The two A_parallel projections integrate cross sections before division; no projected experimental ratio is fabricated from asymmetry values alone"
+      "Born A_parallel references use the published 45 x,Q2 cells for each target; all eight Q2<1 cells per target are explicitly masked in theory, leaving 37 cells above the generation Q2 threshold; v5 widens generator W2/y cuts to cover their physical acceptance",
+      "The two A_parallel projections integrate cross sections before division; no projected experimental ratio is fabricated from asymmetry values alone",
+      "Primary: projected lab aperture |theta_x|<0.17 and 0.04<|theta_y|<0.14 rad, intersected with 0.04<=theta<=0.22. The azimuth-symmetric inclusive longitudinal cross section makes transverse-axis orientation immaterial.",
+      "Polar-ring controls use the same generated events and retain paired covariance in ring-minus-primary differences.",
+      "Generation and physical W2/y differ for the massive fixed target; loose generator cuts are followed by exact physical Rivet cuts."
     ],
-    "target_model": "free proton for the default outputs and accepted-event diagnostics"
+    "target_model": "free proton for the default outputs and accepted-event diagnostics",
+    "acceptance": "rectangle_intersect_polar_ring",
+    "generation_window": {
+      "q2_min_gev2": 1.0,
+      "q2_max_gev2": 20.0,
+      "w2_min_gev2": 2.0,
+      "y_min": 0.095,
+      "y_max": 0.91
+    }
   }
 }
