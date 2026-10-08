@@ -1,4 +1,4 @@
-.PHONY: all paper test list rivet check-rivet check-rivet-fidelity clean
+.PHONY: all test list rivet check-rivet check-rivet-fidelity
 
 RIVET_PLUGIN := build/RivetHerwigPolarizedPheno.so
 RIVET_SOURCES := \
@@ -45,12 +45,7 @@ RIVET_CXX ?= $(shell \
 	elif command -v g++ >/dev/null 2>&1; then command -v g++; \
 	else command -v c++; fi)
 
-all: paper
-
-paper: main.pdf
-
-main.pdf: main.tex references.bib jheppub.sty JHEP.bst
-	latexmk -pdf -interaction=nonstopmode -halt-on-error main.tex
+all: test
 
 test:
 	PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s scripts/tests -p 'test_*.py'
@@ -73,6 +68,3 @@ check-rivet: rivet
 
 check-rivet-fidelity: rivet
 	python3 scripts/check_rivet_fidelity.py
-
-clean:
-	latexmk -C main.tex

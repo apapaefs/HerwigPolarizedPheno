@@ -168,7 +168,7 @@ hadronization, and/or nuclear transport rather than another Rivet histogram.
 
 ## Collaborator material
 
-The three collaborator-supplied files in `SIDIS_ByFrank/` are tracked
+The three collaborator-supplied files in [`SIDIS_ByFrank/`](https://github.com/apapaefs/Phenomenological-Investigations-of-Polarized-Collisions-in-Herwig-7/tree/main/SIDIS_ByFrank) are tracked in the paper repository and
 byte-for-byte unchanged. `provenance-manifest.json` freezes their sizes and
 SHA-256 checksums. `.DS_Store` and generated figures are deliberately excluded.
 

@@ -1,32 +1,29 @@
-# GitHub and Overleaf mirroring
+# Separate code and Overleaf paper repositories
 
-The manuscript was originally imported from Overleaf at commit `e37d50d`.
-The current history deliberately remains a linear descendant of that commit;
-an earlier unrelated-history replacement caused Overleaf's GitHub link to be
-lost and must not be repeated.
+The July 2026 whole-repository mirroring policy is superseded by the
+8 October 2026 split. Keep the existing Git histories; do not force-push,
+rebase the published paper lineage or replace it with an unrelated history.
 
-This repository keeps `main.tex`, the bibliography, style files, and figures
-at its root so the same commit is valid both as the complete phenomenology
-repository and as the Overleaf paper bundle.
+- [HerwigPolarizedPheno](https://github.com/apapaefs/HerwigPolarizedPheno)
+  owns analysis source, Herwig cards, reference inputs, campaign scripts,
+  plotting tools and tests.
+- [Phenomenological-Investigations-of-Polarized-Collisions-in-Herwig-7](https://github.com/apapaefs/Phenomenological-Investigations-of-Polarized-Collisions-in-Herwig-7)
+  owns the manuscript, bibliography, styles, selected figures, provenance,
+  author notes and paper build. This remains the Overleaf GitHub repository.
+- [herwigdispol](https://github.com/apapaefs/herwigdispol) supplies the
+  external Herwig/ThePEG implementation; this split does not relocate it.
 
-The intended remotes are:
+Publish each repository to its own `origin`. Their `main` commits are
+expected to differ. Never run the former `git push overleaf-github main:main`
+from the code checkout. An existing `overleaf-github` remote may be retained
+for historical reads, but must not be a publication destination for code.
 
-```text
-origin             git@github.com:apapaefs/HerwigPolarizedPheno.git
-overleaf-github    git@github.com:apapaefs/Phenomenological-Investigations-of-Polarized-Collisions-in-Herwig-7.git
-```
+Generate and validate results in the code checkout. Copy selected final
+figure assets and their input/source/runtime provenance into the paper
+checkout, then run `make paper` there and check the log for undefined
+citations and references. Preserve the current manuscript while exporting
+figures; do not synchronize whole directory trees. Overleaf can continue to
+synchronize with its existing paper repository after the paper-only change.
 
-Before publishing a paper update, verify ancestry and then push the identical
-`main` commit to both GitHub repositories:
-
-```bash
-git merge-base --is-ancestor e37d50d main
-git push origin main
-git push overleaf-github main:main
-git ls-remote origin refs/heads/main
-git ls-remote overleaf-github refs/heads/main
-```
-
-The two reported hashes must be identical. Overleaf's GitHub synchronization
-can then pull from its existing linked repository without a history rewrite.
-
+See [the separation audit](repository-separation-audit.md) for the reviewed
+source snapshots and preservation checks.

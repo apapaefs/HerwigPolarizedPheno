@@ -1,13 +1,13 @@
 # Herwig Polarized Phenomenology
 
 This repository contains the experimental-data phenomenology layer built on
-Herwig Polarized: twenty-four Rivet analyses (twenty-one data-linked
-measurements and the internal `MC_POLDIJETS`, `MC_POLJETSHAPES`, and
-exact-bin HERMES azimuthal diagnostic), the
+Herwig Polarized: experimental and diagnostic Rivet analyses,
+a reference-only open-charm measurement, the
 registry-driven campaign runner,
 checksum-pinned reference inputs, postprocessing and plotting code, focused
-tests, and the JHEP manuscript *Phenomenological Investigations of Polarized
-Collisions in Herwig 7*.
+tests, and reproducible figure-generation tools. The manuscript
+[*Phenomenological Investigations of Polarized Collisions in Herwig 7*](https://github.com/apapaefs/Phenomenological-Investigations-of-Polarized-Collisions-in-Herwig-7)
+has its own paper-only repository.
 
 The generator implementation remains an external dependency. This repository
 does not vendor Herwig, ThePEG, generated campaigns, installed libraries, or
@@ -33,8 +33,8 @@ ordinary YODA/plot products.
   Rivet-source tests;
 - `docs/`: workflow documentation, the experimental-compatibility audit, and
   the future EIC polarized-DIS study concept;
-- `main.tex`, `references.bib`, and `figures/`: the Overleaf-compatible paper
-  bundle, intentionally kept at repository root.
+- The paper source, bibliography and selected figure assets live in the
+  [paper repository](https://github.com/apapaefs/Phenomenological-Investigations-of-Polarized-Collisions-in-Herwig-7).
 
 Generated work is written below `campaigns/` and ignored by Git. The tracked
 compatibility controller is the sole exception; its generated runtime reports
@@ -94,18 +94,28 @@ unpolarized azimuthal diagnostics, including ready-to-run commands, are
 documented in
 [`docs/sidis-diagnostics-workflow.md`](docs/sidis-diagnostics-workflow.md).
 
+The COMPASS open-charm asymmetries from arXiv:1211.6849v2 are registered as
+published reference data: 45 points and nine data-only plots, with simulation
+disabled pending a validated massive-charm calculation and analysis response.
+See [`docs/compass-open-charm.md`](docs/compass-open-charm.md).
+
+To automatically scan the latest compatible results across all registered
+analyses and browse every plot in one searchable offline front-end, run
+`python3 scripts/build_results_browser.py --tar` on the campaign host. See
+[`docs/results-browser.md`](docs/results-browser.md) for selection rules and options.
+
+To browse completed SIDIS campaigns offline and export a compact tarball of
+plots, cuts, data provenance and numerical CSVs without campaign logs or event
+files, see [`docs/sidis-results-browser.md`](docs/sidis-results-browser.md).
+
 The synchronized 2026-08-19 corrected-production workflow, including the
 STAR 510 GeV generator-cut gate and the explicit no-production preparation
 boundary, is documented in
 [`campaigns/control/compatibility-corrected-20260819/README.md`](campaigns/control/compatibility-corrected-20260819/README.md).
 
-Build the paper with:
-
-```bash
-make paper
-```
-
-This requires `latexmk` and a suitable TeX installation.
+Build the manuscript with `make paper` in the separate paper repository.
+Copy only selected final figures and their provenance there; keep the
+analysis, generation and plotting programs here.
 
 ## Scientific status
 
@@ -140,11 +150,18 @@ The scoped physics programme, measurement hierarchy, uncertainty budget,
 validation requirements, and implementation roadmap are documented in
 [`docs/future-eic-study/README.md`](docs/future-eic-study/README.md).
 
-## Provenance and paper mirroring
+## Repository ownership and provenance
+
+This is the canonical repository for Rivet analyses, generator cards,
+reference data, campaign controllers, postprocessing, plotting and tests.
+Herwig/ThePEG source remains an external dependency provided by
+[herwigdispol](https://github.com/apapaefs/herwigdispol).
 
 The phenomenology code/data snapshot was imported from `apapaefs/HerwigPol`
-commit `822911203d431daa2a026fc697aabf5eeeb060b2`. The paper history is retained
-through audited manuscript commit `f6af80a`, descending linearly from the
-original Overleaf import. The repository `main` branch is mirrored to the
-legacy paper GitHub repository used by Overleaf; see
-[`docs/overleaf-mirroring.md`](docs/overleaf-mirroring.md).
+commit `822911203d431daa2a026fc697aabf5eeeb060b2`. Its inherited paper history
+is preserved, but code and paper now advance independently. Do not push code
+branches to the paper repository or mirror their `main` refs.
+
+See [the separation audit](docs/repository-separation-audit.md) for the
+version choices and [the repository workflow](docs/overleaf-mirroring.md)
+for publication and Overleaf instructions.
