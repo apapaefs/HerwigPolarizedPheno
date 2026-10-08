@@ -150,13 +150,25 @@ the browser and its test: the browser now validates and hashes additional
 Born reference snapshots and their pinned raw sources in the runner's
 order, and the regression test rejects corruption of either input. The
 signature mismatch was reproduced in the original checkout before repair;
-it was not introduced by the separation. The original checkout is unchanged.
+it was not introduced by the separation. The original checkout was kept
+unchanged during this audit and test phase.
 
 The full Python suite ran 444 tests: 438 passed and six were skipped because
 native YODA/Rivet dependencies were unavailable. All 26 focused browser and
 open-charm tests passed. Herwig, Rivet and rivet-build were unavailable on
 the local PATH, so no native smoke test was run. No campaigns were launched.
 
-The prepared split includes the existing October 6 v5 commit `0f7ed13`
-and the preserved local additions. Their inclusion does not itself establish
-publication; remote publication status is reported in the separation delivery.
+The published split includes the existing October 6 v5 commit `0f7ed13`
+and the preserved local additions. Initial separation commits `44033a5`
+(code) and `95fb220` (paper) were pushed as ordinary fast-forward updates and
+verified on both GitHub `main` refs. The two original local `main` branches
+were then fast-forwarded to the published split.
+
+Before updating the original code checkout, its incorporated local source
+was saved in Git stash `f9a2958361cd3e0c4efde886d93122a5c964a700` (label:
+`Preserved local source before reviewed code-paper split 2026-10-08`). This
+is a recovery copy; its changes are already incorporated and should not be
+blindly reapplied. All 137 unrelated untracked files and the paper editor
+lock were verified unchanged. The original code checkout's `overleaf-github`
+fetch remote is retained for historical reads, with its push URL disabled.
+
