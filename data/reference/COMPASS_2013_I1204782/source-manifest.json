@@ -1,0 +1,38 @@
+{
+  "measurement": "COMPASS_2013_I1204782",
+  "source_version": "arXiv:1211.6849v2",
+  "retrieved_at": "2026-09-14",
+  "sources": [
+    {
+      "path": "data/reference/COMPASS_2013_I1204782/arXiv-1211.6849v2.pdf",
+      "url": "https://arxiv.org/pdf/1211.6849v2",
+      "sha256": "2b876dc320d93bdd2815c443fc0bd595eac80655c62de375e9d1a069b12e0acc"
+    },
+    {
+      "path": "data/reference/COMPASS_2013_I1204782/tables-5-7.csv",
+      "kind": "manual numerical transcription",
+      "sha256": "7d3cc2c53537f7ef28439bcffde4e6aebbda1574dec14004d4a7c848d2b5e18c"
+    }
+  ],
+  "snapshot": {
+    "path": "data/reference/COMPASS_2013_I1204782/reference.json",
+    "sha256": "29c14ef743fb821ceed62a927a8dab89f17dd14efeab64787bcbb016ef7306c4"
+  },
+  "tables": [
+    5,
+    6,
+    7
+  ],
+  "pdf_pages_one_based": [
+    21,
+    22,
+    25
+  ],
+  "printed_pages": [
+    20,
+    21,
+    24
+  ],
+  "points": 45,
+  "verification": "PDF table images plus independent pdftotext row comparison; use check --verify-pdf-text to repeat text comparison"
+}

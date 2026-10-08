@@ -4044,6 +4044,7 @@ def write_plot_indexes(
     supplemental: Mapping[str, Any] | None = None,
     born_cells: Mapping[str, Any] | None = None,
     acceptance_controls: Mapping[str, Any] | None = None,
+    data_ratios: Mapping[str, Any] | None = None,
 ) -> Path:
     """Wrap sequentially generated Rivet plots in a small static HTML report.
 
@@ -4208,6 +4209,15 @@ def write_plot_indexes(
                 'their shared-event covariance; these are MC sensitivity comparisons.</p>'
                 + "".join(cards) + '</section>')
 
+    def data_ratio_section(directory: Path) -> str:
+        if data_ratios is None:
+            return ""
+        from hermes_data_ratio_gallery import gallery_section
+        try:
+            return gallery_section(output_dir.parent, output_dir, data_ratios, directory)
+        except Exception as exc:
+            raise CampaignError(f"Could not publish HERMES ratio figures: {exc}") from exc
+
     grouped: dict[Path, list[Path]] = {}
     for script in plot_scripts:
         try:
@@ -4217,7 +4227,7 @@ def write_plot_indexes(
         grouped.setdefault(relative_directory, []).append(script)
 
     title = str(measurement.get("title", measurement["id"]))
-    root_sections: list[str] = [born_cell_section(output_dir), reconstructed_section(output_dir), acceptance_section(output_dir)]
+    root_sections: list[str] = [born_cell_section(output_dir), data_ratio_section(output_dir), reconstructed_section(output_dir), acceptance_section(output_dir)]
     for relative_directory, scripts in sorted(grouped.items(), key=lambda item: str(item[0])):
         directory = output_dir / relative_directory
         directory.mkdir(parents=True, exist_ok=True)
@@ -4228,7 +4238,7 @@ def write_plot_indexes(
         child_title = f"{title} — {relative_directory.as_posix()}"
         child_index = directory / "index.html"
         child_index.write_text(
-            document(child_title, born_cell_section(directory) + reconstructed_section(directory) + acceptance_section(directory) + cards),
+            document(child_title, born_cell_section(directory) + data_ratio_section(directory) + reconstructed_section(directory) + acceptance_section(directory) + cards),
             encoding="utf-8",
         )
         link = html.escape((relative_directory / "index.html").as_posix())
@@ -4250,6 +4260,19 @@ def _hermes_reconstructed_plot_gallery(
         return ensure_campaign_plots(campaign_dir)
     except Exception as exc:
         raise CampaignError(f"Could not construct the HERMES Born projection gallery: {exc}") from exc
+
+
+def _hermes_data_ratio_plot_gallery(campaign_dir, output_dir, measurement, reconstructed):
+    if measurement["id"] != "HERMES_2007_I726689" or reconstructed is None:
+        return None
+    from hermes_data_ratio_gallery import ensure_campaign_plots
+    try:
+        return ensure_campaign_plots(
+            campaign_dir, output_dir,
+            campaign_dir / reconstructed["directory"] / "integrated.json",
+        )
+    except Exception as exc:
+        raise CampaignError(f"Could not construct HERMES MC/data ratio figures: {exc}") from exc
 
 
 def _hermes_born_cell_plot_gallery(
@@ -4729,9 +4752,10 @@ def plot_campaign(args: argparse.Namespace, measurement: Mapping[str, Any]) -> P
     if measurement["id"] == "HERMES_2007_I726689" and measurement.get("physics", {}).get("acceptance"):
         from hermes_acceptance_control import ensure_gallery
         acceptance_controls = ensure_gallery(campaign_dir, output_dir)
+    data_ratios = _hermes_data_ratio_plot_gallery(campaign_dir, output_dir, measurement, reconstructed)
     index = write_plot_indexes(
         output_dir, measurement, rendered_scripts, supplemental=reconstructed, born_cells=born_cells,
-        acceptance_controls=acceptance_controls,
+        acceptance_controls=acceptance_controls, data_ratios=data_ratios,
     )
     if not _nonempty(index):
         raise CampaignError(f"Could not create Rivet plot index {index}")
@@ -4748,6 +4772,8 @@ def plot_campaign(args: argparse.Namespace, measurement: Mapping[str, Any]) -> P
         manifest["plots"]["born_cell_panels"] = born_cells
     if acceptance_controls is not None:
         manifest["plots"]["acceptance_controls"] = acceptance_controls
+    if data_ratios is not None:
+        manifest["plots"]["data_ratios"] = data_ratios
     if plot_metadata_refresh is not None:
         manifest["plots"]["presentation_only_refresh"] = plot_metadata_refresh
     manifest["updated_at"] = utc_now()

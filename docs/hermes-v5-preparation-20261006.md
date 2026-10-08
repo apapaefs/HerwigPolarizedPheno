@@ -240,3 +240,14 @@ python3 scripts/check_hermes_generation_support.py \
 Check that report before launching the nominal production. A failed or
 incomplete check requires investigation; do not lower its thresholds to
 obtain a pass. No full v5 production has been launched.
+
+
+## Completion update — 7 October 2026
+
+The nominal v5 run has now completed all 1,600 shards. The separate high-x
+probe completed all 64 shards and its support-validation report passed all
+preset gates. This supersedes the preparation/pending status above.
+
+Additional publication-oriented MC/data figures are available without replacing
+the original absolute plots. Future HERMES plot/full stages create them
+automatically. See [ratio-plot definitions and commands](hermes-ratio-plots.md).

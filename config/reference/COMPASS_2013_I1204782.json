@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "id": "COMPASS_2013_I1204782",
+  "title": "COMPASS open-charm longitudinal double-spin asymmetries",
+  "process_kind": "polarized_open_charm",
+  "analysis": {
+    "name": "COMPASS_2013_I1204782",
+    "status": "REFERENCE_ONLY",
+    "summary": "Open-charm photon–nucleon spin asymmetries",
+    "description": "Published A(gamma N -> D0 X) in D0 transverse-momentum and laboratory-energy bins, including charge conjugates. Tables 5–7 contain 45 points across three decay-sample groups. No Rivet event analysis or Herwig production configuration is enabled yet."
+  },
+  "reference": {
+    "kind": "published_measurement",
+    "snapshot": "data/reference/COMPASS_2013_I1204782/reference.json",
+    "source_manifest": "data/reference/COMPASS_2013_I1204782/source-manifest.json",
+    "raw_snapshot": "data/reference/COMPASS_2013_I1204782/tables-5-7.csv",
+    "publication_pdf": "data/reference/COMPASS_2013_I1204782/arXiv-1211.6849v2.pdf",
+    "source_url": "https://arxiv.org/abs/1211.6849v2",
+    "sources": ["https://doi.org/10.1103/PhysRevD.87.052018"]
+  },
+  "simulation": {
+    "enabled": false,
+    "status": "not_implemented",
+    "reason": "Reference data only: a validated polarized massive-charm muoproduction calculation and the measurement's reconstruction/weighting treatment are required. The existing massless DIS campaign cards cannot provide this comparison.",
+    "requirements": [
+      "Validated massive gamma* g -> c cbar production in the low-Q2 muon–nucleon regime, with appropriate helicity cross sections and any claimed higher-order terms.",
+      "A documented treatment of the combined proton/deuteron measurement; no arbitrary target fractions or inherited SIDIS deuteron factors.",
+      "D* tagging, D0 decay reconstruction (including the unobserved pi0 channel), Table 4 cuts, and the exclusive candidate-priority convention.",
+      "A validated approximation or response for the signal-purity, acceptance and depolarisation weights used in the published estimator.",
+      "A Rivet event implementation and independent kinematic, normalization, helicity and end-to-end validation."
+    ]
+  },
+  "physics": {
+    "beam": "Positive muons, nominal momentum 160 GeV/c, fixed target",
+    "target": "Published combined proton and deuteron data, 2002–2007; target-specific mixture weights are not supplied in Tables 5–7",
+    "dominant_process": "Photon–gluon fusion to a massive charm pair, mostly quasi-real photons",
+    "observable": "A_gammaN for reconstructed open-charm samples, not inclusive A1 or a directly measured gluon PDF",
+    "hard_scale_in_paper": "mu^2 = 4 (m_c^2 + p_T^2), with D-meson p_T used to approximate charm-quark p_T",
+    "theory_status": "No Herwig prediction; the paper's fitted LO/NLO Delta g/g values are not registered as event observables"
+  },
+  "documentation": "docs/compass-open-charm.md"
+}

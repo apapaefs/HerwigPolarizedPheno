@@ -35,6 +35,7 @@ import compass_sidis_postprocess as compass_sidis
 import polarized_sidis_postprocess as sidis
 import runtime_provenance as provenance
 import star_comparison_policy as star_policy
+import compass_open_charm_reference as open_charm
 from phenomenology_reference_data import (
     REFERENCE_YODA_PATHS,
     ReferenceDataError,
@@ -687,6 +688,14 @@ def discover_all() -> dict[str, dict[str, Any]]:
     for value in registry.values():
         value["process_kind"] = "fixed_target_dis"
     for identifier, value in discover_pp_registry().items():
+        if identifier in registry:
+            raise CampaignError(f"Duplicate measurement id {identifier}")
+        registry[identifier] = value
+    try:
+        references = open_charm.discover(DISPOL_ROOT)
+    except (OSError, ValueError) as exc:
+        raise CampaignError(str(exc)) from exc
+    for identifier, value in references.items():
         if identifier in registry:
             raise CampaignError(f"Duplicate measurement id {identifier}")
         registry[identifier] = value
@@ -6540,11 +6549,22 @@ def main(argv: Sequence[str] | None = None) -> int:
         registry = discover_all()
         if args.command == "list":
             for identifier, measurement in registry.items():
-                print(f"{identifier}\t{measurement['process_kind']}\t{measurement.get('title','')}")
+                note = " [reference data only]" if measurement.get("analysis", {}).get("status") == "REFERENCE_ONLY" else ""
+                print(f"{identifier}\t{measurement['process_kind']}\t{measurement.get('title','')}{note}")
             return 0
         if args.measurement not in registry:
             raise CampaignError(f"Unknown measurement {args.measurement!r}")
         measurement = registry[args.measurement]
+        if measurement.get("analysis", {}).get("status") == "REFERENCE_ONLY":
+            if args.command == "fetch-data":
+                try:
+                    open_charm.validate(DISPOL_ROOT)
+                except (OSError, ValueError) as exc:
+                    raise CampaignError(str(exc)) from exc
+                print(f"{args.measurement}: validated 45 pinned reference points; simulation is not implemented")
+                return 0
+            raise CampaignError(measurement["simulation"]["reason"] +
+                                " View the data with scripts/build_results_browser.py.")
         if measurement["process_kind"] == "fixed_target_dis":
             if getattr(args, "jet_kt_min_gev", None) is not None:
                 raise CampaignError(

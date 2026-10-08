@@ -1,0 +1,1156 @@
+{
+  "measurement": "COMPASS_2013_I1204782",
+  "schema_version": 1,
+  "observable": "A_gammaN_to_D0X",
+  "provenance": {
+    "source": "COMPASS publication, Tables 5–7",
+    "publication": "https://arxiv.org/abs/1211.6849v2",
+    "publication_pdf_url": "https://arxiv.org/pdf/1211.6849v2",
+    "doi": "10.1103/PhysRevD.87.052018",
+    "inspire_id": 1204782,
+    "notes": "Exact numerical transcription of arXiv v2 Tables 5–7, visually checked against PDF pages 21, 22 and 25. Experimental data only; no Herwig prediction or extracted Delta g/g fit is included."
+  },
+  "binning": {
+    "pt_bins_GeV": [
+      [
+        0.0,
+        0.3
+      ],
+      [
+        0.3,
+        0.7
+      ],
+      [
+        0.7,
+        1.0
+      ],
+      [
+        1.0,
+        1.5
+      ],
+      [
+        1.5,
+        null
+      ]
+    ],
+    "energy_bins_GeV": [
+      [
+        0.0,
+        30.0
+      ],
+      [
+        30.0,
+        50.0
+      ],
+      [
+        50.0,
+        null
+      ]
+    ],
+    "open_upper_bound": "null means open-ended, not an invented finite edge",
+    "plot_axis": "Five categorical published pT intervals; spacings are not physical bin widths"
+  },
+  "uncertainties": {
+    "stat": "First published uncertainty",
+    "syst": "Second published uncertainty",
+    "total": "Quadrature of published statistical and systematic errors, for display only",
+    "covariance": "Not supplied in Tables 5–7; no diagonal-fit assumption or chi2 is made",
+    "range": "Measured estimates and errors are retained even outside [-1, 1]"
+  },
+  "estimator": {
+    "observable": "Photon–nucleon asymmetry, A_muN / D, not the SIDIS A1 estimator",
+    "D_equation_2": "y*(2-y-2*y*y*m_mu^2/Q^2)/(y*y*(1-2*m_mu^2/Q^2)+2*(1-y))",
+    "signal_weight": "w_S = P_mu*f*D*s/(s+b)",
+    "published_means": "Means weighted by w_S^2; all five means per cell, including D, are retained exactly",
+    "muon_asymmetry_conversion": "Section 4.2 permits conversion of the published A_gammaN by the tabulated mean D; no conversion is applied here",
+    "response": "Signal/background separation, acceptance and signal-purity weighting cannot be reconstructed from Tables 5–7 alone"
+  },
+  "selection": {
+    "scope": "Published reconstruction cuts (Table 4 and Section 3), recorded as documentation; not implemented particle-level cuts",
+    "beam": "Positive 160 GeV/c muons; combined proton and deuteron target data from 2002–2007",
+    "common": "Incoming and outgoing muon, at least two additional charged tracks, incoming trajectory crossing the target and vertex inside the target; RICH identification",
+    "channels": {
+      "D0_Kpi": {
+        "mass_offset_MeV": [
+          -400,
+          400
+        ],
+        "abs_cos_theta_star_lt": 0.65,
+        "z": [
+          0.2,
+          0.85
+        ],
+        "pK_GeV": [
+          9.5,
+          50
+        ],
+        "pPi_GeV": [
+          7,
+          50
+        ],
+        "tag": "Exclude reconstructed D* tags"
+      },
+      "Dstar_Kpi": {
+        "mass_offset_MeV": [
+          -600,
+          600
+        ],
+        "abs_cos_theta_star_lt": 0.9,
+        "z": [
+          0.2,
+          0.85
+        ],
+        "pK_GeV": [
+          9.5,
+          50
+        ],
+        "pPi_GeV": [
+          2.5,
+          50
+        ],
+        "deltaM_MeV": [
+          3.2,
+          8.9
+        ]
+      },
+      "Dstar_Kpipi0": {
+        "mass_offset_MeV": [
+          -600,
+          600
+        ],
+        "abs_cos_theta_star_lt": 0.9,
+        "z": [
+          0.2,
+          0.85
+        ],
+        "pK_GeV": [
+          9.5,
+          50
+        ],
+        "pPi_GeV": [
+          2.5,
+          50
+        ],
+        "deltaM_MeV": [
+          3.2,
+          8.9
+        ],
+        "reconstruction": "Neutral pion is not reconstructed; additional neural-network selection"
+      },
+      "Dstar_Ksubpi": {
+        "mass_offset_MeV": [
+          -400,
+          400
+        ],
+        "abs_cos_theta_star_lt": 0.85,
+        "z": [
+          0.25,
+          0.85
+        ],
+        "pK_GeV": [
+          2.5,
+          9.5
+        ],
+        "pPi_GeV": [
+          2.5,
+          50
+        ],
+        "deltaM_MeV": [
+          3.2,
+          8.9
+        ]
+      },
+      "Dstar_Kpipipi": {
+        "mass_offset_MeV": [
+          -400,
+          400
+        ],
+        "abs_cos_theta_star_lt": 0.85,
+        "z": [
+          0.3,
+          0.85
+        ],
+        "pK_GeV": [
+          9.5,
+          50
+        ],
+        "pPi_GeV": [
+          2.5,
+          50
+        ],
+        "deltaM_MeV": [
+          4.0,
+          7.5
+        ]
+      }
+    },
+    "tagged_common": "Slow pion momentum < 8 GeV/c and electron rejection; DeltaM is reconstructed D* mass minus reconstructed D0-candidate mass minus charged-pion mass",
+    "candidate_priority": "Dstar_Kpipipi, then Dstar_Kpi or Dstar_Kpipi0, then D0_Kpi, then Dstar_Ksubpi; one of two candidates in the same sample is chosen randomly",
+    "charge_conjugates": true,
+    "observed_kinematics_not_fiducial_cuts": {
+      "mean_Q2_GeV2": 0.6,
+      "Q2_range_GeV2_approx": [
+        0.001,
+        30
+      ],
+      "y_range_approx": [
+        0.1,
+        1
+      ],
+      "mean_y_approx": 0.63
+    }
+  },
+  "datasets": [
+    {
+      "id": "table5-energy1",
+      "table": 5,
+      "samples": [
+        "D0_Kpi",
+        "Dstar_Kpi",
+        "Dstar_Ksubpi"
+      ],
+      "label": "Combined untagged / tagged Kπ samples",
+      "energy_bin_GeV": [
+        0.0,
+        30.0
+      ],
+      "energy_label": "0–30 GeV",
+      "points": [
+        {
+          "bin_index": 1,
+          "pt_bin_GeV": [
+            0.0,
+            0.3
+          ],
+          "value": -0.9,
+          "stat": 0.63,
+          "syst": 0.11,
+          "total": 0.6395310782127793,
+          "means": {
+            "y": 0.5,
+            "Q2_GeV2": 0.46,
+            "pt_GeV": 0.19,
+            "E_GeV": 24.3,
+            "D": 0.62
+          }
+        },
+        {
+          "bin_index": 2,
+          "pt_bin_GeV": [
+            0.3,
+            0.7
+          ],
+          "value": -0.18,
+          "stat": 0.37,
+          "syst": 0.04,
+          "total": 0.3721558813185679,
+          "means": {
+            "y": 0.51,
+            "Q2_GeV2": 0.47,
+            "pt_GeV": 0.51,
+            "E_GeV": 24.6,
+            "D": 0.63
+          }
+        },
+        {
+          "bin_index": 3,
+          "pt_bin_GeV": [
+            0.7,
+            1.0
+          ],
+          "value": -0.42,
+          "stat": 0.44,
+          "syst": 0.05,
+          "total": 0.44283179650969057,
+          "means": {
+            "y": 0.5,
+            "Q2_GeV2": 0.45,
+            "pt_GeV": 0.85,
+            "E_GeV": 24.7,
+            "D": 0.62
+          }
+        },
+        {
+          "bin_index": 4,
+          "pt_bin_GeV": [
+            1.0,
+            1.5
+          ],
+          "value": -0.3,
+          "stat": 0.35,
+          "syst": 0.03,
+          "total": 0.3512833614050059,
+          "means": {
+            "y": 0.54,
+            "Q2_GeV2": 0.41,
+            "pt_GeV": 1.23,
+            "E_GeV": 25.3,
+            "D": 0.66
+          }
+        },
+        {
+          "bin_index": 5,
+          "pt_bin_GeV": [
+            1.5,
+            null
+          ],
+          "value": 0.38,
+          "stat": 0.49,
+          "syst": 0.04,
+          "total": 0.49162994213127414,
+          "means": {
+            "y": 0.56,
+            "Q2_GeV2": 0.47,
+            "pt_GeV": 1.84,
+            "E_GeV": 25.6,
+            "D": 0.69
+          }
+        }
+      ]
+    },
+    {
+      "id": "table5-energy2",
+      "table": 5,
+      "samples": [
+        "D0_Kpi",
+        "Dstar_Kpi",
+        "Dstar_Ksubpi"
+      ],
+      "label": "Combined untagged / tagged Kπ samples",
+      "energy_bin_GeV": [
+        30.0,
+        50.0
+      ],
+      "energy_label": "30–50 GeV",
+      "points": [
+        {
+          "bin_index": 1,
+          "pt_bin_GeV": [
+            0.0,
+            0.3
+          ],
+          "value": -0.19,
+          "stat": 0.48,
+          "syst": 0.06,
+          "total": 0.48373546489791297,
+          "means": {
+            "y": 0.6,
+            "Q2_GeV2": 0.69,
+            "pt_GeV": 0.2,
+            "E_GeV": 39.1,
+            "D": 0.74
+          }
+        },
+        {
+          "bin_index": 2,
+          "pt_bin_GeV": [
+            0.3,
+            0.7
+          ],
+          "value": 0.1,
+          "stat": 0.26,
+          "syst": 0.04,
+          "total": 0.26305892875931813,
+          "means": {
+            "y": 0.6,
+            "Q2_GeV2": 0.62,
+            "pt_GeV": 0.51,
+            "E_GeV": 39.5,
+            "D": 0.75
+          }
+        },
+        {
+          "bin_index": 3,
+          "pt_bin_GeV": [
+            0.7,
+            1.0
+          ],
+          "value": -0.36,
+          "stat": 0.29,
+          "syst": 0.04,
+          "total": 0.29274562336608895,
+          "means": {
+            "y": 0.61,
+            "Q2_GeV2": 0.6,
+            "pt_GeV": 0.85,
+            "E_GeV": 39.2,
+            "D": 0.75
+          }
+        },
+        {
+          "bin_index": 4,
+          "pt_bin_GeV": [
+            1.0,
+            1.5
+          ],
+          "value": 0.13,
+          "stat": 0.23,
+          "syst": 0.01,
+          "total": 0.23021728866442678,
+          "means": {
+            "y": 0.64,
+            "Q2_GeV2": 0.55,
+            "pt_GeV": 1.24,
+            "E_GeV": 39.2,
+            "D": 0.77
+          }
+        },
+        {
+          "bin_index": 5,
+          "pt_bin_GeV": [
+            1.5,
+            null
+          ],
+          "value": 0.0,
+          "stat": 0.25,
+          "syst": 0.02,
+          "total": 0.25079872407968906,
+          "means": {
+            "y": 0.65,
+            "Q2_GeV2": 0.7,
+            "pt_GeV": 1.92,
+            "E_GeV": 39.9,
+            "D": 0.79
+          }
+        }
+      ]
+    },
+    {
+      "id": "table5-energy3",
+      "table": 5,
+      "samples": [
+        "D0_Kpi",
+        "Dstar_Kpi",
+        "Dstar_Ksubpi"
+      ],
+      "label": "Combined untagged / tagged Kπ samples",
+      "energy_bin_GeV": [
+        50.0,
+        null
+      ],
+      "energy_label": "> 50 GeV",
+      "points": [
+        {
+          "bin_index": 1,
+          "pt_bin_GeV": [
+            0.0,
+            0.3
+          ],
+          "value": 0.07,
+          "stat": 0.68,
+          "syst": 0.06,
+          "total": 0.6826419266350405,
+          "means": {
+            "y": 0.69,
+            "Q2_GeV2": 1.17,
+            "pt_GeV": 0.2,
+            "E_GeV": 59.2,
+            "D": 0.84
+          }
+        },
+        {
+          "bin_index": 2,
+          "pt_bin_GeV": [
+            0.3,
+            0.7
+          ],
+          "value": -0.04,
+          "stat": 0.36,
+          "syst": 0.05,
+          "total": 0.3634556369077249,
+          "means": {
+            "y": 0.69,
+            "Q2_GeV2": 0.73,
+            "pt_GeV": 0.51,
+            "E_GeV": 59.0,
+            "D": 0.83
+          }
+        },
+        {
+          "bin_index": 3,
+          "pt_bin_GeV": [
+            0.7,
+            1.0
+          ],
+          "value": 1.49,
+          "stat": 0.42,
+          "syst": 0.15,
+          "total": 0.4459820624195551,
+          "means": {
+            "y": 0.69,
+            "Q2_GeV2": 0.76,
+            "pt_GeV": 0.84,
+            "E_GeV": 58.6,
+            "D": 0.83
+          }
+        },
+        {
+          "bin_index": 4,
+          "pt_bin_GeV": [
+            1.0,
+            1.5
+          ],
+          "value": -0.2,
+          "stat": 0.33,
+          "syst": 0.02,
+          "total": 0.3306055050963308,
+          "means": {
+            "y": 0.71,
+            "Q2_GeV2": 0.73,
+            "pt_GeV": 1.24,
+            "E_GeV": 58.3,
+            "D": 0.85
+          }
+        },
+        {
+          "bin_index": 5,
+          "pt_bin_GeV": [
+            1.5,
+            null
+          ],
+          "value": 0.36,
+          "stat": 0.33,
+          "syst": 0.04,
+          "total": 0.33241540277189324,
+          "means": {
+            "y": 0.69,
+            "Q2_GeV2": 0.6,
+            "pt_GeV": 1.95,
+            "E_GeV": 59.9,
+            "D": 0.86
+          }
+        }
+      ]
+    },
+    {
+      "id": "table6-energy1",
+      "table": 6,
+      "samples": [
+        "Dstar_Kpipi0"
+      ],
+      "label": "D* tagged Kππ⁰ sample (π⁰ unobserved)",
+      "energy_bin_GeV": [
+        0.0,
+        30.0
+      ],
+      "energy_label": "0–30 GeV",
+      "points": [
+        {
+          "bin_index": 1,
+          "pt_bin_GeV": [
+            0.0,
+            0.3
+          ],
+          "value": -0.63,
+          "stat": 1.29,
+          "syst": 0.08,
+          "total": 1.2924782396620842,
+          "means": {
+            "y": 0.52,
+            "Q2_GeV2": 0.75,
+            "pt_GeV": 0.19,
+            "E_GeV": 24.4,
+            "D": 0.65
+          }
+        },
+        {
+          "bin_index": 2,
+          "pt_bin_GeV": [
+            0.3,
+            0.7
+          ],
+          "value": -0.24,
+          "stat": 0.8,
+          "syst": 0.04,
+          "total": 0.8009993757800314,
+          "means": {
+            "y": 0.53,
+            "Q2_GeV2": 0.51,
+            "pt_GeV": 0.52,
+            "E_GeV": 24.3,
+            "D": 0.65
+          }
+        },
+        {
+          "bin_index": 3,
+          "pt_bin_GeV": [
+            0.7,
+            1.0
+          ],
+          "value": 0.55,
+          "stat": 0.95,
+          "syst": 0.06,
+          "total": 0.951892851112981,
+          "means": {
+            "y": 0.53,
+            "Q2_GeV2": 0.41,
+            "pt_GeV": 0.84,
+            "E_GeV": 24.6,
+            "D": 0.65
+          }
+        },
+        {
+          "bin_index": 4,
+          "pt_bin_GeV": [
+            1.0,
+            1.5
+          ],
+          "value": 1.35,
+          "stat": 0.86,
+          "syst": 0.14,
+          "total": 0.8713208364316786,
+          "means": {
+            "y": 0.54,
+            "Q2_GeV2": 0.38,
+            "pt_GeV": 1.24,
+            "E_GeV": 25.4,
+            "D": 0.67
+          }
+        },
+        {
+          "bin_index": 5,
+          "pt_bin_GeV": [
+            1.5,
+            null
+          ],
+          "value": -0.19,
+          "stat": 1.14,
+          "syst": 0.03,
+          "total": 1.1403946685248927,
+          "means": {
+            "y": 0.56,
+            "Q2_GeV2": 0.52,
+            "pt_GeV": 1.8,
+            "E_GeV": 25.7,
+            "D": 0.7
+          }
+        }
+      ]
+    },
+    {
+      "id": "table6-energy2",
+      "table": 6,
+      "samples": [
+        "Dstar_Kpipi0"
+      ],
+      "label": "D* tagged Kππ⁰ sample (π⁰ unobserved)",
+      "energy_bin_GeV": [
+        30.0,
+        50.0
+      ],
+      "energy_label": "30–50 GeV",
+      "points": [
+        {
+          "bin_index": 1,
+          "pt_bin_GeV": [
+            0.0,
+            0.3
+          ],
+          "value": 0.27,
+          "stat": 1.17,
+          "syst": 0.06,
+          "total": 1.1715374513859982,
+          "means": {
+            "y": 0.67,
+            "Q2_GeV2": 0.65,
+            "pt_GeV": 0.2,
+            "E_GeV": 38.8,
+            "D": 0.81
+          }
+        },
+        {
+          "bin_index": 2,
+          "pt_bin_GeV": [
+            0.3,
+            0.7
+          ],
+          "value": 0.49,
+          "stat": 0.69,
+          "syst": 0.06,
+          "total": 0.6926037828369117,
+          "means": {
+            "y": 0.65,
+            "Q2_GeV2": 0.65,
+            "pt_GeV": 0.51,
+            "E_GeV": 39.0,
+            "D": 0.79
+          }
+        },
+        {
+          "bin_index": 3,
+          "pt_bin_GeV": [
+            0.7,
+            1.0
+          ],
+          "value": -0.53,
+          "stat": 0.76,
+          "syst": 0.06,
+          "total": 0.7623647421018367,
+          "means": {
+            "y": 0.63,
+            "Q2_GeV2": 0.53,
+            "pt_GeV": 0.86,
+            "E_GeV": 39.4,
+            "D": 0.77
+          }
+        },
+        {
+          "bin_index": 4,
+          "pt_bin_GeV": [
+            1.0,
+            1.5
+          ],
+          "value": -0.11,
+          "stat": 0.51,
+          "syst": 0.01,
+          "total": 0.510098029794274,
+          "means": {
+            "y": 0.64,
+            "Q2_GeV2": 0.59,
+            "pt_GeV": 1.25,
+            "E_GeV": 39.6,
+            "D": 0.78
+          }
+        },
+        {
+          "bin_index": 5,
+          "pt_bin_GeV": [
+            1.5,
+            null
+          ],
+          "value": -0.23,
+          "stat": 0.51,
+          "syst": 0.03,
+          "total": 0.5108815909777921,
+          "means": {
+            "y": 0.66,
+            "Q2_GeV2": 0.66,
+            "pt_GeV": 1.88,
+            "E_GeV": 40.0,
+            "D": 0.8
+          }
+        }
+      ]
+    },
+    {
+      "id": "table6-energy3",
+      "table": 6,
+      "samples": [
+        "Dstar_Kpipi0"
+      ],
+      "label": "D* tagged Kππ⁰ sample (π⁰ unobserved)",
+      "energy_bin_GeV": [
+        50.0,
+        null
+      ],
+      "energy_label": "> 50 GeV",
+      "points": [
+        {
+          "bin_index": 1,
+          "pt_bin_GeV": [
+            0.0,
+            0.3
+          ],
+          "value": -2.55,
+          "stat": 2.0,
+          "syst": 0.27,
+          "total": 2.018142710513803,
+          "means": {
+            "y": 0.72,
+            "Q2_GeV2": 1.12,
+            "pt_GeV": 0.19,
+            "E_GeV": 59.3,
+            "D": 0.86
+          }
+        },
+        {
+          "bin_index": 2,
+          "pt_bin_GeV": [
+            0.3,
+            0.7
+          ],
+          "value": -1.28,
+          "stat": 1.03,
+          "syst": 0.14,
+          "total": 1.0394710193170371,
+          "means": {
+            "y": 0.72,
+            "Q2_GeV2": 0.77,
+            "pt_GeV": 0.51,
+            "E_GeV": 59.1,
+            "D": 0.86
+          }
+        },
+        {
+          "bin_index": 3,
+          "pt_bin_GeV": [
+            0.7,
+            1.0
+          ],
+          "value": -0.17,
+          "stat": 1.0,
+          "syst": 0.03,
+          "total": 1.0004498987955368,
+          "means": {
+            "y": 0.73,
+            "Q2_GeV2": 0.8,
+            "pt_GeV": 0.85,
+            "E_GeV": 58.2,
+            "D": 0.88
+          }
+        },
+        {
+          "bin_index": 4,
+          "pt_bin_GeV": [
+            1.0,
+            1.5
+          ],
+          "value": -0.05,
+          "stat": 0.78,
+          "syst": 0.01,
+          "total": 0.7800640999302557,
+          "means": {
+            "y": 0.74,
+            "Q2_GeV2": 0.62,
+            "pt_GeV": 1.25,
+            "E_GeV": 58.3,
+            "D": 0.88
+          }
+        },
+        {
+          "bin_index": 5,
+          "pt_bin_GeV": [
+            1.5,
+            null
+          ],
+          "value": 0.26,
+          "stat": 0.9,
+          "syst": 0.04,
+          "total": 0.9008884503644167,
+          "means": {
+            "y": 0.74,
+            "Q2_GeV2": 0.88,
+            "pt_GeV": 1.92,
+            "E_GeV": 57.3,
+            "D": 0.88
+          }
+        }
+      ]
+    },
+    {
+      "id": "table7-energy1",
+      "table": 7,
+      "samples": [
+        "Dstar_Kpipipi"
+      ],
+      "label": "D* tagged Kπππ sample",
+      "energy_bin_GeV": [
+        0.0,
+        30.0
+      ],
+      "energy_label": "0–30 GeV",
+      "points": [
+        {
+          "bin_index": 1,
+          "pt_bin_GeV": [
+            0.0,
+            0.3
+          ],
+          "value": 7.03,
+          "stat": 4.74,
+          "syst": 0.71,
+          "total": 4.792880136202031,
+          "means": {
+            "y": 0.46,
+            "Q2_GeV2": 0.38,
+            "pt_GeV": 0.22,
+            "E_GeV": 27.7,
+            "D": 0.58
+          }
+        },
+        {
+          "bin_index": 2,
+          "pt_bin_GeV": [
+            0.3,
+            0.7
+          ],
+          "value": -0.59,
+          "stat": 1.74,
+          "syst": 0.06,
+          "total": 1.741034175425629,
+          "means": {
+            "y": 0.52,
+            "Q2_GeV2": 0.31,
+            "pt_GeV": 0.53,
+            "E_GeV": 27.8,
+            "D": 0.71
+          }
+        },
+        {
+          "bin_index": 3,
+          "pt_bin_GeV": [
+            0.7,
+            1.0
+          ],
+          "value": 2.91,
+          "stat": 2.61,
+          "syst": 0.3,
+          "total": 2.627184805071771,
+          "means": {
+            "y": 0.45,
+            "Q2_GeV2": 0.26,
+            "pt_GeV": 0.84,
+            "E_GeV": 27.7,
+            "D": 0.61
+          }
+        },
+        {
+          "bin_index": 4,
+          "pt_bin_GeV": [
+            1.0,
+            1.5
+          ],
+          "value": -1.89,
+          "stat": 2.64,
+          "syst": 0.19,
+          "total": 2.646828290615015,
+          "means": {
+            "y": 0.46,
+            "Q2_GeV2": 0.31,
+            "pt_GeV": 1.22,
+            "E_GeV": 27.7,
+            "D": 0.64
+          }
+        },
+        {
+          "bin_index": 5,
+          "pt_bin_GeV": [
+            1.5,
+            null
+          ],
+          "value": 1.64,
+          "stat": 3.52,
+          "syst": 0.17,
+          "total": 3.5241027226799164,
+          "means": {
+            "y": 0.46,
+            "Q2_GeV2": 0.4,
+            "pt_GeV": 1.84,
+            "E_GeV": 28.1,
+            "D": 0.72
+          }
+        }
+      ]
+    },
+    {
+      "id": "table7-energy2",
+      "table": 7,
+      "samples": [
+        "Dstar_Kpipipi"
+      ],
+      "label": "D* tagged Kπππ sample",
+      "energy_bin_GeV": [
+        30.0,
+        50.0
+      ],
+      "energy_label": "30–50 GeV",
+      "points": [
+        {
+          "bin_index": 1,
+          "pt_bin_GeV": [
+            0.0,
+            0.3
+          ],
+          "value": -2.05,
+          "stat": 1.1,
+          "syst": 0.21,
+          "total": 1.119866063420086,
+          "means": {
+            "y": 0.6,
+            "Q2_GeV2": 0.72,
+            "pt_GeV": 0.2,
+            "E_GeV": 40.6,
+            "D": 0.74
+          }
+        },
+        {
+          "bin_index": 2,
+          "pt_bin_GeV": [
+            0.3,
+            0.7
+          ],
+          "value": 1.0,
+          "stat": 0.54,
+          "syst": 0.11,
+          "total": 0.5510898293381943,
+          "means": {
+            "y": 0.61,
+            "Q2_GeV2": 0.44,
+            "pt_GeV": 0.52,
+            "E_GeV": 39.7,
+            "D": 0.8
+          }
+        },
+        {
+          "bin_index": 3,
+          "pt_bin_GeV": [
+            0.7,
+            1.0
+          ],
+          "value": 1.42,
+          "stat": 0.57,
+          "syst": 0.15,
+          "total": 0.589406481131655,
+          "means": {
+            "y": 0.64,
+            "Q2_GeV2": 0.57,
+            "pt_GeV": 0.85,
+            "E_GeV": 40.9,
+            "D": 0.81
+          }
+        },
+        {
+          "bin_index": 4,
+          "pt_bin_GeV": [
+            1.0,
+            1.5
+          ],
+          "value": -0.45,
+          "stat": 0.51,
+          "syst": 0.05,
+          "total": 0.5124451190127582,
+          "means": {
+            "y": 0.63,
+            "Q2_GeV2": 0.58,
+            "pt_GeV": 1.23,
+            "E_GeV": 41.1,
+            "D": 0.79
+          }
+        },
+        {
+          "bin_index": 5,
+          "pt_bin_GeV": [
+            1.5,
+            null
+          ],
+          "value": 0.44,
+          "stat": 0.68,
+          "syst": 0.05,
+          "total": 0.6818357573492315,
+          "means": {
+            "y": 0.65,
+            "Q2_GeV2": 0.75,
+            "pt_GeV": 1.95,
+            "E_GeV": 42.2,
+            "D": 0.78
+          }
+        }
+      ]
+    },
+    {
+      "id": "table7-energy3",
+      "table": 7,
+      "samples": [
+        "Dstar_Kpipipi"
+      ],
+      "label": "D* tagged Kπππ sample",
+      "energy_bin_GeV": [
+        50.0,
+        null
+      ],
+      "energy_label": "> 50 GeV",
+      "points": [
+        {
+          "bin_index": 1,
+          "pt_bin_GeV": [
+            0.0,
+            0.3
+          ],
+          "value": 0.17,
+          "stat": 1.83,
+          "syst": 0.05,
+          "total": 1.8306829326784035,
+          "means": {
+            "y": 0.69,
+            "Q2_GeV2": 0.88,
+            "pt_GeV": 0.2,
+            "E_GeV": 59.1,
+            "D": 0.84
+          }
+        },
+        {
+          "bin_index": 2,
+          "pt_bin_GeV": [
+            0.3,
+            0.7
+          ],
+          "value": -1.75,
+          "stat": 0.84,
+          "syst": 0.18,
+          "total": 0.8590692637965811,
+          "means": {
+            "y": 0.68,
+            "Q2_GeV2": 0.7,
+            "pt_GeV": 0.51,
+            "E_GeV": 60.2,
+            "D": 0.84
+          }
+        },
+        {
+          "bin_index": 3,
+          "pt_bin_GeV": [
+            0.7,
+            1.0
+          ],
+          "value": 1.69,
+          "stat": 0.81,
+          "syst": 0.17,
+          "total": 0.8276472678623424,
+          "means": {
+            "y": 0.69,
+            "Q2_GeV2": 0.58,
+            "pt_GeV": 0.86,
+            "E_GeV": 60.9,
+            "D": 0.84
+          }
+        },
+        {
+          "bin_index": 4,
+          "pt_bin_GeV": [
+            1.0,
+            1.5
+          ],
+          "value": 1.06,
+          "stat": 0.66,
+          "syst": 0.11,
+          "total": 0.6691038783328042,
+          "means": {
+            "y": 0.71,
+            "Q2_GeV2": 0.77,
+            "pt_GeV": 1.24,
+            "E_GeV": 61.8,
+            "D": 0.86
+          }
+        },
+        {
+          "bin_index": 5,
+          "pt_bin_GeV": [
+            1.5,
+            null
+          ],
+          "value": 0.08,
+          "stat": 0.63,
+          "syst": 0.02,
+          "total": 0.630317380372777,
+          "means": {
+            "y": 0.74,
+            "Q2_GeV2": 0.77,
+            "pt_GeV": 2.03,
+            "E_GeV": 64.4,
+            "D": 0.88
+          }
+        }
+      ]
+    }
+  ]
+}
