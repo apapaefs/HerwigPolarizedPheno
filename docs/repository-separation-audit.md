@@ -171,4 +171,3 @@ is a recovery copy; its changes are already incorporated and should not be
 blindly reapplied. All 137 unrelated untracked files and the paper editor
 lock were verified unchanged. The original code checkout's `overleaf-github`
 fetch remote is retained for historical reads, with its push URL disabled.
-
