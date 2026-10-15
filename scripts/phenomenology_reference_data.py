@@ -31,6 +31,40 @@ class ReferenceDataError(RuntimeError):
 
 
 SOURCES: dict[str, list[dict[str, Any]]] = {
+    "HERMES_1997_I440904": [
+        {
+            "url": "https://www.hepdata.net/record/data/44586/38302/1",
+            "sha256": "018500455c15201f52fa5523389e85da6d194dfc598e5fb30686d34b74afd282",
+            "raw": "data/experimental/HERMES_1997_I440904/raw-hepdata-table1.json",
+            "kind": "hepdata", "name": "Table 1", "doi": "10.17182/hepdata.44586.v1/t1",
+            "headers": ["X", "Q**2 [GEV**2]", "A1", "G1"], "rows": 9,
+        },
+    ],
+    "E154_1997_I443170": [
+        {
+            "url": "https://www.hepdata.net/record/data/19559/18063/1",
+            "sha256": "1a51fe6b9cb88c440f9eb1786e984bc0c45eb916c82c224399051a5e226940f3",
+            "raw": "data/experimental/E154_1997_I443170/raw-hepdata-table1.json",
+            "kind": "hepdata", "name": "Table 1", "doi": "10.17182/hepdata.19559.v1/t1",
+            "headers": ["X", "Q**2 [GEV**2]", "G1", "A1"], "rows": 11,
+        },
+    ],
+    "E142_1996_I424108": [
+        {
+            "url": "https://www.hepdata.net/record/data/22340/20151/1",
+            "sha256": "acb6094db95f2e49411413d74706558668f9b0727386d9c3edc6318e9dab0ba7",
+            "raw": "data/experimental/E142_1996_I424108/raw-hepdata-table1.json",
+            "kind": "hepdata", "name": "Table 1", "doi": "10.17182/hepdata.22340.v1/t1",
+            "headers": ["X", "Q**2 [GEV**2]", "A1", "G1"], "rows": 8,
+        },
+        {
+            "url": "https://www.hepdata.net/record/data/22340/20157/1",
+            "sha256": "c6c4983754b4847d23a123a3764bc9dc95afb3907b5bdfb3289e944ecd89ceed",
+            "raw": "data/experimental/E142_1996_I424108/raw-hepdata-table3.json",
+            "kind": "hepdata", "name": "Table 3", "doi": "10.17182/hepdata.22340.v1/t3",
+            "headers": ["X", "Q**2 [GEV**2]", "A1", "G1"], "rows": 8,
+        },
+    ],
     "HERMES_2007_I726689_LEGACY": [
         {
             "url": "https://www.hepdata.net/record/data/11211/10813/1",
@@ -108,6 +142,9 @@ SOURCES: dict[str, list[dict[str, Any]]] = {
 
 
 REFERENCE_PATHS = {
+    "HERMES_1997_I440904": "data/experimental/HERMES_1997_I440904/reference.json",
+    "E154_1997_I443170": "data/experimental/E154_1997_I443170/reference.json",
+    "E142_1996_I424108": "data/experimental/E142_1996_I424108/reference.json",
     "HERMES_2007_I726689_LEGACY": "data/experimental/HERMES_2007_I726689_LEGACY/reference.json",
     "COMPASS_2010_I843494": "data/experimental/COMPASS_2010_I843494/reference.json",
     "STAR_2019_I1708793": "data/phenomenology/STAR_2019_I1708793/reference.json",
@@ -116,6 +153,9 @@ REFERENCE_PATHS = {
 
 
 REFERENCE_YODA_PATHS = {
+    "HERMES_1997_I440904": "analyses/rivet/dis/HERMES_1997_I440904.yoda.gz",
+    "E154_1997_I443170": "analyses/rivet/dis/E154_1997_I443170.yoda.gz",
+    "E142_1996_I424108": "analyses/rivet/dis/E142_1996_I424108.yoda.gz",
     "HERMES_2007_I726689_LEGACY": "analyses/rivet/dis/HERMES_2007_I726689_LEGACY.yoda.gz",
     "COMPASS_2010_I843494": "analyses/rivet/dis/COMPASS_2010_I843494.yoda.gz",
     "STAR_2019_I1708793": "analyses/rivet/pp/STAR_2019_I1708793.yoda.gz",
@@ -366,12 +406,185 @@ def normalize_phenix(table1: Mapping[str, Any], table2: Mapping[str, Any]) -> di
     }
 
 
+def normalize_e142(helium: Mapping[str, Any], neutron: Mapping[str, Any]) -> dict[str, Any]:
+    """A1 only; supplement missing HEPData mean x values from paper Tables 7,9."""
+    measurement = "E142_1996_I424108"
+    edges = [0.03, 0.04, 0.06, 0.10, 0.15, 0.20, 0.30, 0.40, 0.60]
+    q2_means = [1.1, 1.2, 1.8, 2.5, 3.1, 3.7, 4.4, 5.5]
+    datasets = []
+    for table, target, number, paper_table, means, source, reaction in (
+        (helium, "He3", 1, 7, [0.035, 0.050, 0.082, 0.124, 0.175, 0.246, 0.343, 0.466],
+         SOURCES[measurement][0], "E- HE3 --> E- X"),
+        (neutron, "Neutron", 3, 9, [0.035, 0.050, 0.081, 0.124, 0.174, 0.245, 0.341, 0.466],
+         SOURCES[measurement][1], "E- N --> E- X"),
+    ):
+        if table["qualifiers"]["RE"][0]["value"] != reaction:
+            raise ReferenceDataError(f"E142 target changed in {source['name']}")
+        points = []
+        for index, row in enumerate(table["values"]):
+            xcell, qcell = row["x"]
+            if [float(xcell["low"]), float(xcell["high"])] != edges[index:index+2]:
+                raise ReferenceDataError("E142 x bin edges changed")
+            if float(qcell["value"]) != q2_means[index]:
+                raise ReferenceDataError("E142 mean Q2 changed")
+            if "value" in xcell and float(xcell["value"]) != means[index]:
+                raise ReferenceDataError("E142 HEPData mean x disagrees with the publication")
+            value = _dependent(row, 0)
+            systematic = _error(value, "sys")
+            points.append({
+                "bin": index+1, "x_low": edges[index], "x_high": edges[index+1],
+                "x_mean": means[index], "x_mean_source": f"hep-ex/9610007 Table {paper_table}",
+                "q2_mean": q2_means[index], "value": float(value["value"]),
+                "stat": _error(value, "stat"), "systematic_combined": systematic,
+                "systematics": {"published_total": systematic},
+            })
+        datasets.append({
+            "target": target, "observable": "A1He3" if target == "He3" else "A1n",
+            "bin_edges": edges, "points": points, "plot_coordinate": "x_mean",
+            "rivet_path": f"/{measurement}/d{number:02d}-x01-y01",
+            "rivet_aliases": [f"/{measurement}/A1_{target}_{window}" for window in ("W025", "W100")],
+            "provenance": {"source_url": source["url"], "source_sha256": source["sha256"],
+                           "table_doi": source["doi"], "publication_table": paper_table},
+        })
+    return {
+        "schema_version": 3, "measurement": measurement, "observable": "A1",
+        "datasets": datasets, "point_count": 16,
+        "provenance": {
+            "publication": "Phys. Rev. D54 (1996) 6620-6650",
+            "publication_url": "https://arxiv.org/abs/hep-ex/9610007",
+            "record_doi": "10.17182/hepdata.22340.v1",
+            "source": "HEPData Tables 1 and 3, A1 columns; paper Tables 7 and 9 for complete mean x",
+            "a2_assumption": "Published central A1 values set A2=0 (Sec. 6.1)",
+            "neutron_status": "Nuclear-extracted neutron data, not a free-neutron target measurement",
+            "alias_status": "Window-check paths reuse the same data; not additional measurements",
+        },
+    }
+
+
+def normalize_e154(table: Mapping[str, Any]) -> dict[str, Any]:
+    """Select A1 (group 1, not g1); complete mean x from publication Table I."""
+    measurement = "E154_1997_I443170"
+    source = SOURCES[measurement][0]
+    edges = [.014, .02, .03, .04, .06, .10, .15, .20, .30, .40, .50, .70]
+    means = [.017, .024, .035, .049, .081, .123, .173, .242, .342, .441, .564]
+    q2_means = [1.2, 1.6, 2.0, 2.6, 4.4, 6.6, 8.2, 9.8, 11.7, 13.3, 15.0]
+    headers = [item["name"] for item in table["headers"]]
+    if headers != source["headers"] or len(table["values"]) != 11:
+        raise ReferenceDataError("E154 table columns or row count changed")
+    if table["qualifiers"]["RE"][0]["value"] != "E- N --> E- X":
+        raise ReferenceDataError("E154 reference must be the extracted neutron")
+    if table["qualifiers"]["PLAB"][0]["value"] != "48.3 GeV":
+        raise ReferenceDataError("E154 beam energy changed")
+    points = []
+    for index, row in enumerate(table["values"]):
+        xcell, qcell = row["x"]
+        if [float(xcell["low"]), float(xcell["high"])] != edges[index:index+2]:
+            raise ReferenceDataError("E154 x bin edges changed")
+        if float(qcell["value"]) != q2_means[index]:
+            raise ReferenceDataError("E154 measured mean Q2 changed")
+        if "value" in xcell and float(xcell["value"]) != means[index]:
+            raise ReferenceDataError("E154 mean x disagrees with publication Table I")
+        value = _dependent(row, 1)
+        systematic = _error(value, "sys")
+        points.append({
+            "bin": index+1, "x_low": edges[index], "x_high": edges[index+1],
+            "x_mean": means[index], "x_mean_source": "hep-ex/9705012 Table I",
+            "q2_mean": q2_means[index], "value": float(value["value"]),
+            "stat": _error(value, "stat"), "systematic_combined": systematic,
+            "systematics": {"published_total": systematic},
+        })
+    return {
+        "schema_version": 3, "measurement": measurement, "observable": "A1",
+        "point_count": 11,
+        "datasets": [{
+            "target": "Neutron", "observable": "A1n", "bin_edges": edges,
+            "points": points, "plot_coordinate": "x_mean",
+            "rivet_path": f"/{measurement}/d01-x01-y02",
+            "rivet_aliases": [f"/{measurement}/A1_Neutron_{w}" for w in ("W025", "W100")],
+            "provenance": {"source_url": source["url"], "source_sha256": source["sha256"],
+                           "table_doi": source["doi"], "publication_table": "I"},
+        }],
+        "provenance": {
+            "publication": "Phys. Rev. Lett. 79 (1997) 26-30",
+            "publication_url": "https://arxiv.org/abs/hep-ex/9705012",
+            "record_doi": "10.17182/hepdata.19559.v1",
+            "source": "HEPData Table 1 A1 column (group 1); publication Table I for complete mean x",
+            "q2_convention": "Published bin-dependent measured mean Q2; not evolved g1 at Q2=5",
+            "a2_assumption": "E154 measured longitudinal and transverse asymmetries; no experimental A2=0 assumption is imposed here",
+            "neutron_status": "Nuclear-extracted neutron data, not a free-neutron target measurement",
+            "alias_status": "Window-check paths reuse the same data; not additional measurements",
+        },
+    }
+
+
+def normalize_hermes1997(table: Mapping[str, Any]) -> dict[str, Any]:
+    """Select A1 (group 0, not g1); complete mean x from publication Table I."""
+    measurement = "HERMES_1997_I440904"
+    source = SOURCES[measurement][0]
+    edges = [0.023, 0.04, 0.055, 0.075, 0.1, 0.14, 0.2, 0.3, 0.4, 0.6]
+    means = [0.033, 0.047, 0.065, 0.087, 0.119, 0.168, 0.244, 0.342, 0.464]
+    q2_means = [1.22, 1.47, 1.73, 1.99, 2.3, 2.65, 3.07, 3.86, 5.25]
+    headers = [item["name"] for item in table["headers"]]
+    if headers != source["headers"] or len(table["values"]) != 9:
+        raise ReferenceDataError("HERMES1997 table columns or row count changed")
+    if table["qualifiers"]["RE"][0]["value"] != "E+ N --> E+ X":
+        raise ReferenceDataError("HERMES1997 reference must be the extracted neutron")
+    if table["qualifiers"]["PLAB"][0]["value"] != "27.5 GeV":
+        raise ReferenceDataError("HERMES1997 beam energy changed")
+    points = []
+    for index, row in enumerate(table["values"]):
+        xcell, qcell = row["x"]
+        if [float(xcell["low"]), float(xcell["high"])] != edges[index:index+2]:
+            raise ReferenceDataError("HERMES1997 x bin edges changed")
+        if float(qcell["value"]) != q2_means[index]:
+            raise ReferenceDataError("HERMES1997 measured mean Q2 changed")
+        if "value" in xcell and float(xcell["value"]) != means[index]:
+            raise ReferenceDataError("HERMES1997 mean x disagrees with publication Table I")
+        value = _dependent(row, 0)
+        systematic = _error(value, "sys")
+        points.append({
+            "bin": index+1, "x_low": edges[index], "x_high": edges[index+1],
+            "x_mean": means[index], "x_mean_source": "hep-ex/9703005 Table I",
+            "q2_mean": q2_means[index], "value": float(value["value"]),
+            "stat": _error(value, "stat"), "systematic_combined": systematic,
+            "systematics": {"published_total": systematic},
+        })
+    return {
+        "schema_version": 3, "measurement": measurement, "observable": "A1",
+        "point_count": 9,
+        "datasets": [{
+            "target": "Neutron", "observable": "A1n", "bin_edges": edges,
+            "points": points, "plot_coordinate": "x_mean",
+            "rivet_path": f"/{measurement}/d01-x01-y01",
+            "rivet_aliases": [f"/{measurement}/A1_Neutron_{w}" for w in ("W025", "W100")],
+            "provenance": {"source_url": source["url"], "source_sha256": source["sha256"],
+                           "table_doi": source["doi"], "publication_table": "I"},
+        }],
+        "provenance": {
+            "publication": "Phys. Lett. B404 (1997) 383-389",
+            "publication_url": "https://arxiv.org/abs/hep-ex/9703005",
+            "record_doi": "10.17182/hepdata.44586.v1",
+            "source": "HEPData Table 1 A1 column (group 0); publication Table I for complete mean x",
+            "q2_convention": "Published bin-dependent measured mean Q2; not evolved g1 at Q2=2.5",
+            "a2_assumption": "Published central values neglect A2; its uncertainty is included in the published systematic error",
+            "neutron_status": "Nuclear-extracted neutron data, not a free-neutron target measurement",
+            "alias_status": "Window-check paths reuse the same data; not additional measurements",
+        },
+    }
+
+
 def normalized_from_raw(measurement: str) -> dict[str, Any]:
     sources = SOURCES[measurement]
     tables = [
         _table((DISPOL_ROOT/source["raw"]).read_bytes(), source)
         for source in sources if source["kind"] == "hepdata"
     ]
+    if measurement == "HERMES_1997_I440904":
+        return normalize_hermes1997(tables[0])
+    if measurement == "E154_1997_I443170":
+        return normalize_e154(tables[0])
+    if measurement == "E142_1996_I424108":
+        return normalize_e142(tables[0], tables[1])
     if measurement == "COMPASS_2010_I843494":
         return normalize_compass(tables[0])
     if measurement == "HERMES_2007_I726689_LEGACY":
@@ -490,7 +703,20 @@ def write_reference_yoda(measurement: str, snapshot: Mapping[str, Any] | None = 
     snapshot = snapshot or validate_vendored(measurement)
     yoda = _import_yoda()
     objects: list[Any] = []
-    if measurement == "HERMES_2007_I726689_LEGACY":
+    if measurement in {"E142_1996_I424108", "E154_1997_I443170", "HERMES_1997_I440904"}:
+        for dataset in snapshot["datasets"]:
+            for path in [dataset["rivet_path"], *dataset["rivet_aliases"]]:
+                objects.append(_estimate(yoda, dataset["bin_edges"], dataset["points"], path, {
+                    "Observable": dataset["observable"],
+                    "Title": dataset["provenance"]["table_doi"],
+                    "PublishedXMeans": json.dumps([p["x_mean"] for p in dataset["points"]]),
+                    "PublishedQ2MeansGeV2": json.dumps([p["q2_mean"] for p in dataset["points"]]),
+                    "ReferenceSourcePath": dataset["rivet_path"],
+                    "A2G2Assumption": ("Published A1 central values use A2=0"
+                                       if measurement == "E142_1996_I424108"
+                                       else snapshot["provenance"]["a2_assumption"]),
+                }))
+    elif measurement == "HERMES_2007_I726689_LEGACY":
         for dataset in snapshot["datasets"]:
             objects.append(_estimate(yoda, dataset["q2_edges"], dataset["points"], dataset["rivet_path"], {
                 "Observable": "Born A_parallel", "XLow": dataset["x_low"], "XHigh": dataset["x_high"],

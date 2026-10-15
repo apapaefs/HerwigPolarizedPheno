@@ -1,0 +1,176 @@
+{
+  "combination": {
+    "longitudinal": {
+      "MM": 0.25,
+      "MP": -0.25,
+      "PM": -0.25,
+      "PP": 0.25
+    },
+    "selection_target_components": {
+      "He3_W025": {
+        "longitudinal": {
+          "N": 0.29,
+          "P": -0.018
+        },
+        "unpolarized": {
+          "N": 0.3333333333333333,
+          "P": 0.6666666666666666
+        }
+      },
+      "He3_W050": {
+        "longitudinal": {
+          "N": 0.29,
+          "P": -0.018
+        },
+        "unpolarized": {
+          "N": 0.3333333333333333,
+          "P": 0.6666666666666666
+        }
+      },
+      "He3_W100": {
+        "longitudinal": {
+          "N": 0.29,
+          "P": -0.018
+        },
+        "unpolarized": {
+          "N": 0.3333333333333333,
+          "P": 0.6666666666666666
+        }
+      },
+      "Neutron_W025": {
+        "longitudinal": {
+          "N": 1.0,
+          "P": 0.0
+        },
+        "unpolarized": {
+          "N": 1.0,
+          "P": 0.0
+        }
+      },
+      "Neutron_W050": {
+        "longitudinal": {
+          "N": 1.0,
+          "P": 0.0
+        },
+        "unpolarized": {
+          "N": 1.0,
+          "P": 0.0
+        }
+      },
+      "Neutron_W100": {
+        "longitudinal": {
+          "N": 1.0,
+          "P": 0.0
+        },
+        "unpolarized": {
+          "N": 1.0,
+          "P": 0.0
+        }
+      }
+    },
+    "target_components": {
+      "longitudinal": {
+        "N": 0.29,
+        "P": -0.018
+      },
+      "unpolarized": {
+        "N": 0.3333333333333333,
+        "P": 0.6666666666666666
+      }
+    },
+    "unpolarized": {
+      "MM": 0.25,
+      "MP": 0.25,
+      "PM": 0.25,
+      "PP": 0.25
+    }
+  },
+  "outputs": {
+    "He3_W025": {
+      "a1": "/E142_1996_I424108/A1_He3_W025",
+      "apar": "/E142_1996_I424108/AParallel_He3_W025",
+      "parity_pm_mp": "/E142_1996_I424108/Parity_PM_MP_He3_W025",
+      "parity_pp_mm": "/E142_1996_I424108/Parity_PP_MM_He3_W025"
+    },
+    "He3_W050": {
+      "a1": "/E142_1996_I424108/d01-x01-y01",
+      "apar": "/E142_1996_I424108/AParallel_He3_W050",
+      "parity_pm_mp": "/E142_1996_I424108/Parity_PM_MP_He3_W050",
+      "parity_pp_mm": "/E142_1996_I424108/Parity_PP_MM_He3_W050"
+    },
+    "He3_W100": {
+      "a1": "/E142_1996_I424108/A1_He3_W100",
+      "apar": "/E142_1996_I424108/AParallel_He3_W100",
+      "parity_pm_mp": "/E142_1996_I424108/Parity_PM_MP_He3_W100",
+      "parity_pp_mm": "/E142_1996_I424108/Parity_PP_MM_He3_W100"
+    },
+    "Neutron_W025": {
+      "a1": "/E142_1996_I424108/A1_Neutron_W025",
+      "apar": "/E142_1996_I424108/AParallel_Neutron_W025",
+      "parity_pm_mp": "/E142_1996_I424108/Parity_PM_MP_Neutron_W025",
+      "parity_pp_mm": "/E142_1996_I424108/Parity_PP_MM_Neutron_W025"
+    },
+    "Neutron_W050": {
+      "a1": "/E142_1996_I424108/d03-x01-y01",
+      "apar": "/E142_1996_I424108/AParallel_Neutron_W050",
+      "parity_pm_mp": "/E142_1996_I424108/Parity_PM_MP_Neutron_W050",
+      "parity_pp_mm": "/E142_1996_I424108/Parity_PP_MM_Neutron_W050"
+    },
+    "Neutron_W100": {
+      "a1": "/E142_1996_I424108/A1_Neutron_W100",
+      "apar": "/E142_1996_I424108/AParallel_Neutron_W100",
+      "parity_pm_mp": "/E142_1996_I424108/Parity_PM_MP_Neutron_W100",
+      "parity_pp_mm": "/E142_1996_I424108/Parity_PP_MM_Neutron_W100"
+    }
+  },
+  "output_annotations": {
+    "He3_W025": {
+      "AcceptancePrescription": "approximate published-mean-Q2 window; not detector acceptance",
+      "Observable": "A1He3",
+      "Q2WindowRelativeHalfWidth": "0.025",
+      "RepresentativeBeamEnergyGeV": "25.51",
+      "SharedEventSamples": "targets and nested windows are statistically correlated",
+      "TargetModel": "per-nucleon 2p+n with Pp=-0.027, Pn=0.87"
+    },
+    "He3_W050": {
+      "AcceptancePrescription": "approximate published-mean-Q2 window; not detector acceptance",
+      "Observable": "A1He3",
+      "Q2WindowRelativeHalfWidth": "0.05",
+      "RepresentativeBeamEnergyGeV": "25.51",
+      "SharedEventSamples": "targets and nested windows are statistically correlated",
+      "TargetModel": "per-nucleon 2p+n with Pp=-0.027, Pn=0.87"
+    },
+    "He3_W100": {
+      "AcceptancePrescription": "approximate published-mean-Q2 window; not detector acceptance",
+      "Observable": "A1He3",
+      "Q2WindowRelativeHalfWidth": "0.1",
+      "RepresentativeBeamEnergyGeV": "25.51",
+      "SharedEventSamples": "targets and nested windows are statistically correlated",
+      "TargetModel": "per-nucleon 2p+n with Pp=-0.027, Pn=0.87"
+    },
+    "Neutron_W025": {
+      "AcceptancePrescription": "approximate published-mean-Q2 window; not detector acceptance",
+      "Observable": "A1n",
+      "Q2WindowRelativeHalfWidth": "0.025",
+      "RepresentativeBeamEnergyGeV": "25.51",
+      "SharedEventSamples": "targets and nested windows are statistically correlated",
+      "TargetModel": "free neutron; no helium polarization factor"
+    },
+    "Neutron_W050": {
+      "AcceptancePrescription": "approximate published-mean-Q2 window; not detector acceptance",
+      "Observable": "A1n",
+      "Q2WindowRelativeHalfWidth": "0.05",
+      "RepresentativeBeamEnergyGeV": "25.51",
+      "SharedEventSamples": "targets and nested windows are statistically correlated",
+      "TargetModel": "free neutron; no helium polarization factor"
+    },
+    "Neutron_W100": {
+      "AcceptancePrescription": "approximate published-mean-Q2 window; not detector acceptance",
+      "Observable": "A1n",
+      "Q2WindowRelativeHalfWidth": "0.1",
+      "RepresentativeBeamEnergyGeV": "25.51",
+      "SharedEventSamples": "targets and nested windows are statistically correlated",
+      "TargetModel": "free neutron; no helium polarization factor"
+    }
+  }
+}

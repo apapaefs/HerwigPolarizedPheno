@@ -1,0 +1,174 @@
+{
+  "schema_version": 3,
+  "measurement": "HERMES_1997_I440904",
+  "observable": "A1",
+  "point_count": 9,
+  "datasets": [
+    {
+      "target": "Neutron",
+      "observable": "A1n",
+      "bin_edges": [
+        0.023,
+        0.04,
+        0.055,
+        0.075,
+        0.1,
+        0.14,
+        0.2,
+        0.3,
+        0.4,
+        0.6
+      ],
+      "points": [
+        {
+          "bin": 1,
+          "x_low": 0.023,
+          "x_high": 0.04,
+          "x_mean": 0.033,
+          "x_mean_source": "hep-ex/9703005 Table I",
+          "q2_mean": 1.22,
+          "value": -0.111,
+          "stat": 0.048,
+          "systematic_combined": 0.018,
+          "systematics": {
+            "published_total": 0.018
+          }
+        },
+        {
+          "bin": 2,
+          "x_low": 0.04,
+          "x_high": 0.055,
+          "x_mean": 0.047,
+          "x_mean_source": "hep-ex/9703005 Table I",
+          "q2_mean": 1.47,
+          "value": -0.117,
+          "stat": 0.052,
+          "systematic_combined": 0.013,
+          "systematics": {
+            "published_total": 0.013
+          }
+        },
+        {
+          "bin": 3,
+          "x_low": 0.055,
+          "x_high": 0.075,
+          "x_mean": 0.065,
+          "x_mean_source": "hep-ex/9703005 Table I",
+          "q2_mean": 1.73,
+          "value": -0.077,
+          "stat": 0.055,
+          "systematic_combined": 0.011,
+          "systematics": {
+            "published_total": 0.011
+          }
+        },
+        {
+          "bin": 4,
+          "x_low": 0.075,
+          "x_high": 0.1,
+          "x_mean": 0.087,
+          "x_mean_source": "hep-ex/9703005 Table I",
+          "q2_mean": 1.99,
+          "value": -0.126,
+          "stat": 0.064,
+          "systematic_combined": 0.014,
+          "systematics": {
+            "published_total": 0.014
+          }
+        },
+        {
+          "bin": 5,
+          "x_low": 0.1,
+          "x_high": 0.14,
+          "x_mean": 0.119,
+          "x_mean_source": "hep-ex/9703005 Table I",
+          "q2_mean": 2.3,
+          "value": -0.097,
+          "stat": 0.068,
+          "systematic_combined": 0.015,
+          "systematics": {
+            "published_total": 0.015
+          }
+        },
+        {
+          "bin": 6,
+          "x_low": 0.14,
+          "x_high": 0.2,
+          "x_mean": 0.168,
+          "x_mean_source": "hep-ex/9703005 Table I",
+          "q2_mean": 2.65,
+          "value": -0.158,
+          "stat": 0.085,
+          "systematic_combined": 0.02,
+          "systematics": {
+            "published_total": 0.02
+          }
+        },
+        {
+          "bin": 7,
+          "x_low": 0.2,
+          "x_high": 0.3,
+          "x_mean": 0.244,
+          "x_mean_source": "hep-ex/9703005 Table I",
+          "q2_mean": 3.07,
+          "value": -0.078,
+          "stat": 0.113,
+          "systematic_combined": 0.019,
+          "systematics": {
+            "published_total": 0.019
+          }
+        },
+        {
+          "bin": 8,
+          "x_low": 0.3,
+          "x_high": 0.4,
+          "x_mean": 0.342,
+          "x_mean_source": "hep-ex/9703005 Table I",
+          "q2_mean": 3.86,
+          "value": 0.146,
+          "stat": 0.219,
+          "systematic_combined": 0.052,
+          "systematics": {
+            "published_total": 0.052
+          }
+        },
+        {
+          "bin": 9,
+          "x_low": 0.4,
+          "x_high": 0.6,
+          "x_mean": 0.464,
+          "x_mean_source": "hep-ex/9703005 Table I",
+          "q2_mean": 5.25,
+          "value": -0.149,
+          "stat": 0.374,
+          "systematic_combined": 0.103,
+          "systematics": {
+            "published_total": 0.103
+          }
+        }
+      ],
+      "plot_coordinate": "x_mean",
+      "rivet_path": "/HERMES_1997_I440904/d01-x01-y01",
+      "rivet_aliases": [
+        "/HERMES_1997_I440904/A1_Neutron_W025",
+        "/HERMES_1997_I440904/A1_Neutron_W100"
+      ],
+      "provenance": {
+        "source_url": "https://www.hepdata.net/record/data/44586/38302/1",
+        "source_sha256": "018500455c15201f52fa5523389e85da6d194dfc598e5fb30686d34b74afd282",
+        "table_doi": "10.17182/hepdata.44586.v1/t1",
+        "publication_table": "I"
+      }
+    }
+  ],
+  "provenance": {
+    "publication": "Phys. Lett. B404 (1997) 383-389",
+    "publication_url": "https://arxiv.org/abs/hep-ex/9703005",
+    "record_doi": "10.17182/hepdata.44586.v1",
+    "source": "HEPData Table 1 A1 column (group 0); publication Table I for complete mean x",
+    "q2_convention": "Published bin-dependent measured mean Q2; not evolved g1 at Q2=2.5",
+    "a2_assumption": "Published central values neglect A2; its uncertainty is included in the published systematic error",
+    "neutron_status": "Nuclear-extracted neutron data, not a free-neutron target measurement",
+    "alias_status": "Window-check paths reuse the same data; not additional measurements"
+  }
+}

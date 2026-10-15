@@ -1,0 +1,9 @@
+# -*- ThePEG-repository -*-
+read HERMES_1997_I440904-Common.in
+set /Herwig/EventHandlers/EventHandler:BeamB /Herwig/Particles/n0
+set /Herwig/EventHandlers/FixedTargetLuminosity:TargetParticle /Herwig/Particles/n0
+set /Herwig/Partons/EPPolarizedExtractor:FirstLongitudinalPolarization 1
+set /Herwig/Partons/EPPolarizedExtractor:SecondLongitudinalPolarization -1
+set /Herwig/MatrixElements/PowhegMEDISNCPol:Contribution NegativeNLO
+cd /Herwig/Generators
+saverun HERMES_1997_I440904_N_PM-NEGNLO EventGenerator

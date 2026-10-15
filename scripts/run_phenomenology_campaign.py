@@ -6414,6 +6414,19 @@ def _legacy_arguments(args: argparse.Namespace) -> list[str]:
                 command.append("--plot-comparisons")
             if args.plot_data_components:
                 command.append("--plot-data-components")
+    if args.command == "check-nlo-signs":
+        command.extend(["--tag", args.tag])
+    if args.command in {"postprocess", "check-nlo-signs"} and getattr(args, "allow_plot_metadata_refresh", False):
+        command.append("--allow-plot-metadata-refresh")
+    if getattr(args, "nlo_sign_convention", None) is not None:
+        command.extend(["--nlo-sign-convention", args.nlo_sign_convention])
+    if args.command in {"plot", "full"}:
+        if getattr(args, "hide_scale_uncertainty", False):
+            command.append("--hide-scale-uncertainty")
+        if getattr(args, "plot_scale", None) is not None:
+            command.extend(["--plot-scale", str(args.plot_scale)])
+        if getattr(args, "ratiolabel", None) is not None:
+            command.extend(["--ratiolabel", args.ratiolabel])
     return command
 
 
@@ -6471,6 +6484,12 @@ def _add_campaign_options(parser: argparse.ArgumentParser) -> None:
 
 
 def _add_plot_options(parser: argparse.ArgumentParser) -> None:
+    dis_scale = parser.add_mutually_exclusive_group()
+    dis_scale.add_argument("--hide-scale-uncertainty", action="store_true",
+                          help="Fixed-target DIS only: retain central MC/PDF errors without the scale envelope")
+    dis_scale.add_argument("--plot-scale", type=float, choices=(0.5, 1.0, 2.0),
+                          help="Fixed-target DIS only: one saved scale prediction with its own MC errors")
+    parser.add_argument("--ratiolabel", help="Fixed-target DIS normalized-residual axis label (TeX accepted)")
     parser.add_argument("--plot-jobs", type=int, default=1,
                         help="Concurrent independent plot scripts (1-100); default is serial")
     parser.add_argument(
@@ -6523,10 +6542,17 @@ def make_parser() -> argparse.ArgumentParser:
     full = commands.add_parser("full")
     _add_campaign_options(full)
     _add_plot_options(full)
+    experimental._add_nlo_sign_options(full)
     for name in ("postprocess",):
         child = commands.add_parser(name); _add_measurement(child); _add_tag(child)
         child.add_argument("--dry-run", action="store_true")
         child.add_argument("--include-diagnostics", action="store_true")
+        child.add_argument("--allow-plot-metadata-refresh", action="store_true")
+        experimental._add_nlo_sign_options(child)
+    check_signs = commands.add_parser("check-nlo-signs")
+    _add_measurement(check_signs); _add_tag(check_signs)
+    check_signs.add_argument("--allow-plot-metadata-refresh", action="store_true")
+    experimental._add_nlo_sign_options(check_signs)
     plot = commands.add_parser("plot")
     _add_measurement(plot); _add_tag(plot)
     plot.add_argument("--dry-run", action="store_true")
@@ -6577,6 +6603,12 @@ def main(argv: Sequence[str] | None = None) -> int:
                     "campaigns"
                 )
             return experimental.main(_legacy_arguments(args))
+        if (args.command == "check-nlo-signs"
+                or getattr(args, "nlo_sign_convention", None) is not None
+                or getattr(args, "hide_scale_uncertainty", False)
+                or getattr(args, "plot_scale", None) is not None
+                or getattr(args, "ratiolabel", None) is not None):
+            raise CampaignError("NLO sign checks and selected-scale/residual-label options are only valid for fixed-target DIS")
         if getattr(args, "comparisons", False):
             args.profile = "paper"
             if getattr(args, "families", None) is None:

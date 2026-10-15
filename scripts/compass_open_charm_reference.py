@@ -54,7 +54,7 @@ def source_file(repo: Path, relative: str | Path) -> Path:
 
 def descriptor(repo: Path = ROOT) -> dict:
     path = source_file(repo, Path("config/reference") / f"{ID}.json")
-    value = json.loads(path.read_text())
+    value = json.loads(path.read_text(encoding="utf-8"))
     if (value.get("schema_version") != 1 or value.get("id") != ID
             or value.get("process_kind") != "polarized_open_charm"
             or value.get("analysis", {}).get("status") != "REFERENCE_ONLY"
@@ -203,8 +203,8 @@ def validate(repo: Path = ROOT, *, verify_pdf_text: bool = False) -> dict:
                              r"(0–30|30–50|>\s*50)\s+" + number + r"\s*±\s*" + number
                              + r"\s*±\s*" + number + (r"\s+" + number) * 5 + r"\s*$", re.M)
         for table, page in [(5, 21), (6, 22), (7, 25)]:
-            text = subprocess.check_output(["pdftotext", "-f", str(page), "-l", str(page), "-layout",
-                                            str(repo / DATA / "arXiv-1211.6849v2.pdf"), "-"], text=True)
+            text = subprocess.check_output(["pdftotext", "-enc", "UTF-8", "-f", str(page), "-l", str(page), "-layout",
+                                            str(repo / DATA / "arXiv-1211.6849v2.pdf"), "-"], encoding="utf-8")
             found = pattern.findall(text)
             wanted = [row for row in rows if row["table"] == table]
             if len(found) != 15:

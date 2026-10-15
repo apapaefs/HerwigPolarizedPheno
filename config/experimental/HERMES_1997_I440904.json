@@ -1,0 +1,397 @@
+{
+  "schema_version": 2,
+  "id": "HERMES_1997_I440904",
+  "title": "HERMES 1997 neutron A1 (approximate mean-Q2 windows)",
+  "analysis": {
+    "name": "HERMES_1997_I440904",
+    "source": "analyses/rivet/dis/HERMES_1997_I440904.cc",
+    "info": "analyses/rivet/dis/HERMES_1997_I440904.info",
+    "plot": "analyses/rivet/dis/HERMES_1997_I440904.plot",
+    "plugin": "RivetHERMES_1997_I440904.so",
+    "reference_yoda": "analyses/rivet/dis/HERMES_1997_I440904.yoda.gz",
+    "support_files": [
+      "analyses/rivet/dis/COMPASSInclusiveDIS.hh",
+      "analyses/rivet/dis/HERMES1997DIS.hh"
+    ]
+  },
+  "reference": {
+    "snapshot": "data/experimental/HERMES_1997_I440904/reference.json",
+    "raw_snapshots": [
+      "data/experimental/HERMES_1997_I440904/raw-hepdata-table1.json"
+    ],
+    "format": "hepdata-table-json-multidataset",
+    "expected_rows": 9,
+    "hepdata_record": "https://www.hepdata.net/record/ins440904",
+    "hepdata_tables": [
+      "https://doi.org/10.17182/hepdata.44586.v1/t1"
+    ]
+  },
+  "cards": {
+    "directory": "cards/experimental/HERMES_1997_I440904",
+    "common": "HERMES_1997_I440904-Common.in",
+    "stem_pattern": "HERMES_1997_I440904_{component}_{helicity}-{order}",
+    "components": {
+      "N": {
+        "label": "neutron component",
+        "particle": "n0"
+      }
+    },
+    "helicities": {
+      "PP": [
+        1,
+        1
+      ],
+      "PM": [
+        1,
+        -1
+      ],
+      "MP": [
+        -1,
+        1
+      ],
+      "MM": [
+        -1,
+        -1
+      ]
+    },
+    "orders": {
+      "POSNLO": "PositiveNLO",
+      "NEGNLO": "NegativeNLO"
+    }
+  },
+  "campaign": {
+    "default_jobs": 4,
+    "default_shards": 1,
+    "default_seed_base": 440904,
+    "default_events": {
+      "POSNLO": 100000,
+      "NEGNLO": 10000
+    },
+    "smoke_events": 100,
+    "comparison_profile": {
+      "plotting": {
+        "unmatch": [
+          "/HERMES_1997_I440904/Sigma(LL|UU)_",
+          "/HERMES_1997_I440904/UU_(X|Q2)Moment_"
+        ]
+      },
+      "families": {
+        "unpolarized_nlo": {
+          "label": "NLO+PS (unpolarized beams)",
+          "id_prefix": "UNPOL",
+          "card_directory": "cards/experimental/HERMES_1997_I440904/comparisons",
+          "materialized_directory": "comparisons",
+          "stem_pattern": "HERMES_1997_I440904_UNPOL_{component}_{helicity}-{order}",
+          "helicities": {
+            "00": [
+              0,
+              0
+            ]
+          },
+          "orders": {
+            "POSNLO": "PositiveNLO",
+            "NEGNLO": "NegativeNLO"
+          },
+          "event_options": {
+            "POSNLO": "posnlo_events",
+            "NEGNLO": "negnlo_events"
+          },
+          "postprocess": "direct_unpolarized",
+          "perturbative_order": "NLO+PS",
+          "real_emission_spin_density": "enabled with unpolarized density matrices",
+          "shower_spin_correlations": "enabled",
+          "beam_polarization": "00"
+        },
+        "polarized_lo": {
+          "label": "LO+PS (polarized)",
+          "id_prefix": "LOPOL",
+          "card_directory": "cards/experimental/HERMES_1997_I440904/comparisons",
+          "materialized_directory": "comparisons",
+          "stem_pattern": "HERMES_1997_I440904_LO_{component}_{helicity}-{order}",
+          "helicities": {
+            "PP": [
+              1,
+              1
+            ],
+            "PM": [
+              1,
+              -1
+            ],
+            "MP": [
+              -1,
+              1
+            ],
+            "MM": [
+              -1,
+              -1
+            ]
+          },
+          "orders": {
+            "LO": "Born"
+          },
+          "event_options": {
+            "LO": "lo_events"
+          },
+          "postprocess": "helicity_asymmetry",
+          "perturbative_order": "LO+PS with the nominal NLO PDF inputs",
+          "real_emission_spin_density": "not applicable",
+          "shower_spin_correlations": "enabled",
+          "beam_polarization": "physical PP, PM, MP, MM"
+        },
+        "no_real_spin_nlo": {
+          "label": "NLO+PS (polarized; Born spin only)",
+          "id_prefix": "NOREALSPIN",
+          "card_directory": "cards/experimental/HERMES_1997_I440904/comparisons",
+          "materialized_directory": "comparisons",
+          "stem_pattern": "HERMES_1997_I440904_NOREALSPIN_{component}_{helicity}-{order}",
+          "helicities": {
+            "PP": [
+              1,
+              1
+            ],
+            "PM": [
+              1,
+              -1
+            ],
+            "MP": [
+              -1,
+              1
+            ],
+            "MM": [
+              -1,
+              -1
+            ]
+          },
+          "orders": {
+            "POSNLO": "PositiveNLO",
+            "NEGNLO": "NegativeNLO"
+          },
+          "event_options": {
+            "POSNLO": "posnlo_events",
+            "NEGNLO": "negnlo_events"
+          },
+          "postprocess": "helicity_asymmetry",
+          "perturbative_order": "NLO+PS",
+          "real_emission_spin_density": "disabled; Born spin density and shower spin correlations retained",
+          "shower_spin_correlations": "enabled",
+          "beam_polarization": "physical PP, PM, MP, MM"
+        },
+        "no_shower_spin_nlo": {
+          "label": "NLO+PS (polarized; shower spin off)",
+          "id_prefix": "NOSHOWERSPIN",
+          "card_directory": "cards/experimental/HERMES_1997_I440904/comparisons",
+          "materialized_directory": "comparisons",
+          "stem_pattern": "HERMES_1997_I440904_NOSHOWERSPIN_{component}_{helicity}-{order}",
+          "helicities": {
+            "PP": [
+              1,
+              1
+            ],
+            "PM": [
+              1,
+              -1
+            ],
+            "MP": [
+              -1,
+              1
+            ],
+            "MM": [
+              -1,
+              -1
+            ]
+          },
+          "orders": {
+            "POSNLO": "PositiveNLO",
+            "NEGNLO": "NegativeNLO"
+          },
+          "event_options": {
+            "POSNLO": "posnlo_events",
+            "NEGNLO": "negnlo_events"
+          },
+          "postprocess": "helicity_asymmetry",
+          "perturbative_order": "NLO+PS",
+          "real_emission_spin_density": "disabled",
+          "shower_spin_correlations": "disabled",
+          "beam_polarization": "physical PP, PM, MP, MM"
+        }
+      }
+    }
+  },
+  "raw_observables": {
+    "Neutron_W050": {
+      "ordinary": "SigmaX_W050",
+      "weighted": "SigmaOverD_X_W050",
+      "covariance": "CovarianceProxy_X_W050"
+    },
+    "Neutron_W025": {
+      "ordinary": "SigmaX_W025",
+      "weighted": "SigmaOverD_X_W025",
+      "covariance": "CovarianceProxy_X_W025"
+    },
+    "Neutron_W100": {
+      "ordinary": "SigmaX_W100",
+      "weighted": "SigmaOverD_X_W100",
+      "covariance": "CovarianceProxy_X_W100"
+    }
+  },
+  "outputs": {
+    "Neutron_W050": {
+      "a1": "/HERMES_1997_I440904/d01-x01-y01",
+      "apar": "/HERMES_1997_I440904/AParallel_Neutron_W050",
+      "parity_pp_mm": "/HERMES_1997_I440904/Parity_PP_MM_Neutron_W050",
+      "parity_pm_mp": "/HERMES_1997_I440904/Parity_PM_MP_Neutron_W050"
+    },
+    "Neutron_W025": {
+      "a1": "/HERMES_1997_I440904/A1_Neutron_W025",
+      "apar": "/HERMES_1997_I440904/AParallel_Neutron_W025",
+      "parity_pp_mm": "/HERMES_1997_I440904/Parity_PP_MM_Neutron_W025",
+      "parity_pm_mp": "/HERMES_1997_I440904/Parity_PM_MP_Neutron_W025"
+    },
+    "Neutron_W100": {
+      "a1": "/HERMES_1997_I440904/A1_Neutron_W100",
+      "apar": "/HERMES_1997_I440904/AParallel_Neutron_W100",
+      "parity_pp_mm": "/HERMES_1997_I440904/Parity_PP_MM_Neutron_W100",
+      "parity_pm_mp": "/HERMES_1997_I440904/Parity_PM_MP_Neutron_W100"
+    }
+  },
+  "plotting": {
+    "unmatch": [
+      "/HERMES_1997_I440904/Sigma(LL|UU)_",
+      "/HERMES_1997_I440904/UU_(X|Q2)Moment_"
+    ]
+  },
+  "diagnostics": [
+    "Accepted_X_W025",
+    "Accepted_Q2_W025",
+    "Accepted_Y_W025",
+    "Accepted_W2_W025",
+    "Accepted_Theta_W025",
+    "Accepted_EPrime_W025",
+    "Accepted_X_W050",
+    "Accepted_Q2_W050",
+    "Accepted_Y_W050",
+    "Accepted_W2_W050",
+    "Accepted_Theta_W050",
+    "Accepted_EPrime_W050",
+    "Accepted_X_W100",
+    "Accepted_Q2_W100",
+    "Accepted_Y_W100",
+    "Accepted_W2_W100",
+    "Accepted_Theta_W100",
+    "Accepted_EPrime_W100",
+    "XMoment_W025",
+    "Q2Moment_W025",
+    "XMoment_W050",
+    "Q2Moment_W050",
+    "XMoment_W100",
+    "Q2Moment_W100"
+  ],
+  "combination": {
+    "unpolarized": {
+      "PP": 0.25,
+      "PM": 0.25,
+      "MP": 0.25,
+      "MM": 0.25
+    },
+    "longitudinal": {
+      "PP": 0.25,
+      "PM": -0.25,
+      "MP": -0.25,
+      "MM": 0.25
+    },
+    "target_components": {
+      "unpolarized": {
+        "N": 1.0
+      },
+      "longitudinal": {
+        "N": 1.0
+      }
+    }
+  },
+  "physics": {
+    "beam": "27.5 GeV e+ on a free neutron at rest",
+    "beam_energy_gev": 27.5,
+    "published_beam_energies_gev": [
+      27.5
+    ],
+    "target_model": "free neutron; reference A1n is already extracted from helium-3",
+    "exchange": "photon",
+    "unpolarized_pdf": "NNPDF40_nlo_pch_as_01180",
+    "polarized_pdf": "NNPDFpol20_nlo_as_01180",
+    "primary_q2_min_gev2": 1.0,
+    "w2_min_gev2": 4.0,
+    "a2_g2_assumption": "eta*A2 neglected in the MC and published central values; published A2 systematic uncertainty retained without a second addition",
+    "depolarization_model": "Whitlow R1990 fit B; electron mass neglected; target-mass kinematics retained",
+    "primary_status": "approximate mean-Q2 comparison; not an acceptance-unfolding reproduction",
+    "q2_means_gev2": [
+      1.22,
+      1.47,
+      1.73,
+      1.99,
+      2.3,
+      2.65,
+      3.07,
+      3.86,
+      5.25
+    ],
+    "q2_windows": {
+      "W025": 0.025,
+      "W050": 0.05,
+      "W100": 0.1
+    },
+    "nominal_window": "W050",
+    "assumptions": [
+      "Nine published x bins; cross-section-weighted MC integration within each bin.",
+      "Q2 windows approximate the published mean kinematics; nominal half-width 5 percent, sensitivity half-widths 2.5 and 10 percent.",
+      "Published cuts Q2 > 1 GeV2, W2 > 4 GeV2, y < 0.85 and 0.04 < theta < 0.22 rad are applied; Q2 < 15 GeV2 is the published outer range.",
+      "The y cut clips the low-x part of the first bin; the accepted region is an intersection with the Q2 window.",
+      "No azimuthal efficiency, detector response or original x-y averaging weights are reconstructed.",
+      "A1_MC = sigma_LL_over_D / sigma_UU uses event-by-event D with R1990 fit B; eta*A2 is neglected, consistently with the experimental central-value convention.",
+      "Published statistical and total systematic errors, including the A2 treatment, are retained; no additional A2 error is invented.",
+      "No conversion to g1 or evolution to Q2=2.5 GeV2 is performed.",
+      "Reference A1n is already extracted from helium-3; free-neutron samples use unit target coefficients without a second nuclear correction.",
+      "Beam and target polarization/dilution corrections are already removed from the data; generate fully polarized helicity samples.",
+      "Nested windows share events; their uncertainties are correlated.",
+      "A bin-integrated prediction is not a pointwise value at the published mean x; window stability does not establish full acceptance fidelity."
+    ],
+    "primary_q2_max_gev2": 15.0,
+    "y_max": 0.85,
+    "scattering_angle_min_rad": 0.04,
+    "scattering_angle_max_rad": 0.22
+  },
+  "output_annotations": {
+    "Neutron_W050": {
+      "Observable": "A1n",
+      "TargetModel": "free neutron; no helium polarization factor",
+      "Q2WindowRelativeHalfWidth": "0.05",
+      "AcceptancePrescription": "published kinematic cuts intersected with approximate mean-Q2 window; no detector-efficiency model",
+      "SharedEventSamples": "nested windows are statistically correlated",
+      "BeamEnergyGeV": "27.5",
+      "MCExtractionAssumption": "eta*A2 neglected, matching published central-value convention",
+      "BeamLepton": "positron",
+      "PublishedCuts": "Q2>1; W2>4; 0<y<0.85; 0.04<theta<0.22"
+    },
+    "Neutron_W025": {
+      "Observable": "A1n",
+      "TargetModel": "free neutron; no helium polarization factor",
+      "Q2WindowRelativeHalfWidth": "0.025",
+      "AcceptancePrescription": "published kinematic cuts intersected with approximate mean-Q2 window; no detector-efficiency model",
+      "SharedEventSamples": "nested windows are statistically correlated",
+      "BeamEnergyGeV": "27.5",
+      "MCExtractionAssumption": "eta*A2 neglected, matching published central-value convention",
+      "BeamLepton": "positron",
+      "PublishedCuts": "Q2>1; W2>4; 0<y<0.85; 0.04<theta<0.22"
+    },
+    "Neutron_W100": {
+      "Observable": "A1n",
+      "TargetModel": "free neutron; no helium polarization factor",
+      "Q2WindowRelativeHalfWidth": "0.1",
+      "AcceptancePrescription": "published kinematic cuts intersected with approximate mean-Q2 window; no detector-efficiency model",
+      "SharedEventSamples": "nested windows are statistically correlated",
+      "BeamEnergyGeV": "27.5",
+      "MCExtractionAssumption": "eta*A2 neglected, matching published central-value convention",
+      "BeamLepton": "positron",
+      "PublishedCuts": "Q2>1; W2>4; 0<y<0.85; 0.04<theta<0.22"
+    }
+  }
+}

@@ -74,7 +74,7 @@ class OpenCharmReferenceTests(unittest.TestCase):
                        {"reference": {"snapshot": "elsewhere.json"}}]:
             repo = self.temporary_repo()
             path = repo / "config/reference" / f"{charm.ID}.json"
-            value = json.loads(path.read_text())
+            value = json.loads(path.read_text(encoding="utf-8"))
             for key, update in change.items():
                 value.setdefault(key, {}).update(update)
             path.write_text(json.dumps(value))

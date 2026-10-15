@@ -42,6 +42,11 @@ remain ignored.
 
 ## Quick start
 
+For command-line flags and short examples, use the single
+[argument quick reference](docs/campaign-options-quick-reference.txt).
+The [saved helium campaign check](docs/he3-saved-campaign-check.txt) verifies
+postprocessing and plotting in independent copies of completed campaigns.
+
 Use a shell with the compatible Herwig Polarized, Rivet, YODA, LHAPDF, and
 PDF sets described in [`docs/runtime-compatibility.md`](docs/runtime-compatibility.md).
 
@@ -75,6 +80,21 @@ PHENIX prompt-photon comparison. See
 [`docs/phenomenology-campaign.md`](docs/phenomenology-campaign.md)
 for profiles, physics families, PDF replicas, scale points, sharding, resume,
 and recovery.
+
+The E142 helium-3 and neutron A1 campaign uses a documented approximation
+with narrow windows around the published mean Q2 values. Its input cards,
+target combinations, window checks, and personal-output-directory commands
+are described in [`docs/E142_1996_I424108.md`](docs/E142_1996_I424108.md).
+
+The E154 neutron A1 campaign at 48.3 GeV uses eleven published x bins and
+three approximate mean-Q2 windows, with the published scattered-electron
+energy cut. See [`docs/E154_1997_I443170.md`](docs/E154_1997_I443170.md) for its
+MC extraction assumptions, input cards, validation and run commands.
+
+The HERMES 1997 neutron A1 campaign uses a 27.5 GeV positron beam, nine
+published bins and three approximate mean-Q2 windows with the published DIS
+and angular cuts. See [`docs/HERMES_1997_I440904.md`](docs/HERMES_1997_I440904.md)
+for reference provenance, approximations, validation and run commands.
 
 The loose 510 GeV `MC_POLDIJETS` spin-on/spin-off control, its cross-section
 and asymmetry definitions, and ready-to-run commands are documented in

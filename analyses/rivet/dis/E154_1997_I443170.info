@@ -1,0 +1,36 @@
+Name: E154_1997_I443170
+Year: 1997
+Summary: E154 neutron A1 with approximate mean-Q2 windows
+Experiment: E154
+Collider: SLAC fixed target
+InspireID: 443170
+Status: UNVALIDATED
+Reentrant: true
+References:
+ - Phys.Rev.Lett. 79 (1997) 26-30
+ - hep-ex/9705012
+RunInfo: Separate 48.3 GeV electron-neutron runs for PP,PM,MP,MM and signed NLO contributions.
+NumEvents: 100000
+NeedsCrossSection: yes
+Beams: [[11, 2112]]
+Energies: [[48.3, 0.939565]]
+Description: |
+  Approximate theory comparison to the neutron A1 column of publication
+  Table I and HEPData Table 1. Uses eleven published x bins and Q2 windows
+  of 2.5, 5 (nominal), and 10 percent around their measured mean Q2.
+  Requires 1 < Q2 < 17 GeV2 and scattered-electron energy > 10 GeV,
+  plus the analysis DIS guard W2 > 4 GeV2. The energy cut clips some
+  x-Q2 windows. Spectrometer angular acceptances and efficiencies are
+  not reconstructed. Uses free-neutron inputs with no additional helium
+  polarization factor: the data already include the nuclear extraction.
+  The MC estimator uses R1990 fit B and neglects eta*A2. E154 measured
+  both longitudinal and transverse asymmetries, so this MC approximation
+  must not be attributed to the published extraction. No g1 observable
+  or evolution to fixed Q2=5 is performed. Nested windows share events.
+Keywords:
+ - DIS
+ - polarized
+ - fixed-target
+ - neutron
+ - asymmetry
+ - approximate

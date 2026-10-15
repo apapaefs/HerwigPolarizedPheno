@@ -4,12 +4,41 @@
 from __future__ import annotations
 
 import os
+import inspect
+import re
 import runpy
 import sys
 import traceback
 from collections.abc import Iterable
 
 import numpy as np
+
+RESIDUAL_LABEL = r"$\frac{\mathrm{MC}-\mathrm{Data}}{\sigma_{\mathrm{Data}}}$"
+
+
+def _normalize_ratio_panel_labels(yaml_file):
+    r"""Match default labels to residual mode, then escape for YODA's Python source.
+
+    The installed Rivet assigns MC/Data even in deviation mode, and YODA
+    writes lower-panel labels inside a non-raw, single-quoted Python string.
+    Escape here, once immediately before script generation, so e.g. \\frac
+    is not interpreted as a form-feed by the generated Python script.
+    """
+    if not isinstance(yaml_file, dict):
+        return yaml_file
+    result = dict(yaml_file)
+    features = dict(result.get("plot features", {}))
+    for key, mode in list(features.items()):
+        if re.fullmatch(r"RatioPlot\d*Mode", str(key)) and mode == "deviation":
+            label_key = key[:-4] + "YLabel"
+            label = features.get(label_key)
+            if label is None or str(label).strip().lower() in {"ratio", "mc/data", "data/mc"}:
+                features[label_key] = RESIDUAL_LABEL
+    for key, label in list(features.items()):
+        if re.fullmatch(r"RatioPlot\d*YLabel", str(key)) and isinstance(label, str):
+            features[key] = label.encode("unicode_escape").decode("ascii").replace("'", "\\'")
+    result["plot features"] = features
+    return result
 
 
 def _coerce_plot_values(vals):
@@ -144,6 +173,8 @@ def _patch_fetch_data_band_annotations() -> None:
     import yoda.plotting.fetch_data as fetch_data
 
     original_mkcurves1d = fetch_data.mkCurves1D
+    parameters = inspect.signature(original_mkcurves1d).parameters
+    mode_keyword = "deviation_modes" if "deviation_modes" in parameters else "deviation"
     force_no_error_bands = _coerce_boollike(os.environ.get("DISPOL_FORCE_NO_ERROR_BANDS"))
 
     def _normalize_annotation_value(ao, key):
@@ -191,13 +222,14 @@ def _patch_fetch_data_band_annotations() -> None:
         if force_no_error_bands:
             variation_dict = {}
         colors = _normalize_color_sequence(colors)
+        mode = kwargs.pop("deviation_modes", deviation)
+        kwargs[mode_keyword] = mode
         return original_mkcurves1d(
             aos,
             ratio_panels,
             error_bars=error_bars,
             variation_dict=variation_dict,
             colors=colors,
-            deviation=deviation,
             line_styles=line_styles,
             **kwargs,
         )
@@ -213,7 +245,8 @@ def _patch_script_generator_traceback() -> list[str]:
     failures: list[str] = []
 
     def normalize_band_settings(yaml_file):
-        return _normalize_hist_yaml_tree(yaml_file, force_no_error_bands=force_no_error_bands)
+        normalized = _normalize_hist_yaml_tree(yaml_file, force_no_error_bands=force_no_error_bands)
+        return _normalize_ratio_panel_labels(normalized)
 
     def process_with_traceback(*args, **kwargs):
         try:

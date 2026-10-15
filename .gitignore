@@ -37,3 +37,8 @@ rendered/
 __pycache__/
 *.py[cod]
 .pytest_cache/
+
+# Pinned helium DIS experimental references (not generated MC output).
+!/analyses/rivet/dis/E142_1996_I424108.yoda.gz
+!/analyses/rivet/dis/E154_1997_I443170.yoda.gz
+!/analyses/rivet/dis/HERMES_1997_I440904.yoda.gz

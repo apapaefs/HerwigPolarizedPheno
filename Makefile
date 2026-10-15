@@ -2,6 +2,9 @@
 
 RIVET_PLUGIN := build/RivetHerwigPolarizedPheno.so
 RIVET_SOURCES := \
+	analyses/rivet/dis/E142_1996_I424108.cc \
+	analyses/rivet/dis/E154_1997_I443170.cc \
+	analyses/rivet/dis/HERMES_1997_I440904.cc \
 	analyses/rivet/dis/COMPASS_2009_I820721.cc \
 	analyses/rivet/dis/COMPASS_2010_I862410.cc \
 	analyses/rivet/dis/COMPASS_2010_I843494.cc \
@@ -28,6 +31,7 @@ RIVET_SOURCES := \
 	analyses/rivet/pp/STAR_2022_I1949588.cc \
 	analyses/rivet/pp/PHENIX_2023_I2033856.cc
 RIVET_ANALYSES := \
+	E142_1996_I424108 E154_1997_I443170 HERMES_1997_I440904 \
 	COMPASS_2009_I820721 COMPASS_2010_I862410 COMPASS_2010_I843494 \
 	COMPASS_2013_I1236358 COMPASS_2014_I1278730 COMPASS_2016_I1357198 \
 	COMPASS_2017_I1444985 COMPASS_2017_I1483098 COMPASS_2017_I1501480 \
@@ -54,6 +58,8 @@ list:
 	python3 scripts/run_phenomenology_campaign.py list
 
 rivet: $(RIVET_PLUGIN)
+
+$(RIVET_PLUGIN): analyses/rivet/dis/E142DIS.hh analyses/rivet/dis/E154DIS.hh analyses/rivet/dis/HERMES1997DIS.hh
 
 $(RIVET_PLUGIN): $(RIVET_SOURCES) analyses/rivet/dis/COMPASSInclusiveDIS.hh analyses/rivet/dis/COMPASSSIDIS.hh analyses/rivet/dis/COMPASSSIDISBinning.hh analyses/rivet/dis/SIDISTrancheBinning.hh analyses/rivet/dis/SIDISAzimuthal.hh analyses/rivet/dis/COMPASSModernMultiplicity.hh analyses/rivet/dis/COMPASSMultiplicityFiducial.hh analyses/rivet/dis/SIDISBinnedFits.hh analyses/rivet/pp/STARPolarizedJets.hh analyses/rivet/pp/PolJetShapesHard.hh
 	mkdir -p build

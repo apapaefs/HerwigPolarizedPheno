@@ -1,0 +1,86 @@
+# -*- ThePEG-repository -*-
+
+############################################################
+# E142 inclusive electron DIS: approximate published-mean-Q2 windows
+# Proton and neutron components are selected by each thin card.
+############################################################
+
+read snippets/EPCollider.in
+read snippets/PolarizedEP.in
+read snippets/FixedTarget.in
+
+set /Herwig/Particles/e-:PDF /Herwig/Partons/NoPDF
+set /Herwig/EventHandlers/EventHandler:BeamA /Herwig/Particles/e-
+set /Herwig/EventHandlers/EventHandler:BeamB /Herwig/Particles/p+
+set /Herwig/EventHandlers/FixedTargetLuminosity:BeamParticle /Herwig/Particles/e-
+set /Herwig/EventHandlers/FixedTargetLuminosity:BeamEMaxA 25.51*GeV
+set /Herwig/EventHandlers/FixedTargetLuminosity:TargetParticle /Herwig/Particles/p+
+set /Herwig/EventHandlers/EventHandler:LuminosityFunction /Herwig/EventHandlers/FixedTargetLuminosity
+
+############################################################
+# ThePEG LHAPDF applies its neutron u<->d isospin map to n0
+############################################################
+
+create ThePEG::LHAPDF /Herwig/Partons/E142PDF ThePEGLHAPDF.so
+set /Herwig/Partons/E142PDF:PDFName NNPDF40_nlo_pch_as_01180
+set /Herwig/Partons/E142PDF:RemnantHandler /Herwig/Partons/HadronRemnants
+set /Herwig/Particles/p+:PDF /Herwig/Partons/E142PDF
+set /Herwig/Particles/n0:PDF /Herwig/Partons/E142PDF
+
+create ThePEG::LHAPDF /Herwig/Partons/E142DiffPDF
+set /Herwig/Partons/E142DiffPDF:PDFName NNPDFpol20_nlo_as_01180
+set /Herwig/Partons/E142DiffPDF:RemnantHandler /Herwig/Partons/HadronRemnants
+
+set /Herwig/Partons/HardLOPDF:PDFName NNPDF40_nlo_pch_as_01180
+set /Herwig/Partons/HardNLOPDF:PDFName NNPDF40_nlo_pch_as_01180
+set /Herwig/Partons/ShowerLOPDF:PDFName NNPDF40_nlo_pch_as_01180
+set /Herwig/Partons/ShowerNLOPDF:PDFName NNPDF40_nlo_pch_as_01180
+set /Herwig/Partons/EPPolarizedExtractor:SecondPDF /Herwig/Partons/E142PDF
+set /Herwig/Partons/EPPolarizedExtractor:SecondLongitudinalDifferencePDF /Herwig/Partons/E142DiffPDF
+set /Herwig/Shower/ShowerHandler:PDFB /Herwig/Partons/ShowerLOPDF
+set /Herwig/Partons/RemnantDecayer:DISOneRemnantFallback RelaxMass
+
+############################################################
+# Generation envelope covers all three Q2 windows in E142DIS.hh.
+# 25.51 GeV is one published beam setting; no detector acceptance is modeled.
+############################################################
+
+set /Herwig/EventHandlers/EventHandler:Cuts:ScaleMin 0.0*GeV2
+set /Herwig/EventHandlers/EventHandler:Cuts:X1Min 1.0e-6
+set /Herwig/EventHandlers/EventHandler:Cuts:X2Min 1.0e-6
+set /Herwig/EventHandlers/EventHandler:Cuts:MHatMin 0.0*GeV
+set /Herwig/Cuts/NeutralCurrentCut:MinQ2 1.0*GeV2
+set /Herwig/Cuts/NeutralCurrentCut:MaxQ2 6.1*GeV2
+set /Herwig/Cuts/NeutralCurrentCut:Miny 0.01
+set /Herwig/Cuts/NeutralCurrentCut:Maxy 0.95
+set /Herwig/Cuts/NeutralCurrentCut:MinW2 4.0*GeV2
+set /Herwig/Cuts/NeutralCurrentCut:MaxW2 1.0e10*GeV2
+
+set /Herwig/Shower/ShowerHandler:Interactions QCD
+set /Herwig/Shower/ShowerHandler:MPIHandler NULL
+set /Herwig/Shower/PowhegShowerHandler:MPIHandler NULL
+set /Herwig/DipoleShower/DipoleShowerHandler:MPIHandler NULL
+set /Herwig/Shower/ShowerHandler:HardEmission POWHEG
+set /Herwig/Shower/ShowerHandler:SpinCorrelations Yes
+
+set /Herwig/Samplers/Sampler:BinSampler:InitialPoints 10000
+set /Herwig/MatrixElements/MEDISNC:UseNativeDISWindowGeneration Yes
+set /Herwig/MatrixElements/MEDISNCPol:UseNativeDISWindowGeneration Yes
+set /Herwig/MatrixElements/PowhegMEDISNC:UseNativeDISWindowGeneration Yes
+set /Herwig/MatrixElements/PowhegMEDISNCPol:UseNativeDISWindowGeneration Yes
+insert /Herwig/MatrixElements/SubProcess:MatrixElements[0] /Herwig/MatrixElements/PowhegMEDISNCPol
+set /Herwig/MatrixElements/PowhegMEDISNCPol:GammaZ Gamma
+set /Herwig/MatrixElements/PowhegMEDISNCPol:UsePOWHEGRealSpinVertex Yes
+
+set /Herwig/Model:QCD/RunningAlphaS /Herwig/Couplings/NLOAlphaS
+set /Herwig/Model:QCD/AlphaS 0.118
+
+cd /Herwig/Generators
+set EventGenerator:DebugLevel 0
+set EventGenerator:PrintEvent 0
+set EventGenerator:DumpPeriod -1
+set EventGenerator:MaxWarnings 20
+set EventGenerator:MaxErrors 1000000
+
+read snippets/Rivet.in
+insert /Herwig/Analysis/Rivet:Analyses 0 E142_1996_I424108
