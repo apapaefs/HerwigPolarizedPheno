@@ -33,6 +33,7 @@ from typing import Any, Mapping, Sequence
 import run_experimental_campaign as experimental
 import compass_sidis_postprocess as compass_sidis
 import polarized_sidis_postprocess as sidis
+from experimental_nlo_signs import audit_order_signs
 import runtime_provenance as provenance
 import star_comparison_policy as star_policy
 import compass_open_charm_reference as open_charm
@@ -1771,6 +1772,66 @@ def _logical_sidis_groups(
     return groups
 
 
+def _audit_sidis_nlo_signs(
+    args: argparse.Namespace,
+    jobs: Sequence[Mapping[str, Any]],
+    campaign_dir: Path,
+) -> dict[str, Any]:
+    """Check every SIDIS shard before combining normalized cross sections."""
+
+    orders = {str(job["contribution"]) for job in jobs}
+    if orders != {"POSNLO", "NEGNLO"}:
+        raise CampaignError("SIDIS sign inspection requires POSNLO and NEGNLO")
+    audit_jobs = []
+    for job in jobs:
+        contribution = str(job["contribution"])
+        if str(job.get("order", contribution)) != contribution:
+            raise CampaignError(f"Inconsistent SIDIS order/contribution for {job['id']}")
+        audit_jobs.append({**job, "order": contribution})
+    try:
+        report = audit_order_signs(
+            audit_jobs, campaign_dir,
+            mode=getattr(args, "nlo_sign_convention", None) or "auto",
+        )
+        report["postprocessor_sha256"] = experimental.sha256_file(SCRIPT_PATH)
+        report["arithmetic_sha256"] = experimental.sha256_file(
+            SCRIPT_PATH.with_name("polarized_sidis_postprocess.py")
+        )
+        report["sign_inspector_sha256"] = experimental.sha256_file(
+            SCRIPT_PATH.with_name("experimental_nlo_signs.py")
+        )
+    except (OSError, ValueError) as exc:
+        raise CampaignError(f"SIDIS NLO sign inspection failed: {exc}") from exc
+    operator = "-" if report["order_coefficients"]["NEGNLO"] < 0 else "+"
+    report["combination"] = f"normalized POSNLO{operator}NEGNLO bins"
+    return report
+
+
+def check_sidis_nlo_signs(
+    args: argparse.Namespace, measurement: Mapping[str, Any]
+) -> dict[str, Any]:
+    """Read-only sign report; a stale signature still blocks postprocessing."""
+
+    campaign_dir = _campaign_dir(measurement["id"], args.tag)
+    manifest_path = campaign_dir / experimental.MANIFEST_NAME
+    if not manifest_path.is_file():
+        raise CampaignError(f"No prepared campaign at {campaign_dir}")
+    manifest = _load_json(manifest_path)
+    _logical_sidis_groups(manifest, campaign_dir, measurement)
+    report = _audit_sidis_nlo_signs(args, manifest["jobs"], campaign_dir)
+    report.update(measurement=measurement["id"], tag=args.tag)
+    try:
+        _assert_manifest_signature_current(manifest, measurement)
+        report["generation_signature_current"] = True
+        report["postprocessing_compatible"] = True
+    except CampaignError as exc:
+        report["generation_signature_current"] = False
+        report["postprocessing_compatible"] = False
+        report["generation_signature_note"] = str(exc)
+    print(json.dumps(report, indent=2, sort_keys=True))
+    return report
+
+
 def _load_sidis_object(
     group: Mapping[str, Mapping[str, Sequence[Mapping[str, Any]]]],
     campaign_dir: Path,
@@ -1778,8 +1839,10 @@ def _load_sidis_object(
     object_name: str,
     cache: dict[tuple[str, str, str], experimental.BinSeries] | None = None,
     helicities: Sequence[str] | None = None,
+    *,
+    order_coefficients: Mapping[str, float],
 ) -> dict[str, experimental.BinSeries]:
-    """Load shards and add normalized NLO components for every helicity."""
+    """Load shards and combine audited NLO components for every helicity."""
 
     output: dict[str, experimental.BinSeries] = {}
     selected_helicities = tuple(helicities or group.keys())
@@ -1803,7 +1866,9 @@ def _load_sidis_object(
             if cache is not None:
                 cache[cache_key] = loaded
             by_contribution[contribution] = loaded
-        output[helicity] = sidis.add_nlo_components(by_contribution)
+        output[helicity] = sidis.add_nlo_components(
+            by_contribution, order_coefficients=order_coefficients,
+        )
     return output
 
 
@@ -1823,6 +1888,8 @@ def _sidis_component_samples(
     object_name: str,
     target: str,
     cache: dict[tuple[str, str, str], experimental.BinSeries] | None = None,
+    *,
+    order_coefficients: Mapping[str, float],
 ) -> dict[str, experimental.BinSeries]:
     """Load the proton/neutron target components needed by one observable."""
 
@@ -1845,7 +1912,8 @@ def _sidis_component_samples(
                 f"{_variation_id(variation)}"
             )
         component_samples = _load_sidis_object(
-            groups[key], campaign_dir, analysis, object_name, cache
+            groups[key], campaign_dir, analysis, object_name, cache,
+            order_coefficients=order_coefficients
         )
         samples.update(
             {
@@ -3910,6 +3978,8 @@ def _sidis_prediction_sets(
     measurement: Mapping[str, Any],
     snapshot: Mapping[str, Any],
     include_diagnostics: bool,
+    *,
+    order_coefficients: Mapping[str, float],
 ) -> dict[tuple[Any, ...], dict[str, Any]]:
     """Construct every normalized-yield SIDIS variation."""
 
@@ -3937,6 +4007,7 @@ def _sidis_prediction_sets(
                     positive_name,
                     str(dataset["target"]),
                     cache,
+                    order_coefficients=order_coefficients,
                 )
                 negative = _sidis_component_samples(
                     groups,
@@ -3946,6 +4017,7 @@ def _sidis_prediction_sets(
                     negative_name,
                     str(dataset["target"]),
                     cache,
+                    order_coefficients=order_coefficients,
                 )
                 covariance = _sidis_component_samples(
                     groups,
@@ -3955,6 +4027,7 @@ def _sidis_prediction_sets(
                     covariance_name,
                     str(dataset["target"]),
                     cache,
+                    order_coefficients=order_coefficients,
                 )
                 differences = {
                     label: sidis.difference_series(
@@ -3979,6 +4052,7 @@ def _sidis_prediction_sets(
                     object_name,
                     str(dataset["target"]),
                     cache,
+                    order_coefficients=order_coefficients,
                 )
                 result = sidis.asymmetry(samples, str(dataset["target"]))
                 observable = str(dataset_id)
@@ -4004,6 +4078,7 @@ def _sidis_prediction_sets(
                     f"CosPhiNumerator_{prefix}",
                     str(diagnostic["target"]),
                     cache,
+                    order_coefficients=order_coefficients,
                 )
                 denominators = _sidis_component_samples(
                     groups,
@@ -4013,6 +4088,7 @@ def _sidis_prediction_sets(
                     f"CosPhiDenominator_{prefix}",
                     str(diagnostic["target"]),
                     cache,
+                    order_coefficients=order_coefficients,
                 )
                 positive = _sidis_component_samples(
                     groups,
@@ -4022,6 +4098,7 @@ def _sidis_prediction_sets(
                     f"CosPhiCovariancePositive_{prefix}",
                     str(diagnostic["target"]),
                     cache,
+                    order_coefficients=order_coefficients,
                 )
                 negative = _sidis_component_samples(
                     groups,
@@ -4031,6 +4108,7 @@ def _sidis_prediction_sets(
                     f"CosPhiCovarianceNegative_{prefix}",
                     str(diagnostic["target"]),
                     cache,
+                    order_coefficients=order_coefficients,
                 )
                 covariance = {
                     label: [
@@ -4064,8 +4142,10 @@ def _compass_component_samples(
     helicities: Sequence[str],
     cache: dict[tuple[str, str, str], experimental.BinSeries],
     components: Sequence[str] = ("P", "N"),
+    *,
+    order_coefficients: Mapping[str, float],
 ) -> dict[str, experimental.BinSeries]:
-    """Load configured target samples after normalized signed-NLO addition."""
+    """Load configured target samples after audited NLO combination."""
 
     family, channel, polarized, unpolarized, scale, mpi = variation
     samples: dict[str, experimental.BinSeries] = {}
@@ -4091,6 +4171,7 @@ def _compass_component_samples(
             object_name,
             cache,
             helicities,
+            order_coefficients=order_coefficients,
         )
         for helicity, series in loaded.items():
             label = component if helicities == ("00",) else f"{component}:{helicity}"
@@ -4106,6 +4187,8 @@ def _compass_sidis_prediction_sets(
     campaign_dir: Path,
     measurement: Mapping[str, Any],
     snapshot: Mapping[str, Any],
+    *,
+    order_coefficients: Mapping[str, float],
 ) -> dict[tuple[Any, ...], dict[str, Any]]:
     """Construct all COMPASS A1 or multiplicity variations."""
 
@@ -4148,15 +4231,18 @@ def _compass_sidis_prediction_sets(
                 ordinary = _compass_component_samples(
                     groups, variation, campaign_dir, analysis,
                     str(raw["ordinary"]), helicities, cache, components,
+                    order_coefficients=order_coefficients,
                 )
                 inverse_d = _compass_component_samples(
                     groups, variation, campaign_dir, analysis,
                     str(raw["inverse_depolarization"]), helicities, cache,
                     components,
+                    order_coefficients=order_coefficients,
                 )
                 covariance = _compass_component_samples(
                     groups, variation, campaign_dir, analysis,
                     str(raw["covariance"]), helicities, cache, components,
+                    order_coefficients=order_coefficients,
                 )
                 if schema6:
                     result = compass_sidis.a1_target_combination(
@@ -4171,14 +4257,17 @@ def _compass_sidis_prediction_sets(
                 numerator = _compass_component_samples(
                     groups, variation, campaign_dir, analysis,
                     str(raw["numerator"]), helicities, cache, components,
+                    order_coefficients=order_coefficients,
                 )
                 denominator = _compass_component_samples(
                     groups, variation, campaign_dir, analysis,
                     str(raw["denominator"]), helicities, cache, components,
+                    order_coefficients=order_coefficients,
                 )
                 covariance = _compass_component_samples(
                     groups, variation, campaign_dir, analysis,
                     str(raw["covariance"]), helicities, cache, components,
+                    order_coefficients=order_coefficients,
                 )
                 widths = [
                     math.prod(
@@ -4258,14 +4347,17 @@ def _compass_sidis_prediction_sets(
                 numerator = _compass_component_samples(
                     groups, variation, campaign_dir, analysis,
                     str(raw["numerator"]), helicities, cache, components,
+                    order_coefficients=order_coefficients,
                 )
                 denominator = _compass_component_samples(
                     groups, variation, campaign_dir, analysis,
                     str(raw["denominator"]), helicities, cache, components,
+                    order_coefficients=order_coefficients,
                 )
                 covariance = _compass_component_samples(
                     groups, variation, campaign_dir, analysis,
                     str(raw["covariance"]), helicities, cache, components,
+                    order_coefficients=order_coefficients,
                 )
                 widths = [
                     math.prod(
@@ -4298,6 +4390,8 @@ def _sidis_diagnostic_prediction_sets(
     campaign_dir: Path,
     measurement: Mapping[str, Any],
     snapshot: Mapping[str, Any],
+    *,
+    order_coefficients: Mapping[str, float],
 ) -> dict[tuple[Any, ...], dict[str, Any]]:
     """Construct target-combined pT-slope or azimuthal predictions."""
 
@@ -4328,6 +4422,7 @@ def _sidis_diagnostic_prediction_sets(
                 spectra = _compass_component_samples(
                     groups, variation, campaign_dir, analysis,
                     str(raw["spectrum"]), ("00",), cache, components,
+                    order_coefficients=order_coefficients,
                 )
                 spectrum_binning = dataset["spectrum_binning"]
                 result = compass_sidis.pt2_slope_target_combination(
@@ -4337,16 +4432,19 @@ def _sidis_diagnostic_prediction_sets(
                     len(dataset["points"]),
                     _compass_component_samples(
                         groups, variation, campaign_dir, analysis,
-                        str(raw["covariance"]), ("00",), cache, components),
+                        str(raw["covariance"]), ("00",), cache, components,
+                        order_coefficients=order_coefficients),
                     float(snapshot["fit_policy"]["minimum_region_significance"]),
                 )
             elif "inputs" in raw:
                 inputs = _compass_component_samples(
                     groups, variation, campaign_dir, analysis,
-                    str(raw["inputs"]), ("00",), cache, components)
+                    str(raw["inputs"]), ("00",), cache, components,
+                    order_coefficients=order_coefficients)
                 covariance = _compass_component_samples(
                     groups, variation, campaign_dir, analysis,
-                    str(raw["covariance"]), ("00",), cache, components)
+                    str(raw["covariance"]), ("00",), cache, components,
+                    order_coefficients=order_coefficients)
                 result = compass_sidis.azimuthal_target_fit(
                     inputs, covariance, target_weights, int(dataset["harmonic"]),
                     len(dataset["points"]), snapshot["estimator"])
@@ -4354,18 +4452,22 @@ def _sidis_diagnostic_prediction_sets(
                 numerator = _compass_component_samples(
                     groups, variation, campaign_dir, analysis,
                     str(raw["numerator"]), ("00",), cache, components,
+                    order_coefficients=order_coefficients,
                 )
                 denominator = _compass_component_samples(
                     groups, variation, campaign_dir, analysis,
                     str(raw["denominator"]), ("00",), cache, components,
+                    order_coefficients=order_coefficients,
                 )
                 covariance_positive = _compass_component_samples(
                     groups, variation, campaign_dir, analysis,
                     str(raw["covariance_positive"]), ("00",), cache, components,
+                    order_coefficients=order_coefficients,
                 )
                 covariance_negative = _compass_component_samples(
                     groups, variation, campaign_dir, analysis,
                     str(raw["covariance_negative"]), ("00",), cache, components,
+                    order_coefficients=order_coefficients,
                 )
                 result = compass_sidis.azimuthal_target_combination(
                     numerator,
@@ -4453,6 +4555,7 @@ def postprocess_sidis_diagnostic(
     manifest = _load_json(manifest_path)
     _assert_manifest_signature_current(manifest, measurement)
     groups = _logical_sidis_groups(manifest, campaign_dir, measurement)
+    sign_audit = _audit_sidis_nlo_signs(args, manifest["jobs"], campaign_dir)
     prediction_path = campaign_dir / "postprocess" / "prediction.yoda"
     if args.dry_run:
         print(json.dumps({
@@ -4460,12 +4563,14 @@ def postprocess_sidis_diagnostic(
             "target_variation_groups": len(groups),
             "postprocessor": measurement["postprocessor"],
             "output": str(prediction_path),
+            "order_sign_audit": sign_audit,
         }, indent=2))
         return prediction_path
 
     snapshot = _measurement_snapshot(measurement)
     predictions = _sidis_diagnostic_prediction_sets(
-        groups, campaign_dir, measurement, snapshot
+        groups, campaign_dir, measurement, snapshot,
+        order_coefficients=sign_audit["order_coefficients"]
     )
     nominal_mpi = measurement["families"]["nominal"]["mpi"]
     central_key = ("nominal", "sidis", 0, 0, 1.0, nominal_mpi)
@@ -4501,7 +4606,10 @@ def postprocess_sidis_diagnostic(
             {
                 "Generator": "HerwigPol POWHEG NLO+PS",
                 "HardProcessAccuracy": "NLO",
-                "NLOCombination": "normalized POSNLO+NEGNLO bins",
+                "NLOCombination": sign_audit["combination"],
+                "OrderCoefficients": json.dumps(
+                    sign_audit["order_coefficients"], sort_keys=True,
+                ),
                 "TargetCombination": json.dumps(target_weights, sort_keys=True),
                 "ObservableDefinition": observable_definition,
                 "DiagnosticOnly": 1,
@@ -4568,15 +4676,16 @@ def postprocess_sidis_diagnostic(
     if not experimental._nonempty(prediction_path):
         raise CampaignError(f"Postprocessing produced empty output {prediction_path}")
     summary = {
+        "order_sign_audit": sign_audit,
+        "nlo_combination": (
+            "shards combined within each contribution, then "
+            + sign_audit["combination"]
+        ),
         "measurement": measurement["id"],
         "tag": args.tag,
         "diagnostic_only": True,
         "hard_process_accuracy": "POWHEG NLO+PS",
         "central_sample_label": measurement["families"]["nominal"]["label"],
-        "nlo_combination": (
-            "shards combined within each contribution, then normalized "
-            "POSNLO and NEGNLO bins added"
-        ),
         "raw_object_inventory": {
             dataset_id: dict(dataset["raw_objects"])
             for dataset_id, dataset in snapshot["datasets"].items()
@@ -4613,6 +4722,7 @@ def postprocess_sidis_diagnostic(
         writer.writerows(rows)
 
     manifest["postprocess"] = {
+        "order_sign_audit": sign_audit,
         "created_at": experimental.utc_now(),
         "prediction": str(prediction_path.relative_to(campaign_dir)),
         "predictions": [{
@@ -4644,6 +4754,7 @@ def postprocess_compass_sidis(
     manifest = _load_json(manifest_path)
     _assert_manifest_signature_current(manifest, measurement)
     groups = _logical_sidis_groups(manifest, campaign_dir, measurement)
+    sign_audit = _audit_sidis_nlo_signs(args, manifest["jobs"], campaign_dir)
     prediction_path = campaign_dir / "postprocess" / "prediction.yoda"
     if args.dry_run:
         print(
@@ -4653,6 +4764,7 @@ def postprocess_compass_sidis(
                     "target_variation_groups": len(groups),
                     "postprocessor": measurement["postprocessor"],
                     "output": str(prediction_path),
+                    "order_sign_audit": sign_audit,
                 },
                 indent=2,
             )
@@ -4661,7 +4773,8 @@ def postprocess_compass_sidis(
 
     snapshot = _measurement_snapshot(measurement)
     predictions = _compass_sidis_prediction_sets(
-        groups, campaign_dir, measurement, snapshot
+        groups, campaign_dir, measurement, snapshot,
+        order_coefficients=sign_audit["order_coefficients"]
     )
     nominal_mpi = measurement["families"]["nominal"]["mpi"]
     central_key = ("nominal", "sidis", 0, 0, 1.0, nominal_mpi)
@@ -4685,7 +4798,8 @@ def postprocess_compass_sidis(
         annotations = {
             "Generator": "HerwigPol POWHEG NLO+PS",
             "HardProcessAccuracy": "NLO",
-            "NLOCombination": "normalized POSNLO+NEGNLO bins",
+            "NLOCombination": sign_audit["combination"],
+            "OrderCoefficients": json.dumps(sign_audit["order_coefficients"], sort_keys=True),
             "TargetCombination": json.dumps(
                 target_weights,
                 sort_keys=True,
@@ -4800,14 +4914,15 @@ def postprocess_compass_sidis(
     if not experimental._nonempty(prediction_path):
         raise CampaignError(f"Postprocessing produced empty output {prediction_path}")
     summary = {
+        "order_sign_audit": sign_audit,
+        "nlo_combination": (
+            "shards combined within each contribution, then "
+            + sign_audit["combination"]
+        ),
         "measurement": measurement["id"],
         "tag": args.tag,
         "hard_process_accuracy": "POWHEG NLO+PS",
         "central_sample_label": measurement["families"]["nominal"]["label"],
-        "nlo_combination": (
-            "shards combined within each contribution, then normalized "
-            "POSNLO and NEGNLO bins added"
-        ),
         "raw_object_inventory": {
             species: dict(dataset["raw_objects"])
             for species, dataset in snapshot["datasets"].items()
@@ -4846,6 +4961,7 @@ def postprocess_compass_sidis(
         writer.writerows(rows)
 
     manifest["postprocess"] = {
+        "order_sign_audit": sign_audit,
         "created_at": experimental.utc_now(),
         "prediction": str(prediction_path.relative_to(campaign_dir)),
         "predictions": [
@@ -4877,6 +4993,7 @@ def postprocess_sidis(
     manifest = _load_json(manifest_path)
     _assert_manifest_signature_current(manifest, measurement)
     groups = _logical_sidis_groups(manifest, campaign_dir, measurement)
+    sign_audit = _audit_sidis_nlo_signs(args, manifest["jobs"], campaign_dir)
     prediction_path = campaign_dir / "postprocess" / "prediction.yoda"
     if args.dry_run:
         print(
@@ -4885,6 +5002,7 @@ def postprocess_sidis(
                     "measurement": measurement["id"],
                     "target_variation_groups": len(groups),
                     "output": str(prediction_path),
+                    "order_sign_audit": sign_audit,
                 },
                 indent=2,
             )
@@ -4901,6 +5019,7 @@ def postprocess_sidis(
         measurement,
         snapshot,
         include_diagnostics,
+        order_coefficients=sign_audit["order_coefficients"],
     )
     nominal_mpi = measurement["families"]["nominal"]["mpi"]
     central_key = ("nominal", "sidis", 0, 0, 1.0, nominal_mpi)
@@ -4937,7 +5056,8 @@ def postprocess_sidis(
             "PDFInputs": "NNPDF40 NLO + NNPDFpol2.0 NLO",
             "SampleLabel": measurement["families"]["nominal"]["label"],
             "HelicityCombination": "independent PP,PM,MP,MM samples",
-            "NLOCombination": "normalized POSNLO+NEGNLO bins",
+            "NLOCombination": sign_audit["combination"],
+            "OrderCoefficients": json.dumps(sign_audit["order_coefficients"], sort_keys=True),
             "TargetModel": (
                 "proton"
                 if target == "proton"
@@ -5009,6 +5129,11 @@ def postprocess_sidis(
     output_dir.mkdir(parents=True, exist_ok=True)
     experimental._write_yoda_objects(yoda, objects, prediction_path)
     summary = {
+        "order_sign_audit": sign_audit,
+        "nlo_combination": (
+            "shards combined within each contribution, then "
+            + sign_audit["combination"]
+        ),
         "measurement": measurement["id"],
         "tag": args.tag,
         "hard_process_accuracy": "POWHEG NLO+PS",
@@ -5045,6 +5170,7 @@ def postprocess_sidis(
             writer.writeheader()
             writer.writerows(rows)
     manifest["postprocess"] = {
+        "order_sign_audit": sign_audit,
         "created_at": experimental.utc_now(),
         "prediction": str(prediction_path.relative_to(campaign_dir)),
         "predictions": [
@@ -6603,12 +6729,17 @@ def main(argv: Sequence[str] | None = None) -> int:
                     "campaigns"
                 )
             return experimental.main(_legacy_arguments(args))
-        if (args.command == "check-nlo-signs"
-                or getattr(args, "nlo_sign_convention", None) is not None
-                or getattr(args, "hide_scale_uncertainty", False)
+        if (getattr(args, "hide_scale_uncertainty", False)
                 or getattr(args, "plot_scale", None) is not None
                 or getattr(args, "ratiolabel", None) is not None):
-            raise CampaignError("NLO sign checks and selected-scale/residual-label options are only valid for fixed-target DIS")
+            raise CampaignError("Selected-scale/residual-label options are only valid for fixed-target DIS")
+        if (args.command == "check-nlo-signs"
+                or getattr(args, "nlo_sign_convention", None) is not None):
+            if measurement["process_kind"] not in {"polarized_sidis", "unpolarized_sidis"}:
+                raise CampaignError("NLO sign inspection is supported for inclusive DIS and SIDIS only")
+            if args.command == "check-nlo-signs":
+                check_sidis_nlo_signs(args, measurement)
+                return 0
         if getattr(args, "comparisons", False):
             args.profile = "paper"
             if getattr(args, "families", None) is None:

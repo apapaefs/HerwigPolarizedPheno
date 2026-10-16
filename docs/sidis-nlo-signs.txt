@@ -1,0 +1,51 @@
+SIDIS NLO sign checking
+======================
+Runner: scripts/run_phenomenology_campaign.py
+Arithmetic: scripts/polarized_sidis_postprocess.py
+Inspector shared with inclusive DIS: scripts/experimental_nlo_signs.py
+
+Applies to COMPASS_2009_I820721, COMPASS_2010_I862410,
+HERMES_2019_I1698889, and the other registry-based SIDIS postprocessors.
+
+Run these from the repository containing the saved campaign. Replace
+SAVED_TAG with its existing tag; this is not a new event-generation tag.
+
+Read-only inspection (does not regenerate events or change saved products):
+  python3 scripts/run_phenomenology_campaign.py check-nlo-signs \
+    --measurement COMPASS_2009_I820721 --tag SAVED_TAG
+
+Recombine existing shards (replaces that campaign's postprocess outputs):
+  python3 scripts/run_phenomenology_campaign.py postprocess \
+    --measurement COMPASS_2009_I820721 --tag SAVED_TAG \
+    --nlo-sign-convention auto
+
+Then redraw its plots (replaces that campaign's plotting outputs):
+  python3 scripts/run_phenomenology_campaign.py plot \
+    --measurement COMPASS_2009_I820721 --tag SAVED_TAG
+
+--nlo-sign-convention auto        Default for SIDIS full and postprocess.
+                                 Inspect every shard's normalization metadata.
+--nlo-sign-convention magnitudes  Require positive normalized NEGNLO magnitudes;
+                                 compute POSNLO - NEGNLO.
+--nlo-sign-convention signed      Require already-negative normalized NEGNLO;
+                                 compute POSNLO + NEGNLO.
+
+The convention concerns cross-section normalization, not the sign of an
+individual asymmetry or angular-moment bin. Auto checks pure-sign unit event
+weights. Weighted/mixed event streams require a verified explicit convention.
+Explicit modes still validate normalization: they cannot override contradictory
+metadata. Missing, empty, or conflicting shards stop postprocessing.
+
+Shards are combined within each contribution first. Coefficients are applied
+before helicity/target combinations and ratios, for all PDF and scale variations.
+Variances and covariance proxies retain squared coefficients.
+
+The applied coefficients and input/script hashes are recorded under
+order_sign_audit in postprocess/summary.json and manifest.json's postprocess
+section. Prediction YODA annotations also state the applied convention.
+
+Original shard YODA files are required: plotted CSVs and reference YODA files
+cannot establish their storage convention. Existing generation-signature checks
+remain enforced. check-nlo-signs can report a stale signature without bypassing
+it for postprocess. Back up postprocess/ and plots/ before recombining if you
+want to retain the old results. This change itself does not reprocess campaigns.

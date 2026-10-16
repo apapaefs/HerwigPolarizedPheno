@@ -51,7 +51,9 @@ class SharedIntegrationTests(unittest.TestCase):
                 self.assertEqual(primary.main([
                     command, "--measurement", "PP", "--tag", "test", *options,
                 ]), 2)
-            self.assertIn("only valid for fixed-target DIS", output.getvalue())
+            expected = ("only valid for fixed-target DIS" if command == "plot"
+                        else "inclusive DIS and SIDIS only")
+            self.assertIn(expected, output.getvalue())
 
     def test_current_e142_descriptor_allows_proven_plot_metadata_refresh(self):
         measurement = campaign.get_measurement("E142_1996_I424108")

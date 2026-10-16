@@ -1,4 +1,4 @@
-CAMPAIGN COMMANDS — QUICK REFERENCE (15 October 2026)
+CAMPAIGN COMMANDS — QUICK REFERENCE (16 October 2026)
 
 Use the activated Herwig/Rivet environment; run from the intended checkout.
 D = fixed-target DIS engine / helium wrappers (both checkouts).
@@ -24,7 +24,7 @@ COMMANDS (D/G)
   postprocess      Recombine saved shard YODA.           Example: postprocess --measurement ID --tag pilot
   plot             Replot saved analyzed YODA.           Example: plot --measurement ID --tag pilot
   full             Prepare + generate + postprocess + plot. Example: full --measurement ID --tag pilot
-  check-nlo-signs   Inspect DIS normalization/signs; read only. Example: check-nlo-signs --measurement ID --tag pilot
+  check-nlo-signs   Inspect DIS/SIDIS normalization/signs; read only. Example: check-nlo-signs --measurement ID --tag pilot
 
 IDENTITY / GENERAL
   -h, --help                 Help for that command.                 Example: full --help
@@ -69,11 +69,12 @@ PHENIX SAMPLING (P; generation commands only)
                             C=1 is the detuning-matched control; omission retains base settings.
                             Does not change photon+jet samples. Use new tags for C=1,2,5,10.
 
-POSTPROCESSING / DIS SIGN AUDIT
-  --nlo-sign-convention auto|magnitudes|signed (D; full/postprocess/check-nlo-signs)
+POSTPROCESSING / DIS AND SIDIS SIGN AUDIT
+  --nlo-sign-convention auto|magnitudes|signed (D and G/SIDIS; full/postprocess/check-nlo-signs)
                             Default auto checks every shard. magnitudes subtracts positive NEGNLO;
                             signed adds already-negative NEGNLO. Contradictions are rejected.
                             Example: check-nlo-signs --tag pilot --nlo-sign-convention auto
+                            SIDIS: use the generic runner with --measurement ID; see docs/sidis-nlo-signs.txt.
   --allow-plot-metadata-refresh (D: postprocess/check-nlo-signs/plot; G: plot)
                             Accept only a proven presentation-only metadata change; not changed physics.
                             Example: plot --tag pilot --allow-plot-metadata-refresh
