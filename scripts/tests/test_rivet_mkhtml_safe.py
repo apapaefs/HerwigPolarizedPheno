@@ -23,6 +23,33 @@ import rivet_mkhtml_safe as safe  # noqa: E402
 
 
 class RivetMkhtmlSafeTests(unittest.TestCase):
+    def test_deviation_errors_only_enable_nonreference_curves_in_that_panel(self) -> None:
+        class Curve(dict):
+            annotation = dict.get
+            setAnnotation = dict.__setitem__
+
+        curves = {label: Curve() for label in ('Data', 'MC', 'Comparison')}
+        panels = {'RatioPlot': ['Data', 'MC', 'Comparison'],
+                  'RatioPlot2': ['MC', 'Comparison']}
+        safe._enable_deviation_error_bars(curves, panels, True, [True, False])
+        self.assertEqual(curves['Data'], {})
+        self.assertEqual(curves['MC'], {'RatioPlotErrorBars': 1})
+        self.assertEqual(curves['Comparison'], {'RatioPlotErrorBars': 1})
+
+    def test_deviation_errors_respect_explicit_error_bar_settings(self) -> None:
+        class Curve(dict):
+            annotation = dict.get
+            setAnnotation = dict.__setitem__
+
+        curves = {'Data': Curve(), 'PanelOff': Curve(RatioPlotErrorBars=0),
+                  'CurveOff': Curve(ErrorBars=0), 'CommandOff': Curve()}
+        panels = {'RatioPlot': list(curves)}
+        original = {label: dict(curve) for label, curve in curves.items()}
+        safe._enable_deviation_error_bars(curves, panels, [True, True, True, False], True)
+        self.assertEqual(curves, original)
+        safe._enable_deviation_error_bars(curves, panels, False, True)
+        self.assertEqual(curves, original)
+
     def test_residual_label_matches_mode_and_survives_python_generation(self) -> None:
         source = {'plot features': {'RatioPlot': 1, 'RatioPlotMode': 'deviation',
                                     'RatioPlotYLabel': 'MC/Data'}, 'histograms': {}}

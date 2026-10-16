@@ -33,6 +33,10 @@ What is checked:
      the committed .plot files and the original campaigns stay unchanged.
      Generated numerical residuals, the data-at-zero baseline, TeX labels and
      the MC/PDF/scale overlay arrays are checked. PNG and PDF files must exist.
+     Prediction error bars in residual panels use the uncertainties included
+     in each plotted input: all sources in full views, no hard-scale source
+     in central-only views, and MC statistics alone in selected-scale views.
+     They are normalized by the experimental uncertainty; data stay at zero.
   6. Plotting preserves the fresh full postprocessed products. Original input
      checksums are rechecked at the end, including after a test failure.
 

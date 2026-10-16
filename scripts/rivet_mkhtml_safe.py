@@ -41,6 +41,29 @@ def _normalize_ratio_panel_labels(yaml_file):
     return result
 
 
+def _enable_deviation_error_bars(aos, ratio_panels, error_bars, deviation):
+    """Show prediction uncertainties that YODA hides by default in residuals.
+
+    Keep the reference at zero and use YODA's computed residual errors, which
+    include the uncertainty sources present in each plotted input. Explicit
+    per-curve, per-panel and command-line error-bar settings take precedence.
+    """
+    if not ratio_panels:
+        return
+    modes = [deviation] * len(ratio_panels) if isinstance(deviation, bool) else deviation
+    flags = [error_bars] * len(aos) if isinstance(error_bars, bool) else error_bars
+    enabled = dict(zip(aos, flags))
+    for (panel, curves), is_deviation in zip(ratio_panels.items(), modes):
+        if not is_deviation:
+            continue
+        key = panel + "ErrorBars"
+        for label in curves[1:]:
+            ao = aos[label]
+            if (enabled[label] and ao.annotation(key, None) is None
+                    and ao.annotation("ErrorBars", None) is None):
+                ao.setAnnotation(key, 1)
+
+
 def _coerce_plot_values(vals):
     if isinstance(vals, (str, bytes)):
         return [vals]
@@ -223,6 +246,7 @@ def _patch_fetch_data_band_annotations() -> None:
             variation_dict = {}
         colors = _normalize_color_sequence(colors)
         mode = kwargs.pop("deviation_modes", deviation)
+        _enable_deviation_error_bars(aos, ratio_panels, error_bars, mode)
         kwargs[mode_keyword] = mode
         return original_mkcurves1d(
             aos,
