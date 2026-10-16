@@ -169,7 +169,7 @@ class ResultsBrowserTests(unittest.TestCase):
                                    "predictions": [{"family": "nominal", "yoda": "postprocess/HERMES-analyzed.yoda"}]}
         (path / "manifest.json").write_text(json.dumps(manifest))
         browser.build(ROOT, [self.root], self.output, identifiers=[identifier], observation=NO_PROCESSES)
-        metadata = json.loads((self.output / "analyses" / identifier / "metadata.json").read_text())
+        metadata = json.loads((self.output / "analyses" / identifier / "metadata.json").read_text(encoding="utf-8"))
         self.assertEqual(metadata["availability"], "ready")
         self.assertTrue((self.output / metadata["downloads"]["Numerical results (CSV)"]).is_file())
 
@@ -229,7 +229,7 @@ class ResultsBrowserTests(unittest.TestCase):
         report = self.build(archive=True)
         self.assertEqual(report['plots'], 1)
         self.assertEqual(before, browser.common.digest(path / 'manifest.json'))
-        page = (self.output / 'index.html').read_text()
+        page = (self.output / 'index.html').read_text(encoding="utf-8")
         payload = page.split('<script id="results-data" type="application/json">')[1].split('</script>')[0]
         data = json.loads(payload)
         for item in data['items']:
@@ -239,7 +239,7 @@ class ResultsBrowserTests(unittest.TestCase):
         with tarfile.open(report['archive']) as archive:
             self.assertTrue(all(m.isfile() for m in archive.getmembers()))
             self.assertFalse(any(Path(m.name).suffix in {'.log', '.yoda', '.run', '.so', '.py'} for m in archive.getmembers()))
-        inventory = json.loads((self.output / 'bundle.json').read_text())
+        inventory = json.loads((self.output / 'bundle.json').read_text(encoding="utf-8"))
         for record in inventory['files']:
             self.assertEqual(record['sha256'], browser.common.digest(self.output / record['path']))
 

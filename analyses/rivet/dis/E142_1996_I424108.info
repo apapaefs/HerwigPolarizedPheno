@@ -1,0 +1,35 @@
+Name: E142_1996_I424108
+Year: 1996
+Summary: E142 helium-3 and neutron A1 with approximate mean-Q2 windows
+Experiment: E142
+Collider: SLAC fixed target
+InspireID: 424108
+Status: UNVALIDATED
+Reentrant: true
+References:
+ - Phys.Rev.D 54 (1996) 6620-6650
+ - hep-ex/9610007
+RunInfo: Separate electron-proton and electron-neutron runs for PP,PM,MP,MM and signed NLO contributions.
+NumEvents: 100000
+NeedsCrossSection: yes
+Beams: [[11, 2212], [11, 2112]]
+Energies: [[25.51, 0.938272], [25.51, 0.939565]]
+Description:
+  Approximate theory comparison to E142 Tables 7 and 9 (HEPData Tables 1
+  and 3). This is not a detector-acceptance implementation. Uses eight
+  published x bins and Q2 windows of 2.5, 5 (nominal), and 10 percent
+  around the published mean Q2 in each bin, with Q2 > 1 and W2 > 4 GeV2.
+  The lowest 10-percent window is truncated at Q2=1 GeV2. The representative
+  beam energy is 25.51 GeV; the data combine 19.42, 22.66 and 25.51 GeV.
+  No spectrometer angle or scattered-energy acceptance is imposed.
+  The campaign uses R1990 fit B and neglects eta*A2, combines proton and
+  neutron inputs with Pp=-0.027 and Pn=0.87 for helium-3, and produces
+  the free-neutron prediction separately from the same neutron samples.
+  Binding, Fermi motion, off-shell, shadowing and additional nuclear
+  corrections are not included. Window and target outputs share events.
+Keywords:
+ - DIS
+ - polarized
+ - fixed-target
+ - asymmetry
+ - approximate

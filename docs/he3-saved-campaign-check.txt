@@ -1,0 +1,65 @@
+NATIVE POSTPROCESSING / PLOTTING CHECK USING SAVED HELIUM CAMPAIGNS
+
+Use the existing activated polarized Herwig/Rivet environment. No new Herwig
+build is needed. This script invokes postprocessing and plotting, never Herwig.
+Run from HerwigPolarizedPheno-he3-integration on the remote host.
+
+Preview these three existing 4x scale studies (read only):
+
+python3 scripts/check_he3_saved_campaign.py \
+  --campaign /home/nbaldona/HerwigPol/work/E142_1996_I424108/e142-scale-study-4x \
+  --campaign /home/nbaldona/HerwigPol/work/E154_1997_I443170/e154-scale-study-4x \
+  --campaign /home/nbaldona/HerwigPol/work/HERMES_1997_I440904/hermes1997-scale-study-4x \
+  --output-root /home/nbaldona/HerwigPol/work/he3-integration-validation-20261015 \
+  --dry-run
+
+Remove --dry-run to execute. The output root must not already exist; use a new
+name for each attempt. All three together copy 9,600 shard YODA files and their
+small baselines: approximately 1.64 GB before new postprocessing and plots.
+The check runs sequentially. It does not launch generation jobs or use --jobs.
+You may supply just one --campaign to check one experiment.
+
+What is checked:
+  1. Current definitions/signatures and a complete saved shard matrix.
+  2. Every original file is copied independently; no hardlinks or symlinks.
+  3. New postprocessing matches the saved corrected baseline: bin values,
+     statistical errors, masks, diagnostics, PDF/scale errors, and NLO audit.
+     Annotations/provenance may differ; physical numbers must agree within
+     floating-point / YODA serialization precision.
+  4. Every configured A1 output is rendered, including both E142 targets and
+     all window aliases. Full, central-only, and each available central-PDF
+     scale view are checked. Scale views use their own values and MC errors.
+  5. A private plot configuration forces the residual panel ON for the checks;
+     the committed .plot files and the original campaigns stay unchanged.
+     Generated numerical residuals, the data-at-zero baseline, TeX labels and
+     the MC/PDF/scale overlay arrays are checked. PNG and PDF files must exist.
+     Prediction error bars in residual panels use the uncertainties included
+     in each plotted input: all sources in full views, no hard-scale source
+     in central-only views, and MC statistics alone in selected-scale views.
+     They are normalized by the experimental uncertainty; data stay at zero.
+  6. Plotting preserves the fresh full postprocessed products. Original input
+     checksums are rechecked at the end, including after a test failure.
+
+The destination contains one ID/TAG directory per source, each with:
+  baseline/              saved postprocessing for the numerical comparison
+  yoda/                  independent copies of original shard inputs
+  postprocess/           newly recomputed results
+  plots*/                newly rendered validation views
+  logs/                  standard campaign plotting logs
+  validation-controls/   private residual settings and plotting-tool adapter
+  validation.json        detailed pass/fail status, input hashes and checks
+A top-level validation-summary.json is written when all requested checks pass.
+This is a numerical reproducibility/integration check, not a new assessment of
+experimental acceptance or proof of the generator's physical accuracy.
+
+The plotting tool is taken from the ACTIVE PATH; its identity is recorded.
+The saved generation provenance is preserved in the copied manifest. Only its
+plot-tool entry is redirected to the validation adapter. Comparisons require a
+nominal-family campaign with a recorded NLO sign audit. Incomplete inputs,
+incompatible signatures, or changed numbers are reported as errors rather
+than silently accepted. A comparison-family campaign is deliberately refused.
+
+The script's --help lists its three options: repeatable --campaign,
+--output-root, and --dry-run. No source campaign is resumed or reprocessed in
+place. The separate three check_*_rivet.py scripts test compiled analyses using
+artificial events; this check tests saved real campaign outputs instead.

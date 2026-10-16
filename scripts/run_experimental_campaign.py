@@ -33,6 +33,8 @@ import urllib.request
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
+
+from experimental_nlo_signs import audit_order_signs
 from typing import Any, Callable, Iterable, Mapping, Sequence
 
 import runtime_provenance as provenance
@@ -886,7 +888,9 @@ def load_reference_snapshot(measurement: Mapping[str, Any]) -> dict[str, Any]:
 def write_reference_yoda(snapshot: Mapping[str, Any], destination: Path) -> None:
     if "datasets" in snapshot:
         datasets = snapshot["datasets"]
-        if isinstance(datasets, list) and datasets and all("bin_edges" in item for item in datasets):
+        if (isinstance(datasets, list) and datasets
+                and all("bin_edges" in item for item in datasets)
+                and not any(item.get("rivet_aliases") for item in datasets)):
             yoda = _import_yoda()
             objects = [
                 _reference_estimate(yoda, {**snapshot, **dataset})
@@ -1446,6 +1450,8 @@ def measurement_signature(
     ))
     if measurement["reference"].get("raw_snapshot"):
         files.append(resolve_dispol_path(str(measurement["reference"]["raw_snapshot"])))
+    files.extend(resolve_dispol_path(str(path))
+                 for path in measurement["reference"].get("raw_snapshots", []))
     card_dir = resolve_dispol_path(measurement["cards"]["directory"])
     files.extend(sorted(card_dir.glob("*.in")))
     for path in files:
@@ -1487,6 +1493,7 @@ def comparison_signature(measurement: Mapping[str, Any]) -> str:
 def _assert_manifest_signatures_current(
     manifest: Mapping[str, Any], measurement: Mapping[str, Any], *,
     allow_plot_metadata_refresh: bool = False,
+    campaign_dir: Path | None = None,
 ) -> dict[str, Any] | None:
     """Refuse to reinterpret event products made with another definition."""
 
@@ -1495,7 +1502,12 @@ def _assert_manifest_signatures_current(
     current = measurement_signature(measurement)
     refresh: dict[str, Any] | None = None
     if recorded != current:
-        if allow_plot_metadata_refresh:
+        if (measurement["id"] == "E142_1996_I424108" and campaign_dir is not None
+                and (not allow_plot_metadata_refresh or _has_legacy_e142_schema(campaign_dir))):
+            refresh = authorize_e142_output_schema_migration(
+                manifest, measurement, campaign_dir, current_signature=current
+            )
+        elif allow_plot_metadata_refresh:
             refresh = authorize_plot_metadata_refresh(
                 manifest,
                 measurement,
@@ -1520,6 +1532,86 @@ def _assert_manifest_signatures_current(
                 "stale signature. Use a new immutable tag and rerun them."
             )
     return refresh
+
+
+def _has_legacy_e142_schema(campaign_dir: Path) -> bool:
+    path = campaign_dir / "resolved-measurement.json"
+    if not path.is_file():
+        return False
+    try:
+        saved = load_json(path)
+    except (OSError, ValueError):
+        return False
+    if not isinstance(saved, Mapping):
+        return False
+    combination = saved.get("combination", {})
+    return ("output_annotations" in saved
+            or (isinstance(combination, Mapping)
+                and "selection_target_components" in combination))
+
+
+def authorize_e142_output_schema_migration(
+    manifest: Mapping[str, Any], measurement: Mapping[str, Any],
+    campaign_dir: Path, *, current_signature: str,
+) -> dict[str, Any]:
+    """Accept only the exact E142 output-schema move, with historical proof."""
+    source = campaign_dir / "resolved-measurement.json"
+    if measurement["id"] != "E142_1996_I424108" or not source.is_file():
+        raise CampaignError("E142 schema compatibility requires its saved resolved-measurement.json")
+    try:
+        historical = load_json(source)
+    except (OSError, ValueError) as exc:
+        raise CampaignError(f"Cannot read E142 historical descriptor: {exc}") from exc
+    if not isinstance(historical, dict):
+        raise CampaignError("E142 historical descriptor must be a JSON object")
+    migrated = copy.deepcopy({key: value for key, value in historical.items() if not key.startswith("_")})
+    selections = {f"{target}_{window}" for target in ("He3", "Neutron")
+                  for window in ("W025", "W050", "W100")}
+    try:
+        if migrated["id"] != "E142_1996_I424108":
+            raise ValueError("wrong measurement")
+        coefficients = migrated["combination"].pop("selection_target_components")
+        annotations = migrated.pop("output_annotations")
+        if any(set(block) != selections for block in (coefficients, annotations, migrated["outputs"])):
+            raise ValueError("unexpected output selections")
+        for selection, output in migrated["outputs"].items():
+            if set(output) != {"a1", "apar", "parity_pp_mm", "parity_pm_mp"}:
+                raise ValueError("unexpected historical output fields")
+            ann = annotations[selection]
+            if set(ann) != {"Observable", "TargetModel", "Q2WindowRelativeHalfWidth",
+                            "AcceptancePrescription", "RepresentativeBeamEnergyGeV", "SharedEventSamples"}:
+                raise ValueError("unexpected historical annotation fields")
+            if (ann["AcceptancePrescription"] != "approximate published-mean-Q2 window; not detector acceptance"
+                    or ann["SharedEventSamples"] != "targets and nested windows are statistically correlated"):
+                raise ValueError("unexpected acceptance prescription")
+            output.update(
+                target_components=coefficients[selection], observable=ann["Observable"],
+                target="neutron" if selection.startswith("Neutron") else "helium-3",
+                target_model=ann["TargetModel"], axis="x",
+                acceptance=(f"Approximate published-mean-Q2 window, relative half-width {ann['Q2WindowRelativeHalfWidth']}; "
+                            f"representative beam energy {ann['RepresentativeBeamEnergyGeV']} GeV; "
+                            "not detector acceptance; targets and nested windows share statistically correlated events"),
+            )
+    except (KeyError, TypeError, ValueError, AttributeError) as exc:
+        raise CampaignError(f"E142 saved descriptor is not the supported historical schema: {exc}") from exc
+    current = {key: value for key, value in measurement.items() if not key.startswith("_")}
+    if canonical_json_bytes(migrated) != canonical_json_bytes(current):
+        raise CampaignError("E142 differs by more than the exact output-schema reorganization; compatibility refused")
+    recorded = manifest.get("configuration", {}).get("measurement_signature")
+    if measurement_signature(historical) != recorded:
+        raise CampaignError(
+            "E142 historical signature cannot be reproduced with the current analysis, cards, "
+            "reference and plot files; compatibility refused"
+        )
+    return {
+        "mode": "e142_output_schema_migration_v1",
+        "generation_measurement_signature": recorded,
+        "current_measurement_signature": current_signature,
+        "saved_descriptor": source.name,
+        "saved_descriptor_sha256": sha256_file(source),
+        "verified_at": utc_now(),
+    }
+
 
 
 def _git_file_at_commit(commit: str, relative_path: Path) -> bytes:
@@ -3101,6 +3193,10 @@ def _family_annotations(
         annotations["DeuteronDStateFactor"] = str(physics["d_state_factor"])
     if set(orders) == {"POSNLO", "NEGNLO"}:
         annotations["NLOCombination"] = f"normalized {order_formula} bins"
+        if "_nlo_sign_audit" in measurement:
+            audit = measurement["_nlo_sign_audit"]
+            annotations["NLOSignConvention"] = str(audit["resolution"])
+            annotations["NLOSignInputsSHA256"] = str(audit["inputs_sha256"])
     if str(family["postprocess"]) == "helicity_asymmetry":
         annotations["HelicityCombination"] = "independent PP,PM,MP,MM samples"
     else:
@@ -3131,6 +3227,10 @@ def _selection_annotations(
     """Annotate the target represented by this output rather than all generated beams."""
     output = measurement["outputs"][selection]
     result = dict(annotations)
+    # Older helium descriptors keep presentation metadata in this separate map.
+    # Explicit fields on the current output schema take precedence below.
+    result.update({str(key): str(value) for key, value in
+                   measurement.get("output_annotations", {}).get(selection, {}).items()})
     result["PlotAxis"] = "q2_mean" if output.get("axis", "x") == "q2" else "x_mean"
     if "acceptance" in output:
         result["Acceptance"] = str(output["acceptance"])
@@ -3455,7 +3555,8 @@ def _asymmetry_family_objects(
                 result["a1_errors"],
                 {
                     **selected_annotations,
-                    "Observable": str(paths.get("observable", snapshot.get("observable", "A1"))),
+                    "Observable": str(paths.get("observable", selected_annotations.get(
+                        "Observable", snapshot.get("observable", "A1")))),
                     "Selection": selection,
                 },
             )
@@ -3693,6 +3794,50 @@ def _write_summary_csv(path: Path, rows: Sequence[Mapping[str, Any]]) -> None:
         writer.writerows(rows)
 
 
+def _audit_campaign_nlo_signs(
+    args: argparse.Namespace, measurement: Mapping[str, Any],
+    jobs: Sequence[Mapping[str, Any]], campaign_dir: Path,
+) -> dict[str, Any]:
+    try:
+        report = audit_order_signs(
+            jobs, campaign_dir, mode=getattr(args, "nlo_sign_convention", None) or "auto",
+            configured=measurement["combination"].get("order_coefficients"),
+        )
+        report["postprocessor_sha256"] = sha256_file(SCRIPT_PATH)
+        report["sign_inspector_sha256"] = sha256_file(SCRIPT_PATH.with_name("experimental_nlo_signs.py"))
+        return report
+    except (OSError, ValueError) as exc:
+        raise CampaignError(f"NLO sign audit failed: {exc}") from exc
+
+
+
+def check_campaign_nlo_signs(args: argparse.Namespace, measurement: Mapping[str, Any]) -> dict[str, Any]:
+    """Read-only audit; reporting old inputs does not waive postprocess provenance."""
+    directory = campaign_directory(str(measurement["id"]), args.tag)
+    manifest_path = directory / MANIFEST_NAME
+    if not manifest_path.is_file():
+        raise CampaignError(f"No prepared campaign at {directory}")
+    manifest = load_json(manifest_path)
+    report = _audit_campaign_nlo_signs(args, measurement, manifest["jobs"], directory)
+    report.update(measurement=measurement["id"], tag=args.tag)
+    try:
+        compatibility = _assert_manifest_signatures_current(
+            manifest, measurement, campaign_dir=directory,
+            allow_plot_metadata_refresh=bool(getattr(args, "allow_plot_metadata_refresh", False)),
+        )
+        report["generation_signature_current"] = compatibility is None
+        report["postprocessing_compatible"] = True
+        if compatibility is not None:
+            report["input_compatibility"] = compatibility
+    except CampaignError as exc:
+        report["generation_signature_current"] = False
+        report["postprocessing_compatible"] = False
+        report["generation_signature_note"] = str(exc)
+    print(json.dumps(report, indent=2, sort_keys=True))
+    return report
+
+
+
 def postprocess_campaign(args: argparse.Namespace, measurement: Mapping[str, Any]) -> Path:
     campaign_dir = campaign_directory(str(measurement["id"]), args.tag)
     tracker_started = float(getattr(args, "_tracker_started_at", time.time()))
@@ -3700,7 +3845,14 @@ def postprocess_campaign(args: argparse.Namespace, measurement: Mapping[str, Any
     if not manifest_path.exists():
         raise CampaignError(f"No prepared campaign at {campaign_dir}")
     manifest = load_json(manifest_path)
-    _assert_manifest_signatures_current(manifest, measurement)
+    input_compatibility = _assert_manifest_signatures_current(
+        manifest, measurement, campaign_dir=campaign_dir,
+        allow_plot_metadata_refresh=bool(getattr(args, "allow_plot_metadata_refresh", False)),
+    )
+    postprocess_measurement_signature = (
+        input_compatibility["current_measurement_signature"] if input_compatibility is not None
+        else manifest["configuration"].get("measurement_signature")
+    )
     if not args.dry_run:
         write_campaign_monitor_files(
             campaign_dir,
@@ -3714,6 +3866,13 @@ def postprocess_campaign(args: argparse.Namespace, measurement: Mapping[str, Any
             ),
         )
     groups = _require_complete_matrix(manifest, measurement, campaign_dir)
+    sign_audit = _audit_campaign_nlo_signs(
+        args, measurement, [job for jobs in groups.values() for job in jobs], campaign_dir
+    )
+    measurement = copy.deepcopy(dict(measurement))
+    if sign_audit["order_coefficients"]:
+        measurement["combination"]["order_coefficients"] = sign_audit["order_coefficients"]
+    measurement["_nlo_sign_audit"] = sign_audit
     snapshot = load_reference_snapshot(measurement)
     yoda = _import_yoda()
     include_comparisons = bool(manifest["configuration"].get("comparisons", False))
@@ -3865,6 +4024,7 @@ def postprocess_campaign(args: argparse.Namespace, measurement: Mapping[str, Any
     variation_output = postprocess_dir / f"{measurement['id']}-variations.yoda"
     yoda_output = yoda_outputs["nominal"]
     if args.dry_run:
+        print("NLO sign audit: " + json.dumps(sign_audit, sort_keys=True))
         for family_id, output in yoda_outputs.items():
             print(f"Would write {len(family_products[family_id]['objects'])} objects to {output}")
         if variation_objects:
@@ -3883,6 +4043,13 @@ def postprocess_campaign(args: argparse.Namespace, measurement: Mapping[str, Any
 
     rows = family_products["nominal"]["rows"]
     summary = {
+        "order_sign_audit": sign_audit,
+        "measurement_signature": postprocess_measurement_signature,
+        "input_compatibility": input_compatibility,
+        "selection_target_combinations": {
+            selection: output.get("target_components", {})
+            for selection, output in measurement["outputs"].items()
+        },
         "acceptance": measurement.get("physics", {}).get("acceptance", "unspecified"),
         "measurement": measurement["id"],
         "tag": args.tag,
@@ -4001,6 +4168,9 @@ def postprocess_campaign(args: argparse.Namespace, measurement: Mapping[str, Any
         for family_id, family in family_specs.items()
     ]
     manifest["postprocess"] = {
+        "order_sign_audit": sign_audit,
+        "measurement_signature": postprocess_measurement_signature,
+        "input_compatibility": input_compatibility,
         "created_at": utc_now(),
         "yoda": str(yoda_output.relative_to(campaign_dir)),
         "predictions": predictions,
@@ -4564,6 +4734,16 @@ def add_theory_uncertainty_overlay(
     script.write_text(source, encoding="utf-8")
 
 
+def _reference_dataset_axis(dataset: Mapping[str, Any]) -> str:
+    axis = dataset.get("plot_axis", dataset.get("plot_coordinate", "q2_mean"))
+    if ("plot_axis" in dataset and "plot_coordinate" in dataset
+            and dataset["plot_axis"] != dataset["plot_coordinate"]):
+        raise CampaignError("Conflicting plot_axis and plot_coordinate in reference dataset")
+    if axis not in {"x_mean", "q2_mean"}:
+        raise CampaignError(f"Unsupported multi-dataset reference plot axis {axis!r}")
+    return str(axis)
+
+
 def _fixed_reference_overlay_points(
     measurement: Mapping[str, Any],
     snapshot: Mapping[str, Any],
@@ -4572,11 +4752,10 @@ def _fixed_reference_overlay_points(
     datasets = snapshot.get("datasets")
     if isinstance(datasets, list):
         for dataset in datasets:
-            if Path(str(dataset.get("rivet_path", ""))).name != plot_stem:
+            paths = [dataset.get("rivet_path", ""), *dataset.get("rivet_aliases", [])]
+            if not any(Path(str(path)).name == plot_stem for path in paths):
                 continue
-            axis = str(dataset.get("plot_axis", "q2_mean"))
-            if axis not in {"x_mean", "q2_mean"}:
-                raise CampaignError(f"Unsupported multi-dataset reference plot axis {axis!r}")
+            axis = _reference_dataset_axis(dataset)
             return [
                 {**dict(point), "plot_x": float(point[axis])}
                 for point in dataset.get("points", [])
@@ -4610,6 +4789,80 @@ def _fixed_theory_uncertainty_bands(
     return None
 
 
+def _write_no_scale_plot_copy(source: Path, destination: Path) -> None:
+    """Remove only hard-scale errors from a disposable plotting input.
+
+    Retain MC statistics and PDF errors in both main and residual panels,
+    exactly as for central-scale generation. Never modify the analyzed YODA.
+    """
+    yoda = _import_yoda()
+    objects = yoda.read(str(source))
+    copies = []
+    for path, original in objects.items():
+        estimate = original.clone()
+        if not hasattr(estimate, "bins"):
+            raise CampaignError(f"Expected a binned estimate in {source}: {path}")
+        for bin_object in estimate.bins(True, True):
+            sources = list(bin_object.sources())
+            if "hard_scale" in sources:
+                bin_object.rmSource("hard_scale")
+        copies.append(estimate)
+    _write_yoda_objects(yoda, copies, destination)
+
+
+
+def _write_selected_scale_plot_copy(
+    measurement: Mapping[str, Any], source: Path, destination: Path, scale: float,
+) -> dict[str, dict[str, Any]]:
+    """Map a saved scale point onto reference paths, with its own MC errors.
+
+    Only the nominal PDF members are selected. Cloning preserves bin edges,
+    under/overflows and masks; no central-scale values are used to fill gaps.
+    """
+    yoda = _import_yoda()
+    objects = yoda.read(str(source))
+    analysis = str(measurement["analysis"]["name"])
+    prefix = f"/{analysis}/VARIATIONS/p000-u000-mu{_scale_token(scale)}"
+    copies, bands = [], {}
+    for selection, outputs in measurement["outputs"].items():
+        if outputs.get("summary_only", False):
+            continue
+        for observable in ("a1", "apar", "parity_pp_mm", "parity_pm_mp"):
+            if observable not in outputs:
+                continue
+            target = str(outputs[observable])
+            path = target if scale == 1.0 else f"{prefix}/{observable}_{selection}"
+            if path not in objects:
+                raise CampaignError(f"Missing selected-scale prediction {path} in {source}")
+            estimate = objects[path].clone()
+            estimate.setPath(target)
+            estimate.setAnnotation("HardScaleFactor", str(scale))
+            estimate.setAnnotation("PlotUncertaintyMode", "MC statistical only")
+            estimate.setAnnotation("PlotSourcePath", path)
+            for bin_object in estimate.bins(True, True):
+                for error_source in list(bin_object.sources()):
+                    if error_source != "stat":
+                        bin_object.rmSource(error_source)
+            errors: list[float | None] = []
+            for index, bin_object in enumerate(estimate.bins(False, True), start=1):
+                if estimate.isMasked(index) or not math.isfinite(float(bin_object.val())):
+                    errors.append(None)
+                    continue
+                if "stat" not in bin_object.sources():
+                    raise CampaignError(f"Missing MC statistical error in {path}, bin {index}")
+                error = float(bin_object.errAvg("stat"))
+                if not math.isfinite(error) or error < 0:
+                    raise CampaignError(f"Invalid MC statistical error in {path}, bin {index}")
+                errors.append(error)
+            bands[Path(target).name] = {"monte_carlo": errors}
+            copies.append(estimate)
+    if not copies:
+        raise CampaignError("No configured asymmetry outputs for selected-scale plotting")
+    _write_yoda_objects(yoda, copies, destination)
+    return bands
+
+
+
 def plot_campaign(args: argparse.Namespace, measurement: Mapping[str, Any]) -> Path:
     campaign_dir = campaign_directory(str(measurement["id"]), args.tag)
     tracker_started = float(getattr(args, "_tracker_started_at", time.time()))
@@ -4620,11 +4873,16 @@ def plot_campaign(args: argparse.Namespace, measurement: Mapping[str, Any]) -> P
     plot_metadata_refresh = _assert_manifest_signatures_current(
         manifest,
         measurement,
+        campaign_dir=campaign_dir,
         allow_plot_metadata_refresh=bool(
             getattr(args, "allow_plot_metadata_refresh", False)
         ),
     )
     postprocess = manifest.get("postprocess", {})
+    if (plot_metadata_refresh is not None
+            and plot_metadata_refresh["mode"] == "e142_output_schema_migration_v1"
+            and postprocess.get("measurement_signature") != plot_metadata_refresh["current_measurement_signature"]):
+        raise CampaignError("E142 output schema changed: run postprocess before plotting the migrated outputs")
     all_prediction_entries = postprocess.get("predictions")
     if not isinstance(all_prediction_entries, list) or not all_prediction_entries:
         all_prediction_entries = [
@@ -4636,7 +4894,11 @@ def plot_campaign(args: argparse.Namespace, measurement: Mapping[str, Any]) -> P
                 ),
             }
         ]
+    hide_scale_uncertainty = bool(getattr(args, "hide_scale_uncertainty", False))
+    plot_scale = getattr(args, "plot_scale", None)
     plot_comparisons = bool(getattr(args, "plot_comparisons", False))
+    if plot_scale is not None and (hide_scale_uncertainty or plot_comparisons):
+        raise CampaignError("--plot-scale cannot be combined with --hide-scale-uncertainty or --plot-comparisons")
     if plot_comparisons:
         prediction_entries = all_prediction_entries
     else:
@@ -4659,17 +4921,52 @@ def plot_campaign(args: argparse.Namespace, measurement: Mapping[str, Any]) -> P
             nominal_theory_label = prediction.name
     if nominal_theory_label is None:
         nominal_theory_label = predictions[0][0].name
+    plot_suffix = "-central" if hide_scale_uncertainty else ""
+    selected_source: Path | None = None
+    selected_bands: dict[str, dict[str, Any]] = {}
+    if plot_scale is not None:
+        plot_suffix = f"-mu{_scale_token(plot_scale)}"
+        nominal_entries = [entry for entry in prediction_entries
+                           if str(entry.get("family", "")) == "nominal"]
+        if len(nominal_entries) != 1:
+            raise CampaignError("--plot-scale requires a nominal postprocessed prediction")
+        if plot_scale == 1.0:
+            selected_source = campaign_dir / str(nominal_entries[0]["yoda"])
+        else:
+            configured = manifest.get("configuration", {}).get("variation_points", [])
+            if [0, 0, plot_scale] not in configured:
+                raise CampaignError(f"Scale {plot_scale:g} with central PDF members was not generated in this campaign")
+            variation_path = postprocess.get("variations_yoda")
+            if not variation_path or not _nonempty(campaign_dir / str(variation_path)):
+                raise CampaignError("Missing postprocessed scale variations; run postprocess for this scale study first")
+            selected_source = campaign_dir / str(variation_path)
+        selected_destination = campaign_dir / "work" / f"plot{plot_suffix}" / str(nominal_theory_label)
+        label = str(nominal_entries[0].get("label", "HerwigPol"))
+        predictions = [(selected_destination, label + rf"; $\mu/\mu_0={plot_scale:g}$")]
     runtime = manifest.get("runtime") or preflight_runtime(measurement)
-    output_dir = campaign_dir / "plots"
+    output_dir = campaign_dir / f"plots{plot_suffix}"
+    plot_copies: list[tuple[Path, Path]] = []
+    if hide_scale_uncertainty:
+        plot_copies = [
+            (prediction, campaign_dir / "work" / "plot-central" / prediction.name)
+            for prediction, _ in predictions
+        ]
+        predictions = [
+            (destination, label)
+            for (_, destination), (_, label) in zip(plot_copies, predictions)
+        ]
     safe_wrapper = DISPOL_ROOT / "scripts" / "rivet_mkhtml_safe.py"
     command = [
         sys.executable,
         str(safe_wrapper),
         runtime["tools"]["rivet-mkhtml"],
         "--dry-run",
+        "--deviation",
         "-o",
         str(output_dir),
     ]
+    if args.ratiolabel is not None:
+        command.extend(["--ratiolabel", args.ratiolabel])
     plotting = measurement.get("plotting", {})
     if plot_comparisons and len(prediction_entries) > 1:
         plotting = _comparison_profile(measurement).get("plotting", plotting)
@@ -4678,8 +4975,18 @@ def plot_campaign(args: argparse.Namespace, measurement: Mapping[str, Any]) -> P
     for prediction, label in predictions:
         command.append(f"{prediction}:Title={label}")
     if args.dry_run:
+        if selected_source is not None:
+            print(f"Selected scale {plot_scale:g}, MC statistical only: {selected_source} -> {predictions[0][0]}")
+        for source, destination in plot_copies:
+            print(f"Scale-free plotting copy: {source} -> {destination}")
         print(" ".join(command))
         return output_dir
+    if selected_source is not None:
+        selected_bands = _write_selected_scale_plot_copy(
+            measurement, selected_source, predictions[0][0], plot_scale
+        )
+    for source, destination in plot_copies:
+        _write_no_scale_plot_copy(source, destination)
     write_campaign_monitor_files(
         campaign_dir,
         build_campaign_monitor_payload(
@@ -4697,13 +5004,13 @@ def plot_campaign(args: argparse.Namespace, measurement: Mapping[str, Any]) -> P
     mpl_cache.mkdir(parents=True, exist_ok=True)
     environment["MPLCONFIGDIR"] = str(mpl_cache)
     environment["DISPOL_FORCE_NO_ERROR_BANDS"] = "1"
-    _run_logged(command, campaign_dir, environment, campaign_dir / "logs" / "rivet-mkhtml-generate.log")
+    _run_logged(command, campaign_dir, environment, campaign_dir / "logs" / f"rivet-mkhtml{plot_suffix}-generate.log")
     plot_scripts = sorted(
         path for path in output_dir.rglob("*.py") if not path.name.endswith("__data.py")
     )
     if not plot_scripts:
         raise CampaignError(f"rivet-mkhtml did not generate plot scripts below {output_dir}")
-    script_log = campaign_dir / "logs" / "rivet-plot-scripts.log"
+    script_log = campaign_dir / "logs" / f"rivet-plot{plot_suffix}-scripts.log"
     rendered_scripts: list[Path] = []
     snapshot = load_reference_snapshot(measurement)
     summary_path = campaign_dir / "postprocess" / "summary.json"
@@ -4714,11 +5021,12 @@ def plot_campaign(args: argparse.Namespace, measurement: Mapping[str, Any]) -> P
             log.flush()
             reference_points = _fixed_reference_overlay_points(measurement, snapshot, script.stem)
             apply_published_reference_coordinates(script, reference_points)
-            add_theory_uncertainty_overlay(
-                script,
-                _fixed_theory_uncertainty_bands(measurement, summary, script.stem),
-                nominal_theory_label,
-            )
+            bands = (selected_bands.get(script.stem) if plot_scale is not None else
+                     _fixed_theory_uncertainty_bands(measurement, summary, script.stem))
+            if hide_scale_uncertainty and bands:
+                bands = {key: value for key, value in bands.items()
+                         if key not in {"scale_down", "scale_up"}}
+            add_theory_uncertainty_overlay(script, bands, nominal_theory_label)
             add_experimental_error_overlay(
                 script,
                 reference_points,
@@ -4746,43 +5054,55 @@ def plot_campaign(args: argparse.Namespace, measurement: Mapping[str, Any]) -> P
             rendered_scripts.append(script)
     if not any(output_dir.rglob("*.png")):
         raise CampaignError(f"Generated Rivet scripts produced no PNG plots below {output_dir}")
-    reconstructed = _hermes_reconstructed_plot_gallery(campaign_dir, measurement)
-    born_cells = _hermes_born_cell_plot_gallery(campaign_dir, output_dir, measurement)
-    acceptance_controls = None
-    if measurement["id"] == "HERMES_2007_I726689" and measurement.get("physics", {}).get("acceptance"):
-        from hermes_acceptance_control import ensure_gallery
-        acceptance_controls = ensure_gallery(campaign_dir, output_dir)
-    data_ratios = _hermes_data_ratio_plot_gallery(campaign_dir, output_dir, measurement, reconstructed)
+    reconstructed = born_cells = acceptance_controls = data_ratios = None
+    if not plot_suffix:
+        reconstructed = _hermes_reconstructed_plot_gallery(campaign_dir, measurement)
+        born_cells = _hermes_born_cell_plot_gallery(campaign_dir, output_dir, measurement)
+        acceptance_controls = None
+        if measurement["id"] == "HERMES_2007_I726689" and measurement.get("physics", {}).get("acceptance"):
+            from hermes_acceptance_control import ensure_gallery
+            acceptance_controls = ensure_gallery(campaign_dir, output_dir)
+        data_ratios = _hermes_data_ratio_plot_gallery(campaign_dir, output_dir, measurement, reconstructed)
+    elif measurement["id"] == "HERMES_2007_I726689":
+        print("Selected display omits supplemental HERMES galleries that read nominal/full-uncertainty products; use the default plots for those galleries.")
     index = write_plot_indexes(
         output_dir, measurement, rendered_scripts, supplemental=reconstructed, born_cells=born_cells,
         acceptance_controls=acceptance_controls, data_ratios=data_ratios,
     )
     if not _nonempty(index):
         raise CampaignError(f"Could not create Rivet plot index {index}")
-    manifest["plots"] = {
+    plot_record = "plots" + plot_suffix.replace("-", "_")
+    manifest[plot_record] = {
         "created_at": utc_now(),
+        "uncertainty_mode": ("mc-stat-only" if plot_scale is not None else
+                             "no-hard-scale" if hide_scale_uncertainty else "all"),
         "index": str(index.relative_to(campaign_dir)),
         "plot_metadata_sha256": sha256_file(
             resolve_dispol_path(str(measurement["analysis"]["plot"]))
         ),
     }
-    if reconstructed is not None:
-        manifest["plots"]["reconstructed_born_projections"] = reconstructed
-    if born_cells is not None:
-        manifest["plots"]["born_cell_panels"] = born_cells
-    if acceptance_controls is not None:
-        manifest["plots"]["acceptance_controls"] = acceptance_controls
-    if data_ratios is not None:
-        manifest["plots"]["data_ratios"] = data_ratios
+    if plot_scale is not None:
+        manifest[plot_record]["hard_scale_factor"] = plot_scale
+        manifest[plot_record]["source_yoda"] = str(selected_source.relative_to(campaign_dir))
+    for key, value in (("reconstructed_born_projections", reconstructed),
+                       ("born_cell_panels", born_cells),
+                       ("acceptance_controls", acceptance_controls), ("data_ratios", data_ratios)):
+        if value is not None:
+            manifest[plot_record][key] = value
+    if plot_suffix and measurement["id"] == "HERMES_2007_I726689":
+        manifest[plot_record]["supplemental_galleries"] = "omitted: galleries read nominal/full-uncertainty products"
     if plot_metadata_refresh is not None:
-        manifest["plots"]["presentation_only_refresh"] = plot_metadata_refresh
+        key = ("presentation_only_refresh" if plot_metadata_refresh["mode"] == "presentation_only_plot_metadata_refresh"
+               else "input_compatibility")
+        manifest[plot_record][key] = plot_metadata_refresh
     manifest["updated_at"] = utc_now()
     manifest["history"].append(
         {
             "at": utc_now(),
             "action": (
                 "plot-metadata-refresh"
-                if plot_metadata_refresh is not None else "plot"
+                if plot_metadata_refresh is not None and plot_metadata_refresh["mode"] == "presentation_only_plot_metadata_refresh"
+                else "plot"
             ),
         }
     )
@@ -4877,7 +5197,32 @@ def _add_campaign_options(parser: argparse.ArgumentParser) -> None:
     )
 
 
+def _add_nlo_sign_options(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument(
+        "--nlo-sign-convention", choices=("auto", "magnitudes", "signed"),
+        help=(
+            "NLO storage convention (default: auto). Inspect every shard's normalization; "
+            "subtract positive NEGNLO magnitudes or add already-negative NEGNLO. "
+            "Explicit modes still check normalization and must agree with configured order_coefficients"
+        ),
+    )
+
+
+
 def _add_plot_options(parser: argparse.ArgumentParser) -> None:
+    scale_display = parser.add_mutually_exclusive_group()
+    scale_display.add_argument(
+        "--hide-scale-uncertainty",
+        action="store_true",
+        help=("Hide hard-scale uncertainty while retaining MC statistical and PDF "
+              "uncertainties; save separately in plots-central"),
+    )
+    scale_display.add_argument(
+        "--plot-scale", type=float, choices=(0.5, 1.0, 2.0),
+        help=("Plot one saved DIS scale point with its own MC statistical errors "
+              "and central PDF members; save separately in plots-mu0p5, plots-mu1, "
+              "or plots-mu2. No PDF band or scale envelope."),
+    )
     parser.add_argument(
         "--plot-comparisons",
         action="store_true",
@@ -4885,6 +5230,11 @@ def _add_plot_options(parser: argparse.ArgumentParser) -> None:
             "Overlay postprocessed comparison-family predictions; by default "
             "only the nominal NLO+PS (polarized; full spin) prediction is plotted"
         ),
+    )
+    parser.add_argument(
+        "--ratiolabel",
+        default=None,
+        help="Override the normalized-residual lower-panel label (ordinary TeX is accepted)",
     )
     parser.add_argument(
         "--plot-data-components",
@@ -4915,6 +5265,15 @@ def make_parser() -> argparse.ArgumentParser:
     _add_measurement(postprocess)
     _add_tag(postprocess)
     postprocess.add_argument("--dry-run", action="store_true")
+    postprocess.add_argument("--allow-plot-metadata-refresh", action="store_true",
+                             help="Permit changed plot settings only when restoring their historical bytes reproduces the generation signature")
+    _add_nlo_sign_options(postprocess)
+
+    check_signs = subparsers.add_parser("check-nlo-signs", help="Inspect stored NLO signs without changing campaign files")
+    _add_measurement(check_signs)
+    _add_tag(check_signs)
+    check_signs.add_argument("--allow-plot-metadata-refresh", action="store_true")
+    _add_nlo_sign_options(check_signs)
 
     plot = subparsers.add_parser("plot", help="Generate Rivet HTML from postprocessed outputs")
     _add_measurement(plot)
@@ -4934,6 +5293,7 @@ def make_parser() -> argparse.ArgumentParser:
     full = subparsers.add_parser("full", help="Prepare, run, postprocess, and plot")
     _add_campaign_options(full)
     _add_plot_options(full)
+    _add_nlo_sign_options(full)
     return parser
 
 
@@ -4957,6 +5317,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             run_campaign(args, measurement)
         elif args.command == "postprocess":
             postprocess_campaign(args, measurement)
+        elif args.command == "check-nlo-signs":
+            check_campaign_nlo_signs(args, measurement)
         elif args.command == "plot":
             plot_campaign(args, measurement)
         elif args.command == "full":

@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import contextlib
+import ast
 import io
 import sys
 import tempfile
@@ -22,6 +23,70 @@ import rivet_mkhtml_safe as safe  # noqa: E402
 
 
 class RivetMkhtmlSafeTests(unittest.TestCase):
+    def test_deviation_errors_only_enable_nonreference_curves_in_that_panel(self) -> None:
+        class Curve(dict):
+            annotation = dict.get
+            setAnnotation = dict.__setitem__
+
+        curves = {label: Curve() for label in ('Data', 'MC', 'Comparison')}
+        panels = {'RatioPlot': ['Data', 'MC', 'Comparison'],
+                  'RatioPlot2': ['MC', 'Comparison']}
+        safe._enable_deviation_error_bars(curves, panels, True, [True, False])
+        self.assertEqual(curves['Data'], {})
+        self.assertEqual(curves['MC'], {'RatioPlotErrorBars': 1})
+        self.assertEqual(curves['Comparison'], {'RatioPlotErrorBars': 1})
+
+    def test_deviation_errors_respect_explicit_error_bar_settings(self) -> None:
+        class Curve(dict):
+            annotation = dict.get
+            setAnnotation = dict.__setitem__
+
+        curves = {'Data': Curve(), 'PanelOff': Curve(RatioPlotErrorBars=0),
+                  'CurveOff': Curve(ErrorBars=0), 'CommandOff': Curve()}
+        panels = {'RatioPlot': list(curves)}
+        original = {label: dict(curve) for label, curve in curves.items()}
+        safe._enable_deviation_error_bars(curves, panels, [True, True, True, False], True)
+        self.assertEqual(curves, original)
+        safe._enable_deviation_error_bars(curves, panels, False, True)
+        self.assertEqual(curves, original)
+
+    def test_residual_label_matches_mode_and_survives_python_generation(self) -> None:
+        source = {'plot features': {'RatioPlot': 1, 'RatioPlotMode': 'deviation',
+                                    'RatioPlotYLabel': 'MC/Data'}, 'histograms': {}}
+        output = safe._normalize_ratio_panel_labels(source)
+        label = output['plot features']['RatioPlotYLabel']
+        # This is exactly how this YODA version writes the label in Python.
+        restored = ast.literal_eval("'" + label + "'")
+        self.assertEqual(restored, safe.RESIDUAL_LABEL)
+        self.assertNotIn('\f', restored)
+        self.assertEqual(source['plot features']['RatioPlotYLabel'], 'MC/Data')
+        self.assertEqual(output['plot features']['RatioPlotMode'], 'deviation')
+
+    def test_residual_label_renders_with_mathtext_when_available(self) -> None:
+        try:
+            from matplotlib.mathtext import MathTextParser
+        except ImportError:
+            self.skipTest('Matplotlib is not active')
+        MathTextParser('path').parse(safe.RESIDUAL_LABEL)
+
+    def test_true_ratios_and_disabled_panels_are_preserved(self) -> None:
+        source = {'plot features': {'RatioPlot': 0, 'RatioPlotMode': 'mcdata',
+                                    'RatioPlotYLabel': 'MC/Data'}}
+        self.assertEqual(safe._normalize_ratio_panel_labels(source), source)
+
+    def test_numbered_residual_panels_get_labels_without_changing_ratios(self) -> None:
+        source = {'plot features': {'RatioPlotMode': 'mcdata', 'RatioPlotYLabel': 'MC/Data',
+                                    'RatioPlot2Mode': 'deviation'}}
+        result = safe._normalize_ratio_panel_labels(source)['plot features']
+        self.assertEqual(result['RatioPlotYLabel'], 'MC/Data')
+        self.assertEqual(ast.literal_eval("'" + result['RatioPlot2YLabel'] + "'"), safe.RESIDUAL_LABEL)
+
+    def test_custom_tex_and_quotes_are_preserved_by_generated_literal(self) -> None:
+        label = r"Data's residual: $\frac{M-D}{\sigma_D}$"
+        source = {'plot features': {'RatioPlotMode': 'deviation', 'RatioPlotYLabel': label}}
+        encoded = safe._normalize_ratio_panel_labels(source)['plot features']['RatioPlotYLabel']
+        self.assertEqual(ast.literal_eval("'" + encoded + "'"), label)
+
     def test_large_numpy_lists_are_not_serialized_with_ellipsis(self) -> None:
         yoda_module = types.ModuleType("yoda")
         yoda_module.__path__ = []  # type: ignore[attr-defined]
@@ -90,6 +155,10 @@ class RivetMkhtmlSafeTests(unittest.TestCase):
             )
             self.assertTrue(expected.is_dir())
             self.assertEqual(yaml_file["stylepath"], "../../")
+            self.assertEqual(
+                ast.literal_eval("'" + yaml_file['plot features']['RatioPlotYLabel'] + "'"),
+                safe.RESIDUAL_LABEL,
+            )
             raise RuntimeError("synthetic plotting failure")
 
         generator_module.process = fail_process  # type: ignore[attr-defined]
@@ -109,7 +178,8 @@ class RivetMkhtmlSafeTests(unittest.TestCase):
                         RuntimeError, "synthetic plotting failure"
                     ):
                         generator_module.process(
-                            {"histograms": {}},
+                            {"histograms": {}, "plot features": {
+                                "RatioPlotMode": "deviation", "RatioPlotYLabel": "MC/Data"}},
                             "/HERMES_2019_I1698889/DIAGNOSTICS/test",
                             temporary,
                         )

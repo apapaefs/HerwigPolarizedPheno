@@ -114,6 +114,8 @@ def measurement_signature(repo: Path, descriptor: dict, kind: str,
     for key in (("source_manifest", "raw_snapshot") if kind == "phenomenology" else ("raw_snapshot",)):
         if reference.get(key):
             paths.append(reference[key])
+    if kind == "experimental":
+        paths.extend(reference.get("raw_snapshots", []))
     directory = repo / descriptor["cards"]["directory"]
     if not common.contained(directory, repo) or directory.is_symlink():
         raise common.ExportError(f"Invalid card directory: {directory}")

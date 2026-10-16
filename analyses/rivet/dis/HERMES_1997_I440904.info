@@ -1,0 +1,35 @@
+Name: HERMES_1997_I440904
+Year: 1997
+Summary: HERMES neutron A1 with approximate mean-Q2 windows
+Experiment: HERMES
+Collider: HERA fixed target
+InspireID: 440904
+Status: UNVALIDATED
+Reentrant: true
+References:
+ - Phys.Lett.B 404 (1997) 383-389
+ - hep-ex/9703005
+RunInfo: Separate 27.5 GeV positron-neutron runs for PP,PM,MP,MM and signed NLO contributions.
+NumEvents: 100000
+NeedsCrossSection: yes
+Beams: [[-11, 2112]]
+Energies: [[27.5, 0.939565]]
+Description: |
+  Approximate theory comparison to the neutron A1 column of publication
+  Table I and HEPData Table 1. Uses nine published x bins and Q2 windows
+  of 2.5, 5 (nominal), and 10 percent around their measured mean Q2.
+  Requires Q2 > 1 GeV2, W2 > 4 GeV2, 0 < y < 0.85 and
+  0.04 < scattering angle < 0.22 rad; the published outer Q2 range
+  ends at 15 GeV2. Detector efficiencies and the experimental x-y
+  averaging weights are not reconstructed. Uses free-neutron inputs:
+  the data already include the helium-to-neutron extraction. The MC
+  estimator uses R1990 fit B and neglects eta*A2, matching the paper's
+  central-value treatment; the published systematic error is retained.
+  No g1 output or evolution to Q2=2.5 is performed. Windows share events.
+Keywords:
+ - DIS
+ - polarized
+ - fixed-target
+ - neutron
+ - asymmetry
+ - approximate

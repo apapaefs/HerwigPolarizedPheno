@@ -1,0 +1,135 @@
+CAMPAIGN COMMANDS — QUICK REFERENCE (16 October 2026)
+
+Use the activated Herwig/Rivet environment; run from the intended checkout.
+D = fixed-target DIS engine / helium wrappers (both checkouts).
+G = generic run_phenomenology_campaign.py, for non-DIS measurements.
+P = PHENIX additions in ORIGINAL HerwigPolarizedPheno only; not merged into
+    HerwigPolarizedPheno-he3-integration. These are not DIS-engine arguments.
+
+ENTRY POINTS
+  DIS:     python3 scripts/run_experimental_campaign.py COMMAND --measurement ID ...
+  Helium:  python3 scripts/run_E142_1996_I424108.py --output-root /path/to/work COMMAND ...
+           Substitute run_E154_1997_I443170.py or run_HERMES_1997_I440904.py.
+  PHENIX:  python3 scripts/run_PHENIX_2023_I2033856.py --output-root /path/to/work COMMAND ...
+  Original photon+jet only: scripts/run_PHENIX_2023_I2033856_MEGammaJet_Only.py
+  Generic: python3 scripts/run_phenomenology_campaign.py COMMAND --measurement ID ...
+  Wrappers fix --measurement; do not also supply it. Flags after COMMAND may
+  be reordered. Put wrapper-only --output-root before COMMAND for clarity.
+
+COMMANDS (D/G)
+  list             List measurements.                    Example: list
+  fetch-data       Fetch/check experimental references.  Example: fetch-data --measurement ID
+  prepare          Build plugin and Herwig .run files.   Example: prepare --measurement ID --tag pilot
+  campaign         Generate/resume saved job matrix.     Example: campaign --measurement ID --tag pilot
+  postprocess      Recombine saved shard YODA.           Example: postprocess --measurement ID --tag pilot
+  plot             Replot saved analyzed YODA.           Example: plot --measurement ID --tag pilot
+  full             Prepare + generate + postprocess + plot. Example: full --measurement ID --tag pilot
+  check-nlo-signs   Inspect DIS/SIDIS normalization/signs; read only. Example: check-nlo-signs --measurement ID --tag pilot
+
+IDENTITY / GENERAL
+  -h, --help                 Help for that command.                 Example: full --help
+  --measurement ID           Registry identifier; engine only.      --measurement E142_1996_I424108
+  --tag NAME                 Campaign name: letters/digits/._-; starts alphanumeric. --tag e142-4x
+  --output-root DIR          Wrappers only; writes DIR/ID/TAG.       --output-root /path/to/work
+  --dry-run                  Preview that stage; no Herwig jobs.     --dry-run
+                             prepare/full: plan; plot: command; postprocess: computes without writing results,
+                             but may create its output directory. Native-check --dry-run writes nothing.
+
+GENERATION (prepare / campaign / full)
+  --jobs N                   Maximum concurrent Herwig processes.   --jobs 100
+  --shards N                 Divide each logical sample into N jobs; does not multiply its event budget. --shards 100
+  --seed-base N              Starting deterministic random seed.    --seed-base 71424108
+  --posnlo-events N          D: total per target/helicity/POSNLO/variation, split across shards. --posnlo-events 12000000
+  --negnlo-events N          D: corresponding NEGNLO total.          --negnlo-events 1200000
+  --lo-events N             D: LO comparison total per target/helicity (default POSNLO total).
+                            G/P: LO total per helicity/component/variation AND per pT slice. --lo-events 600000
+  --comparisons             D: add all four optional comparison families. --comparisons
+                            G: alias for paper profile + all families.
+  --profile central|paper   Default central. D paper adds comparisons, PDF replicas and scales;
+                            G paper selects replicas/scales but keeps nominal family unless requested. --profile central
+  --polarized-pdf-members LIST   central, all, or member numbers.     --polarized-pdf-members 0,1,2
+  --unpolarized-pdf-members LIST central, all, or member numbers.     --unpolarized-pdf-members central
+  --scales LIST             central, all (=0.5,1,2), or factors; changes generation. --scales all
+  --smoke                   Use the descriptor's small test budget. --smoke
+  --recover-failed          Retry failed shards with fresh seeds.   --recover-failed
+  --rerun-failed-random-seed Alias of --recover-failed.
+  --progress-interval SEC   Progress refresh; default 5; negative suppresses live refresh. --progress-interval 10
+  --max-listed N            Maximum displayed jobs; default 12.     --max-listed 20
+
+PHENIX SAMPLING (P; generation commands only)
+  --hard-pt-edges EDGES      Nonoverlapping Born-pT slices in GeV; not final photon-pT cuts.
+                            Example: --hard-pt-edges 4,8,12,16,20,inf
+  --hard-pt-events CHANNEL=N1,N2,...
+                            Events per helicity in each slice, split over --shards. Repeat for
+                            photon and/or fragmentation; unlisted channels use --lo-events.
+                            Example: --hard-pt-events fragmentation=6000000,3000000,1500000,750000,300000
+                            Requires --hard-pt-edges; one count per interval; incompatible with --smoke.
+  --photon-enhancement C     Expanded PHENIX only: weighted q->q gamma shower enhancement in
+                            fragmentation/QCD-dijet samples, detuning fixed at 2. --photon-enhancement 5
+                            C=1 is the detuning-matched control; omission retains base settings.
+                            Does not change photon+jet samples. Use new tags for C=1,2,5,10.
+
+POSTPROCESSING / DIS AND SIDIS SIGN AUDIT
+  --nlo-sign-convention auto|magnitudes|signed (D and G/SIDIS; full/postprocess/check-nlo-signs)
+                            Default auto checks every shard. magnitudes subtracts positive NEGNLO;
+                            signed adds already-negative NEGNLO. Contradictions are rejected.
+                            Example: check-nlo-signs --tag pilot --nlo-sign-convention auto
+                            SIDIS: use the generic runner with --measurement ID; see docs/sidis-nlo-signs.txt.
+  --allow-plot-metadata-refresh (D: postprocess/check-nlo-signs/plot; G: plot)
+                            Accept only a proven presentation-only metadata change; not changed physics.
+                            Example: plot --tag pilot --allow-plot-metadata-refresh
+
+PLOTTING (plot / full unless noted)
+  --plot-comparisons         Overlay already-generated comparison families. --plot-comparisons
+  --plot-data-components     Add experimental stat-only bars inside total errors. --plot-data-components
+  --hide-scale-uncertainty   D: central prediction, MC + any PDF errors; no scale band; plots-central/.
+                            Example: plot --tag scale-study --hide-scale-uncertainty
+  --plot-scale 0.5|1|2       D: selected scale's central-PDF prediction + its OWN MC errors;
+                            no PDF/scale band; plots-mu0p5/, plots-mu1/, plots-mu2/.
+                            Example: plot --tag scale-study --plot-scale 2
+  --ratiolabel TEXT          D: custom normalized-residual label; does not change the plotting mode.
+                            Example: --ratiolabel '$\frac{\mathrm{MC}-\mathrm{Data}}{\sigma_{\mathrm{Data}}}$'
+                            RatioPlot=1 in the analysis .plot enables the lower panel; RatioPlot=0 hides it.
+  --plot-jobs N              G: parallel rendering (1–100); DIS still renders serially. --plot-jobs 8
+  --nominal-prediction FILE  G/pp: prepend an existing nominal prediction to comparisons. --nominal-prediction /path/prediction.yoda
+  --include-diagnostics     G: include optional diagnostics (postprocess/plot/full). --include-diagnostics
+
+  --plot-scale cannot combine with --hide-scale-uncertainty or --plot-comparisons.
+  Omitting both scale-display flags preserves the full-uncertainty view.
+  Original checkout: use helium wrappers/DIS engine for scale-display flags.
+  Integration clone: the generic entry point also forwards those flags for DIS.
+  Alternate HERMES 2007 views omit its nominal-only supplemental galleries.
+
+OTHER GENERIC OPTIONS (G; not helium-wrapper options)
+  --families LIST            nominal, all, or comma-separated family IDs (generation). --families all
+  --jet-kt-min-gev VALUE     Polarized-pp jet generation cut: 3,4,5 GeV. --jet-kt-min-gev 4
+  --source-file ZIP          fetch-data: local pinned HERMES supplemental archive. --source-file /path/supplement.zip
+
+OPTIONAL DIS COMPARISON FAMILIES (--comparisons)
+  polarized_lo              Polarized LO hard process + shower.
+  no_real_spin_nlo          NLO, real-emission spin vertex off; shower spin correlations on.
+  no_shower_spin_nlo        NLO, real-emission spin vertex AND shower spin correlations off.
+  unpolarized_nlo           NLO with both beam polarizations zero.
+  These are separate generated samples; --plot-comparisons only displays saved ones.
+  Enabling them is independent of the three Q2-window outputs.
+
+SHORT COMPLETE EXAMPLES (replace paths/tags; preview generation with --dry-run)
+  # Helium scale study, external results directory:
+  python3 scripts/run_E142_1996_I424108.py --output-root /path/to/work full --tag e142-example --posnlo-events 12000000 --negnlo-events 1200000 --shards 100 --jobs 100 --seed-base 71424108 --scales all --dry-run
+  # Cleaner plots from that existing study, no event generation:
+  python3 scripts/run_E142_1996_I424108.py --output-root /path/to/work plot --tag e142-example --hide-scale-uncertainty
+  # Expanded PHENIX, original checkout, five slices and unequal fragmentation budgets:
+  python3 scripts/run_PHENIX_2023_I2033856.py --output-root /path/to/work full --tag phenix-example --lo-events 600000 --hard-pt-edges 4,8,12,16,20,inf --hard-pt-events fragmentation=6000000,3000000,1500000,750000,300000 --photon-enhancement 5 --shards 72 --jobs 72 --seed-base 2033856 --dry-run
+
+Same-tag generation settings are immutable; change the tag for new physics,
+event budgets, seeds or sharding. Runtime --jobs may change on resume.
+postprocess replaces its outputs; ordinary plot updates plots/. Alternate scale
+views have separate directories. The saved-campaign checker below works on copies.
+
+SAVED-RESULT NATIVE CHECK (integration clone)
+  scripts/check_he3_saved_campaign.py --campaign DIR [--campaign DIR ...] --output-root NEWDIR [--dry-run]
+  Copies all shard YODA and baselines, checks numerical reproduction, renders full,
+  central-only and each available central-PDF scale view. Validation plots force
+  the residual panel on via a private plot config; original cards are unchanged.
+  No Herwig generation. Run with native Rivet/YODA; NEWDIR must not exist.
+  --dry-run lists inputs/bytes only. See docs/he3-saved-campaign-check.txt for commands.

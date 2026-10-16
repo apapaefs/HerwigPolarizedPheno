@@ -32,16 +32,31 @@ def _same_edges(
 
 def add_nlo_components(
     contributions: Mapping[str, experimental.BinSeries],
+    *,
+    order_coefficients: Mapping[str, float] | None = None,
 ) -> experimental.BinSeries:
-    """Add normalized POSNLO and NEGNLO cross sections."""
+    """Combine normalized NLO components using the audited storage convention.
+
+    The default retains the historical already-signed arithmetic for direct
+    callers. Campaign runners always supply coefficients from the shard audit.
+    Variances (including same-event covariance proxies) use squared coefficients.
+    """
 
     if set(contributions) != {"POSNLO", "NEGNLO"}:
         raise experimental.CampaignError(
             "SIDIS NLO combination requires POSNLO and NEGNLO"
         )
-    return experimental.add_independent_series(
-        [contributions["POSNLO"], contributions["NEGNLO"]]
+    coefficients = (
+        {"POSNLO": 1.0, "NEGNLO": 1.0}
+        if order_coefficients is None else dict(order_coefficients)
     )
+    if (set(coefficients) != {"POSNLO", "NEGNLO"}
+            or coefficients["POSNLO"] != 1.0
+            or coefficients["NEGNLO"] not in {-1.0, 1.0}):
+        raise experimental.CampaignError(
+            "SIDIS requires audited POSNLO=1 and NEGNLO=+1 or -1 coefficients"
+        )
+    return experimental.linear_combine_series(contributions, coefficients)
 
 
 def difference_series(

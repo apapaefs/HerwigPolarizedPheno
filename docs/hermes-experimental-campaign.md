@@ -412,3 +412,57 @@ the same raw `SigmaX`, `SigmaOverD_X`, and `CovarianceProxy_X` histograms.
 Summary JSON records the resolved maps in `output_target_combinations`.
 Accepted-event diagnostics keep their existing proton target convention;
 their common names are not deuteron mixtures.
+
+
+## Stored NLO signs and postprocessing compatibility
+
+Fixed-target DIS postprocessing audits the normalization metadata in every
+POSNLO/NEGNLO shard before combining it. The default `--nlo-sign-convention auto`
+subtracts NEGNLO histograms stored as positive magnitudes, and adds NEGNLO
+histograms that already carry the negative normalized cross section. It uses
+Rivet cross-section metadata and raw event counters, never the sign of an
+asymmetry or an individual observable bin. Independent variances still add with
+squared coefficients. Existing explicit `combination.order_coefficients` are
+retained and checked against that evidence; contradictory or mixed conventions
+are refused rather than silently overridden.
+
+To inspect a completed campaign without writing results:
+
+```bash
+python3 scripts/run_experimental_campaign.py check-nlo-signs \
+  --measurement HERMES_2007_I726689 --tag YOUR_TAG
+```
+
+`--nlo-sign-convention magnitudes` and `--nlo-sign-convention signed` explicitly
+select the two conventions after verification of the generator's normalization.
+They remain subject to the metadata consistency checks. Automatic inference is
+restricted to uniform unit-weight streams; non-unit weights require an explicit
+verified convention. The option is accepted by `full`, `postprocess`, and
+`check-nlo-signs`, including through the generic campaign CLI and helium wrappers.
+The audit, input digest, and postprocessor identity are saved with the
+postprocessed results. An audit failure requires investigation; changing a flag
+is not a substitute for checking the stored convention.
+
+The E142 compatibility path accepts only the exact historical move from separate
+selection target/annotation maps into upstream's per-output fields. It reproduces
+the saved generation signature with current source inputs before permitting
+reuse, preserves the original descriptor and generation record, and records a
+separate compatibility report. The first use of that migration requires
+`postprocess` before `plot`. It does not authorize different cuts, coefficients,
+references, or event-generation settings. For a current-schema E142 campaign,
+`--allow-plot-metadata-refresh` retains the ordinary historical `.plot` proof.
+
+## Residual labels and optional scale displays
+
+The fixed-target DIS plotting command explicitly requests normalized residuals,
+`(MC - Data) / sigma_Data`, for enabled lower panels. The shared safe plotting
+wrapper keeps their axis labels consistent with this mode and escapes TeX labels
+when generating Python. `--ratiolabel` supplies a custom label; it does not change
+the mathematical mode. Other callers requesting true MC/data ratios retain that
+mode. `RatioPlot=0` still disables a panel.
+
+See [DIS scale displays](dis-hide-scale.md) for `--hide-scale-uncertainty` and
+`--plot-scale 0.5`, `1`, or `2`. These produce separate views from saved results,
+without regenerating events or replacing the full-uncertainty plots. Default
+HERMES 2007 plotting retains upstream's reference coordinates, supplementary
+references, acceptance checks, support masks, and supplemental galleries.

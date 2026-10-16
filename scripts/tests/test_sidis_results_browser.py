@@ -28,7 +28,7 @@ class LinkParser(HTMLParser):
 def assert_links(testcase, output):
     for path in output.rglob("*.html"):
         parser = LinkParser()
-        parser.feed(path.read_text())
+        parser.feed(path.read_text(encoding="utf-8"))
         for address in parser.links:
             parsed = urlsplit(address)
             if parsed.scheme in {"https", "http"}:
@@ -72,7 +72,7 @@ class BrowserTests(unittest.TestCase):
     def put(self, name, text):
         path = self.campaign / name
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(text)
+        path.write_text(text, encoding="utf-8")
         return path
 
     def build(self, **kwargs):
@@ -129,7 +129,7 @@ class BrowserTests(unittest.TestCase):
         with self.assertRaisesRegex(browser.ExportError, "overwrite"):
             self.build()
         self.output = self.base / "other"
-        self.output.with_suffix(".tar.gz").write_text("existing archive")
+        self.output.with_suffix(".tar.gz").write_text("existing archive", encoding="utf-8")
         with self.assertRaisesRegex(browser.ExportError, "overwrite"):
             self.build(archive=True)
 
@@ -144,8 +144,8 @@ class BrowserTests(unittest.TestCase):
             self.build()
         self.assertFalse(self.output.exists())
         self.build(allow_incomplete=True)
-        self.assertIn("Incomplete", (self.output / "index.html").read_text())
-        self.assertNotIn("fixture PNG", (self.output / "index.html").read_text())
+        self.assertIn("Incomplete", (self.output / "index.html").read_text(encoding="utf-8"))
+        self.assertNotIn("fixture PNG", (self.output / "index.html").read_text(encoding="utf-8"))
         assert_links(self, self.output)
 
     def test_failed_shard_not_mistaken_for_completion(self):
