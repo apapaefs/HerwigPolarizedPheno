@@ -1,0 +1,11 @@
+# -*- ThePEG-repository -*-
+read PHENIX_2023_I2033856-Common.in
+set /Herwig/Partons/PPPolarizedExtractor:FirstLongitudinalPolarization -1
+set /Herwig/Partons/PPPolarizedExtractor:SecondLongitudinalPolarization -1
+# Separate QCD Born sample: prompt photons are supplied by the QED shower.
+# This sample must be cross-section normalized and ADDED to gamma+jet.
+set /Herwig/Cuts/JetKtCut:MinKT 4.0*GeV
+insert /Herwig/MatrixElements/SubProcess:MatrixElements[0] /Herwig/MatrixElements/MEQCD2to2
+set /Herwig/MatrixElements/MEQCD2to2:Process All
+cd /Herwig/Generators
+saverun PHENIX_2023_I2033856_WithLoop_fragmentation_MM-LO EventGenerator

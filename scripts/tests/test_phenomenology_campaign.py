@@ -47,10 +47,16 @@ class RegistryAndMatrixTests(unittest.TestCase):
             self.assertIn(identifier, registry)
         for identifier in ("STAR_2019_I1708793", "PHENIX_2023_I2033856"):
             families = registry[identifier]["families"]
-            self.assertEqual(families["nominal"]["label"], "LO+PS (polarized; MPI on)")
-            self.assertEqual(families["mpi_off"]["label"], "LO+PS (polarized; MPI off)")
+            expected = ("LO+PS (expanded, unmerged; MPI on)"
+                        if identifier == "PHENIX_2023_I2033856"
+                        else "LO+PS (polarized; MPI on)")
+            self.assertEqual(families["nominal"]["label"], expected)
+            self.assertEqual(families["mpi_off"]["label"],
+                             "LO+PS (expanded, unmerged; MPI off)" if identifier == "PHENIX_2023_I2033856"
+                             else "LO+PS (polarized; MPI off)")
             self.assertEqual(families["unpolarized_closure"]["label"],
-                             "LO+PS (unpolarized closure; MPI on)")
+                             "LO+PS (expanded unpolarized closure; MPI on)" if identifier == "PHENIX_2023_I2033856"
+                             else "LO+PS (unpolarized closure; MPI on)")
 
     def test_central_and_paper_job_matrices(self) -> None:
         registry = campaign.discover_pp_registry()
@@ -59,11 +65,11 @@ class RegistryAndMatrixTests(unittest.TestCase):
         star_central = campaign.build_job_matrix(star, campaign._resolved_options(args(), star))
         phenix_central = campaign.build_job_matrix(phenix, campaign._resolved_options(args(), phenix))
         self.assertEqual(len(star_central), 12)
-        self.assertEqual(len(phenix_central), 4)
+        self.assertEqual(len(phenix_central), 8)
         star_paper = campaign.build_job_matrix(star, campaign._resolved_options(args("paper"), star))
         phenix_paper = campaign.build_job_matrix(phenix, campaign._resolved_options(args("paper"), phenix))
         self.assertEqual(len(star_paper), 2436)
-        self.assertEqual(len(phenix_paper), 812)
+        self.assertEqual(len(phenix_paper), 1624)
         for jobs in (star_paper, phenix_paper):
             self.assertEqual(len({job["id"] for job in jobs}), len(jobs))
             self.assertEqual(len({job["seed"] for job in jobs}), len(jobs))
@@ -333,9 +339,11 @@ class SourceAndAnalysisContractTests(unittest.TestCase):
         source = (DISPOL_ROOT / "analyses/rivet/pp/PHENIX_2023_I2033856.cc").read_text()
         self.assertIn("10.0,12.0,14.0,16.0", source)
         self.assertIn("22.0,24.0,26.0,28.0,30.0", source)
-        self.assertIn("_inclusive->fill(pt, 1.0/pt)", source)
+        # Absolute rates and multiplicity errors are exercised by the compiled
+        # controlled-event checker, independently of the fill implementation.
+        self.assertIn("1.0/pt", source)
         self.assertIn("sf/(2.0*M_PI*0.5)", source)
-        self.assertIn("particle.pT()/GeV < 0.2", source)
+        self.assertIn("particle.p3().mod()/GeV < 0.2", source)
         self.assertIn("particle.E()/GeV < 0.3", source)
 
     def test_fully_masked_plot_is_suppressed(self) -> None:

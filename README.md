@@ -106,6 +106,13 @@ multijet-rate extension is documented in
 The three COMPASS SIDIS reference-data, estimator, and campaign contracts are
 documented in
 [`docs/compass-sidis-workflow.md`](docs/compass-sidis-workflow.md).
+
+The combined PHENIX photon+jet, QCD-dijet and loop-induced gluon-fusion
+workflow uses `scripts/run_PHENIX_2023_I2033856_WithLoop.py`. It defaults to
+weighted photon enhancement 12 in the dijet sample and five hard-pT slices
+with more low-pT sampling. See [the PHENIX runbook](docs/PHENIX_2023_I2033856.md)
+for the 125M-event default allocation, overrides, required generator fixes,
+normalization and the retained unmerged approximation.
 The six-analysis SIDIS tranche/charge-ratio suite, schema-6 target contract,
 source hierarchy and production gates are documented in
 [`docs/sidis-tranches-workflow.md`](docs/sidis-tranches-workflow.md).
@@ -150,8 +157,9 @@ experimental covariance chains. In particular:
   boundaries;
 - STAR weak-boson and jet results are explicitly generator-level proxies;
 - the STAR 510 GeV result needs a newly signed covariance-corrected campaign;
-- PHENIX prompt photons remain diagnostic-only because the available hard
-  process is incomplete for a publication-level comparison;
+- PHENIX now includes tree photon+jet, QCD-dijet shower photons and loop-induced
+  gluon fusion; the additive tree/dijet prescription remains unmerged and is
+  not a complete NLO calculation;
 - measurements already entering NNPDFpol2.0 are closure tests, not independent
   validations of that fit.
 

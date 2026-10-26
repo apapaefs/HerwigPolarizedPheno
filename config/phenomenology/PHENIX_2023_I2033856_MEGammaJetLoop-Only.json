@@ -1,0 +1,159 @@
+{
+  "schema_version": 3,
+  "id": "PHENIX_2023_I2033856_MEGammaJetLoop-Only",
+  "title": "PHENIX prompt photons: gg -> gamma g loop-induced component only",
+  "process_kind": "polarized_pp",
+  "analysis": {
+    "name": "PHENIX_2023_I2033856",
+    "source": "analyses/rivet/pp/PHENIX_2023_I2033856.cc",
+    "info": "analyses/rivet/pp/PHENIX_2023_I2033856.info",
+    "plot": "analyses/rivet/pp/PHENIX_2023_I2033856.plot",
+    "plugin": "RivetPHENIX_2023_I2033856.so",
+    "reference_yoda": "analyses/rivet/pp/PHENIX_2023_I2033856.yoda.gz"
+  },
+  "reference": {
+    "snapshot": "data/phenomenology/PHENIX_2023_I2033856/reference.json",
+    "sources": [
+      "https://doi.org/10.17182/hepdata.129088.v1/t1",
+      "https://doi.org/10.17182/hepdata.129088.v1/t2"
+    ],
+    "measurement": "PHENIX_2023_I2033856"
+  },
+  "cards": {
+    "directory": "cards/phenomenology/PHENIX_2023_I2033856_MEGammaJetLoop-Only",
+    "common": "PHENIX_2023_I2033856-Common.in",
+    "stem_pattern": "PHENIX_2023_I2033856_MEGammaJetLoop-Only_{channel}_{helicity}-LO",
+    "polarized_pdf_object": "/Herwig/Partons/PHENIXPolarizedPDF",
+    "helicities": {
+      "PP": [
+        1,
+        1
+      ],
+      "PM": [
+        1,
+        -1
+      ],
+      "MP": [
+        -1,
+        1
+      ],
+      "MM": [
+        -1,
+        -1
+      ]
+    },
+    "contributions": {
+      "LO": "Leading loop-induced gg -> gamma g"
+    }
+  },
+  "channels": {
+    "photon": {
+      "label": "gg -> gamma g quark-box loop",
+      "raw_objects": {
+        "inclusive_cross_section": "InclusivePhotonCrossSection",
+        "isolated_cross_section": "IsolatedPhotonCrossSection",
+        "isolated_all": "IsolatedPhotonYield"
+      },
+      "observables": [
+        "inclusive_cross_section",
+        "isolated_cross_section",
+        "isolated_all"
+      ],
+      "scale_object": "/Herwig/MatrixElements/PHENIXGammaJetLoop",
+      "scale_interpretation": "renormalization and factorization"
+    }
+  },
+  "families": {
+    "nominal": {
+      "label": "Loop-induced+PS (polarized; full spin; MPI on)",
+      "helicities": [
+        "PP",
+        "PM",
+        "MP",
+        "MM"
+      ],
+      "mpi": "on"
+    },
+    "mpi_off": {
+      "label": "Loop-induced+PS (polarized; full spin; MPI off)",
+      "helicities": [
+        "PP",
+        "PM",
+        "MP",
+        "MM"
+      ],
+      "mpi": "off",
+      "paper_only": true
+    },
+    "unpolarized_closure": {
+      "label": "Loop-induced+PS (unpolarized closure; MPI on)",
+      "helicities": [
+        "00"
+      ],
+      "mpi": "on",
+      "paper_only": true
+    }
+  },
+  "campaign": {
+    "default_jobs": 4,
+    "default_shards": 1,
+    "default_seed_base": 226000000,
+    "default_events": {
+      "LO": 200000
+    },
+    "smoke_events": 100
+  },
+  "postprocessor": "phenix_prompt_photon",
+  "scales": {
+    "central": 1,
+    "points": [
+      0.5,
+      1,
+      2
+    ],
+    "mapping": "ScalePreFactor = (mu/mu0)^2"
+  },
+  "pdf_ensembles": {
+    "polarized": {
+      "set": "NNPDFpol20_nlo_as_01180",
+      "central_member": 0,
+      "replica_members": [
+        1,
+        100
+      ]
+    },
+    "unpolarized": {
+      "set": "NNPDF40_nlo_pch_as_01180",
+      "central_member": 0,
+      "replica_members": [
+        1,
+        100
+      ]
+    },
+    "combination": "independent replica variances added in quadrature"
+  },
+  "global_uncertainties": {
+    "cross_section_luminosity_relative": 0.1,
+    "all_relative_luminosity_absolute": 0.00039,
+    "all_polarization_relative": 0.066
+  },
+  "physics": {
+    "beams": "longitudinally polarized pp",
+    "sqrt_s_gev": 510,
+    "hard_process_accuracy": "Leading loop-induced alpha_EM alpha_s^3",
+    "event_simulation": "QCD+QED shower, hadronization, remnants, and MPI",
+    "pdf_accuracy": "NLO PDF inputs do not promote the hard prediction to NLO accuracy",
+    "photon_production": "Only native MEPP2GammaJetLoop, gg -> gamma g, AmplitudeMode Massive; massless u,d,s and particle-data c,b,t masses",
+    "accuracy_scope": "Loop-induced hard contribution plus QCD/QED shower; not a complete NLO or NNLO prompt-photon calculation",
+    "fiducial": "All non-hadron-decay photons, |eta|<0.25; spectra 6<pT<30 GeV; isolated ALL 6<pT<20 GeV",
+    "isolation": "DeltaR_eta_phi<0.5; sum of other visible particle energies <0.1 E_gamma; charged momentum >=0.2 GeV and neutral energy >=0.3 GeV",
+    "acceptance": "Particle-level full-cone proxy for acceptance-corrected data; not a detector simulation",
+    "generation_cuts": "Born photon pT>4 GeV; optional disjoint PhotonKtCut slices, including the open upper tail",
+    "mpi_spin": "MPI follows the installed underlying-event model; beam-spin dependence of additional scatterings is not separately modeled",
+    "counting": "Every accepted photon; same-event contributions grouped per bin before filling, preserving event-level diagonal MC sumW2; no inter-bin covariance exported",
+    "combination_status": "Additional hard-process component for the expanded PHENIX campaign. Add normalized per-helicity yields and independent variances to tree photon+jet and dijets before forming A_LL; do not pool as repeated tree events or rescale by an assumed 15 percent."
+  },
+  "plotting": {
+    "ratio_label": "$(\\mathrm{MC}-\\mathrm{Data})/\\sigma_{\\mathrm{Data}}$"
+  }
+}

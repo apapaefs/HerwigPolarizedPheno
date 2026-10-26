@@ -1,16 +1,18 @@
-CAMPAIGN COMMANDS — QUICK REFERENCE (16 October 2026)
+CAMPAIGN COMMANDS — QUICK REFERENCE (26 October 2026)
 
 Use the activated Herwig/Rivet environment; run from the intended checkout.
 D = fixed-target DIS engine / helium wrappers (both checkouts).
 G = generic run_phenomenology_campaign.py, for non-DIS measurements.
-P = PHENIX additions in ORIGINAL HerwigPolarizedPheno only; not merged into
-    HerwigPolarizedPheno-he3-integration. These are not DIS-engine arguments.
+P = PHENIX sampling in the generic runner and PHENIX wrappers.
+    These are not DIS-engine arguments; see docs/PHENIX_2023_I2033856.md.
 
 ENTRY POINTS
   DIS:     python3 scripts/run_experimental_campaign.py COMMAND --measurement ID ...
   Helium:  python3 scripts/run_E142_1996_I424108.py --output-root /path/to/work COMMAND ...
            Substitute run_E154_1997_I443170.py or run_HERMES_1997_I440904.py.
-  PHENIX:  python3 scripts/run_PHENIX_2023_I2033856.py --output-root /path/to/work COMMAND ...
+  PHENIX full: python3 scripts/run_PHENIX_2023_I2033856_WithLoop.py --output-root /path/to/work COMMAND ...
+  Tree+dijet: scripts/run_PHENIX_2023_I2033856.py
+  Loop only: scripts/run_PHENIX_2023_I2033856_MEGammaJetLoop_Only.py
   Original photon+jet only: scripts/run_PHENIX_2023_I2033856_MEGammaJet_Only.py
   Generic: python3 scripts/run_phenomenology_campaign.py COMMAND --measurement ID ...
   Wrappers fix --measurement; do not also supply it. Flags after COMMAND may
@@ -57,17 +59,21 @@ GENERATION (prepare / campaign / full)
   --max-listed N            Maximum displayed jobs; default 12.     --max-listed 20
 
 PHENIX SAMPLING (P; generation commands only)
+  WithLoop defaults: EF12, detuning2, edges 4,8,12,16,20,inf; 125M events total
+  with extra low-pT dijet sampling. --smoke uses 6000 events. Other variants opt in explicitly.
+  --lo-events or custom --hard-pt-edges disables the default unequal budget table.
   --hard-pt-edges EDGES      Nonoverlapping Born-pT slices in GeV; not final photon-pT cuts.
                             Example: --hard-pt-edges 4,8,12,16,20,inf
   --hard-pt-events CHANNEL=N1,N2,...
                             Events per helicity in each slice, split over --shards. Repeat for
-                            photon and/or fragmentation; unlisted channels use --lo-events.
+                            photon, fragmentation and/or gammajet_loop; unlisted channels use --lo-events.
                             Example: --hard-pt-events fragmentation=6000000,3000000,1500000,750000,300000
-                            Requires --hard-pt-edges; one count per interval; incompatible with --smoke.
+                            Requires slices (WithLoop has default edges); one count per interval; no --smoke.
   --photon-enhancement C     Expanded PHENIX only: weighted q->q gamma shower enhancement in
                             fragmentation/QCD-dijet samples, detuning fixed at 2. --photon-enhancement 5
-                            C=1 is the detuning-matched control; omission retains base settings.
-                            Does not change photon+jet samples. Use new tags for C=1,2,5,10.
+                            C=1 is the detuning-matched control; WithLoop defaults to 12.
+                            Other variants retain base settings when omitted.
+                            Does not enhance tree photon+jet or loop samples. Use a new tag to change C.
 
 POSTPROCESSING / DIS AND SIDIS SIGN AUDIT
   --nlo-sign-convention auto|magnitudes|signed (D and G/SIDIS; full/postprocess/check-nlo-signs)
@@ -118,8 +124,8 @@ SHORT COMPLETE EXAMPLES (replace paths/tags; preview generation with --dry-run)
   python3 scripts/run_E142_1996_I424108.py --output-root /path/to/work full --tag e142-example --posnlo-events 12000000 --negnlo-events 1200000 --shards 100 --jobs 100 --seed-base 71424108 --scales all --dry-run
   # Cleaner plots from that existing study, no event generation:
   python3 scripts/run_E142_1996_I424108.py --output-root /path/to/work plot --tag e142-example --hide-scale-uncertainty
-  # Expanded PHENIX, original checkout, five slices and unequal fragmentation budgets:
-  python3 scripts/run_PHENIX_2023_I2033856.py --output-root /path/to/work full --tag phenix-example --lo-events 600000 --hard-pt-edges 4,8,12,16,20,inf --hard-pt-events fragmentation=6000000,3000000,1500000,750000,300000 --photon-enhancement 5 --shards 72 --jobs 72 --seed-base 2033856 --dry-run
+  # Full PHENIX (tree+dijet+loop), default EF12 and unequal slice allocation:
+  python3 scripts/run_PHENIX_2023_I2033856_WithLoop.py --output-root /path/to/work full --tag phenix-example --shards 72 --jobs 72 --seed-base 526000000 --dry-run
 
 Same-tag generation settings are immutable; change the tag for new physics,
 event budgets, seeds or sharding. Runtime --jobs may change on resume.

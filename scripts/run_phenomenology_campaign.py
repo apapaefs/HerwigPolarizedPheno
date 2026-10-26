@@ -419,6 +419,11 @@ def _load_json(path: Path) -> dict[str, Any]:
     return value
 
 
+def _reference_measurement(measurement: Mapping[str, Any]) -> str:
+    """Generator variants can share the same checksum-validated data table."""
+    return str(measurement["reference"].get("measurement", measurement["id"]))
+
+
 def _measurement_snapshot(measurement: Mapping[str, Any]) -> dict[str, Any]:
     """Load either external reference data or an internal MC definition.
 
@@ -429,7 +434,7 @@ def _measurement_snapshot(measurement: Mapping[str, Any]) -> dict[str, Any]:
 
     reference = measurement["reference"]
     if reference.get("kind") != "internal_observable_definition":
-        return validate_vendored(str(measurement["id"]))
+        return validate_vendored(_reference_measurement(measurement))
 
     snapshot_path = DISPOL_ROOT / str(reference["snapshot"])
     snapshot = _load_json(snapshot_path)
@@ -572,6 +577,20 @@ def _validate_descriptor(measurement: Mapping[str, Any], path: Path) -> None:
         raise CampaignError(f"Unsupported schema/process kind in {path}")
     if path.stem != measurement["id"]:
         raise CampaignError(f"Registry filename must match id in {path}")
+    additive = measurement.get("additive_channels")
+    if additive is not None:
+        if (measurement["postprocessor"] != "phenix_prompt_photon"
+                or not isinstance(additive, dict) or not additive):
+            raise CampaignError("additive_channels requires a PHENIX channel mapping")
+        components = []
+        for output, inputs in additive.items():
+            if (output not in measurement["channels"] or not isinstance(inputs, list)
+                    or not inputs or any(item not in measurement["channels"] for item in inputs)):
+                raise CampaignError("Invalid additive photon channel definition")
+            components.extend(inputs)
+        if (len(components) != len(set(components))
+                or set(components) != set(measurement["channels"])):
+            raise CampaignError("Additive channels must partition the generated channels")
     helicities = set(measurement["cards"]["helicities"])
     if process_kind == "unpolarized_sidis":
         if helicities != {"00"}:
@@ -891,6 +910,28 @@ def _family_selector(
     return selected
 
 
+def _photon_shower_sampling(
+    args: argparse.Namespace, measurement: Mapping[str, Any]
+) -> dict[str, Any] | None:
+    factor = getattr(args, "photon_enhancement", None)
+    if factor is None:
+        factor = measurement.get("campaign", {}).get("sampling_defaults", {}).get("photon_enhancement")
+    if factor is None:
+        return None
+    if (measurement.get("postprocessor") != "phenix_prompt_photon"
+            or "fragmentation" not in measurement["channels"]):
+        raise CampaignError(
+            "--photon-enhancement requires the expanded PHENIX prompt-photon "
+            "campaign with the fragmentation component"
+        )
+    if not math.isfinite(factor) or not 1.0 <= factor <= 1e8:
+        raise CampaignError("--photon-enhancement must be finite and between 1 and 1e8")
+    # Explicit C=1 is the control with the same detuning as enhanced runs.
+    # Only descriptors with explicit sampling defaults opt into enhancement.
+    return {"channel": "fragmentation", "enhancement_factor": float(factor),
+            "detuning": 2.0}
+
+
 def _resolved_options(args: argparse.Namespace, measurement: Mapping[str, Any]) -> dict[str, Any]:
     defaults = measurement["campaign"]
     smoke = bool(args.smoke)
@@ -971,6 +1012,71 @@ def _resolved_options(args: argparse.Namespace, measurement: Mapping[str, Any]) 
             list(point) for point in _variation_points(args, measurement)
         ],
     }
+    sampling_defaults = defaults.get("sampling_defaults", {})
+    requested_edges = getattr(args, "hard_pt_edges", None)
+    if requested_edges is None:
+        requested_edges = sampling_defaults.get("hard_pt_edges")
+    if requested_edges is not None:
+        if measurement["postprocessor"] != "phenix_prompt_photon":
+            raise CampaignError("--hard-pt-edges is only valid for PHENIX prompt photons")
+        try:
+            edges = [float(value) for value in requested_edges.split(",")]
+        except ValueError as exc:
+            raise CampaignError("--hard-pt-edges requires comma-separated GeV values") from exc
+        if (len(edges) < 2 or
+                any(not math.isfinite(x) or x <= 0 for x in edges[:-1]) or
+                math.isnan(edges[-1]) or
+                any(a >= b for a, b in zip(edges, edges[1:]))):
+            raise CampaignError(
+                "--hard-pt-edges must be positive and strictly increasing; "
+                "only the final edge may be inf"
+            )
+        options["hard_pt_ranges_gev"] = [
+            [low, None if math.isinf(high) else high]
+            for low, high in zip(edges, edges[1:])
+        ]
+    requested_budgets = getattr(args, "hard_pt_events", None)
+    # Explicit budgets, an explicit uniform event count, or custom slice edges
+    # supersede the recommended allocation. Smoke always uses tiny equal counts.
+    if (not requested_budgets and not smoke
+            and getattr(args, "lo_events", None) is None
+            and getattr(args, "hard_pt_edges", None) is None):
+        requested_budgets = [
+            channel + "=" + ",".join(map(str, counts))
+            for channel, counts in sampling_defaults.get("hard_pt_events", {}).items()
+        ]
+    if requested_budgets:
+        if measurement["postprocessor"] != "phenix_prompt_photon":
+            raise CampaignError("--hard-pt-events is only valid for PHENIX prompt photons")
+        if not options.get("hard_pt_ranges_gev"):
+            raise CampaignError("--hard-pt-events requires --hard-pt-edges")
+        if smoke:
+            raise CampaignError("Omit --hard-pt-events when using --smoke")
+        budgets: dict[str, list[int]] = {}
+        for specification in requested_budgets:
+            channel, separator, counts = specification.partition("=")
+            channel = channel.strip()
+            if not separator or channel not in measurement["channels"]:
+                raise CampaignError(
+                    "--hard-pt-events requires CHANNEL=N1,N2,...; available channels: "
+                    + ", ".join(measurement["channels"])
+                )
+            if channel in budgets:
+                raise CampaignError(f"Repeated --hard-pt-events channel {channel!r}")
+            try:
+                values = [int(value) for value in counts.split(",")]
+            except ValueError as exc:
+                raise CampaignError("--hard-pt-events requires positive integer counts") from exc
+            if (len(values) != len(options["hard_pt_ranges_gev"]) or
+                    any(value <= 0 for value in values)):
+                raise CampaignError(
+                    "--hard-pt-events requires one positive integer per hard-pT slice"
+                )
+            budgets[channel] = values
+        options["hard_pt_events_by_channel"] = budgets
+    photon_sampling = _photon_shower_sampling(args, measurement)
+    if photon_sampling is not None:
+        options["photon_shower_sampling"] = photon_sampling
     if jet_kt_min_gev is not None:
         options["jet_kt_min_gev"] = jet_kt_min_gev
     if (options["jobs"] <= 0 or options["shards"] <= 0 or
@@ -980,6 +1086,27 @@ def _resolved_options(args: argparse.Namespace, measurement: Mapping[str, Any]) 
 
 
 def build_job_matrix(measurement: Mapping[str, Any], options: Mapping[str, Any]) -> list[dict[str, Any]]:
+    if options.get("hard_pt_ranges_gev"):
+        # Reuse the ordinary matrix for each disjoint Born-pT slice. Event
+        # budgets and shard counts apply separately to every slice.
+        sliced_jobs = []
+        unsliced_options = dict(options)
+        ranges = unsliced_options.pop("hard_pt_ranges_gev")
+        budgets = unsliced_options.pop("hard_pt_events_by_channel", {})
+        for index, bounds in enumerate(ranges, start=1):
+            unsliced_options["seed_base"] = int(options["seed_base"]) + len(sliced_jobs)
+            unsliced_options["lo_events_by_channel"] = {
+                channel: counts[index - 1] for channel, counts in budgets.items()
+            }
+            for job in build_job_matrix(measurement, unsliced_options):
+                job["hard_pt_range_gev"] = list(bounds)
+                job["id"] += f"-pt{index:02d}"
+                job["stem"] += f"-pt{index:02d}"
+                job["card_input"] = f"{job['stem']}.in"
+                job["run_file"] = f"runs/{job['stem']}.run"
+                job["output_yoda"] = f"yoda/{job['id']}.yoda"
+                sliced_jobs.append(job)
+        return sliced_jobs
     families = measurement["families"]
     has_companions = bool(measurement["analysis"].get("companions"))
     selected_families = list(options.get("families", ["nominal"]))
@@ -999,8 +1126,12 @@ def build_job_matrix(measurement: Mapping[str, Any], options: Mapping[str, Any])
                 for target_component in targets:
                     for helicity in family["helicities"]:
                         for contribution in contributions:
+                            event_budget = int(options["events_by_contribution"][contribution])
+                            if contribution == "LO":
+                                event_budget = int(options.get("lo_events_by_channel", {}).get(
+                                    channel, event_budget))
                             event_splits = experimental.split_events(
-                                int(options["events_by_contribution"][contribution]),
+                                event_budget,
                                 int(options["shards"]),
                             )
                             level = str(family.get("observable_level", "default"))
@@ -1052,6 +1183,9 @@ def build_job_matrix(measurement: Mapping[str, Any], options: Mapping[str, Any])
                                     job["analysis_instances"] = analysis_instances
                                 if "hard_process_spin" in family:
                                     job["hard_process_spin"] = family["hard_process_spin"]
+                                photon_sampling = options.get("photon_shower_sampling")
+                                if photon_sampling and channel == photon_sampling["channel"]:
+                                    job["photon_shower_sampling"] = dict(photon_sampling)
                                 jobs.append(job)
                                 seed_slot += 1
     ids = [job["id"] for job in jobs]
@@ -1067,7 +1201,7 @@ def _plan(measurement: Mapping[str, Any], args: argparse.Namespace) -> dict[str,
     logical = {(job["channel"], job["target_component"], job["observable_level"],
                 job["family"], job["helicity"], job["contribution"],
                 job["polarized_pdf_member"], job["unpolarized_pdf_member"],
-                job["scale"], job["mpi"]) for job in jobs}
+                job["scale"], job["mpi"], tuple(job.get("hard_pt_range_gev", []))) for job in jobs}
     return {"measurement": measurement["id"], "tag": args.tag,
             "campaign_directory": str(_campaign_dir(measurement["id"], args.tag)),
             "options": options, "logical_jobs": len(logical),
@@ -1299,6 +1433,25 @@ def _card_text(measurement: Mapping[str, Any], job: Mapping[str, Any]) -> str:
         overrides.append(
             f"set /Herwig/Cuts/JetKtCut:MinKT {jet_kt_min_gev:.1f}*GeV"
         )
+    if "hard_pt_range_gev" in job:
+        cut = {"photon": "PhotonKtCut", "fragmentation": "JetKtCut",
+               "gammajet_loop": "PhotonKtCut"}[job["channel"]]
+        low, high = job["hard_pt_range_gev"]
+        overrides.append(f"set /Herwig/Cuts/{cut}:MinKT {low:.17g}*GeV")
+        if high is not None:
+            overrides.append(f"set /Herwig/Cuts/{cut}:MaxKT {high:.17g}*GeV")
+    photon_sampling = job.get("photon_shower_sampling")
+    if photon_sampling:
+        if (measurement.get("postprocessor") != "phenix_prompt_photon"
+                or job["channel"] != "fragmentation"
+                or photon_sampling["channel"] != "fragmentation"):
+            raise CampaignError("Photon shower sampling overrides require a PHENIX fragmentation job")
+        overrides.extend([
+            "set /Herwig/Shower/QtoQGammaSudakov:EnhancementFactor "
+            f"{photon_sampling['enhancement_factor']:.17g}",
+            "set /Herwig/Shower/SplittingGenerator:Detuning "
+            f"{photon_sampling['detuning']:.17g}",
+        ])
     specs = experimental.analysis_specs(measurement)
     for spec in specs:
         analysis_name = str(spec["name"])
@@ -1451,7 +1604,7 @@ def prepare_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> Path
             )
         reference_yoda = DISPOL_ROOT / str(reference_yoda_name)
         if not reference_yoda.is_file() or reference_yoda.stat().st_size == 0:
-            write_reference_yoda(str(measurement["id"]), snapshot)
+            write_reference_yoda(_reference_measurement(measurement), snapshot)
     common_source = DISPOL_ROOT/measurement["cards"]["directory"]/measurement["cards"]["common"]
     shutil.copy2(common_source, campaign_dir/"cards"/common_source.name)
     logical_cards: dict[str, Mapping[str, Any]] = {}
@@ -1639,8 +1792,15 @@ def _logical_groups(manifest: Mapping[str, Any], campaign_dir: Path) -> dict[tup
         key = (job["family"], job["channel"], int(job["polarized_pdf_member"]),
                int(job["unpolarized_pdf_member"]), float(job["scale"]), job["mpi"])
         groups.setdefault(key, {}).setdefault(str(job["helicity"]), []).append(job)
+    expected_ranges = {
+        tuple(bounds) for bounds in manifest.get("configuration", {}).get("hard_pt_ranges_gev", [])
+    }
     for helicities in groups.values():
         for jobs in helicities.values():
+            if expected_ranges and {
+                tuple(job.get("hard_pt_range_gev", [])) for job in jobs
+            } != expected_ranges:
+                raise CampaignError("Incomplete hard-pT slices for a helicity/component")
             jobs.sort(key=lambda job: int(job["shard"]))
     return groups
 
@@ -1657,7 +1817,23 @@ def _load_series_many(
     campaign_dir: Path,
     requested: Mapping[str, tuple[str, str]],
 ) -> dict[str, experimental.BinSeries]:
-    """Combine many shard objects after reading every shard YODA only once."""
+    """Average shards within each slice, then add disjoint slice cross sections."""
+    slices: dict[tuple[Any, ...], list[Mapping[str, Any]]] = {}
+    for job in jobs:
+        slices.setdefault(tuple(job.get("hard_pt_range_gev", [])), []).append(job)
+    if len(slices) > 1:
+        if () in slices:
+            raise CampaignError("Cannot combine sliced and unsliced samples")
+        ordered = sorted(slices, key=lambda bounds: bounds[0])
+        if any(a[1] is None or a[1] > b[0] for a, b in zip(ordered, ordered[1:])):
+            raise CampaignError("Cannot add overlapping hard-pT slices")
+        loaded = [_load_series_many(slices[bounds], campaign_dir, requested)
+                  for bounds in ordered]
+        return {
+            label: experimental.add_independent_series([item[label] for item in loaded])
+            for label in requested
+        }
+
 
     if not jobs or not requested:
         raise CampaignError("Multi-object shard loading requires jobs and objects")
@@ -2024,6 +2200,60 @@ def _star_prediction(channel: str, samples: Mapping[str, experimental.BinSeries]
     else:
         raise CampaignError(f"Unknown STAR channel {channel}")
     return output
+
+
+def _prediction_channels(measurement: Mapping[str, Any]) -> list[str]:
+    """Output channels can sum independently generated hard-process classes."""
+    return list(measurement.get("additive_channels", measurement["channels"]))
+
+
+def _combine_phenix_channels(
+    measurement: Mapping[str, Any],
+    samples: Mapping[tuple[Any, ...], Mapping[str, Mapping[str, experimental.BinSeries]]],
+) -> tuple[dict[tuple[Any, ...], Any], dict[tuple[Any, ...], Any]]:
+    """Add cross sections (and independent variances), never average asymmetries.
+
+    Each input has already been combined over shards and normalized to its own
+    subprocess cross section. Keep component predictions as named diagnostics.
+    The same operation is applied independently to each PDF/scale/family point.
+    """
+    channel_map = measurement.get("additive_channels", {
+        channel: [channel] for channel in measurement["channels"]
+    })
+    variations = {key[:1] + key[2:] for key in samples}
+    combined, predictions = {}, {}
+    for variation in sorted(variations):
+        for output_channel, components in channel_map.items():
+            keys = {name: (variation[0], name, *variation[1:]) for name in components}
+            missing = [name for name, key in keys.items() if key not in samples]
+            if missing:
+                raise CampaignError(f"Missing additive PHENIX components {missing} for {variation}")
+            first = samples[next(iter(keys.values()))]
+            if any(set(samples[key]) != set(first) for key in keys.values()):
+                raise CampaignError("Additive PHENIX samples have different observables")
+            objects = {}
+            for observable, helicities in first.items():
+                if any(set(samples[key][observable]) != set(helicities) for key in keys.values()):
+                    raise CampaignError("Additive PHENIX samples have different helicities")
+                objects[observable] = {
+                    helicity: experimental.linear_combine_series(
+                        {name: samples[key][observable][helicity] for name, key in keys.items()},
+                        {name: 1.0 for name in components},
+                    ) for helicity in helicities
+                }
+            output_key = (variation[0], output_channel, *variation[1:])
+            combined[output_key] = objects
+            if set(next(iter(objects.values()))) == set(DENOMINATOR):
+                prediction = _phenix_prediction(objects)
+                if len(components) > 1:
+                    for name, key in keys.items():
+                        prediction.update({
+                            f"Component_{name}_{observable}": result
+                            for observable, result in _phenix_prediction(samples[key]).items()
+                            if observable in measurement["channels"][name]["observables"]
+                        })
+                predictions[output_key] = prediction
+    return combined, predictions
 
 
 def _phenix_prediction(samples_by_object: Mapping[str, Mapping[str, experimental.BinSeries]]) -> dict[str, dict[str, Any]]:
@@ -3479,7 +3709,7 @@ def aggregate_uncertainties(predictions: Mapping[tuple[Any, ...], Mapping[str, A
                             measurement: Mapping[str, Any]) -> dict[str, Any]:
     bands: dict[str, Any] = {}
     snapshot = _measurement_snapshot(measurement)
-    for channel in measurement["channels"]:
+    for channel in _prediction_channels(measurement):
         nominal_mpi = measurement["families"]["nominal"]["mpi"]
         central_key = ("nominal", channel, 0, 0, 1.0, nominal_mpi)
         if central_key not in predictions:
@@ -5200,6 +5430,8 @@ def postprocess_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> 
     manifest = _load_json(manifest_path)
     _assert_manifest_signature_current(manifest, measurement)
     groups = _logical_groups(manifest, campaign_dir)
+    hard_pt_ranges = manifest["configuration"].get("hard_pt_ranges_gev")
+    photon_sampling = manifest["configuration"].get("photon_shower_sampling")
     if args.dry_run:
         print(json.dumps({"measurement": measurement["id"], "groups": len(groups),
                           "output": str(campaign_dir/"postprocess"/"prediction.yoda")},
@@ -5275,7 +5507,7 @@ def postprocess_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> 
         if measurement["postprocessor"] == "star_weak_bosons":
             predictions[key] = _star_prediction(channel, objects["yield"])
         elif measurement["postprocessor"] == "phenix_prompt_photon":
-            predictions[key] = _phenix_prediction(objects)
+            pass  # Combined per helicity after all hard-process samples are loaded.
         elif measurement["postprocessor"] == "star_jet_all":
             predictions[key] = _star_jet_prediction(objects)
             _apply_star_display_binning(predictions[key], snapshot)
@@ -5295,6 +5527,9 @@ def postprocess_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> 
         else:
             raise CampaignError(f"Unknown postprocessor {measurement['postprocessor']}")
 
+    if measurement["postprocessor"] == "phenix_prompt_photon":
+        raw_samples, predictions = _combine_phenix_channels(measurement, raw_samples)
+
     configured_families = list(manifest["configuration"]["families"])
     physical_families = [
         family_id
@@ -5311,7 +5546,7 @@ def postprocess_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> 
     nominal_mpi = measurement["families"]["nominal"]["mpi"]
     central_mpi = measurement["families"][central_family]["mpi"]
     central_keys = [(central_family, channel, 0, 0, 1.0, central_mpi)
-                    for channel in measurement["channels"]]
+                    for channel in _prediction_channels(measurement)]
     missing_central = [key for key in central_keys if key not in predictions]
     if missing_central:
         raise CampaignError(f"Missing central predictions: {missing_central}")
@@ -5403,6 +5638,9 @@ def postprocess_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> 
                 "HardProcessAccuracy": "LO",
                 "PDFInputs": "NNPDF40 NLO + NNPDFpol2.0 NLO",
                 "SampleLabel": measurement["families"][key[0]]["label"],
+                "GeneratedComponents": ",".join(
+                    measurement.get("additive_channels", {}).get(key[1], [key[1]])
+                ),
                 "Channel": key[1], "PolarizedPDFMember": key[2],
                 "UnpolarizedPDFMember": key[3], "HardScaleFactor": key[4],
                 "MPI": key[5], "HelicityCombination": "independent PP,PM,MP,MM samples",
@@ -5416,6 +5654,10 @@ def postprocess_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> 
                     "jet_kt_min_gev"
                 ),
             }
+            if hard_pt_ranges:
+                annotation["HardPtRangesGeV"] = json.dumps(hard_pt_ranges)
+            if photon_sampling:
+                annotation["PhotonShowerSampling"] = json.dumps(photon_sampling, sort_keys=True)
             helicity_match = re.match(
                 r"^Sigma(PP|PM|MP|MM)_", observable
             )
@@ -5456,7 +5698,7 @@ def postprocess_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> 
                                                  "comparison_roles":
                                                  star_policy.comparison_roles(mask),
                                                  "note": "PDF fit overlap prevents interpreting this as an independent PDF validation"}
-                    if count:
+                    if count and (include_diagnostics or measurement["postprocessor"] != "phenix_prompt_photon"):
                         objects_by_family["nominal"].append(
                             experimental._estimate_from_values(
                                 yoda,
@@ -5496,7 +5738,7 @@ def postprocess_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> 
 
     # Add the explicitly requested unpolarized closure when the paper profile
     # has generated it.  It is kept separate from the nominal physics curves.
-    for channel in measurement["channels"]:
+    for channel in _prediction_channels(measurement):
         if not include_diagnostics:
             break
         physical_key = ("nominal", channel, 0, 0, 1.0, nominal_mpi)
@@ -5692,6 +5934,8 @@ def postprocess_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> 
         "measurement": measurement["id"], "tag": args.tag,
         "hard_process_accuracy": "LO",
         "central_sample_label": measurement["families"][central_family]["label"],
+        "physics": copy.deepcopy(measurement.get("physics", {})),
+        "additive_channels": copy.deepcopy(measurement.get("additive_channels", {})),
         "uncertainties": bands, "pulls": pulls_summary,
         "correlated_goodness_of_fit": correlated_goodness_of_fit,
         "global_experimental_uncertainties": measurement.get("global_uncertainties", {}),
@@ -5722,6 +5966,12 @@ def postprocess_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> 
         summary["sampling"] = measurement["sampling"]
         summary["sampling_library_resolution"] = manifest.get("runtime", {}).get(
             "sampling_library_resolution", {})
+    if hard_pt_ranges:
+        summary["hard_pt_ranges_gev"] = hard_pt_ranges
+    if "hard_pt_events_by_channel" in manifest["configuration"]:
+        summary["hard_pt_events_by_channel"] = manifest["configuration"]["hard_pt_events_by_channel"]
+    if photon_sampling:
+        summary["photon_shower_sampling"] = photon_sampling
     experimental.atomic_write_json(output_dir/"summary.json", summary)
     if central_rows:
         with (output_dir/"central.csv").open("w", encoding="utf-8", newline="") as stream:
@@ -6292,6 +6542,9 @@ def plot_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> Path:
     command = [sys.executable, str(safe_wrapper),
                runtime["tools"]["rivet-mkhtml"], "--dry-run",
                "--offline", "--deviation", "--pwd", "-o", str(output)]
+    ratio_label = measurement.get("plotting", {}).get("ratio_label")
+    if ratio_label:
+        command.extend(["--ratiolabel", str(ratio_label)])
     include_diagnostics = bool(
         getattr(args, "include_diagnostics", False)
     )
@@ -6344,6 +6597,15 @@ def plot_pp(args: argparse.Namespace, measurement: Mapping[str, Any]) -> Path:
         shutil.rmtree(output)
     output.mkdir(parents=True, exist_ok=True)
     environment = experimental.analysis_environment(measurement, campaign_dir, runtime)
+    # A generator variant may keep its source/plot metadata in a separate
+    # directory while sharing the original experiment's reference YODA.
+    reference_yoda = measurement["analysis"].get("reference_yoda")
+    if reference_yoda:
+        reference_directory = str((DISPOL_ROOT / reference_yoda).parent)
+        data_directories = environment.get("RIVET_DATA_PATH", "").split(os.pathsep)
+        environment["RIVET_DATA_PATH"] = os.pathsep.join(dict.fromkeys(
+            directory for directory in [*data_directories, reference_directory] if directory
+        ))
     mpl_cache = campaign_dir/"work"/"matplotlib-cache"
     mpl_cache.mkdir(parents=True, exist_ok=True)
     environment["MPLCONFIGDIR"] = str(mpl_cache)
@@ -6601,6 +6863,25 @@ def _add_campaign_options(parser: argparse.ArgumentParser) -> None:
             "and 5 GeV scan points are accepted"
         ),
     )
+    parser.add_argument(
+        "--hard-pt-edges",
+        help=("PHENIX Born-pT slice edges in GeV, e.g. 4,8,12,16,20; "
+              "append ,inf for an open upper tail. LO events and shards are per slice."),
+    )
+    parser.add_argument(
+        "--hard-pt-events", action="append", metavar="CHANNEL=N1,N2,...",
+        help=("PHENIX events per helicity in each --hard-pt-edges slice for one "
+              "component (photon, fragmentation, or gammajet_loop), divided over --shards. "
+              "Repeat for another component; unspecified components use --lo-events. "
+              "Cannot be combined with --smoke."),
+    )
+    parser.add_argument(
+        "--photon-enhancement", type=float, metavar="FACTOR",
+        help=("Expanded PHENIX only: weighted final-state q->q gamma enhancement "
+              "in QCD-dijet (fragmentation) cards, with fixed detuning 2. "
+              "Use 1 for the detuning-matched control. WithLoop defaults to 12; "
+              "other measurements preserve base settings when omitted."),
+    )
     parser.add_argument("--smoke", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--recover-failed", "--rerun-failed-random-seed",
@@ -6717,6 +6998,11 @@ def main(argv: Sequence[str] | None = None) -> int:
                 return 0
             raise CampaignError(measurement["simulation"]["reason"] +
                                 " View the data with scripts/build_results_browser.py.")
+        # Validate before fixed-target forwarding, which would discard this option.
+        _photon_shower_sampling(args, measurement)
+        if ((getattr(args, "hard_pt_events", None) or getattr(args, "hard_pt_edges", None)) and
+                measurement.get("postprocessor") != "phenix_prompt_photon"):
+            raise CampaignError("--hard-pt-events/--hard-pt-edges are only valid for PHENIX prompt photons")
         if measurement["process_kind"] == "fixed_target_dis":
             if getattr(args, "jet_kt_min_gev", None) is not None:
                 raise CampaignError(
@@ -6754,7 +7040,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 )
             else:
                 outputs = fetch_and_validate(
-                    args.measurement,
+                    _reference_measurement(measurement),
                     source_file=getattr(args, "source_file", None),
                 )
                 print(

@@ -59,7 +59,7 @@ generator-dependent approximation exposed.
 | `STAR_2019_I1708793` | Central values are correct; complete combined covariance is unavailable | Simplified truth proxy | Not reproduced | Qualitative theory comparison only, not a literal STAR fiducial analysis |
 | `STAR_2021_I1850855` | Exact HEPData inventory and 36-point primary covariance | Generator-dependent parton proxy | Not reproduced | Retain only as a hard-parton modeling comparison |
 | `STAR_2022_I1949588` | Exact HEPData inventory; luminosity covariance repaired by this audit | Generator-dependent parton proxy | Not reproduced | Produce a newly signed campaign after the covariance repair; retain only as a modeling comparison |
-| `PHENIX_2023_I2033856` | Exact selected tables and global-error metadata | Fiducial photon observable is close, generated process is incomplete | Not reproduced | Diagnostic only; exclude from publication-grade comparisons |
+| `PHENIX_2023_I2033856` and variants | Exact selected tables and global-error metadata | Updated isolation/counting; WithLoop includes tree, dijet and loop components | Not reproduced | Unmerged LO+PS plus leading loop-induced contribution; see PHENIX runbook |
 
 “Not reproduced” does not mean that detector cuts should be applied again to
 an unfolded result.  It means that equivalence to the experiment's corrected
@@ -358,20 +358,21 @@ all prompt photons, `|eta|<0.25`, the exact 18 cross-section and seven
 `A_LL` bins, the `1/pT` invariant-cross-section factor, and the published
 isolation cone and particle thresholds.
 
-The generated sample is not the published direct-photon process.  The cards
-contain the direct `gamma+jet` matrix element plus a QED shower but omit the
-QCD dijet event class in which a hard quark fragments or showers to a
-non-decay photon.  Isolation reduces but does not eliminate that component.
-The publication's NLO calculation also contains a photon fragmentation
-function and a fragmentation scale.  Inclusive cross sections are therefore
-definitely incomplete, and isolated cross sections and `A_LL` are not exact.
+The original cards omitted the QCD-dijet event class. The October 2026
+workflow now generates that class separately with QED shower photons; the
+WithLoop variant also adds massive-quark-box `gg -> gamma g`. The analysis
+uses charged-particle momentum for the isolation threshold and groups
+same-event photons for the diagonal statistical variances. EF12 and unequal
+hard-pT sampling improve statistics without changing physical normalization.
+The combined tree/dijet prescription remains unmerged. It does not implement
+the publication's full NLO calculation with photon fragmentation functions
+and a fragmentation scale. See [the PHENIX runbook](PHENIX_2023_I2033856.md).
 
 The recorded 10% cross-section luminosity, `3.9e-4` `A_LL` shift, and 6.6%
 polarization scale are global uncertainties.  Generic diagonal pulls that
 omit them must not be interpreted as a complete goodness of fit.  PHENIX
-should remain excluded from publication-grade conclusions until a separately
-normalized fragmentation-photon sample with overlap removal, or a validated
-NLO prompt-photon implementation, is available.
+comparisons should retain this perturbative/merging qualification; adding
+the separately normalized finite loop contribution does not remove it.
 
 Primary source: [PHENIX, Phys. Rev. Lett. 130 (2023)
 251901](https://arxiv.org/abs/2202.08158).
