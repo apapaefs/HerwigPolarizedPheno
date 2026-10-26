@@ -1,0 +1,7 @@
+# -*- ThePEG-repository -*-
+read PHENIX_2023_I2033856-Common.in
+set /Herwig/Partons/PPPolarizedExtractor:FirstLongitudinalPolarization -1
+set /Herwig/Partons/PPPolarizedExtractor:SecondLongitudinalPolarization -1
+insert /Herwig/MatrixElements/SubProcess:MatrixElements[0] /Herwig/MatrixElements/MEGammaJet
+cd /Herwig/Generators
+saverun PHENIX_2023_I2033856_photon_MM-LO EventGenerator

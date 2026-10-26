@@ -1,0 +1,53 @@
+PHENIX: pool repeated tree+dijet samples and add a loop-only sample
+
+For NEW production use run_PHENIX_2023_I2033856_WithLoop.py instead. It generates
+and combines all three channels within one campaign. No separate pooling step
+is needed. See PHENIX_2023_I2033856.md for defaults and commands.
+
+The existing pooling helper is retained for completed, compatible central-scale,
+central-PDF, nominal two-component campaigns and optional loop-only additions:
+
+python3 scripts/combine_PHENIX_2023_I2033856.py \
+  --campaign /path/to/tree-dijet-run1 \
+  --campaign /path/to/tree-dijet-run2 \
+  --loop-campaign /path/to/loop-only-run \
+  --output-dir /path/to/new-combined-result
+
+--campaign PATH             Repeat for ORIGINAL tree+dijet campaigns.
+--loop-campaign PATH        Optional; repeat for compatible loop-only campaigns.
+--loop-runtime-audit FILE   Required if loop and baseline runtime binaries differ.
+--output-dir PATH           Must be a new directory; original results stay intact.
+--no-plots                  Write combined YODA/JSON/CSV without rendering.
+--plot-only                 Re-render an existing pool; no input campaign options.
+--rivet-mkhtml PATH         Optional explicit plotting executable.
+
+Repeat samples of a given process/helicity/pT stratum are averaged with generated
+event fractions; their variances use squared fractions. Disjoint strata are added.
+Loop samples are pooled separately and then their normalized helicity cross
+sections are ADDED to the tree+dijet cross sections, with independent variances
+added. A_LL is calculated afterward. No assumed percentage is used.
+
+The helper checks complete shards, event counts, nonoverlapping slices, unique
+seeds, reference inputs, saved-card hashes, observable definitions and runtime
+identities. It supports the existing finalized YODA v3 layout. It is not a
+general arbitrary-campaign merger and does not accept full WithLoop campaigns
+as tree+dijet inputs. Preserve the checkout matching historical generation
+signatures for old products; a new plotting file can invalidate that signature.
+
+If the loop run used a different runtime, the audit must describe the exact
+baseline_artifacts and loop_artifacts maps (artifact name -> SHA256), their
+changed_artifacts list, schema_version 1, and evidence containing a reason and
+partner_replay with status PASS, all_compared_outputs_match true, and the hash
+of the replay report. Do not invent an audit to suppress a compatibility error.
+This provision records the tested partner-finder upgrade; it is not permission
+to mix campaigns across a result-changing physics correction. In particular,
+do not pool pre-fix polarized-ISR events with corrected-ISR events.
+
+Outputs include prediction.yoda, central.csv, summary.json, provenance.json,
+resolved-measurement.json, and Rivet PNG/PDF/HTML plots. Where present, separate
+baseline_prediction and loop_prediction fields retain the component comparison.
+Generated data, runtime audits and plots are not committed to this repository.
+
+Replot an existing compatible pool:
+python3 scripts/combine_PHENIX_2023_I2033856.py \
+  --plot-only --output-dir /path/to/combined-result

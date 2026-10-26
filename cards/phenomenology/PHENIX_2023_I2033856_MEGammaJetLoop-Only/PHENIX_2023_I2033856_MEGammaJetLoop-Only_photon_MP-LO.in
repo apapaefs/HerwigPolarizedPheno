@@ -1,0 +1,11 @@
+# -*- ThePEG-repository -*-
+# Loop component only; the common card matches the expanded PHENIX campaign.
+read PHENIX_2023_I2033856-Common.in
+create Herwig::MEPP2GammaJetLoop /Herwig/MatrixElements/PHENIXGammaJetLoop HwMEHadron.so
+set /Herwig/MatrixElements/PHENIXGammaJetLoop:AmplitudeMode Massive
+set /Herwig/MatrixElements/PHENIXGammaJetLoop:ScalePreFactor 1.0
+set /Herwig/Partons/PPPolarizedExtractor:FirstLongitudinalPolarization -1
+set /Herwig/Partons/PPPolarizedExtractor:SecondLongitudinalPolarization 1
+insert /Herwig/MatrixElements/SubProcess:MatrixElements[0] /Herwig/MatrixElements/PHENIXGammaJetLoop
+cd /Herwig/Generators
+saverun PHENIX_2023_I2033856_MEGammaJetLoop-Only_photon_MP-LO EventGenerator

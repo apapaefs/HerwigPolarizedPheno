@@ -24,12 +24,26 @@
     "stem_pattern": "PHENIX_2023_I2033856_{channel}_{helicity}-LO",
     "polarized_pdf_object": "/Herwig/Partons/PHENIXPolarizedPDF",
     "helicities": {
-      "PP": [1, 1],
-      "PM": [1, -1],
-      "MP": [-1, 1],
-      "MM": [-1, -1]
+      "PP": [
+        1,
+        1
+      ],
+      "PM": [
+        1,
+        -1
+      ],
+      "MP": [
+        -1,
+        1
+      ],
+      "MM": [
+        -1,
+        -1
+      ]
     },
-    "contributions": {"LO": "Born"}
+    "contributions": {
+      "LO": "Born"
+    }
   },
   "channels": {
     "photon": {
@@ -39,26 +53,57 @@
         "isolated_cross_section": "IsolatedPhotonCrossSection",
         "isolated_all": "IsolatedPhotonYield"
       },
-      "observables": ["inclusive_cross_section", "isolated_cross_section", "isolated_all"],
+      "observables": [
+        "inclusive_cross_section",
+        "isolated_cross_section",
+        "isolated_all"
+      ],
       "scale_object": "/Herwig/MatrixElements/MEGammaJet",
+      "scale_interpretation": "renormalization and factorization"
+    },
+    "fragmentation": {
+      "label": "QCD dijets with shower photons",
+      "raw_objects": {
+        "inclusive_cross_section": "InclusivePhotonCrossSection",
+        "isolated_cross_section": "IsolatedPhotonCrossSection",
+        "isolated_all": "IsolatedPhotonYield"
+      },
+      "observables": [
+        "inclusive_cross_section",
+        "isolated_cross_section",
+        "isolated_all"
+      ],
+      "scale_object": "/Herwig/MatrixElements/MEQCD2to2",
       "scale_interpretation": "renormalization and factorization"
     }
   },
   "families": {
     "nominal": {
-      "label": "LO+PS (polarized; MPI on)",
-      "helicities": ["PP", "PM", "MP", "MM"],
+      "label": "LO+PS (expanded, unmerged; MPI on)",
+      "helicities": [
+        "PP",
+        "PM",
+        "MP",
+        "MM"
+      ],
       "mpi": "on"
     },
     "mpi_off": {
-      "label": "LO+PS (polarized; MPI off)",
-      "helicities": ["PP", "PM", "MP", "MM"],
+      "label": "LO+PS (expanded, unmerged; MPI off)",
+      "helicities": [
+        "PP",
+        "PM",
+        "MP",
+        "MM"
+      ],
       "mpi": "off",
       "paper_only": true
     },
     "unpolarized_closure": {
-      "label": "LO+PS (unpolarized closure; MPI on)",
-      "helicities": ["00"],
+      "label": "LO+PS (expanded unpolarized closure; MPI on)",
+      "helicities": [
+        "00"
+      ],
       "mpi": "on",
       "paper_only": true
     }
@@ -67,22 +112,42 @@
     "default_jobs": 4,
     "default_shards": 1,
     "default_seed_base": 2033856,
-    "default_events": {"LO": 200000},
+    "default_events": {
+      "LO": 200000
+    },
     "smoke_events": 100
   },
   "postprocessor": "phenix_prompt_photon",
   "scales": {
     "central": 1.0,
-    "points": [0.5, 1.0, 2.0],
+    "points": [
+      0.5,
+      1.0,
+      2.0
+    ],
     "mapping": "ScalePreFactor = (mu/mu0)^2"
   },
   "pdf_ensembles": {
-    "polarized": {"set": "NNPDFpol20_nlo_as_01180", "central_member": 0, "replica_members": [1, 100]},
-    "unpolarized": {"set": "NNPDF40_nlo_pch_as_01180", "central_member": 0, "replica_members": [1, 100]},
+    "polarized": {
+      "set": "NNPDFpol20_nlo_as_01180",
+      "central_member": 0,
+      "replica_members": [
+        1,
+        100
+      ]
+    },
+    "unpolarized": {
+      "set": "NNPDF40_nlo_pch_as_01180",
+      "central_member": 0,
+      "replica_members": [
+        1,
+        100
+      ]
+    },
     "combination": "independent replica variances added in quadrature"
   },
   "global_uncertainties": {
-    "cross_section_luminosity_relative": 0.10,
+    "cross_section_luminosity_relative": 0.1,
     "all_relative_luminosity_absolute": 0.00039,
     "all_polarization_relative": 0.066
   },
@@ -91,6 +156,24 @@
     "sqrt_s_gev": 510.0,
     "hard_process_accuracy": "LO",
     "event_simulation": "QCD+QED shower, hadronization, remnants, and MPI",
-    "pdf_accuracy": "NLO PDF inputs do not promote the hard prediction to NLO accuracy"
+    "pdf_accuracy": "NLO PDF inputs do not promote the hard prediction to NLO accuracy",
+    "photon_production": "Independently normalized LO gamma+jet and LO QCD dijets with QED shower radiation; added per helicity before ratios",
+    "accuracy_scope": "LO plus QCD/QED shower approximation; no NLO matching, fixed-order photon fragmentation functions, or QCD/QED multijet merging",
+    "fiducial": "All non-hadron-decay photons, |eta|<0.25; spectra 6<pT<30 GeV; isolated ALL 6<pT<20 GeV",
+    "isolation": "DeltaR_eta_phi<0.5; sum of other visible particle energies <0.1 E_gamma; charged momentum >=0.2 GeV and neutral energy >=0.3 GeV",
+    "acceptance": "Particle-level full-cone proxy for acceptance-corrected data; not a detector simulation",
+    "generation_cuts": "Born photon pT>4 GeV in gamma+jet; Born parton pT>4 GeV in QCD dijets; verify cut stability before precision use",
+    "mpi_spin": "MPI follows the installed underlying-event model; beam-spin dependence of additional scatterings is not separately modeled",
+    "counting": "Every accepted photon; same-event contributions grouped per bin before filling, preserving event-level diagonal MC sumW2; no inter-bin covariance exported",
+    "combination_status": "Unmerged diagnostic sum; overlap in radiative phase space is not subtracted or validated. Additional channels do not establish greater accuracy."
+  },
+  "additive_channels": {
+    "photon": [
+      "photon",
+      "fragmentation"
+    ]
+  },
+  "plotting": {
+    "ratio_label": "$(\\mathrm{MC}-\\mathrm{Data})/\\sigma_{\\mathrm{Data}}$"
   }
 }

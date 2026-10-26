@@ -89,10 +89,14 @@ run a central smoke campaign:
 
 ```bash
 python3 scripts/run_phenomenology_campaign.py full \
-  --measurement PHENIX_2023_I2033856 \
+  --measurement PHENIX_2023_I2033856_WithLoop \
   --tag phenix_smoke \
   --smoke --jobs 4
 ```
+
+For the three-component PHENIX workflow, enhancement and hard-pT sampling defaults,
+see [the PHENIX runbook](PHENIX_2023_I2033856.md). Its smoke run uses 6,000 events;
+its default central production allocation is 125M events.
 
 The new jet and SIDIS measurements use the same interface:
 

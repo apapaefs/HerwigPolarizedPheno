@@ -200,7 +200,7 @@ def point_groups(value: object) -> list:
 def metadata(repo: Path, identifier: str, kind: str, descriptor: dict) -> dict:
     reference = descriptor["reference"]
     snapshot = common.read_json(source_file(repo, reference["snapshot"]))
-    if snapshot.get("measurement") != identifier:
+    if snapshot.get("measurement") != reference.get("measurement", identifier):
         raise common.ExportError(f"Reference identity mismatch for {identifier}")
     analysis = descriptor["analysis"]
     info = source_file(repo, analysis["info"]).read_text() if analysis.get("info") else ""
